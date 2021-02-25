@@ -1,0 +1,20 @@
+{
+    "filelist": {
+        "dummy": "dummy.png",
+        "splash_spinner": "loader.gif",
+        "option_spinner": "spinner_3.gif",
+        "icon": "icon.png",
+        "loading": "loading_screen.png",
+        "bg_interior": "background_s.png",
+        "bg_interior_cs": "background_cs.png",
+        "bar_humidity": "bar_blue.png",
+        "bar_co2": "bar_yellow.png",
+        "bar_tvoc": "bar_green.png",
+        "bar_pressure": "bar_barometer.png",
+        "thermometer_full": "thermometer-1.png",
+        "thermometer_almost_full": "thermometer-2.png",
+        "thermometer_half": "thermometer-3.png",
+        "thermometer_almost_empty": "thermometer-4.png",
+        "thermometer_empty": "thermometer-5.png"
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "coord": {
+        "lon": 18.23,
+        "lat": 47.43
+    },
+    "weather": [
+        {
+            "id": 800,
+            "main": "Clear",
+            "description": "clear sky",
+            "icon": "01d"
+        }
+    ],
+    "base": "stations",
+    "main": {
+        "temp": 30.8,
+        "pressure": 1015,
+        "humidity": 35,
+        "temp_min": 29,
+        "temp_max": 31.67
+    },
+    "visibility": 10000,
+    "wind": {
+        "speed": 5.1,
+        "deg": 200
+    },
+    "clouds": {
+        "all": 0
+    },
+    "dt": 1563639468,
+    "sys": {
+        "type": 1,
+        "id": 6670,
+        "message": 0.0064,
+        "country": "HU",
+        "sunrise": 1563592208,
+        "sunset": 1563647778
+    },
+    "timezone": 7200,
+    "id": 3046073,
+    "name": "City1",
+    "cod": 200
+}

@@ -1,0 +1,16 @@
+debugpy>=1.2.1
+gTTS>=2.2.1
+python-vlc>=3.0.11115
+PyGithub>=1.54.1
+rpi-backlight>=2.2.0
+packaging>=20.8
+multiprocessing-logging>=0.3.1
+getrpimodel>=0.1.19
+jsonschema>=3.2.0
+APScheduler>=3.6.3
+python-dateutil>=2.8.1
+Adafruit-PureIO>=1.0.4
+Adafruit-PlatformDetect>=2.4.0
+adafruit-blinka==4.1.0
+adafruit-circuitpython-dht>=3.2.6
+Adafruit_BME280>=1.0.1

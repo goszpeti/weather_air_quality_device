@@ -1,0 +1,8 @@
+# python requirements for the tests for CT
+freezegun
+pylint
+rope
+pytest
+pytest-cov
+pytest-mock
+pytest-qt

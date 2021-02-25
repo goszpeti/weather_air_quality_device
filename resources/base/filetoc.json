@@ -1,0 +1,6 @@
+{
+    "filelist": {
+        "events_schema": "events_schema.json",
+        "tts_dict": "tts_dict.json"
+    }
+}

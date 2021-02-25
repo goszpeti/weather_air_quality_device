@@ -1,0 +1,83 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "raspiHost",
+            "description": "What type of component do you want to create?",
+            "options": [
+                "MyPi4"                
+            ],
+            "default": "MyPi4"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "restart",
+            "type": "shell",
+            "command": "ssh pi@${input:raspiHost} sudo shutdown -r now",
+            "problemMatcher": [
+                "$eslint-compact"
+            ]
+        },
+        {
+            "label": "shutdown",
+            "type": "shell",
+            "command": "ssh pi@${input:raspiHost}sudo shutdown -h now",
+            "problemMatcher": [
+                "$eslint-compact"
+            ]
+        },
+        {
+            "label": "copySrc",
+            "type": "shell",
+            "command": "ssh pi@${input:raspiHost} mkdir -p ~/PiWeather/piweather && scp -r src/main.py pi@${input:raspiHost}:PiWeather && scp -r src/piweather/* pi@${input:raspiHost}:PiWeather/piweather",
+            "problemMatcher": []
+        },
+        {
+            "label": "copyRsc",
+            "type": "shell",
+            "command": "scp -r resources pi@${input:raspiHost}:PiWeather",
+            "problemMatcher": []
+        },
+        {
+            "label": "copyDrv",
+            "type": "shell",
+            "command": "scp -r src/piweather/driver pi@${input:raspiHost}:PiWeather/piweather",
+            "problemMatcher": []
+        },
+        {
+            "label": "Install package in editable mode",
+            "type": "shell",
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "command": "pip3 install -e .",
+            "problemMatcher": []
+        },
+        {
+            "label": "Install dev and test dependencies",
+            "type": "shell",
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "command": "${config:python.pythonPath} -m pip install --upgrade pip && pip install -r test/requirements.txt",
+            "problemMatcher": []
+        },
+        {
+            "label": "CompileGui",
+            "type": "shell",
+            "command": "${workspaceRoot}/script/build/compileGui.sh",
+            "problemMatcher": [],
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+    ]
+}

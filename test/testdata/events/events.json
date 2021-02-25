@@ -1,0 +1,68 @@
+{
+    "version": "0.1.0",
+    "events": [
+        {
+            "name": "Daily Greeting",
+            "recurrence": "day",
+            "date": "",
+            "triggers": [
+                "camera",
+                "motion"
+            ],
+            "actions": {
+                "text_2_speach": "${day_time_greeting}!"
+            },
+            "last_triggered": "2020-12-25 20:27:24.863244"
+        },
+        {
+            "name": "Wakeup",
+            "recurrence": "weekday",
+            "date": "8:15",
+            "triggers": [],
+            "actions": {
+                "text_2_speach": "${day_time_greeting}!",
+                "play_sound": "alarm.mp3"
+            },
+            "last_triggered": "2020-12-25 16:49:50.628349"
+        },
+        {
+            "name": "Christmas1",
+            "recurrence": "date",
+            "date": "december 24",
+            "triggers": [
+                "motion"
+            ],
+            "actions": {
+                "text_2_speach": "Frohe Weihnachten!",
+                "background": "bg_interior_cs"
+            },
+            "last_triggered": ""
+        },
+        {
+            "name": "Christmas2",
+            "recurrence": "date",
+            "date": "december 25",
+            "triggers": [
+                "motion"
+            ],
+            "actions": {
+                "text_2_speach": "Frohe Weihnachten!",
+                "background": "bg_interior_cs"
+            },
+            "last_triggered": "2020-12-25 20:27:24.861232"
+        },
+        {
+            "name": "Christmas3",
+            "recurrence": "date",
+            "date": "december 26",
+            "triggers": [
+                "motion"
+            ],
+            "actions": {
+                "text_2_speach": "Frohe Weihnachten!",
+                "background": "bg_interior_cs"
+            },
+            "last_triggered": ""
+        }
+    ]
+}
