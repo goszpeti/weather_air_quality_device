@@ -19,7 +19,6 @@ from setuptools import find_packages, setup, Command
 NAME = 'piweather'
 DESCRIPTION = 'Weather Air Quality Device - base package'
 URL = 'https://github.com/goszpeti/piWeather'
-EMAIL = 'peter.gosztolya@gmail.com'
 AUTHOR = 'Peter Gosztolya'
 REQUIRES_PYTHON = '>=3.6.0'
 
