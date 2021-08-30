@@ -1,0 +1,32 @@
+{
+    "en": {
+        "startup": "Starting waiqed station, version {}.",
+        "new_version": "Found newer version {}.",
+        "morning": "good morning",
+        "beforenoon": "good day",
+        "noon": "good day",
+        "afternoon": "good afternoon",
+        "evening": "good evening",
+        "night": "good night"
+    },
+    "de": {
+        "startup": "Starte Wetter und Luftqualitätsmessgerät, Version {}.",
+        "new_version": "Neue Version {} verfügbar",
+        "morning": "guten morgen",
+        "beforenoon": "guten vormittag",
+        "noon": "guten mittag",
+        "afternoon": "guten nachmittag",
+        "evening": "guten abend",
+        "night": "gute nacht"
+    },
+    "hu": {
+        "startup": "Időjárás és levegőminőségmérő, verzió {} indítása.",
+        "new_version": "új verzió {} elérhető",
+        "morning": "jó reggelt",
+        "beforenoon": "jó délelőttöt",
+        "noon": "jó napot",
+        "afternoon": "jó délutánt",
+        "evening": "jó estét",
+        "night": "jó éjt"
+    }
+}

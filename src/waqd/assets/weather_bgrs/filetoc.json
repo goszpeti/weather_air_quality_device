@@ -1,0 +1,25 @@
+{
+    "filelist": {
+        "dummy": "dummy.png",
+        "bg_day_mist": "mist_bg.jpg",
+        "bg_day_heavy_clouds": "heavy_clouds_bg.jpg",
+        "bg_day_drizzle": "drizzle_bg.jpg",
+        "bg_day_fog": "fog_bg.jpg",
+        "bg_day_squall": "squall_bg.jpg",
+        "bg_day_rain": "rain_bg.jpg",
+        "bg_day_snow": "snow_bg.jpg",
+        "bg_day_clear": "clear_sky_bg.jpg",
+        "bg_day_clouds": "cloudy_bg.jpg",
+        "bg_day_thunderstorm": "thunderstorm_bg.jpg",
+        "bg_night_mist": "mist_bg.jpg",
+        "bg_night_drizzle": "drizzle_bg.jpg",
+        "bg_night_fog": "fog_bg.jpg",
+        "bg_night_squall": "squall_bg.jpg",
+        "bg_night_rain": "rain_night_bg.jpg",
+        "bg_night_snow": "snow_night_bg.jpg",
+        "bg_night_clear": "clear_night_bg.jpg",
+        "bg_night_clouds": "cloudy_night_bg.jpg",
+        "bg_night_heavy_clouds": "cloudy_night_bg.jpg",
+        "bg_night_thunderstorm": "thunderstorm_bg"
+    }
+}

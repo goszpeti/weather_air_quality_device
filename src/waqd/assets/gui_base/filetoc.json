@@ -1,0 +1,15 @@
+{
+    "filelist": {
+        "dummy-pic": "dummy.png",
+        "background-full": "background_full.jpg",
+        "icon": "icon.png",
+        "info_overlay": "info_overlay.png",
+        "loading": "loading_screen.png",
+        "bg_interior": "background_s.png",
+        "bg_interior_cs": "background_cs.png",
+        "bar_humidity": "bar_blue.png",
+        "bar_co2": "bar_yellow.png",
+        "bar_tvoc": "bar_green.png",
+        "bar_pressure": "bar_barometer.png"
+    }
+}
