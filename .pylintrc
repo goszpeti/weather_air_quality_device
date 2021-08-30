@@ -142,7 +142,8 @@ disable=print-statement,
         comprehension-escape,
         broad-except,
         wrong-import-position,
-        missing-module-docstring
+        missing-module-docstring,
+        too-few-public-methods
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -251,6 +252,7 @@ good-names=i,
            ex,
            Run,
            ui,
+           fp,
            _
 
 # Include a hint for the correct naming format with invalid-name.

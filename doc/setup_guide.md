@@ -170,7 +170,7 @@ WeatherAirQualityDevice
 
 * Start a terminal (ctrl + alt + t)
 * Enter command he following commands: 
-    git clone https://github.com/goszpeti/piWeather.git
+    git clone https://github.com/goszpeti/WeatherAirQualityDevice.git
     cd ./WeatherAirQualityDevice/script/installer
     chmod +x ./start_installer.sh
     ./start_installer.sh

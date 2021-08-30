@@ -3,45 +3,62 @@
 
 # Note: To use the 'upload' functionality of this file, you must:
 #   $ pipenv install twine --dev
-# TODO Only for local and CI usage. The installer does not use this package.
 
 import io
 import os
-import sys
-from shutil import rmtree
-from os.path import splitext
+import platform
 from glob import glob
-from os.path import basename
+from os.path import basename, splitext
 
-from setuptools import find_packages, setup, Command
+from setuptools import find_packages, setup
 
 # Package meta-data.
-NAME = 'piweather'
+NAME = 'waqd'
 DESCRIPTION = 'Weather Air Quality Device - base package'
-URL = 'https://github.com/goszpeti/piWeather'
+URL = 'https://github.com/goszpeti/WeatherAirQualityDevice'
 AUTHOR = 'Peter Gosztolya'
-REQUIRES_PYTHON = '>=3.6.0'
+REQUIRES_PYTHON = '>=3.7.0'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    "PyQt5==5.12.3",
-    "PyQtChart==5.12.0",
-    "gTTS>=2.2.1",
-    "python-vlc>=3.0.11115",
-    "PyGithub>=1.45",
-    "packaging>=20.8",
-    "multiprocessing-logging>=0.3.1",
-    "getrpimodel>=0.1.17",
-    "jsonschema>=3.2.0",
-    "APScheduler>=3.6.3",
-    "python-dateutil>=2.8.1",
-    "debugpy >= 1.2.1"
+    # Backend
+    "DebugPy==1.2.1",  # MS VSCode debugger for dynamic debugging
+    "JsonSchema==3.2.0",  # MIT License - for events json schema validation
+    "Python-DateUtil==2.8.1",  # Apache License - for date parse and relative delta
+    "APScheduler==3.7.0",  # MIT License - Scheduler for Events function
+    "PyGithub==1.54.1",  # LGPL - Access to GitHub in AutoUpdater
+    "File-Read-Backwards==2.0.0",  # MIT License - for performance in DetailView
+    # Sound
+    "gTTS==2.2.2",  # MIT License -Google TTS for speech
+    "Python-VLC==3.0.12118",  # LGPLv2+ - use VLC for playing sounds
+    # HW
+    "RPi-Backlight==2.2.0",  # MIT License
+    "Adafruit-Blinka==6.9.1",
+    #"Adafruit-PlatformDetect==2.4.0",  # MIT License - target and model detection - up to 3.10 not working with BMP280
+    "Adafruit-CircuitPython-DHT==3.6.0",  # MIT License - temp/hum sensor
+    "Adafruit-CircuitPython-CCS811==1.3.4",  # MIT License - co2/tvoc sensor
+    "Adafruit-CircuitPython-BME280==2.6.2",  # MIT License - temp/hum/baro sensor
+    "Adafruit-CircuitPython-BMP280==3.2.8",  # MIT License - temp/baro sensor
+    "Adafruit-Circuitpython-BH1750==1.0.5",  # MIT License - light sensor
+    "Adafruit-Circuitpython-ADS1x15==2.2.8",  # MIT License - currently only this ADC is used for analog sensors
+    # QT Widgets
+    "QtWidgets==0.18",  # MIT License - for touch friendly Toggle Switch
+    "PyQtSpinner==0.1.1"  # MIT License - a loading Spinner
 ]
+REQUIRED_NON_RPI = [
+    # UI # 5.11.3 on RPi
+    "PyQt5>=5.12.3",  # GPLv3 - Must be compiled on RPi (takes an eternity) - so use system libs
+    "PyQtChart>=5.12.0",  # GPLv3 - for DetailView
+]
+REQUIRED_LINUX = [ # this package does not install on windows, because it can't decode an UTF-8 char
+    "MH-Z19==3.0.2", # MIT License
+    ]
+#epd-library=0.2.3 GPL v3GPLv3 - Waveshare 2.9 inch epaper 296×128
 
-# What packages are optional?
-EXTRAS = {
-    # 'fancy feature': ['django'],
-}
+if not platform.machine().startswith("armv7"):
+    REQUIRED += REQUIRED_NON_RPI
+if platform.system() == "Linux":
+    REQUIRED += REQUIRED_LINUX
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -66,34 +83,30 @@ setup(
     version=about['__version__'],
     description=DESCRIPTION,
     long_description=long_description,
-    long_description_content_type='text/markdown',
     author=AUTHOR,
-    author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
     packages=find_packages("src"),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
-
-    # entry_points={
-    #     'console_scripts': ['mycli=mymodule:cli'],
-    # },
+    package_data={"": ["ui/qt/*.ui", "ui/qt/*.qm", "assets/**/*.*"]},
     install_requires=REQUIRED,
-    extras_require=EXTRAS,
     include_package_data=True,
-    license='MIT',
+    license='AGPL',
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-        'License :: OSI Approved :: MIT License',  # TODO
+        "License:: OSI Approved:: GNU Affero General Public License v3"
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython'
     ],
     entry_points={
         'gui_scripts': [
-            'piweather=main:main',
+            'waqd=waqd.__main__:main',
         ]
     }
 )
