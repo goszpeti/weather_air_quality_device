@@ -1,0 +1,378 @@
+#
+# Copyright (c) 2019-2021 Péter Gosztolya & Contributors.
+#
+# This file is part of ProjectName
+# (see https://github.com/goszpeti/WeatherAirQualityDevice).
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+import time
+import os
+from typing import TYPE_CHECKING
+
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
+
+
+from waqd import __version__ as WAQD_VERSION
+from waqd import config
+from waqd.assets import get_asset_file
+from waqd.base.component_ctrl import ComponentController
+from waqd.base.system import RuntimeSystem
+from waqd.settings import (BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS, CCS811_ENABLED,
+                           DAY_STANDBY_TIMEOUT, DHT_22_DISABLED, DHT_22_PIN, DISP_TYPE_RPI,
+                           DISP_TYPE_WAVESHARE_5_LCD, DISPLAY_TYPE,
+                           EVENTS_ENABLED, FONT_NAME, FONT_SCALING, AUTO_UPDATER_ENABLED,
+                           LANG, LOCATION, MOTION_SENSOR_ENABLED, MH_Z19_ENABLED,
+                           NIGHT_MODE_BEGIN, NIGHT_MODE_END, INTERIOR_BG, FORECAST_BG,
+                           NIGHT_STANDBY_TIMEOUT, OW_CITY_IDS, LOG_SENSOR_DATA,
+                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, Settings)
+from waqd.ui import common
+from waqd.ui.widgets.fader_widget import FaderWidget
+from waqd.ui.widgets.splashscreen import SplashScreen
+
+# define Qt so we can use it like the namespace in C++
+Qt = QtCore.Qt
+
+if TYPE_CHECKING:
+    from waqd.ui.main_ui import WeatherMainUi
+
+
+class OptionMainUi(QtWidgets.QDialog):
+    """ Base class of the options qt ui. Holds the option SubUi element. """
+    EXTRA_SCALING = 1.15  # make items bigger in this menu
+    # matches strings to seconds in dropdown of timeouts
+    TIME_CBOX_VALUES = [5, 30, 120, 600, 1800]  # seconds
+    FONT_SCALING_VALUES = [1, 1.2, 1.4]
+    DHT_PIN_VALUES = ["Disabled", "4", "8", "22"]
+
+    def __init__(self, main_ui: "WeatherMainUi", comp_ctrl: ComponentController, settings: Settings):
+        super().__init__()
+
+        self._main_ui = main_ui  # reference to main ui instance
+        self._comp_ctrl = comp_ctrl
+        self._comps = comp_ctrl.components
+        self._settings = settings
+        self._previous_scaling = self._settings.get(FONT_SCALING)
+        self._runtime_system = RuntimeSystem()
+
+        # create qt base objects
+        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.FramelessWindowHint)
+
+        ui_type = uic.loadUiType(config.base_path / "ui" / "qt" / "options.ui")
+        self._ui = ui_type[0]()  # 0th element is always the UI class
+        self._ui.setupUi(self)
+
+        self.setGeometry(main_ui.geometry())
+
+        # start fader - variable must be held otherwise gc will claim it
+        fader_widget = FaderWidget(main_ui, self)  # pylint: disable=unused-variable
+
+        # set version label
+        self._ui.version_label.setText(WAQD_VERSION)
+
+        # set up fix background image
+        self._ui.background_label.setPixmap(QtGui.QPixmap(str(get_asset_file("gui_base", "background-full"))))
+
+        # display current options
+        self.display_options()
+
+        # connect buttons on main tab
+        self._ui.ok_button.clicked.connect(self.apply_options)
+        self._ui.cancel_button.clicked.connect(self.close_ui)
+        self._ui.shutdown_button.clicked.connect(self.call_shutdown)
+        self._ui.restart_button.clicked.connect(self.call_restart)
+        self._ui.check_updates_button.clicked.connect(self.show_updater_ui)
+
+        self._ui.lang_cbox.currentTextChanged.connect(self._update_language_cbox)
+        self._ui.forecast_background_cbox.currentTextChanged.connect(self._update_preview_forecast)
+        self._ui.interior_background_cbox.currentTextChanged.connect(self._update_preview_interior)
+        self._ui.font_cbox.currentFontChanged.connect(self._update_font)
+
+        # connect elements on energy saver tab
+        self._ui.night_mode_begin_slider.valueChanged.connect(
+            self._update_night_mode_slider)
+        self._ui.night_mode_begin_slider.sliderMoved.connect(
+            self._update_night_mode_slider)
+
+        self._ui.night_mode_end_slider.valueChanged.connect(
+            self._update_night_mode_slider)
+        self._ui.night_mode_end_slider.sliderMoved.connect(
+            self._update_night_mode_slider)
+
+        self._ui.brightness_slider.valueChanged.connect(
+            self._update_brightness_slider)
+        self._ui.brightness_slider.sliderMoved.connect(
+            self._update_brightness_slider)
+
+        self._ui.motion_sensor_enable_toggle.toggled.connect(
+            self._update_motion_sensor_enabled)
+
+        # set starting tab to first tab
+        self._ui.options_tabs.setCurrentIndex(0)
+
+        # set to normal brightness
+        self._comps.display.set_brightness(self._settings.get(BRIGHTNESS))
+
+        common.scale_gui_elements(
+            self, self._settings.get(FONT_SCALING) * self.EXTRA_SCALING)
+
+        # initialize splash screen for the closing of the UI and make a screenshot
+        self._splash_screen = SplashScreen(background=False)
+        # minimal wait to show the button feedback
+        time.sleep(0.3)
+        self.show()
+
+    def display_options(self):
+        """ Set all elements to the display the current values and set up sliders """
+        settings=self._settings
+
+        # read events
+        events_json_path=config.user_config_dir / "events.json"
+        if events_json_path.exists():
+            with open(events_json_path, "r") as fp:
+                events_text=fp.read()
+                self._ui.event_config_text_browser.setText(events_text)
+        self._ui.night_mode_begin_slider.setMaximum(24)
+        self._ui.night_mode_begin_slider.setTickInterval(1)
+        self._ui.night_mode_begin_value.setText(str(settings.get(NIGHT_MODE_BEGIN)))
+        self._ui.night_mode_begin_slider.setSliderPosition(settings.get(NIGHT_MODE_BEGIN))
+
+        self._ui.night_mode_end_slider.setMaximum(24)
+        self._ui.night_mode_end_slider.setTickInterval(1)
+        self._ui.night_mode_end_value.setText(str(settings.get(NIGHT_MODE_END)))
+        self._ui.night_mode_end_slider.setSliderPosition(settings.get(NIGHT_MODE_END))
+
+        self._ui.brightness_slider.setMaximum(100)
+        self._ui.brightness_slider.setMinimum(30)
+        self._ui.brightness_slider.setTickInterval(5)
+        self._ui.brightness_value.setText(str(settings.get(BRIGHTNESS)))
+        self._ui.brightness_slider.setSliderPosition(settings.get(BRIGHTNESS))
+
+        self._ui.events_enable_toggle.setChecked(settings.get(EVENTS_ENABLED))
+        self._ui.auto_updater_enable_toggle.setChecked(settings.get(AUTO_UPDATER_ENABLED))
+        self._ui.sensor_logging_enable_toggle.setChecked(settings.get(LOG_SENSOR_DATA))
+        self._ui.updater_beta_channel_toggle.setChecked(settings.get(UPDATER_USER_BETA_CHANNEL))
+
+        # themes
+        # set background images
+        bgr_path = config.assets_path / "gui_bgrs"
+        for bgr_file in bgr_path.iterdir():
+            self._ui.interior_background_cbox.addItem(bgr_file.name)
+            self._ui.forecast_background_cbox.addItem(bgr_file.name)
+
+        self._ui.interior_background_cbox.setCurrentText(settings.get(INTERIOR_BG))
+        self._ui.forecast_background_cbox.setCurrentText(settings.get(FORECAST_BG))
+        self._ui.font_cbox.setCurrentText(settings.get(FONT_NAME))
+        # try to get index - font-scaling can be set to anything
+        try:
+            scaling_index=self.FONT_SCALING_VALUES.index(self._previous_scaling)
+        except Exception:  # normal
+            scaling_index=1
+        self._ui.font_scaling_cbox.setCurrentIndex(scaling_index)
+
+        # hw feature toggles
+        self._ui.sound_enable_toggle.setChecked(settings.get(SOUND_ENABLED))
+        self._ui.motion_sensor_enable_toggle.setChecked(settings.get(MOTION_SENSOR_ENABLED))
+        self._ui.ccs811_enable_toggle.setChecked(settings.get(CCS811_ENABLED))
+        self._ui.bmp280_enable_toggle.setChecked(settings.get(BMP_280_ENABLED))
+        self._ui.bme280_enable_toggle.setChecked(settings.get(BME_280_ENABLED))
+        self._ui.mh_z19_enable_toggle.setChecked(settings.get(MH_Z19_ENABLED))
+
+        # set up DHT22 combo box
+        self._ui.dht22_pin_cbox.addItems(self.DHT_PIN_VALUES)
+        # 0 is not in the list and means it is disabled, so it maps to 'Disabled'
+        if str(settings.get(DHT_22_PIN)) not in self.DHT_PIN_VALUES:
+            selected_pin=0
+        else:
+            selected_pin=self.DHT_PIN_VALUES.index(str(settings.get(DHT_22_PIN)))
+
+        self._ui.dht22_pin_cbox.setCurrentIndex(selected_pin)
+
+        # set up display type combo box
+        display_dict={DISP_TYPE_RPI: "Org. RPi 7\" display",
+                      DISP_TYPE_WAVESHARE_5_LCD: "Waveshare touch LCD"}
+        self._ui.display_type_cbox.setDisabled(True)
+        self._ui.display_type_cbox.addItems(display_dict.values())
+
+        try:
+            self._ui.display_type_cbox.setCurrentIndex(
+                list(display_dict.values()).index(display_dict.get(settings.get(DISPLAY_TYPE))))
+            self._ui.day_standby_timeout_cbox.setCurrentIndex(
+                self.TIME_CBOX_VALUES.index(settings.get(DAY_STANDBY_TIMEOUT)))
+            self._ui.night_standby_timeout_cbox.setCurrentIndex(
+                self.TIME_CBOX_VALUES.index(settings.get(NIGHT_STANDBY_TIMEOUT)))
+        except Exception:  # leave default
+            pass
+
+        # enable / disable standby based on motion sensor
+        self._ui.day_standby_timeout_cbox.setEnabled(settings.get(MOTION_SENSOR_ENABLED))
+        self._ui.night_standby_timeout_cbox.setEnabled(settings.get(MOTION_SENSOR_ENABLED))
+
+        # populate location dropdown- only ow for now
+        for city in settings.get(OW_CITY_IDS):
+            self._ui.location_combo_box.addItem(city)
+
+        # set info labels
+        self._ui.system_value.setText(self._runtime_system.platform)
+        [ipv4, _]=self._runtime_system.get_ip()
+        self._ui.ip_address_value.setText(ipv4)
+
+        self._ui.location_combo_box.setCurrentText(settings.get(LOCATION))
+        self._ui.lang_cbox.setCurrentText(settings.get(LANG))
+        
+        # set to normal brightness - again, in case it was modified
+        self._comps.display.set_brightness(self._settings.get(BRIGHTNESS))
+
+
+    def close_ui(self):
+        """
+        Transition back to Main Ui.
+        Restart unloaded components and re-init main Gui.
+        Shows splashscreen.
+        """
+        # minimal wait to show the button feedback
+        time.sleep(0.3)
+        self.hide()
+        # this splash screen works only in full screen under RPI - god knows why...
+        if self._runtime_system.is_target_system:
+            self._splash_screen.showFullScreen()
+            self._splash_screen.setFocus()
+        else:
+            self._splash_screen.show()
+        loading_minimum_time = 3  # seconds
+        start = time.time()
+        while not self._comp_ctrl.all_unloaded or (time.time() < start + loading_minimum_time):
+            config.qt_app.processEvents()
+
+        self._comp_ctrl.init_all()
+
+        while not self._comp_ctrl.all_ready:
+            config.qt_app.processEvents()
+
+        self._main_ui.init_gui()
+        start = time.time()
+        while not self._main_ui.ready or (time.time() < start + loading_minimum_time):
+            config.qt_app.processEvents()
+
+        self._splash_screen.finish(self._main_ui)
+
+        self.close()
+
+    def apply_options(self):
+        """
+        Callback of Apply Options button.
+        Write back every option and close ui.
+        """
+        settings = self._settings
+        settings.set(LOCATION, self._ui.location_combo_box.currentText())
+        settings.set(LANG, self._ui.lang_cbox.currentText())
+        settings.set(DAY_STANDBY_TIMEOUT, self.TIME_CBOX_VALUES[
+            self._ui.day_standby_timeout_cbox.currentIndex()])
+        settings.set(NIGHT_STANDBY_TIMEOUT, self.TIME_CBOX_VALUES[
+            self._ui.night_standby_timeout_cbox.currentIndex()])
+
+        settings.set(EVENTS_ENABLED,  self._ui.events_enable_toggle.isChecked())
+        settings.set(LOG_SENSOR_DATA,  self._ui.sensor_logging_enable_toggle.isChecked())
+
+        settings.set(UPDATER_USER_BETA_CHANNEL,  self._ui.updater_beta_channel_toggle.isChecked())
+        settings.set(AUTO_UPDATER_ENABLED, self._ui.auto_updater_enable_toggle.isChecked())
+        settings.set(SOUND_ENABLED, self._ui.sound_enable_toggle.isChecked())
+
+        settings.set(NIGHT_MODE_BEGIN, self._ui.night_mode_begin_slider.sliderPosition())
+        settings.set(NIGHT_MODE_END, self._ui.night_mode_end_slider.sliderPosition())
+        settings.set(BRIGHTNESS, self._ui.brightness_slider.sliderPosition())
+
+        settings.set(INTERIOR_BG, self._ui.interior_background_cbox.currentText())
+        settings.set(FORECAST_BG, self._ui.forecast_background_cbox.currentText())
+        settings.set(FONT_NAME, self._ui.font_cbox.currentText())
+
+        if self._ui.dht22_pin_cbox.currentText() == self.DHT_PIN_VALUES[0]: # "Disabled"
+            settings.set(DHT_22_PIN, DHT_22_DISABLED)
+        else:
+            settings.set(DHT_22_PIN, int(self._ui.dht22_pin_cbox.currentText()))
+        settings.set(MOTION_SENSOR_ENABLED, self._ui.motion_sensor_enable_toggle.isChecked())
+        settings.set(BME_280_ENABLED, self._ui.bme280_enable_toggle.isChecked())
+        settings.set(BMP_280_ENABLED, self._ui.bmp280_enable_toggle.isChecked())
+        settings.set(MH_Z19_ENABLED, self._ui.mh_z19_enable_toggle.isChecked())
+        settings.set(CCS811_ENABLED, self._ui.ccs811_enable_toggle.isChecked())
+
+
+        font_scaling = self.FONT_SCALING_VALUES[self._ui.font_scaling_cbox.currentIndex()]
+        self._settings.set(FONT_SCALING, font_scaling)
+
+        # write them to file
+        settings.save_all_options()
+
+        self.close_ui()
+
+    def _update_language_cbox(self):
+        """ Change language in the current ui on value change. """
+        self._settings.set(LANG, self._ui.lang_cbox.currentText())
+        common.set_ui_language(config.qt_app, self._settings)
+        self._ui.retranslateUi(self)
+        self.display_options()  # redraw values
+
+    def _update_font(self):
+        font=self._ui.font_cbox.currentFont()
+        self.setFont(font)
+        config.qt_app.setFont(font)
+
+    def _update_preview_interior(self):
+        bgr_path = config.assets_path / "gui_bgrs" / self._ui.interior_background_cbox.currentText()
+        self._ui.preview_label.setPixmap(QtGui.QPixmap(str(bgr_path)))
+
+    def _update_preview_forecast(self):
+        bgr_path = config.assets_path / "gui_bgrs" / self._ui.forecast_background_cbox.currentText()
+        self._ui.preview_label.setPixmap(QtGui.QPixmap(str(bgr_path)))
+
+
+    def _update_night_mode_slider(self):
+        """ Callback to update value shown on night mode time silder. """
+        self._ui.night_mode_begin_value.setText(
+            str(self._ui.night_mode_begin_slider.sliderPosition()))
+        self._ui.night_mode_end_value.setText(
+            str(self._ui.night_mode_end_slider.sliderPosition()))
+
+    def _update_brightness_slider(self):
+        """ Callback to update value shown on brightness silder. """
+        self._ui.brightness_value.setText(
+            str(self._ui.brightness_slider.sliderPosition()))
+        self._comps.display.set_brightness(
+            self._ui.brightness_slider.sliderPosition())
+
+    def _update_motion_sensor_enabled(self):
+        """ Callback to disable the timeout checkboxes, if motion sensor is checked. """
+        value=bool(
+            self._ui.motion_sensor_enable_toggle.isChecked())
+        self._ui.day_standby_timeout_cbox.setEnabled(value)
+        self._ui.night_standby_timeout_cbox.setEnabled(value)
+
+    def call_shutdown(self):
+        """ Callback to shut down the target system. """
+        self._runtime_system.shutdown()
+        self.close_ui()
+
+    def call_restart(self):
+        """ Callback to restart the target system. """
+        self._runtime_system.restart()
+        self.close_ui()
+
+    def show_updater_ui(self):
+        if self._runtime_system.is_target_system:
+            # this is the default updater on RaspberryPi OS
+            os.system("sudo apt update") # TODO this takes a while, but is necessary
+            os.system("pi-gpk-update-viewer&")
+
+    def _cyclic_update(self):
+        pass
