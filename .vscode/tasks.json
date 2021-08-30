@@ -8,12 +8,28 @@
             "id": "raspiHost",
             "description": "What type of component do you want to create?",
             "options": [
-                "MyPi4"                
+                "raspberrypi"
             ],
-            "default": "MyPi4"
+            "default": "raspberrypi"
         }
     ],
     "tasks": [
+        {
+            "group": "test",
+            "label": "create python venv",
+            "type": "shell",
+            "command": "${config:python.pythonPath} -m venv .venv ",
+            "problemMatcher": []
+        },
+        // {
+        //     "group": "test",
+        //     "label": "activate venv",
+        //     "type": "shell",
+        //     "command": "./.venv/Scripts/activate.bat",
+        //     "runOptions": {
+        //         "runOn": "default"
+        //     }
+        // },
         {
             "label": "restart",
             "type": "shell",
@@ -31,21 +47,15 @@
             ]
         },
         {
-            "label": "copySrc",
+            "label": "Copy Base to RPi",
             "type": "shell",
-            "command": "ssh pi@${input:raspiHost} mkdir -p ~/PiWeather/piweather && scp -r src/main.py pi@${input:raspiHost}:PiWeather && scp -r src/piweather/* pi@${input:raspiHost}:PiWeather/piweather",
+            "command": "ssh pi@${input:raspiHost} mkdir -p ~/waqd-dev && scp -r script pi@${input:raspiHost}:waqd-dev && scp -r setup.py pi@${input:raspiHost}:waqd-dev",
             "problemMatcher": []
         },
         {
-            "label": "copyRsc",
+            "label": "Copy Src to RPi",
             "type": "shell",
-            "command": "scp -r resources pi@${input:raspiHost}:PiWeather",
-            "problemMatcher": []
-        },
-        {
-            "label": "copyDrv",
-            "type": "shell",
-            "command": "scp -r src/piweather/driver pi@${input:raspiHost}:PiWeather/piweather",
+            "command": "scp -r src pi@${input:raspiHost}:waqd-dev",
             "problemMatcher": []
         },
         {
@@ -54,7 +64,7 @@
             "runOptions": {
                 "runOn": "folderOpen"
             },
-            "command": "pip3 install -e .",
+            "command": "${config:python.pythonPath} -m pip install -e .",
             "problemMatcher": []
         },
         {
@@ -63,7 +73,8 @@
             "runOptions": {
                 "runOn": "folderOpen"
             },
-            "command": "${config:python.pythonPath} -m pip install --upgrade pip && pip install -r test/requirements.txt",
+            "upgrade_pip": "${config:python.pythonPath} -m pip install --upgrade pip ;",
+            "command": "${config:python.pythonPath} -m pip install -r test/requirements.txt",
             "problemMatcher": []
         },
         {
@@ -71,13 +82,16 @@
             "type": "shell",
             "command": "${workspaceRoot}/script/build/compileGui.sh",
             "problemMatcher": [],
-            "runOptions": {
-                "runOn": "folderOpen"
-            },
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
         },
+        {
+            "label": "CompileGui",
+            "type": "shell",
+            "command": "python -m licenseheaders -t agpl-v3 -y 2019-2021 -o 'Péter Gosztolya & Contributors' -n WAQD -u https://github.com/goszpeti/WeatherAirQualityDevice -d ./src",
+            "problemMatcher": [],
+        }
     ]
 }

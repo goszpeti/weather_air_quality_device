@@ -30,18 +30,19 @@
             "-v",
             "--cov-report=xml:cov.xml",
             "--cov-report=term",
-            "--cov=piweather",
+            "--cov=waqd",
             "--cov-append",
             "--cov-branch",
             "--capture=no", // print output
             "--junit-xml=${workspaceFolder}/result.xml",
-            "--no-cov" // no coverage while debugging
+            "--no-cov", // no coverage while debugging
+            "./test/"
         ],
-        "python.linting.pylintArgs": [
-            "--init-hook",
-            "import sys;sys.path.append('${workspaceFolder}/test/mock/');sys.path.append('${workspaceFolder}/src/')"
-        ],
-        "python.pythonPath": "python",
+        "python.venvPath": "${workspaceFolder}/.venv",
+        "python.pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+        //"${workspaceFolder}/.venv/Scripts/python.exe", // "${workspaceFolder}/.venv/bin/python3"
         "python.linting.mypyEnabled": true,
+        "python.terminal.activateEnvironment": true,
+        "git.ignoreLimitWarning": true,
     }
 }

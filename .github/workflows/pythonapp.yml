@@ -8,36 +8,46 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
+  workflow_dispatch:
 jobs:
-  Test:
-
-    runs-on: ubuntu-18.04
+  cleaner:
+    runs-on: self-hosted
+    steps:
+      - name: Runner workspace path
+        run: |
+          echo "Cleaning up previous run"
+          rm -rf "${{ github.workspace }}"
+  testOnTarget:
+    runs-on: self-hosted
+    needs: cleaner
+    timeout-minutes: 15
     env:
-      DISPLAY: ':99.0'
+      DISPLAY: ':0'
     steps:
     - uses: actions/checkout@v2
-    - name: Install qt dependencies - set up a display for gui
-      run: |
-        sudo apt install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
-        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.7
-    - name: Install pip and Python dependencies
-      run: |
+    - name: Install system libs
+      run: | 
+        sudo apt -y install python3-libgpiod python3-venv
+        sudo apt -y install qt5-default python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart
+    - name: Setup pip and create venv
+      run: | 
         python3 -m pip install --upgrade pip
+        python3 -m venv .venv --system-site-packages
+    - name: Activate venv and test
+      run: |
+        source .venv/bin/activate
         pip3 install -r test/requirements.txt
         pip3 install -e .
-    - name: Lint with pylint
+        pytest -v -m "integration" --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append --disable-pytest-warnings
+        pytest -v -m "not integration" --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append
+
+  testUpdaterOnTarget:
+    runs-on: self-hosted
+    needs: testOnTarget
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run tests
       run: |
-        pylint ./src/ --exit-zero
-    - name: Test with pytest
-      run: |
-        pytest -v --cov-report=term --cov=piweather --cov-branch --junit-xml=result.xml
-#  --cov-report=html 
-# - uses: actions/upload-artifact@v2
-#   with:
-#     name: Test results
-#     path: ./result.xml
+        pip3 install -r test/requirements.txt
+        pip3 install -e .
+        pytest -v -m "updater" --junit-xml=result.xml --disable-pytest-warnings
