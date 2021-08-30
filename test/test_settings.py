@@ -1,10 +1,9 @@
 import os
-import sys
 import tempfile
 import shutil
 import configparser
 
-from piweather.settings import *
+from waqd.settings import *
 
 
 def testReadFromFile(base_fixture):
@@ -15,9 +14,9 @@ def testReadFromFile(base_fixture):
     assert not sets.get(FORECAST_ENABLED)
     assert sets.get(LOCATION) == "MyCity"
     assert sets.get(AW_API_KEY) == "123abcd"
-    assert sets.get(AW_CITY_IDS) == {"City1": "167713", "City2": "187944"}
+    assert sets.get(AW_CITY_IDS) == {"City17": "111111", "City20": "222222"}
     assert sets.get(OW_API_KEY) == "456abcd"
-    assert sets.get(OW_CITY_IDS) == {"City1": "2814874", "City2": "3046073"}
+    assert sets.get(OW_CITY_IDS) == {"City17": "333333", "City20": "444444"}
     assert sets.get(NIGHT_MODE_BEGIN) == 22
     assert sets.get(NIGHT_MODE_END) == 8
     assert sets.get(BRIGHTNESS) == 70

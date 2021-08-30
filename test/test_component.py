@@ -1,10 +1,10 @@
 import logging
 import time
 
-from piweather.base.components import (Component, ComponentRegistry,
+from waqd.base.components import (Component, ComponentRegistry,
                                        CyclicComponent)
-from piweather.base.system import RuntimeSystem
-from piweather.settings import Settings
+from waqd.base.system import RuntimeSystem
+from waqd.settings import Settings
 
 
 def testComponent(base_fixture):
@@ -71,10 +71,12 @@ def testCyclicComponent(base_fixture):
     TestComponent.INIT_WAIT_TIME = 0
     TestComponent._update_value = 0
     TestComponent._start_update_loop(update_func=TestComponent._update)
-    time.sleep(1)
-    assert TestComponent._update_value == 1
-    time.sleep(1)
-    assert TestComponent._update_value == 2
+    time.sleep(2)
+    update_value = TestComponent._update_value
+    assert update_value > 0
+    time.sleep(2)
+    update_value = TestComponent._update_value
+    assert update_value > 1
 
 
     # TODO test stop timeout

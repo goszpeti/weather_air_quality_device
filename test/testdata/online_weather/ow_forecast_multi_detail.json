@@ -1298,7 +1298,7 @@
     ],
     "city": {
         "id": 3046073,
-        "name": "City1",
+        "name": "Location",
         "coord": {
             "lat": 47.4295,
             "lon": 18.2265

@@ -1,6 +1,6 @@
-from piweather.components.speach import TextToSpeach
-from piweather.settings import SOUND_ENABLED, Settings
-from piweather.base.components import ComponentRegistry
+from waqd.components.speech import TextToSpeach
+from waqd.settings import SOUND_ENABLED, Settings
+from waqd.base.components import ComponentRegistry
 
 import time
 
@@ -31,4 +31,4 @@ def testOnSoundDisabled(base_fixture):
     tts = TextToSpeach(comps, settings)
     tts.say("Text1", "en")
     # not a very good method of testing
-    assert tts._tts_thread is None
+    assert not tts._tts_thread.is_alive()

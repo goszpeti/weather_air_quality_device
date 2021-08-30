@@ -1,0 +1,20 @@
+# docker build . -t raspi/waqd:v1.5 -f ./test/testdata/auto_updater/dockerfile_install
+FROM raspi/raspbian_py:1
+USER pi
+WORKDIR /home/pi
+ENV COPY_PATH=/home/pi/PiWeather
+ENV DISPLAY=:99.0
+
+# copy src
+COPY --chown=pi src/ ${COPY_PATH}/src
+COPY --chown=pi script/ ${COPY_PATH}/script/
+COPY --chown=pi resources/ ${COPY_PATH}/resources/
+
+# start xserver
+RUN sudo apt-get -o Acquire::Check-Valid-Until=false -o Acquire::Check-Date=false update
+RUN sudo apt -y install qt5-default python3-pyqt5.qtsvg python3-pyqt5.qtchart python3-libgpiod
+RUN pip3 install -r ${COPY_PATH}/script/installer/requirements.txt
+#RUN /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX \
+#    && python3 ${COPY_PATH}/src/main.py
+
+ENTRYPOINT /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX && python3 ${COPY_PATH}/src/main.py

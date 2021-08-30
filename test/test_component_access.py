@@ -2,13 +2,9 @@ import logging
 import time
 
 from freezegun import freeze_time
-from piweather.base.components import (Component, ComponentRegistry,
+from waqd.base.components import (Component, ComponentRegistry,
                                        CyclicComponent)
-from piweather.base.system import RuntimeSystem
-from piweather.settings import (MH_Z19_ENABLED, CCS811_ENABLED, BMP_280_ENABLED,
-                                DHT_22_DISABLED, DHT_22_PIN,
-                                MOTION_SENSOR_ENABLED, MOTION_SENSOR_PIN,
-                                Settings)
+from waqd.settings import (BME_280_ENABLED, DHT_22_PIN, MOTION_SENSOR_ENABLED, Settings)
 
 
 def testDefaultComponentCreation(base_fixture, target_mockup_fixture):
@@ -16,7 +12,7 @@ def testDefaultComponentCreation(base_fixture, target_mockup_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(MOTION_SENSOR_ENABLED, True)
     settings.set(DHT_22_PIN, 15)
-    settings.set(BMP_280_ENABLED, True)
+    settings.set(BME_280_ENABLED, True)
 
     comps = ComponentRegistry(settings)
     # dht22
@@ -46,15 +42,25 @@ def testDefaultComponentCreation(base_fixture, target_mockup_fixture):
     assert rt
 
 
-def testDHT22SensorInstances():
-    pass
+def testComponentRestartWatchdog(base_fixture, target_mockup_fixture):
+    # test, that a sensor revives after stopping it
+    settings = Settings(base_fixture.testdata_path / "integration")
+    settings.set(DHT_22_PIN, 15)
 
-    # # bmp280
-    # comps._sensors["TempSensor"] = None
-    # settings.set(DHT_22_PIN, 0)  # disable
-    # temp = comps.temp_sensor
-    # assert temp
+    comps = ComponentRegistry(settings)
+    temp = comps.temp_sensor
+    hum = comps.humidity_sensor
+    assert temp
 
+    comps.stop_component_instance(temp)
+    time.sleep(1)
+    assert not hasattr(comps._components, "DHT22")
+    assert not hasattr(comps._components, "TempSensor")
+    assert not hasattr(comps._components, "HumiditySensor")
+
+    assert comps.temp_sensor
+    assert comps.humidity_sensor
+    assert comps._components["DHT22"]
 
 def testComponentRegistry(base_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
@@ -69,11 +75,8 @@ def testComponentRegistry(base_fixture):
     assert "Component" in cr.get_names()
     assert "CyclicComponent" in cr.get_names()
 
-    assert cr.get("Component") == comp
-    assert cr.get("CyclicComponent") == cyc_comp
-
-    cr.stop_component("Component")
-    cr.stop_component("CyclicComponent")
+    assert cr._components["Component"] == comp
+    assert cr._components["CyclicComponent"] == cyc_comp
 
 
 def testComponentRegistryDefaultSensors(base_fixture):
@@ -100,8 +103,5 @@ def testComponentRegistryDefaultComps(base_fixture):
     assert "Component" in cr.get_names()
     assert "CyclicComponent" in cr.get_names()
 
-    assert cr.get("Component") == comp
-    assert cr.get("CyclicComponent") == cyc_comp
-
-    cr.stop_component("Component")
-    cr.stop_component("CyclicComponent")
+    assert cr._components["Component"] == comp
+    assert cr._components["CyclicComponent"] == cyc_comp

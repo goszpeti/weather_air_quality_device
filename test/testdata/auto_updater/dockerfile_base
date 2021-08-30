@@ -1,0 +1,26 @@
+# docker build . -t raspi/waqd:v1.5 -f ./test/testdata/auto_updater/dockerfile
+FROM navikey/raspbian-buster
+ENV DISPLAY=:99.0
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt update
+# install virtual screen
+RUN apt install xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 -y
+# install basics and the ui tools (these are huge)
+RUN apt install libraspberrypi-bin libraspberrypi0 -y #raspi-config
+RUN apt install policykit-1 hardlink ca-certificates curl -y
+RUN apt install python3 python3-pip -y python3-venv -y
+RUN apt install desktop-base policykit-1 gvfs obconf arandr -y
+
+RUN /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX  &&  apt install lxde -y 
+#lxtask menu-xdg 
+RUN apt install lightdm -y
+RUN apt install feh zenity xdotool wmctrl -y
+
+RUN apt install sudo
+RUN sudo apt upgrade --yes
+RUN adduser --disabled-password --gecos '' pi 
+RUN adduser pi sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+ENTRYPOINT bash

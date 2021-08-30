@@ -1,7 +1,10 @@
 # python requirements for the tests for CT
 freezegun
 pylint
+mypy
 rope
+autopep8
+PyQt5-stubs
 pytest
 pytest-cov
 pytest-mock

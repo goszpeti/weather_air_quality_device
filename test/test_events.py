@@ -1,17 +1,18 @@
-from piweather.components.speach import TextToSpeach
-from piweather.components.events import parse_event_file, write_events_file, EventHandler, day_time_greeting
-from piweather.settings import SOUND_ENABLED, Settings, NIGHT_MODE_END, NIGHT_MODE_BEGIN
-import time
-import tempfile
-from datetime import datetime, timedelta, timezone
 import json
-from piweather.base.components import ComponentRegistry
-from freezegun import freeze_time
-from PyQt5 import QtCore
-from piweather.base.component_ctrl import ComponentController
-from piweather import config
+import tempfile
+import time
+from datetime import datetime
 
-from piweather.ui.main_ui import WeatherMainUi
+from freezegun import freeze_time
+
+from waqd import config
+from waqd.base.component_ctrl import ComponentController
+from waqd.base.logger import Logger
+from waqd.components.events import (EventHandler, get_time_of_day,
+                                    parse_event_file, write_events_file)
+from waqd.settings import (NIGHT_MODE_BEGIN, NIGHT_MODE_END, SOUND_ENABLED,
+                           Settings)
+from waqd.ui.main_ui import WeatherMainUi
 
 
 def testParser(base_fixture, target_mockup_fixture):
@@ -31,24 +32,21 @@ def testParser(base_fixture, target_mockup_fixture):
 
 def testDailyGreeting(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
 
-    # wmu.qt_root_obj.show()
-    #assert events
     with freeze_time(datetime(2020, 12, 29, 22, 59, 45), tick=True) as frozen:
         settings = Settings(base_fixture.testdata_path / "integration")
         settings.set(NIGHT_MODE_BEGIN, 22)
         settings.set(NIGHT_MODE_END, 0)
         settings.set(SOUND_ENABLED, True)
         comp_ctrl = ComponentController(settings)
-        comp_ctrl._logger.info("Start")
+        Logger().info("Start")
         comps = comp_ctrl.components
         comps.energy_saver
         wmu = WeatherMainUi(comp_ctrl, settings)
         from pytestqt.plugin import _qapp_instance
         config.qt_app = _qapp_instance
-        qtbot.addWidget(wmu._qt_root_obj)
-        #monkeypatch.setattr('apscheduler.triggers.date.datetime', frozen)
+        qtbot.addWidget(wmu)
         ev = EventHandler(comps, settings)
-        t = day_time_greeting()
+        t = get_time_of_day()
 
         current_date_time = datetime.now()
         settings._logger.info(current_date_time)
@@ -57,22 +55,22 @@ def testDailyGreeting(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
         while not ev._scheduler:
             time.sleep(1)
         comps.motion_detection_sensor._motion_detected = 5
-        time.sleep(20)
+        #time.sleep(20)
 
         #comps.motion_detection_sensor._motion_detected = 0
-        time.sleep(30)
+        #time.sleep(30)
+
+        # TODO implement
 
 
 def testEventScheduler(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
 
-    # wmu.qt_root_obj.show()
-    #assert events
     with freeze_time(datetime(2020, 12, 24, 22, 59, 45), tick=True) as frozen:
         settings = Settings(base_fixture.testdata_path / "integration")
         #settings.set(NIGHT_MODE_END, 0)
         settings.set(SOUND_ENABLED, True)
         comp_ctrl = ComponentController(settings)
-        comp_ctrl._logger.info("Start")
+        Logger().info("Start")
         comps = comp_ctrl.components
         comps.energy_saver
         wmu = WeatherMainUi(comp_ctrl, settings)
@@ -81,7 +79,7 @@ def testEventScheduler(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
         qtbot.addWidget(wmu)
         #monkeypatch.setattr('apscheduler.triggers.date.datetime', frozen)
         ev = EventHandler(comps, settings)
-        t = day_time_greeting()
+        t = get_time_of_day()
 
         current_date_time = datetime.now()
         settings._logger.info(current_date_time)

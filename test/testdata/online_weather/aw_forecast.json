@@ -7,8 +7,8 @@
       "Category": "",
       "EndDate": null,
       "EndEpochDate": null,
-      "MobileLink": "http://m.accuweather.com/en/hu/City1/187944/extended-weather-forecast/187944?unit=c&lang=en-us",
-      "Link": "http://www.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?unit=c&lang=en-us"
+      "MobileLink": "http://m.accuweather.com/en/hu/pusztavam/187944/extended-weather-forecast/187944?unit=c&lang=en-us",
+      "Link": "http://www.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?unit=c&lang=en-us"
     },
     "DailyForecasts": [
       {
@@ -241,8 +241,8 @@
         "Sources": [
           "AccuWeather"
         ],
-        "MobileLink": "http://m.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?day=1&unit=c&lang=en-us",
-        "Link": "http://www.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?day=1&unit=c&lang=en-us"
+        "MobileLink": "http://m.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?day=1&unit=c&lang=en-us",
+        "Link": "http://www.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?day=1&unit=c&lang=en-us"
       },
       {
         "Date": "2019-07-23T07:00:00+02:00",
@@ -474,8 +474,8 @@
         "Sources": [
           "AccuWeather"
         ],
-        "MobileLink": "http://m.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?day=2&unit=c&lang=en-us",
-        "Link": "http://www.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?day=2&unit=c&lang=en-us"
+        "MobileLink": "http://m.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?day=2&unit=c&lang=en-us",
+        "Link": "http://www.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?day=2&unit=c&lang=en-us"
       },
       {
         "Date": "2019-07-24T07:00:00+02:00",
@@ -707,8 +707,8 @@
         "Sources": [
           "AccuWeather"
         ],
-        "MobileLink": "http://m.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?day=3&unit=c&lang=en-us",
-        "Link": "http://www.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?day=3&unit=c&lang=en-us"
+        "MobileLink": "http://m.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?day=3&unit=c&lang=en-us",
+        "Link": "http://www.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?day=3&unit=c&lang=en-us"
       },
       {
         "Date": "2019-07-25T07:00:00+02:00",
@@ -940,8 +940,8 @@
         "Sources": [
           "AccuWeather"
         ],
-        "MobileLink": "http://m.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?day=4&unit=c&lang=en-us",
-        "Link": "http://www.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?day=4&unit=c&lang=en-us"
+        "MobileLink": "http://m.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?day=4&unit=c&lang=en-us",
+        "Link": "http://www.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?day=4&unit=c&lang=en-us"
       },
       {
         "Date": "2019-07-26T07:00:00+02:00",
@@ -1173,8 +1173,8 @@
         "Sources": [
           "AccuWeather"
         ],
-        "MobileLink": "http://m.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?day=5&unit=c&lang=en-us",
-        "Link": "http://www.accuweather.com/en/hu/City1/187944/daily-weather-forecast/187944?day=5&unit=c&lang=en-us"
+        "MobileLink": "http://m.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?day=5&unit=c&lang=en-us",
+        "Link": "http://www.accuweather.com/en/hu/pusztavam/187944/daily-weather-forecast/187944?day=5&unit=c&lang=en-us"
       }
     ]
   }

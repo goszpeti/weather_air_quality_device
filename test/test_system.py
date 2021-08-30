@@ -1,15 +1,18 @@
 import os
+import platform
 
-from piweather.base.system import RuntimeSystem
-from .conftest import mock_run_on_target
+from .conftest import mock_run_on_target, mock_run_on_non_target
 
 
-def testInitOnNonTarget(base_fixture):
+def testInitOnNonTarget(base_fixture, mocker):
+    mock_run_on_non_target(mocker)
+
+    from waqd.base.system import RuntimeSystem
     # This test expects, that it is NOT run on a Raspberry Pi
     cur_system = RuntimeSystem()
     assert not cur_system.is_target_system
-    # Actual string is platform dependent
-    assert not cur_system.platform is None
+    if platform.system == "Linux": # works only on linux
+        assert not cur_system.platform is None
 
     [ip4, _] = cur_system.get_ip()
     assert not ip4 is None
@@ -17,14 +20,17 @@ def testInitOnNonTarget(base_fixture):
 
 def testInitOnTarget(base_fixture, mocker):
     # Mocks call to get info of Rpi
-    mock_platform = mock_run_on_target(mocker)
+    mock_run_on_target(mocker)
+    from waqd.base.system import RuntimeSystem
+
     cur_system = RuntimeSystem()
     assert cur_system.is_target_system
     # Actual string is platform dependent
-    assert cur_system.platform == mock_platform.return_value
-
+    assert cur_system.platform == "RASPBERRY_PI_4B"
 
 def testShutdown(base_fixture, mocker):
+    from waqd.base.system import RuntimeSystem
+
     # TODO this would be really cool in Docker with an actual system
     mock_run_on_target(mocker)
     mocker.patch('os.system')
@@ -36,6 +42,8 @@ def testShutdown(base_fixture, mocker):
 
 
 def testRestart(base_fixture, mocker):
+    from waqd.base.system import RuntimeSystem
+
     # TODO this would be really cool in Docker with an actual system
     mock_run_on_target(mocker)
     mocker.patch('os.system')
@@ -47,6 +55,8 @@ def testRestart(base_fixture, mocker):
 
 
 def testGetIPOnTarget(base_fixture, mocker):
+    from waqd.base.system import RuntimeSystem
+
     # TODO this would be really cool in Docker with an actual system
     mock_run_on_target(mocker)
     cur_system = RuntimeSystem()

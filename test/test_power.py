@@ -2,15 +2,15 @@
 import time
 from freezegun import freeze_time
 
-from piweather.components.power import (BRIGHTNESS, DAY_STANDBY_TIMEOUT,
+from waqd.components.power import (BRIGHTNESS, DAY_STANDBY_TIMEOUT,
                                         MOTION_SENSOR_ENABLED,
                                         NIGHT_MODE_BEGIN,
                                         NIGHT_MODE_BRIGHTNESS, NIGHT_MODE_END,
                                         NIGHT_STANDBY_TIMEOUT,
                                         NIGHTMODE_WAKEUP_DELTA_BRIGHTNESS,
                                         STANDBY_BRIGHTNESS, ESaver)
-from piweather.settings import Settings
-from piweather.base.components import ComponentRegistry
+from waqd.settings import Settings
+from waqd.base.components import ComponentRegistry
 
 
 def testNoStandbyIfSensorIsDisabled(base_fixture):
@@ -22,13 +22,15 @@ def testNoStandbyIfSensorIsDisabled(base_fixture):
 
     energy_saver = None
     comps = ComponentRegistry(settings)
+    disp = comps.display
+
     # night mode - no wakeup
     with freeze_time("2019-01-01 12:00:00"):
         # energy_saver needs to be initalized in freeze time, otherwise testing time will have an impact
         energy_saver = ESaver(comps, settings)
         time.sleep(energy_saver.INIT_WAIT_TIME)
         time.sleep(energy_saver.UPDATE_TIME + 1)
-        assert comps.display.get_brightness() == settings.get(BRIGHTNESS)
+        assert disp.get_brightness() == settings.get(BRIGHTNESS)
 
     energy_saver.stop()
 

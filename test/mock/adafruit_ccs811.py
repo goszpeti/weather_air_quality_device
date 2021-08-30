@@ -1,5 +1,5 @@
 AVAILABLE = True
-TEMP = 28.45
+TEMP = 22.45
 TVOC = 55
 CO2 = 1002
 

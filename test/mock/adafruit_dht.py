@@ -1,5 +1,5 @@
 AVAILABLE = True
-TEMP = 28.1
+TEMP = 22.1
 HUM = 55
 _USE_PULSEIO = True
 
