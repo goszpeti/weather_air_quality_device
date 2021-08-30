@@ -24,7 +24,7 @@ REQUIRED = [
     # Backend
     "DebugPy==1.2.1",  # MS VSCode debugger for dynamic debugging
     "JsonSchema==3.2.0",  # MIT License - for events json schema validation
-    "Python-DateUtil==2.8.1",  # Apache License - for date parse and relative delta
+    "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
     "APScheduler==3.7.0",  # MIT License - Scheduler for Events function
     "PyGithub==1.54.1",  # LGPL - Access to GitHub in AutoUpdater
     "File-Read-Backwards==2.0.0",  # MIT License - for performance in DetailView
