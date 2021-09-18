@@ -107,39 +107,13 @@ class ComponentController():
             self._components.show()
             self._watch_components()
 
-    def _check_internet_connection(self):
-        """
-        RPi fails often when WLAN conncetion is unstable.
-        The restart of the adapter is black voodo magic, which is attempted after the second failure.
-        If that doesn't help, the RPi reboots on the next failure.
-        """
-        if self.internet_connected: # at least once connected:
-            if self.internet_reconnect_try == 2:
-                Logger().error("Watchdog: Restarting wlan...")
-                os.system("sudo systemctl restart dhcpcd")
-                time.sleep(2)
-                os.system("wpa_cli -i wlan0 reconfigure")
-                os.system("sudo dhclient")
-                time.sleep(5)
-            # failed 3 times straight - restart linux
-            if self.internet_reconnect_try == 3:
-                Logger().error("Watchdog: Restarting system - Net failure...")
-                RuntimeSystem().restart()
-        [ipv4, ipv6] = RuntimeSystem().get_ip()
-        if not ipv4 and not ipv6 or ipv4 in ["127.0.0.1", "localhost"]:
-            self.internet_reconnect_try += 1
-            time.sleep(5)
-        else:
-            self.internet_reconnect_try = 0
-            self.internet_connected = True
-
     def _watch_components(self):
         """
         Checks existence of global variable of each module and starts it.
         """
         # check and restart wifi
         if RuntimeSystem().is_target_system:
-            self._check_internet_connection()
+            RuntimeSystem().check_internet_connection()
 
         for comp_name in self._components.get_names():
             component = self._components.get(comp_name)

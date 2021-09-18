@@ -421,7 +421,9 @@ class OpenWeatherMap(Component):
                 "%s - City Id for forecast is not available.", location)
 
         # wait a little bit for connection
-        RuntimeSystem().wait_for_network()
+        is_connected = RuntimeSystem().wait_for_network()
+        if not is_connected:
+            return {}
 
         response = []
         if self._cw_json_file and command == self.CURRENT_WEATHER_BY_CITY_ID_API_CMD:
