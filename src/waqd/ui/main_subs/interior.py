@@ -81,7 +81,7 @@ class Interior(sub_ui.SubUi):
             self._humidity_ui_bar.clicked.connect(lambda: self.show_detail("humidity", "%"))
 
         # call once at begin
-        self._cyclic_update()
+        self.init_with_cyclic_update()
 
     def set_available_bar(self, bar_opts, font_name):
         for bar in self._ui_bars:
@@ -124,12 +124,12 @@ class Interior(sub_ui.SubUi):
         # set co2
         # set to yellow if not stable
         label_color = "white"  # used as default font color
-        if self._ui.interior_2_bar and not co2_value is None:
+        if self._co2_bar and not co2_value is None:
             if not self._comps.co2_sensor.readings_stabilized:
                 label_color = "yellow"
             elif co2_value >= 1200:
                 label_color = "red"
-            self._ui.interior_2_bar.set_value_label(f"{int(co2_value)} ppm", color=label_color)
+            self._co2_bar.set_value_label(f"{int(co2_value)} ppm", color=label_color)
 
     def show_detail(self, sensor_type: str, sensor_value_unit: str):
         """ Placholder for daily detail view popup """

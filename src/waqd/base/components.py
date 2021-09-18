@@ -275,7 +275,7 @@ class ComponentRegistry():
                 # won't try to instantiate a new one over and over
                 sensor = self.create_component_instance(sensors.TempSensor, [self._settings, True])
             self._sensors.update({internal_name: sensor})
-            sensor.log_temp = True
+            sensor.select_for_temp_logging()
         return sensor
 
     @property
@@ -294,7 +294,7 @@ class ComponentRegistry():
             else:  # create a default instance that is disabled
                 sensor = self.create_component_instance(sensors.HumiditySensor, [self._settings, True])
             self._sensors.update({internal_name: sensor})
-            sensor.log_hum = True
+            sensor.select_for_hum_logging()
         return sensor
 
     @property
@@ -311,7 +311,7 @@ class ComponentRegistry():
             else:  # create a default instance that is disabled
                 sensor = self.create_component_instance(sensors.BarometricSensor, [self._settings, True])
             self._sensors.update({internal_name: sensor})
-            sensor.log_pres = True
+            sensor.select_for_pres_logging()
         return sensor
 
     @property
@@ -329,7 +329,7 @@ class ComponentRegistry():
             else:  # create a default instance that is disabled
                 sensor = self.create_component_instance(sensors.CO2Sensor, [self._settings, True])
             self._sensors.update({internal_name: sensor})
-            sensor.log_co2 = True
+            sensor.select_for_co2_logging()
         return sensor
 
     @property
@@ -344,7 +344,7 @@ class ComponentRegistry():
             else:  # create a default instance that is disabled
                 sensor = self.create_component_instance(sensors.TvocSensor, [self._settings, True])
             self._sensors.update({internal_name: sensor})
-            sensor.log_tvoc = True
+            sensor.select_for_tvoc_logging()
         return sensor
 
     @property
@@ -359,7 +359,7 @@ class ComponentRegistry():
             # else:  # create a default instance that is disabled
             sensor = self.create_component_instance(sensors.DustSensor, [self._settings, True])
             self._sensors.update({internal_name: sensor})
-            sensor.log_dust = True
+            sensor.select_for_dust_logging()
         return sensor
 
     @property
@@ -374,7 +374,7 @@ class ComponentRegistry():
             # else:  # create a default instance that is disabled
             sensor = self.create_component_instance(sensors.LightSensor, [self._settings, True])
             self._sensors.update({internal_name: sensor})
-            sensor.log_light = True
+            sensor.select_for_light_logging()
         return sensor
 
     @property

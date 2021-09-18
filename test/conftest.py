@@ -2,7 +2,8 @@ import os
 import platform
 import sys
 from pathlib import Path
-
+from tempfile import gettempdir
+import shutil
 import pytest
 import waqd.base.logger
 import waqd.base.system
@@ -31,17 +32,21 @@ def load_mocks():
 def target_mockup_fixture():
     load_mocks()
 
+
 @pytest.fixture
 def base_fixture(request):
     # yield "base_fixture"  # return after setup
     paths = PathSetup()
-    config.assets_path = paths.base_path / "src" / "waqd" /"assets"
+    config.assets_path = paths.base_path / "src" / "waqd" / "assets"
+    config.user_config_dir = Path(gettempdir()) / "waqd_test"
+    shutil.rmtree(config.user_config_dir, ignore_errors=True)
 
     def teardown():
         # reset singletons
         waqd.base.logger.Logger._instance = None
         waqd.base.system.RuntimeSystem._instance = None
         os.environ["PYTHONPATH"] = ""
+
     request.addfinalizer(teardown)
 
     return paths
@@ -52,9 +57,11 @@ def mock_run_on_non_target(mocker):
         class board():
             any_raspberry_pi = False
             id = "NOT_THE_TARGET"
+
         class chip:
             id = "arch"
     mocker.patch('adafruit_platformdetect.Detector', Detector)
+
 
 def mock_run_on_target(mocker):
     load_mocks()

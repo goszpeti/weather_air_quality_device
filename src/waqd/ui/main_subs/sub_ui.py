@@ -19,11 +19,22 @@
 #
 import abc
 
+from typing import Callable
+from threading import Thread
 from PyQt5 import QtCore
 
 from waqd.base.logger import Logger
 from waqd.base.components import ComponentRegistry
 
+
+class WorkerObject(QtCore.QObject):
+
+    def __init__(self, target: Callable, parent = None):
+        super(self.__class__, self).__init__(parent)
+        self.target = target
+        
+    def run(self):
+        self.target()
 
 class SubUi(metaclass=abc.ABCMeta):
     """
@@ -43,6 +54,14 @@ class SubUi(metaclass=abc.ABCMeta):
         self._update_timer.timeout.connect(self._cyclic_update)
         self._update_timer.start(self.UPDATE_TIME)
 
+    def init_with_cyclic_update(self):
+        self._first_thread = QtCore.QThread()
+        self.worker = WorkerObject(target=self._cyclic_update)
+        self.worker.moveToThread(self._first_thread)
+        self._first_thread.started.connect(self.worker.run)
+        self._first_thread.finished.connect(self._first_thread.deleteLater)
+        self._first_thread.start()
+  
     @abc.abstractmethod
     def _cyclic_update(self):
         """ implement ui update callback here """

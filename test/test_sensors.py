@@ -5,24 +5,27 @@ from waqd.components import sensors
 from waqd.base.components import ComponentRegistry
 from waqd.settings import Settings
 from waqd.base.system import RuntimeSystem
+from waqd.base.logger import  SensorLogger
+
 from .conftest import mock_run_on_non_target
 
 def testDHT22(base_fixture, target_mockup_fixture):
     from adafruit_dht import TEMP, HUM
-
+    SensorLogger
     settings = Settings(base_fixture.testdata_path / "integration")
     comps = ComponentRegistry(settings)
 
-    sensors.DHT22.MEASURE_POINTS = 2
     sensors.DHT22.UPDATE_TIME = 1
     sensor = sensors.DHT22(pin=10, components=comps, settings=settings)
+    sensor._temp_impl._values_capacity = 2
+    sensor._hum_impl._values_capacity = 2
 
     time.sleep(1)
     assert sensor.is_alive
     assert sensor.is_ready
 
     # wait until all measurement points are filled up, so that mean value equals the constant value
-    time.sleep(sensor.UPDATE_TIME * (sensor.MEASURE_POINTS + 1))
+    time.sleep(sensor.UPDATE_TIME * (5 + 1))
 
     assert sensor.get_humidity() == HUM
     assert sensor.get_temperature() == TEMP

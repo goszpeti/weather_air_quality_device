@@ -54,7 +54,7 @@ class Exterior(sub_ui.SubUi):
         self._ui.exterior_forecast_temps_value.setText(
             common.format_temp_text_minmax(self._default_min_max_text, None, None))
         # call once at begin
-        self._cyclic_update()
+        self.init_with_cyclic_update()
 
     def show_detail(self):
         """ Daily detail view popup """
@@ -99,6 +99,8 @@ class Exterior(sub_ui.SubUi):
             else:
                 bg_name = "bg_night_" + online_weather_category
 
+            a = str(get_asset_file("weather_bgrs", bg_name))
+            self._logger.debug(a)
             self._ui.exterior_background.set_image(str(get_asset_file("weather_bgrs", bg_name)))
 
             # set todays forecast

@@ -21,6 +21,7 @@ import configparser
 import logging
 import os
 from pathlib import Path
+from typing import Union, Dict
 
 from waqd.config import PROG_NAME
 from waqd.settings import (AUTO_UPDATER_ENABLED,
@@ -107,12 +108,12 @@ class Settings():
 
         self._read_ini()
 
-    def get(self, name: str):
+    def get(self, name: str) -> Union[str, int, float, bool, Dict[str,str]]:
         """ Get a specific setting """
         value = None
         for section in self._values:
             if name in self._values[section]:
-                value = self._values[section].get(name, None)
+                value = self._values[section].get(name)
                 break
         return value
 

@@ -84,7 +84,7 @@ def setup_on_non_target_system():
     sys.path = [str(mockup_path)] + sys.path
     os.environ["PYTHONPATH"] = str(mockup_path) # for mh-z19
     config.user_config_dir = config.base_path.parent
-    print("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
+    Logger().debug("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
 
 
 def qt_app_setup(settings) -> QtWidgets.QApplication:
@@ -120,8 +120,7 @@ def loading_sequence(comp_ctrl: ComponentController, settings: Settings):
     comp_ctrl.init_all()
     app_main_ui = main_ui.WeatherMainUi(comp_ctrl, settings)
 
-    is_target_system = RuntimeSystem().is_target_system
-    if is_target_system:  # only remove titlebar on RPi
+    if RuntimeSystem().is_target_system:  # only remove titlebar on RPi
         app_main_ui.setWindowFlags(Qt.CustomizeWindowHint)
 
     # show splash screen
@@ -160,11 +159,14 @@ def main(settings_path: Optional[Path] = None):
     if not config.user_config_dir.exists():
         os.makedirs(config.user_config_dir)
 
+    Logger(config.user_config_dir)
+
     # System is first, is_target_system is the most basic check
     runtime_system = RuntimeSystem()
     if not runtime_system.is_target_system:
         setup_on_non_target_system()
 
+    # All other classes depend on settings
     if not settings_path:
         settings_path = config.user_config_dir
     settings = Settings(ini_folder=settings_path)

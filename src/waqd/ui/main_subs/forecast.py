@@ -63,7 +63,7 @@ class Forecast(sub_ui.SubUi):
         self._ui.forecast_d3_icon.clicked.connect(lambda: self.show_detail(3))
 
         # call once at begin
-        self._cyclic_update()
+        self.init_with_cyclic_update()
 
     def _init_dummy_values(self):
         dummy_icon = str(get_asset_file("gui_base", "dummy-pic"))
