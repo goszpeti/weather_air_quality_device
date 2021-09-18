@@ -90,7 +90,7 @@ class OnlineUpdater(CyclicComponent):
     def _get_latest_version_tag(self) -> str:
         """ Check, if an update is found and return it's version. """
         releases = self._repository.get_releases()
-        if not releases:
+        if releases.totalCount == 0:
             self._logger.info("Updater: No releases found.")
             return ""
 
