@@ -43,7 +43,7 @@ class SensorDetailView(QtWidgets.QWidget):
         self.setGeometry(main_ui.geometry())
 
         if not log_file.exists():
-            # TODO give some feedback!
+            self.not_enough_values_dialog()
             return
 
         # read log backwards, until we hit the time barrier from TIME_WINDOW_SECONDS - performance!
@@ -63,7 +63,8 @@ class SensorDetailView(QtWidgets.QWidget):
             os.remove(log_file)
 
         if len(self._time_value_pairs) < 2:  # insufficient data
-            return # TODO add message
+            self.not_enough_values_dialog()
+            return
 
         # add values to qt graph
         # time values are converted to "- <Minutes>" format
@@ -136,3 +137,11 @@ class SensorDetailView(QtWidgets.QWidget):
         if event.type() == QtCore.QEvent.MouseButtonPress:
             self.close()
         return super().eventFilter(source, event)
+
+    def not_enough_values_dialog(self):
+        msg = QtWidgets.QMessageBox(parent=self)
+        msg.setWindowTitle("Nothing to display!")
+        msg.setText("There are not enough logged values yet!")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        reply = msg.exec_()
