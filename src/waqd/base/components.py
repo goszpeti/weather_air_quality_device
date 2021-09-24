@@ -176,7 +176,7 @@ class ComponentRegistry():
     def stop_component_instance(self, instance):
         """
         Stops a component based on an instance. 
-        This is meant for a component to commit sudoko, e.g. when for restarting itself.
+        This is meant for a component to commit sudoku, e.g. when for restarting itself.
         """
         for comp in self._components:
             if instance is self._components[comp]:

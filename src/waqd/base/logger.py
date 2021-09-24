@@ -102,7 +102,9 @@ class SensorLogger(logging.Logger):
         if logger.handlers == 0:
             return Path("InvalidPath")
         try:
-            filename = Path(logger.handlers[0].baseFilename) # can be any type of handler
+            filename = Path("NonExistant")
+            if isinstance(logger.handlers[0], logging.FileHandler):
+                filename = Path(logger.handlers[0].baseFilename) # can be any type of handler
             return filename
         except Exception as e:
             print(f"WARNING: Can't find file handler for {sensor_name} logger.")

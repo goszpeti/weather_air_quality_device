@@ -41,10 +41,12 @@ logger = logging.getLogger(PROG_NAME)
 Qt = QtCore.Qt
 
 
-def get_font(font_name):
+def get_font(font_name) -> QtGui.QFont:
     # set up font
     font_file = get_asset_file("font", "franzo")
     font_id = QtGui.QFontDatabase.addApplicationFont(str(font_file))
+    if not config.qt_app:
+        return QtGui.QFont()
     font = config.qt_app.font()
     if font_id != -1:
         font_db = QtGui.QFontDatabase()

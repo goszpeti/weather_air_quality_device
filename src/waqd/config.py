@@ -26,6 +26,10 @@ from pathlib import Path
 from typing import Optional
 from PyQt5 import QtWidgets, QtCore
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from waqd.base.component_ctrl import ComponentController
+
 ### Global constants ###
 PROG_NAME = "W.A.Q.D"
 GITHUB_REPO_NAME = "WeatherAirQualityDevice"
@@ -43,7 +47,7 @@ assets_path = base_path / "assets"
 user_config_dir = Path().home() / ".waqd"
 
 # singleton with access to all backend components
-comp_ctrl: "ComponentController" = None
+comp_ctrl: Optional["ComponentController"] = None
 
 # TODO re-add settings?
 

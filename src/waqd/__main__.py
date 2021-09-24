@@ -159,7 +159,7 @@ def main(settings_path: Optional[Path] = None):
     if not config.user_config_dir.exists():
         os.makedirs(config.user_config_dir)
 
-    Logger(config.user_config_dir)
+    Logger(output_path=config.user_config_dir)
 
     # System is first, is_target_system is the most basic check
     runtime_system = RuntimeSystem()

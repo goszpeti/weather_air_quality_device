@@ -57,7 +57,7 @@ class RuntimeSystem():
     @property
     def platform(self) -> str:
         """ Return target platform (RPi version like Model B) or current platform name. """
-        return self._platform
+        return str(self._platform)
 
     @property
     def is_target_system(self) -> bool:
@@ -74,10 +74,10 @@ class RuntimeSystem():
         if self._is_target_system:
             os.system("shutdown -r now")
 
-    def get_ip(self) -> Tuple["ipv4", "ipv6"]:
+    def get_ip(self) -> Tuple[str, str]: # "ipv4", "ipv6"
         """ Gets IP 4 and 6 addresses on target system """
-        ipv4 = None
-        ipv6 = None
+        ipv4 = ""
+        ipv6 = ""
         if self._is_target_system:
             ret = subprocess.check_output("hostname -I", shell=True)
             ret_str = ret.decode("utf-8")
@@ -91,7 +91,7 @@ class RuntimeSystem():
         else:
             ipv4 = socket.gethostbyname(socket.gethostname())
         if ipv4 in ["localhost", "127.0.0.1"]:  # we want the LAN address
-            ipv4 = None
+            ipv4 = ""
         return (ipv4, ipv6)
     
     def check_internet_connection(self):
