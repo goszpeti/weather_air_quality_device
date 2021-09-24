@@ -39,6 +39,20 @@ from waqd.base.logger import Logger, SensorLogger
 from waqd.settings import LOG_SENSOR_DATA, Settings
 
 
+class SensorComponent():
+    def __init__(self, is_disabled=False):
+        self._readings_stabilized = False
+        self._disabled = is_disabled
+
+    @property
+    def readings_stabilized(self) -> bool:
+        """ Returns true, if sensor is warmed up and readings are considered valid. """
+        return self._readings_stabilized
+    
+    @property
+    def is_disabled(self) -> bool:
+        return self._disabled
+
 class SensorImpl():
     """ Class for any sensor type to store measurements with a moving average.
         Logs to file, if "log_to_file" is activated.
@@ -54,7 +68,6 @@ class SensorImpl():
         self._values_capacity = max_measure_points
         self._values = []
 
-        self._readings_stabilized = False
 
         # only check at init - options will reset this flag, with the exception of non-resettable sensors
         self._logging_enabled = logging_enabled
@@ -89,22 +102,17 @@ class SensorImpl():
             self._values.append(value)
         return True
 
-    @property
-    def readings_stabilized(self) -> bool:
-        """ Returns true, if sensor is warmed up and readings are considered valid. """
-        return self._readings_stabilized
 
-
-class TempSensor():
+class TempSensor(SensorComponent):
     """ Base class for all temperature sensors """
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
         """ is_disabled is for the case, when no sensor can be instantiated """
+        super().__init__(is_disabled)
         MIN_VALUE = -30
         MAX_VALUE = 60
         LOG_TYPE_NAME = "temperature"
         self._temp_impl = SensorImpl(logging_enabled, LOG_TYPE_NAME, MIN_VALUE, MAX_VALUE, max_measure_points)
-        self._disabled = is_disabled
 
     def select_for_temp_logging(self):
         self._temp_impl.log_to_file = True
@@ -119,7 +127,7 @@ class TempSensor():
         self._temp_impl.set_value(value)
 
 
-class BarometricSensor():
+class BarometricSensor(Component):
     """ Base class for all barometric sensors """
 
     def __init__(self, logging_enabled: bool, max_measure_points=5, is_disabled=False):
@@ -142,7 +150,7 @@ class BarometricSensor():
         self._pres_impl.set_value(value)
 
 
-class HumiditySensor():
+class HumiditySensor(Component):
     """ Base class for all humidity sensors """
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
@@ -165,7 +173,7 @@ class HumiditySensor():
         self._hum_impl.set_value(value)
 
 
-class TvocSensor():
+class TvocSensor(Component):
     """ Base class for all TVOC sensors """
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
@@ -188,7 +196,7 @@ class TvocSensor():
         self._tvoc_impl.set_value(value)
 
 
-class CO2Sensor():
+class CO2Sensor(Component):
     """ Base class for all CO2 sensors """
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
@@ -211,10 +219,11 @@ class CO2Sensor():
         self._co2_impl.set_value(value)
 
 
-class DustSensor():
+class DustSensor(Component):
     """ Base class for all dust sensors """
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
+        super().__init__()
         MIN_VALUE = 0
         MAX_VALUE = 1000
         LOG_TYPE_NAME = "dust"
@@ -234,7 +243,7 @@ class DustSensor():
         self._dust_impl.set_value(value)
 
 
-class LightSensor():
+class LightSensor(Component):
     """ Base class for all light sensors """
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
@@ -294,6 +303,9 @@ class DHT22(TempSensor, HumiditySensor, CyclicComponent):
         """
         humidity = 0
         temperature = 0
+        if not self._sensor_driver:
+            self._disabled = True
+            return
         try:
             humidity = self._sensor_driver.humidity
             temperature = self._sensor_driver.temperature
@@ -322,7 +334,7 @@ class DHT22(TempSensor, HumiditySensor, CyclicComponent):
             self._kill_libgpiod()
 
     def _kill_libgpiod(self):
-        if not RuntimeSystem().is_target_system:  # don't check on non target system
+        if not self._runtime_system.is_target_system:  # don't check on non target system
             return
         try:
             pids = check_output(["pgrep", "libgpiod_pulsei"]).decode("utf-8")
@@ -337,11 +349,11 @@ class BMP280(TempSensor, BarometricSensor, CyclicComponent):
     Implements access to the BME280 temperature/pressure sensor.
     """
     UPDATE_TIME = 5  # in seconds
-    MEASURE_POINTS = 5
 
     def __init__(self, components: ComponentRegistry, settings: Settings):
-        TempSensor.__init__(self, settings)
-        BarometricSensor.__init__(self, settings)
+        log_values = bool(settings.get(LOG_SENSOR_DATA))
+        TempSensor.__init__(self, log_values)
+        BarometricSensor.__init__(self, log_values)
         CyclicComponent.__init__(self, components, settings)
 
         self._sensor_driver = None
@@ -392,9 +404,10 @@ class BME280(TempSensor, BarometricSensor, HumiditySensor, CyclicComponent):
     MEASURE_POINTS = 5
 
     def __init__(self, components: ComponentRegistry, settings: Settings):
-        TempSensor.__init__(self, settings)
-        BarometricSensor.__init__(self, settings)
-        HumiditySensor.__init__(self, settings)
+        log_values = bool(settings.get(LOG_SENSOR_DATA))
+        TempSensor.__init__(self, log_values)
+        BarometricSensor.__init__(self, log_values)
+        HumiditySensor.__init__(self, log_values)
         CyclicComponent.__init__(self, components, settings)
 
         self._sensor_driver = None
@@ -445,6 +458,9 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
     STABILIZE_TIME_MINUTES = 3  # in minutes
 
     def __init__(self, settings: Settings):
+        log_values = bool(settings.get(LOG_SENSOR_DATA))
+        CO2Sensor.__init__(self, log_values)
+        CyclicComponent.__init__(self)
         super().__init__(settings)
         self._start_time = datetime.datetime.now()
         self._readings_stabilized = False
@@ -497,15 +513,14 @@ class CCS811(CO2Sensor, TvocSensor, CyclicComponent):  # pylint: disable=invalid
     Return the values as a moving average of the last points.
     """
     UPDATE_TIME = 3  # in seconds
-    MEASURE_POINTS = 3
-    MIN_CO2_VALUE = 400  # for validity check
-    MAX_CO2_VALUE = 6000  # for validity check
     STABILIZE_TIME_MINUTES = 30  # minutes
 
     def __init__(self, components: ComponentRegistry, settings: Settings):
-        CO2Sensor.__init__(self, settings)
-        TvocSensor.__init__(self, settings)
-        CyclicComponent.__init__(self, components, settings)
+        MEASURE_POINTS = 3
+        log_values = bool(settings.get(LOG_SENSOR_DATA))
+        CO2Sensor.__init__(self, log_values, MEASURE_POINTS)
+        TvocSensor.__init__(self, log_values, MEASURE_POINTS)
+        CyclicComponent.__init__(self, components)
         self._start_time = datetime.datetime.now()
         self._reload_forbidden = True
         self._sensor_driver: "CCS811" = None
@@ -604,11 +619,12 @@ class BH1750(LightSensor, CyclicComponent):
     WARNING: PROTOTYPE STATUS!
     """
     UPDATE_TIME = 1  # in seconds
-    MEASURE_POINTS = 2
 
     def __init__(self, settings: Settings):
-        LightSensor.__init__(self, settings)
-        CyclicComponent.__init__(self, None, settings)
+        MEASURE_POINTS = 2
+        log_values = bool(settings.get(LOG_SENSOR_DATA))
+        LightSensor.__init__(self, log_values, MEASURE_POINTS)
+        CyclicComponent.__init__(self)
 
         self._sensor_driver = None
         self._start_update_loop(self._init_sensor, self._read_sensor)
@@ -644,10 +660,10 @@ class GP2Y1010AU0F(DustSensor, CyclicComponent):
     WARNING: PROTOTYPE STATUS!
     """
     UPDATE_TIME = 1  # in seconds
-    MEASURE_POINTS = 5
     LED_PIN = 17  # BCM - TODO make setting
 
     def __init__(self, settings: Settings):
+        log_values = bool(settings.get(LOG_SENSOR_DATA))
         DustSensor.__init__(self, settings)
         CyclicComponent.__init__(self, None, settings)
 

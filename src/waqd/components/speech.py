@@ -20,6 +20,7 @@
 import json
 import threading
 import time
+import os
 from pathlib import Path
 
 from gtts import gTTS
@@ -50,7 +51,7 @@ class TextToSpeach(Component):
         self._tts_thread: threading.Thread = threading.Thread()
         self._save_dir = config.user_config_dir / "tts"
         # ensure dir exists
-        Path.mkdir(self._save_dir, exist_ok=True)
+        os.makedirs(self._save_dir, exist_ok=True)
 
     def get_tts_string(self, key: str, lang="de") -> str:
         if lang in LANGS_MAP:
