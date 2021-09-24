@@ -99,7 +99,6 @@ class Forecast(sub_ui.SubUi):
 
     def _cyclic_update(self):
         self._logger.debug("ForecastGui: update")
-
         if not self._settings.get(FORECAST_ENABLED):
             self._logger.debug("ForecastGui: forecast disabled")
             return

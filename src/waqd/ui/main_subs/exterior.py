@@ -38,7 +38,6 @@ class Exterior(sub_ui.SubUi):
 
     def __init__(self, main_ui, settings):
         super().__init__(main_ui, settings)
-
         self._online_info_date_time = None  # date when last online update occured
 
         # save default text to restore formatting

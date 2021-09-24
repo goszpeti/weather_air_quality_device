@@ -92,7 +92,7 @@ class CyclicComponent(Component):
         self._error_num = 0
 
     @property
-    def is_alive(self):
+    def is_alive(self) -> bool:
         """ Update thread is running, module is OK. """
         if not self._update_thread:
             return False
@@ -173,6 +173,9 @@ class ComponentRegistry():
         """ Get a specific component instance """
         return self._components.get(name)
 
+    def get_sensors(self):
+        return self._sensors
+
     def stop_component_instance(self, instance):
         """
         Stops a component based on an instance. 
@@ -201,11 +204,10 @@ class ComponentRegistry():
         # don't do anything, when reload is intended and the component forbids it
         if reload_intended and component.reload_forbidden:
             return
+        self._logger.info("ComponentRegistry: Stopping %s", name)
 
         # call stop, if module is threaded
-        if isinstance(component, CyclicComponent):
-            self._logger.info("ComponentRegistry: Stopping %s", name)
-            component.stop()
+        component.stop()
         # call destructors
         del component
 

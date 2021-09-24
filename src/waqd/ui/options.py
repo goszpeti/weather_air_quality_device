@@ -67,7 +67,7 @@ class OptionMainUi(QtWidgets.QDialog):
         self._runtime_system = RuntimeSystem()
 
         # create qt base objects
-        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint | Qt.FramelessWindowHint))
 
         ui_type = uic.loadUiType(config.base_path / "ui" / "qt" / "options.ui")
         self._ui = ui_type[0]()  # 0th element is always the UI class
@@ -122,10 +122,10 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.options_tabs.setCurrentIndex(0)
 
         # set to normal brightness
-        self._comps.display.set_brightness(self._settings.get(BRIGHTNESS))
+        self._comps.display.set_brightness(self._settings.get_int(BRIGHTNESS))
 
         common.scale_gui_elements(
-            self, self._settings.get(FONT_SCALING) * self.EXTRA_SCALING)
+            self, self._settings.get_float(FONT_SCALING) * self.EXTRA_SCALING)
 
         # initialize splash screen for the closing of the UI and make a screenshot
         self._splash_screen = SplashScreen(background=False)

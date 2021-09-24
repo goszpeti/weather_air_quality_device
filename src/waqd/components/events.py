@@ -25,6 +25,7 @@ import threading
 import time
 from pathlib import Path
 from typing import List, Optional, Dict
+from PyQt5.QtCore import pyqtBoundSignal
 
 import jsonschema
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -198,7 +199,7 @@ class EventHandler(Component):
         if not settings.get(EVENTS_ENABLED):
             return
 
-        self.gui_background_update_sig = None
+        self.gui_background_update_sig: Optional[pyqtBoundSignal] = None
         self._config_events_file = config.user_config_dir / "events.json"
         self._events = parse_event_file(self._config_events_file)
         self._scheduler: Optional[BackgroundScheduler] = None

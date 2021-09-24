@@ -40,7 +40,10 @@ def testDefaultComponentCreation(base_fixture, target_mockup_fixture):
     assert tvoc
     rt = comps.remote_temp_sensor
     assert rt
+    ev = comps.event_handler
+    assert ev
 
+# TODO Add stop component test
 
 def testComponentRestartWatchdog(base_fixture, target_mockup_fixture):
     # test, that a sensor revives after stopping it

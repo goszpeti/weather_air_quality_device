@@ -51,7 +51,7 @@ class Settings():
         Read config.ini file to load settings.
         Verify config.ini existence, if folder is passed.
         """
-        self._logger = logging.getLogger(PROG_NAME)
+        self._logger = logging.getLogger("root")
         self._parser = configparser.ConfigParser()
         self._ini_file_path = Path()
         if ini_folder is not None:
@@ -116,6 +116,21 @@ class Settings():
                 value = self._values[section].get(name)
                 break
         return value
+
+    def get_string(self, name: str) -> str:
+        return str(self.get(name))
+
+    def get_int(self, name: str) -> int:
+        return int(self.get(name))
+
+    def get_float(self, name: str) -> float:
+        return float(self.get(name))
+
+    def get_bool(self, name: str) -> bool:
+        return bool(self.get(name))
+
+    def get_dict(self, name: str) -> Dict[str, str]:
+        return self.get(name)
 
     def set(self, name: str, value):
         """ Get a specific setting """

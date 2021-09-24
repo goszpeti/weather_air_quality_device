@@ -23,6 +23,7 @@ Sets up cmd arguments, settings and starts the gui
 """
 
 import argparse
+import logging
 import os
 import sys
 import time
@@ -84,7 +85,7 @@ def setup_on_non_target_system():
     sys.path = [str(mockup_path)] + sys.path
     os.environ["PYTHONPATH"] = str(mockup_path) # for mh-z19
     config.user_config_dir = config.base_path.parent
-    Logger().debug("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
+    logging.getLogger("root").info("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
 
 
 def qt_app_setup(settings) -> QtWidgets.QApplication:
@@ -98,7 +99,6 @@ def qt_app_setup(settings) -> QtWidgets.QApplication:
 
     # set up global Qt Application instance
     qt_app = QtWidgets.QApplication([])
-
     # set icon
     icon_path = get_asset_file("gui_base", "icon")
     qt_app.setWindowIcon(QtGui.QIcon(str(icon_path)))
@@ -159,8 +159,6 @@ def main(settings_path: Optional[Path] = None):
     if not config.user_config_dir.exists():
         os.makedirs(config.user_config_dir)
 
-    Logger(output_path=config.user_config_dir)
-
     # System is first, is_target_system is the most basic check
     runtime_system = RuntimeSystem()
     if not runtime_system.is_target_system:
@@ -170,10 +168,13 @@ def main(settings_path: Optional[Path] = None):
     if not settings_path:
         settings_path = config.user_config_dir
     settings = Settings(ini_folder=settings_path)
+    
+    handle_cmd_args(settings) # cmd args set Debug level for logger
+
+    Logger(output_path=config.user_config_dir) # singleton, no assigment needed
 
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
-    handle_cmd_args(settings)
 
     comp_ctrl = ComponentController(settings)
     config.comp_ctrl = comp_ctrl

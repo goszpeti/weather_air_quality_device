@@ -11,7 +11,6 @@ from .conftest import mock_run_on_non_target
 
 def testDHT22(base_fixture, target_mockup_fixture):
     from adafruit_dht import TEMP, HUM
-    SensorLogger
     settings = Settings(base_fixture.testdata_path / "integration")
     comps = ComponentRegistry(settings)
 

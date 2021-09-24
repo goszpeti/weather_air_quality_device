@@ -92,7 +92,7 @@ class ComponentController():
         Stop this module, by sending a stop request.
         Actual stop is asyncron.
         """
-        if self._watch_thread.is_alive():
+        if self._watch_thread and self._watch_thread.is_alive():
             self._stop_event.set()
 
     def _watchdog_loop(self):
@@ -124,12 +124,12 @@ class ComponentController():
                     # call stop, so it will be initialized in the next cycle
                     self._components.stop_component(comp_name)
 
-        for sensor_name in self._components._sensors:
-            sensor = self._components._sensors[sensor_name]
+        for sensor_name in self._components.get_sensors():
+            sensor = self._components.get_sensors()[sensor_name]
             if not sensor:
                 break
             if isinstance(sensor, CyclicComponent) and sensor.is_ready and not sensor.is_alive:
-                self._components._sensors.pop(sensor_name)
+                self._components.get_sensors().pop(sensor_name)
 
     def _unload_all_components(self, reload_intended, updating):
         """

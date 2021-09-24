@@ -477,7 +477,6 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
         log_values = bool(settings.get(LOG_SENSOR_DATA))
         CO2Sensor.__init__(self, log_values)
         CyclicComponent.__init__(self)
-        super().__init__(settings)
         self._start_time = datetime.datetime.now()
         self._readings_stabilized = False
         self._start_update_loop(self._init_sensor, self._read_sensor)

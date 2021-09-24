@@ -70,7 +70,7 @@ class OnlineUpdater(CyclicComponent):
         try:
             self._connect_to_repository(self._settings.get(UPDATER_KEY))
         except:
-            self._logger.error("Updater: Cannot to updater Server.")
+            self._logger.error("Updater: Cannot connect to updater Server.")
             return
 
         latest_tag = self._get_latest_version_tag()

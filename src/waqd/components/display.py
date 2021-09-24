@@ -41,7 +41,7 @@ class Display(Component):
         if (self._settings.get(DISPLAY_TYPE) == DISP_TYPE_WAVESHARE_5_LCD and
                 self._runtime_system.is_target_system):
             # to set brightness, this display needs to be hacked and is switched off by default.
-            pin = self._settings.get(WAVESHARE_DISP_BRIGHTNESS_PIN)
+            pin = self._settings.get_int(WAVESHARE_DISP_BRIGHTNESS_PIN)
             # use compiled gpio because with python it flickers
             os.system("gpio -g mode " + str(pin) + " pwm")
             os.system("gpio pwmc 1000")

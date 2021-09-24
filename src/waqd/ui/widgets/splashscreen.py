@@ -18,6 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.sip import voidptr
 
 from pyqtspinner.spinner import WaitingSpinner
 
@@ -51,8 +52,10 @@ class SplashScreen(QtWidgets.QSplashScreen):
             pixmap = QtGui.QPixmap(str(get_asset_file("gui_base", "loading")))
             pixmap = pixmap.scaled(800, 480, transformMode=Qt.SmoothTransformation)
         else:
+            if not config.qt_app:
+                return # can not really happen...
             screen = config.qt_app.primaryScreen()
-            pixmap = screen.grabWindow(0)
+            pixmap = screen.grabWindow(voidptr(0))
 
         QtWidgets.QSplashScreen.__init__(self, pixmap)
         if config.DEBUG_LEVEL > 0: # unlock gui when debugging
@@ -69,7 +72,7 @@ class SplashScreen(QtWidgets.QSplashScreen):
         if self._is_background_set:
             self._label = QtWidgets.QLabel(self)
             self._label.setText(WAQD_VERSION + "   ")
-            self._label.setAlignment(Qt.AlignBottom | Qt.AlignRight)
+            self._label.setAlignment(Qt.AlignmentFlag(Qt.AlignBottom | Qt.AlignRight))
             self._label.setGeometry(0, 0, 800, 480)
             self._label.show()
         self._spinner = WaitingSpinner(self, centerOnParent=False, radius=30, roundness=60,
@@ -93,8 +96,5 @@ class SplashScreen(QtWidgets.QSplashScreen):
 
     def hideEvent(self, event):  # pylint: disable=unused-argument, invalid-name
         """ Stop movie, when it is hidden. """
-        self._spinner.stop()
-
-    def sizeHint(self):  # pylint: disable=invalid-name
-        """ Set the size to scaled size of the movie. """
-        return self._spinner.scaledSize()
+        if self._spinner:
+            self._spinner.stop()

@@ -36,7 +36,7 @@ class Logger(logging.Logger):
 
     _instance: Optional[logging.Logger] = None
 
-    def __new__(cls, name:str=config.PROG_NAME, level:int=config.DEBUG_LEVEL, output_path: Path = config.user_config_dir) -> logging.Logger:
+    def __new__(cls, name:str=config.PROG_NAME, level:int=config.DEBUG_LEVEL, output_path: Path = config.user_config_dir):
         if cls._instance is None:
             cls._instance = cls._init_logger(output_path)
         return cls._instance
@@ -45,7 +45,7 @@ class Logger(logging.Logger):
         return None
 
     @classmethod
-    def _init_logger(cls, output_path) -> logging.Logger:
+    def _init_logger(cls, output_path):
         """ Set up format and a debug level and register loggers. """
         from waqd import config  # can change after import
 
@@ -85,16 +85,11 @@ class Logger(logging.Logger):
 
 
 class SensorLogger(logging.Logger):
-    _instance: Optional[logging.Logger] = None
+    def __new__(cls, name: str, output_path: Path = config.user_config_dir / "sensor_logs"):
+        return cls._init_logger(name, output_path)
 
-    def __new__(cls, name: str, output_path: Path = config.user_config_dir / "sensor_logs") -> logging.Logger:
-        if cls._instance is None:
-            # the user excepts a logger
-            cls._instance = cls._init_logger(name, output_path)
-        return cls._instance
-
-    def __init__(self, name: str, output_path: Path = config.user_config_dir) -> None:
-        return None
+    def __init__(self, name: str, output_path: Path = config.user_config_dir / "sensor_logs") -> None:
+        pass
 
     @staticmethod
     def get_sensor_logfile_path(sensor_name) -> Path:

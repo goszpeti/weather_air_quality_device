@@ -38,7 +38,7 @@ class SensorDetailView(QtWidgets.QWidget):
 
         # set up  window style and size
         # frameless modal window fullscreen (same as main ui)
-        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowType(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint))
         self.setWindowModality(Qt.WindowModal)
         self.setGeometry(main_ui.geometry())
 
