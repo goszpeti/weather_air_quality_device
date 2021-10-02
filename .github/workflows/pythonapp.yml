@@ -23,6 +23,7 @@ jobs:
     timeout-minutes: 15
     env:
       DISPLAY: ':0'
+      PYTEST_CMD: "pytest -v --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append"
     steps:
     - uses: actions/checkout@v2
     - name: Install system libs
@@ -33,13 +34,19 @@ jobs:
       run: | 
         python3 -m pip install --upgrade pip
         python3 -m venv .venv --system-site-packages
-    - name: Activate venv and test
+    - name: Activate venv and install test deps
       run: |
         source .venv/bin/activate
         pip3 install -r test/requirements.txt
         pip3 install -e .
-        pytest -v -m "integration" --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append --disable-pytest-warnings
-        pytest -v -m "not integration" --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append
+    - name: Test basic modules
+      run: $PYTEST_CMD test/basic
+    - name: Test components
+      run: $PYTEST_CMD test/components
+    - name: Test ui
+      run: $PYTEST_CMD test/ui
+    - name: Test integration
+      run: $PYTEST_CMD --disable-pytest-warnings test/integration
 
   testUpdaterOnTarget:
     runs-on: self-hosted

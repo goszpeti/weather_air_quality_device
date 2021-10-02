@@ -44,8 +44,9 @@ def testGetInstallPath():
     if not user:  # for windows
         user = "user"
         os.environ["SUDO_USER"] = user
-
+    from importlib import reload
     from installer import common
+    reload(common)
     install_path = common.get_waqd_install_path(common.installer_root_dir)
     version_suffix = __version__
     assert install_path.as_posix() == Path(f"/home/{user}/.local/pipx/venvs/waqd.{version_suffix}").as_posix()

@@ -7,7 +7,7 @@ from waqd.settings import Settings
 from waqd.base.system import RuntimeSystem
 from waqd.base.logger import  SensorLogger
 
-from .conftest import mock_run_on_non_target
+from test.conftest import mock_run_on_non_target
 
 def testDHT22(base_fixture, target_mockup_fixture):
     from adafruit_dht import TEMP, HUM
