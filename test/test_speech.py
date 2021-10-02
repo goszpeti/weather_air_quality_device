@@ -29,6 +29,7 @@ def testOnSoundDisabled(base_fixture, capsys):
 
     tts = TextToSpeach(comps, settings)
     tts.say("Text1", "en")
+    tts.wait_for_tts()
     # we can implicitly check, if the Thread has been started by us
     assert "TTS" in tts._tts_thread.getName()
     # test that no warning was thrown
