@@ -18,8 +18,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.sip import voidptr
-
+try:
+    from PyQt5.sip import voidptr # Windows x64
+except:
+    from sip import voidptr # Raspberry
 from pyqtspinner.spinner import WaitingSpinner
 
 from waqd import config
