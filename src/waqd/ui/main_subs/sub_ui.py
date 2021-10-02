@@ -53,7 +53,7 @@ class SubUi(metaclass=abc.ABCMeta):
         self._update_timer = QtCore.QTimer(main_ui)
         self._update_timer.setObjectName("Update" + repr(self).split(" ")[0])
         self._update_timer.timeout.connect(self._cyclic_update)
-        #self._update_timer.start(self.UPDATE_TIME)
+        self._update_timer.start(self.UPDATE_TIME)
         self._first_thread = QtCore.QThread(self._main_ui)
 
     def init_with_cyclic_update(self):
