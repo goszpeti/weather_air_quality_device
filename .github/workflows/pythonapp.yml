@@ -28,11 +28,10 @@ jobs:
     - name: Install system libs
       run: | 
         sudo apt -y install python3-libgpiod python3-venv
-        sudo apt -y install qt5-default python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart
+        sudo apt -y install qt5-default python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart python3-sip
     - name: Setup pip and create venv
       run: | 
         python3 -m pip install --upgrade pip
-        python3 -m pip install --user -I PyQt5-sip
         python3 -m venv .venv --system-site-packages
     - name: Activate venv and test
       run: |
