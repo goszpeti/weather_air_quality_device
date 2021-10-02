@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 15
     env:
       DISPLAY: ':0'
-      PYTEST_CMD: "pytest -v --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append"
+      PYTEST_CMD: "source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append"
     steps:
     - uses: actions/checkout@v2
     - name: Install system libs
