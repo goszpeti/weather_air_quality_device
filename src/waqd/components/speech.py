@@ -18,18 +18,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 import json
-import threading
-import time
 import os
+import time
 from pathlib import Path
+from threading import Thread, ThreadError
 
 from gtts import gTTS
 from waqd import config
+from waqd.assets import get_asset_file
 from waqd.base.components import Component, ComponentRegistry
 from waqd.base.logger import Logger
-from waqd.assets import get_asset_file
-from waqd.settings import SOUND_ENABLED, LANG, LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN, Settings
 from waqd.base.system import RuntimeSystem
+from waqd.settings import LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN
 
 # map settings to internal shortened lang names
 LANGS_MAP = {
@@ -46,14 +46,15 @@ class TextToSpeach(Component):
     A little delay is normal, since TTS is computed in the cloud and the file sent back.
     """
 
-    def __init__(self, components: ComponentRegistry, settings: Settings):
-        super().__init__(components, settings)
-        self._tts_thread: threading.Thread = threading.Thread()
+    def __init__(self, components: ComponentRegistry, lang="en"):
+        super().__init__(components)
+        self._lang = lang
+        self._tts_thread = Thread()
         self._save_dir = config.user_config_dir / "tts"
         # ensure dir exists
         os.makedirs(self._save_dir, exist_ok=True)
 
-    def get_tts_string(self, key: str, lang="de") -> str:
+    def get_tts_string(self, key: str, lang="en") -> str:
         if lang in LANGS_MAP:
             lang = LANGS_MAP.get(lang)
         dict_file = get_asset_file("base", "tts_dict")
@@ -78,20 +79,19 @@ class TextToSpeach(Component):
         Key corresponds to an entry in the tts_dict.json.
         Language is determined from settings.
         """
-        lang = LANGS_MAP.get(self._settings.get(LANG), "de")
+        lang = LANGS_MAP.get(self._lang, "en")
         text = self.get_tts_string(key, lang)
         self.say(text.format(*format_args), lang)
 
-    def say(self, text="", lang="de"):
+    def say(self, text="", lang="en"):
         """
         User function for TTS.
         :param lang: switches between official GTTS languages.
         """
-        if not self._settings.get(SOUND_ENABLED):
+        if self._comps and self._comps.sound.is_disabled:
             return
 
-        Process = threading.Thread
-        self._tts_thread = Process(
+        self._tts_thread = Thread(
             name="google_TTS", target=self._call_tts, args=(text, lang,)
         )
         self._tts_thread.start()
@@ -119,8 +119,8 @@ class TextToSpeach(Component):
                 RuntimeSystem().wait_for_network()
                 gtts = gTTS(text, lang=lang)
                 gtts.save(audio_file)
-
-            self._comps.sound.play(audio_file)
+            if self._comps:
+                self._comps.sound.play(audio_file)
             self._logger.debug("Speech: Finished: %s", text)
-        except RuntimeError as error:
+        except Exception as error:
             self._logger.warning("Speech: Cannot use text to speech engine.: %s", str(error))

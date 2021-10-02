@@ -30,9 +30,8 @@ def testWeatherDetailView(base_fixture, qtbot):
     parent.resize(800, 480)
     # initalize settings
     settings = Settings(base_fixture.testdata_path / "integration")
-    settings.set(LOCATION, "Location")
 
-    weather = OpenWeatherMap(settings)
+    weather = OpenWeatherMap("city_id", "abcd") # inputs do not matter
     weather._fc_json_file = str(base_fixture.testdata_path / "online_weather/ow_forecast.json")
     weather._cw_json_file = str(base_fixture.testdata_path / "online_weather/ow_current_weather.json")
 

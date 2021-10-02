@@ -18,10 +18,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-import threading
+from os import PathLike
+from threading import Lock, Thread
 import time
 
-from waqd.base.components import Component
+from waqd.base.components import Component, ComponentRegistry
 from waqd.settings import SOUND_ENABLED
 
 
@@ -30,29 +31,31 @@ class Sound(Component):
     This class uses VLC to play sounds one after another.
     It waits for the previous sound to finish, before a new one can be played.
     """
-    lock = threading.Lock()  # lock for playing
+    lock = Lock()  # lock for playing
 
-    def __init__(self, settings):
-        super().__init__(settings=settings)
-        self._sound_thread: threading.Thread
-
-    def play(self, audio_file):
-        if not self._settings.get(SOUND_ENABLED):
+    def __init__(self, components: ComponentRegistry, enabled = True):
+        super().__init__()
+        self._disabled = not enabled
+        self._sound_thread = Thread()
+        self._comps = components
+    def play(self, audio_file: PathLike):
+        if self._disabled:
             return
-        Process = threading.Thread
-        self._sound_thread = Process(
+        self._sound_thread = Thread(
             name="Sound", target=self._call_vlc, args=(audio_file,)
         )
         self._sound_thread.start()
 
-    def _call_vlc(self, audio_file):
+    def _call_vlc(self, audio_file: PathLike):
         """
         """
         try:
             # import needs libs and can can crash appplication
             import vlc  # pylint: disable=import-outside-toplevel
-            player = vlc.MediaPlayer(str(audio_file))
-            vlc.libvlc_audio_set_volume(player, 140) # make it louder for passive loudspeakers
+            player: vlc.MediaPlayer = vlc.MediaPlayer(str(audio_file))
+            vlc.libvlc_audio_set_volume(player, 140) # make it louder for passive loudspeake
+            if self._comps.energy_saver.night_mode_active: # lower volume at night
+                player.audio_set_volume(50)
             with self.lock:  # wait for previous sound to end
                 player.play()
                 time.sleep(2)  # wait for starting

@@ -58,7 +58,6 @@ def testMH_Z19(base_fixture, target_mockup_fixture, mocker):
     settings = Settings(base_fixture.testdata_path / "integration")
     sensor = sensors.MH_Z19(settings)
 
-
     measure_points = 2
     sensor._co2_impl._values_capacity = measure_points
     time.sleep(1)

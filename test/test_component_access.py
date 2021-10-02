@@ -15,11 +15,11 @@ def testDefaultComponentCreation(base_fixture, target_mockup_fixture):
     settings.set(BME_280_ENABLED, True)
 
     comps = ComponentRegistry(settings)
-    # dht22
-    temp = comps.temp_sensor
-    assert temp
+   
     disp = comps.display
     assert disp
+    temp = comps.temp_sensor
+    assert temp
     mot = comps.motion_detection_sensor
     assert mot
     tts = comps.tts
@@ -70,8 +70,8 @@ def testComponentRegistry(base_fixture):
     cr = ComponentRegistry(settings)
     assert not cr._unload_in_progress
 
-    comp = cr.create_component_instance(Component)
-    cyc_comp = cr.create_component_instance(CyclicComponent)
+    comp = cr._create_component_instance(Component)
+    cyc_comp = cr._create_component_instance(CyclicComponent)
     assert isinstance(comp, Component)
     assert isinstance(cyc_comp, CyclicComponent)
 
@@ -98,8 +98,8 @@ def testComponentRegistryDefaultComps(base_fixture):
     cr = ComponentRegistry(settings)
     assert not cr._unload_in_progress
 
-    comp = cr.create_component_instance(Component)
-    cyc_comp = cr.create_component_instance(CyclicComponent)
+    comp = cr._create_component_instance(Component)
+    cyc_comp = cr._create_component_instance(CyclicComponent)
     assert isinstance(comp, Component)
     assert isinstance(cyc_comp, CyclicComponent)
 

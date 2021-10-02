@@ -6,41 +6,25 @@ from waqd.settings import LOCATION, Settings
 
 
 def testOpenWeatherCurrentWeatherApiCall(base_fixture):
-    # initalize settings
-    settings = Settings(base_fixture.testdata_path / "integration")
-    settings.set(LOCATION, "Location")
-
     test_json = base_fixture.testdata_path / "online_weather/ow_current_weather.json"
 
-    weather = OpenWeatherMap(settings)
+    weather = OpenWeatherMap("city_id", "no_api_key_needed")
     weather._cw_json_file = str(test_json)
     cw_info = weather._call_ow_api(weather.CURRENT_WEATHER_BY_CITY_ID_API_CMD)
     assert cw_info.get("name") == "Location"  # no umlauts
-    assert cw_info.get("id") == int(weather._city_id)
-
 
 def testOpenWeatherForecastApiCall(base_fixture):
-    # initalize settings
-    settings = Settings(base_fixture.testdata_path / "integration")
-    settings.set(LOCATION, "Location")
-
     test_json = base_fixture.testdata_path / "online_weather/ow_forecast.json"
-    weather = OpenWeatherMap(settings)
+    weather = OpenWeatherMap("city_id", "no_api_key_needed")
     weather._fc_json_file = str(test_json)
     cw_info = weather._call_ow_api(
         weather.FORECAST_BY_CITY_ID_API_CMD)
     assert cw_info.get("city").get("name") == "Location"  # no umlauts
-    assert cw_info.get("city").get("id") == int(weather._city_id)
     assert cw_info.get("list")[0].get("main").get("humidity") == 69
 
 
 def testOpenWeatherNewDayForecast(base_fixture):
-
-    # initalize settings
-    settings = Settings(base_fixture.testdata_path / "integration")
-    settings.set(LOCATION, "Location")
-
-    weather = OpenWeatherMap(settings)
+    weather = OpenWeatherMap("city_id", "no_api_key_needed")
     weather._fc_json_file = str(base_fixture.testdata_path / "online_weather/ow_new_day_forecast.json")
     weather._cw_json_file = str(base_fixture.testdata_path / "online_weather/ow_new_day_cw.json")
 
@@ -59,12 +43,7 @@ def testOpenWeatherNewDayForecast(base_fixture):
 
 
 def testOpenWeatherGet3DayForecast(base_fixture):
-
-    # initalize settings
-    settings = Settings(base_fixture.testdata_path / "integration")
-    settings.set(LOCATION, "Location")
-
-    weather = OpenWeatherMap(settings)
+    weather = OpenWeatherMap("city_id", "no_api_key_needed")
     weather._fc_json_file = str(base_fixture.testdata_path / "online_weather/ow_forecast.json")
     weather._cw_json_file = str(base_fixture.testdata_path / "online_weather/ow_current_weather.json")
 

@@ -29,7 +29,7 @@ from waqd.components.power import ESaver
 from waqd.components.sensors import (BMP280, BME280, DHT22, CCS811, MH_Z19, Prologue433, 
                                      SR501, GP2Y1010AU0F, BH1750,
                                      TempSensor, HumiditySensor, TvocSensor, CO2Sensor, 
-                                     BarometricSensor, DustSensor, LightSensor)
+                                     BarometricSensor, DustSensor, LightSensor, SensorComponent)
 from waqd.components.sound import Sound
 from waqd.components.speech import TextToSpeach
 from waqd.components.updater import OnlineUpdater

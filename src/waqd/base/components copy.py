@@ -20,21 +20,23 @@
 
 
 import threading
+import time
+import types
 # this allows to use forward declarations to avoid circular imports
-from typing import Dict, List, Optional, Type, Union, TypeVar, TYPE_CHECKING
+from typing import Dict, List, Optional, Type, Union, TYPE_CHECKING
 
 from waqd.base.logger import Logger
 from waqd.base.component import Component, CyclicComponent
 from waqd.settings import (AUTO_UPDATER_ENABLED, BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS,
                            CCS811_ENABLED, DHT_22_DISABLED, DHT_22_PIN, LANG,
-                           DISPLAY_TYPE, LOCATION, MH_Z19_ENABLED, MOTION_SENSOR_ENABLED,
-                           MOTION_SENSOR_PIN, OW_CITY_IDS, OW_API_KEY, SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL,
+                           DISPLAY_TYPE, MH_Z19_ENABLED, MOTION_SENSOR_ENABLED,
+                           MOTION_SENSOR_PIN, SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, Settings)
 
 if TYPE_CHECKING:
     from waqd.components import (Display, ESaver, EventHandler, TextToSpeach, Sound, OpenWeatherMap, SR501,
                                  OnlineUpdater, TempSensor, TvocSensor, BarometricSensor, HumiditySensor,
-                                 CO2Sensor, DustSensor, LightSensor, Prologue433, SensorComponent)
+                                 CO2Sensor, DustSensor, LightSensor, Prologue433)
 
 
 class ComponentRegistry():
@@ -51,7 +53,7 @@ class ComponentRegistry():
         self._settings = settings
         self._unload_in_progress = False  # don't generate new objects
         self._components: Dict[str, Component] = {}  # holds all the instances
-        self._sensors: Dict[str, "SensorComponent"] = {}  # mapping from components to specific sensor types
+        self._sensors: Dict[str, CyclicComponent] = {}  # mapping from components to specific sensor types
         self._stop_thread: threading.Thread
 
     def set_unload_in_progress(self):
@@ -118,212 +120,224 @@ class ComponentRegistry():
     def display(self) -> "Display":
         """ Access for Display singleton """
         from waqd.components import Display
-        return self._create_component_instance(Display, [self._settings.get_string(DISPLAY_TYPE), self._settings.get_int(BRIGHTNESS),
-                            self._settings.get_int(WAVESHARE_DISP_BRIGHTNESS_PIN)])
+        component = self.check_for_init_component(Display)
+        if component and isinstance(component, Display):
+            return component
+        component = Display(self._settings.get_string(DISPLAY_TYPE), self._settings.get_int(BRIGHTNESS),
+                self._settings.get_int(WAVESHARE_DISP_BRIGHTNESS_PIN))
+        self._components.update({Display.__name__, component})
+        return component
+
     @property
     def event_handler(self) -> "EventHandler":
         """ Access for Greeter singleton """
         from waqd.components import EventHandler
-        return self._create_component_instance(EventHandler, [self, self._settings])
+        component = self.check_for_init_component(EventHandler)
+        if component and isinstance(component, EventHandler):
+            return component
+        return EventHandler(self, self._settings)
 
     @property
     def tts(self) -> "TextToSpeach":
         """ Access for TTS singleton """
         from waqd.components import TextToSpeach
-        return self._create_component_instance(TextToSpeach, [self, self._settings.get(LANG)])
+        component = self.check_for_init_component(TextToSpeach)
+        if component and isinstance(component, TextToSpeach):
+            return component
+        return TextToSpeach(self, self._settings.get(LANG))
 
     @property
     def sound(self) -> "Sound":
         """ Access for Sound singleton """
         from waqd.components.sound import Sound
-        return self._create_component_instance(Sound, [self, self._settings.get(SOUND_ENABLED)])
+        component = self.check_for_init_component(Sound)
+        if component and isinstance(component, Sound):
+            return component
+        return Sound(self._settings.get(SOUND_ENABLED))
 
     @property
     def energy_saver(self) -> "ESaver":
         """ Access for ESaver singleton """
         from waqd.components.power import ESaver
-        return self._create_component_instance(ESaver, [self, self._settings])
+        component = self.check_for_init_component(ESaver)
+        if component and isinstance(component, ESaver):
+            return component
+        return ESaver(self, self._settings)
 
     @property
     def weather_info(self) -> "OpenWeatherMap":
         """ Access for OnlineWeather singleton """
         from waqd.components.online_weather import OpenWeatherMap
-        location = self._settings.get(LOCATION)
-        return self._create_component_instance(OpenWeatherMap, [self._settings.get_dict(OW_CITY_IDS).get(location),
-                                                                self._settings.get(OW_API_KEY)])
+        component = self.check_for_init_component(OpenWeatherMap)
+        if component and isinstance(component, OpenWeatherMap):
+            return component
+        return OpenWeatherMap(self._settings)
 
     @property
     def auto_updater(self) -> "OnlineUpdater":
         """ Access for OnlineUpdater singleton """
         from waqd.components.updater import OnlineUpdater
-        return self._create_component_instance(OnlineUpdater, [self._settings.get(AUTO_UPDATER_ENABLED),
-                             self._settings.get(UPDATER_USER_BETA_CHANNEL)])
+        component = self.check_for_init_component(OnlineUpdater)
+        if component and isinstance(component, OnlineUpdater):
+            return component
+        return OnlineUpdater(self, self._settings.get(AUTO_UPDATER_ENABLED), 
+                            self._settings.get(UPDATER_USER_BETA_CHANNEL))
 
     @property
     def temp_sensor(self) -> "TempSensor":
         """ Access for temperature sensor  """
-        import waqd.components.sensors as sensors
-        sensor = self._get_sensor(sensors.TempSensor)
+        internal_name = "TempSensor"
+        sensor: "TempSensor" = self._sensors.get(internal_name)
         if not sensor:
+            import waqd.components.sensors as sensors
             dht22_pin = self._settings.get(DHT_22_PIN)
             if dht22_pin != DHT_22_DISABLED:
-                sensor = self._create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
+                sensor = self.create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
             elif self._settings.get(BME_280_ENABLED):
-                sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
+                sensor = self.create_component_instance(sensors.BME280, [self, self._settings])
             elif self._settings.get(BMP_280_ENABLED):
-                sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
+                sensor = self.create_component_instance(sensors.BMP280, [self, self._settings])
             else:  # create a default instance that is disabled, so the watchdog
                 # won't try to instantiate a new one over and over
-                sensor = self._create_component_instance(sensors.TempSensor, [self._settings, True])
-            self._sensors.update({sensors.TempSensor.__name__: sensor})
+                sensor = self.create_component_instance(sensors.TempSensor, [self._settings, True])
+            self._sensors.update({internal_name: sensor})
             sensor.select_for_temp_logging()
         return sensor
 
     @property
     def humidity_sensor(self) -> "HumiditySensor":
         """ Access for humidity sensor """
-        import waqd.components.sensors as sensors
-        sensor = self._get_sensor(sensors.HumiditySensor)
+        internal_name = "HumiditySensor"
+        sensor: "HumiditySensor" = self._sensors.get(internal_name)
         if not sensor:
             # DHT-22 is prioritized, if both are available
+            import waqd.components.sensors as sensors
             dht22_pin = self._settings.get(DHT_22_PIN)
             if dht22_pin != DHT_22_DISABLED:
-                sensor = self._create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
+                sensor = self.create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
             elif self._settings.get(BME_280_ENABLED):
-                sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
+                sensor = self.create_component_instance(sensors.BME280, [self, self._settings])
             else:  # create a default instance that is disabled
-                sensor = self._create_component_instance(sensors.HumiditySensor, [self._settings, True])
-            self._sensors.update({sensors.HumiditySensor.__name__: sensor})
+                sensor = self.create_component_instance(sensors.HumiditySensor, [self._settings, True])
+            self._sensors.update({internal_name: sensor})
             sensor.select_for_hum_logging()
         return sensor
 
     @property
     def pressure_sensor(self) -> "BarometricSensor":
         """ Access for pressure sensor """
-        import waqd.components.sensors as sensors
-        sensor = self._get_sensor(sensors.BarometricSensor)
+        internal_name = "BarometricSensor"
+        sensor: "BarometricSensor" = self._sensors.get(internal_name)
         if not sensor:
+            import waqd.components.sensors as sensors
             if self._settings.get(BME_280_ENABLED):
-                sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
+                sensor = self.create_component_instance(sensors.BME280, [self, self._settings])
             elif self._settings.get(BMP_280_ENABLED):
-                sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
+                sensor = self.create_component_instance(sensors.BMP280, [self, self._settings])
             else:  # create a default instance that is disabled
-                sensor = self._create_component_instance(sensors.BarometricSensor, [self._settings, True])
-            self._sensors.update({sensors.BarometricSensor.__name__: sensor})
+                sensor = self.create_component_instance(sensors.BarometricSensor, [self._settings, True])
+            self._sensors.update({internal_name: sensor})
             sensor.select_for_pres_logging()
         return sensor
 
     @property
     def co2_sensor(self) -> "CO2Sensor":
         """ Access for air_quality_sensor """
-        import waqd.components.sensors as sensors
-        sensor = self._get_sensor(sensors.CO2Sensor)
+        internal_name = "CO2Sensor"
+        sensor: "CO2Sensor" = self._sensors.get(internal_name)
         if not sensor:
+            import waqd.components.sensors as sensors
+
             # MH_Z19 is prioritized, if both are available
             if self._settings.get(MH_Z19_ENABLED):
-                sensor = self._create_component_instance(sensors.MH_Z19, [self._settings])
+                sensor = self.create_component_instance(sensors.MH_Z19, [self._settings])
             elif self._settings.get(CCS811_ENABLED):
-                sensor = self._create_component_instance(sensors.CCS811, [self, self._settings])
+                sensor = self.create_component_instance(sensors.CCS811, [self, self._settings])
             else:  # create a default instance that is disabled
-                sensor = self._create_component_instance(sensors.CO2Sensor, [self._settings, True])
-            self._sensors.update({sensors.CO2Sensor.__name__: sensor})
+                sensor = self.create_component_instance(sensors.CO2Sensor, [self._settings, True])
+            self._sensors.update({internal_name: sensor})
             sensor.select_for_co2_logging()
         return sensor
 
     @property
     def tvoc_sensor(self) -> "TvocSensor":
         """ Access for air_quality_sensor """
-        import waqd.components.sensors as sensors
-        sensor = self._get_sensor(sensors.TvocSensor)
+        internal_name = "TVOCSensor"
+        sensor: "TvocSensor" = self._sensors.get(internal_name)
         if not sensor:
+            import waqd.components.sensors as sensors
             if self._settings.get(CCS811_ENABLED):
-                sensor = self._create_component_instance(sensors.CCS811, [self, self._settings])
+                sensor = self.create_component_instance(sensors.CCS811, [self, self._settings])
             else:  # create a default instance that is disabled
-                sensor = self._create_component_instance(sensors.TvocSensor, [self._settings, True])
-            self._sensors.update({sensors.TvocSensor.__name__: sensor})
+                sensor = self.create_component_instance(sensors.TvocSensor, [self._settings, True])
+            self._sensors.update({internal_name: sensor})
             sensor.select_for_tvoc_logging()
         return sensor
 
     @property
     def dust_sensor(self) -> "DustSensor":
         """ Access for dust sensor """
-        import waqd.components.sensors as sensors
-        sensor = self._get_sensor(sensors.DustSensor)
+        internal_name = "DustSensor"
+        sensor: "DustSensor" = self._sensors.get(internal_name)
         if not sensor:
+            import waqd.components.sensors as sensors
+
             # if self._settings.get(GP2Y1010AU0F_ENABLED):
             #     sensor = self.create_component_instance(sensors.GP2Y1010AU0F, [self, self._settings])
             # else:  # create a default instance that is disabled
-            sensor = self._create_component_instance(sensors.DustSensor, [self._settings, True])
-            self._sensors.update({sensors.DustSensor.__name__: sensor})
+            sensor = self.create_component_instance(sensors.DustSensor, [self._settings, True])
+            self._sensors.update({internal_name: sensor})
             sensor.select_for_dust_logging()
         return sensor
 
     @property
     def light_sensor(self) -> "LightSensor":
         """ Access for light sensor """
-        import waqd.components.sensors as sensors
-        sensor = self._get_sensor(sensors.LightSensor)
+        internal_name = "LightSensor"
+        sensor: "LightSensor" = self._sensors.get(internal_name)
         if not sensor:
+            import waqd.components.sensors as sensors
+
             # if self._settings.get(CGY302_ENABLED):
             #     sensor = self.create_component_instance(sensors.GY302, [self, self._settings])
             # else:  # create a default instance that is disabled
-            sensor = self._create_component_instance(sensors.LightSensor, [self._settings, True])
-            self._sensors.update({sensors.LightSensor.__name__: sensor})
+            sensor = self.create_component_instance(sensors.LightSensor, [self._settings, True])
+            self._sensors.update({internal_name: sensor})
             sensor.select_for_light_logging()
         return sensor
 
     @property
     def motion_detection_sensor(self) -> "SR501":
         """ Access for motion_detection_sensor singleton """
-        import waqd.components.sensors as sensors
         internal_name = "MotionSensor"
-        sensor = self._get_sensor(sensors.SR501)
+        sensor: "SR501" = self._sensors.get(internal_name)
         if not sensor:
-            pin = self._settings.get_int(MOTION_SENSOR_PIN)
+            import waqd.components.sensors as sensors
+            pin = self._settings.get(MOTION_SENSOR_PIN)
             if self._settings.get(MOTION_SENSOR_ENABLED) and pin > 0:
-                sensor = self._create_component_instance(sensors.SR501, [pin])
+                sensor = self.create_component_instance(sensors.SR501, [pin])
             else:  # create a default instance that is disabled
-                sensor = self._create_component_instance(sensors.SR501, [0])
-            self._sensors.update({sensors.SR501.__name__: sensor})
+                sensor = self.create_component_instance(sensors.SR501, [0])
+            self._sensors.update({internal_name: sensor})
         return sensor
 
     @property
     def remote_temp_sensor(self) -> "Prologue433":
         """ Access for remote_temp_sensor singleton """
-        from waqd.components.sensors import Prologue433
-        return self._create_component_instance(Prologue433, [self._settings])
+        from waqd.components.sensors import \
+            Prologue433
+        return self.create_component_instance(Prologue433, [self._settings])
 
-    S = TypeVar('S', bound="SensorComponent") # can't import SensorComponent directly
-    def _get_sensor(self, class_ref: Type[S]) -> Optional[S]:
-        name = class_ref.__name__
-        sensor = self._sensors.get(name)
-        if sensor:
-            if not isinstance(sensor, class_ref):
-                raise TypeError(f"FATAL: Component {str(sensor)}has unexpected type.")
-        return sensor
-
-    T = TypeVar('T', bound=Component)
-    def _create_component_instance(self, class_ref: Type[T], args: List = [], name_ref=None) -> T:
-        """ Generic method for component creation and access. """
-        name = class_ref.__name__
-        if name_ref:
-            name = name_ref
+    def check_for_init_component(self, class_ref: Type[Component]) -> Optional[Component]:
+        internal_name = class_ref.__name__
         with self.comp_init_lock:
-            component = self._components.get(name)
+            component = self._components.get(internal_name)
             if component:
-                if not isinstance(component, class_ref):
-                    raise TypeError(f"FATAL: Component {str(component)}has unexpected type.")
                 return component
-
-            if self._unload_in_progress:
-                import time
-                time.sleep(100)
-            self._logger.info("ComponentRegistry: Starting %s", name)
-            if issubclass(class_ref, Component):
-                component = class_ref(*args)
-                self._components.update({name: component})
-            else:
-                raise TypeError("The component " + str(class_ref) +
-                                " to be created must be subclass of 'Component', but is instead a " +
-                                class_ref.__class__.__name__ + " .")
-            return component
+            if not self._unload_in_progress:
+                self._logger.info("ComponentRegistry: Starting %s", class_ref.__name__)
+                if not issubclass(class_ref, Component):
+                    raise TypeError("The component " + str(class_ref) +
+                                    " to be created must be subclass of 'Component', but is instead a " +
+                                    class_ref.__class__.__name__ + " .")
+                return None

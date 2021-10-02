@@ -33,7 +33,8 @@ from statistics import mean
 from subprocess import check_output
 from typing import Optional
 
-from waqd.base.components import (Component, ComponentRegistry, CyclicComponent)
+from waqd.base.component import Component, CyclicComponent
+from waqd.base.components import ComponentRegistry
 from waqd.base.logger import Logger, SensorLogger
 from waqd.settings import LOG_SENSOR_DATA, Settings
 
@@ -725,7 +726,7 @@ class GP2Y1010AU0F(DustSensor, CyclicComponent):
         self._logger.debug(f"GP2Y1010AU0F: Dust={dust_ug_m3}ug/m3")
 
 
-class SR501(Component):  # pylint: disable=invalid-name
+class SR501(SensorComponent):  # pylint: disable=invalid-name
     """ Implements access to the SR501 infrared movement sensor. """
     BOUNCE_TIME = 3
 

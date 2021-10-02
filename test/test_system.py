@@ -70,13 +70,13 @@ def testGetIPOnTarget(base_fixture, mocker):
     mocker.patch('subprocess.check_output', mock_call)
     [ip4, ip6] = cur_system.get_ip()
     assert ip4 == ip4_ref
-    assert ip6 is None
+    assert ip6 == ""
 
     # check only ip6
     mock_call.return_value = ip6_ref.encode("utf-8")
     mocker.patch('subprocess.check_output', mock_call)
     [ip4, ip6] = cur_system.get_ip()
-    assert ip4 is None
+    assert ip4 == ""
     assert ip6 == ip6_ref
 
     # check both ip4 and ip6

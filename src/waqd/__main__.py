@@ -178,8 +178,8 @@ def main(settings_path: Optional[Path] = None):
 
     comp_ctrl = ComponentController(settings)
     config.comp_ctrl = comp_ctrl
-
-    comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
+    #if config.DEBUG_LEVEL > 0: # disable startup sound
+    #    comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
     display_type = settings.get(DISPLAY_TYPE)
 
     if display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
