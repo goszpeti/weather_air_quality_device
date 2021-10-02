@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 ### Global constants ###
 PROG_NAME = "W.A.Q.D"
-GITHUB_REPO_NAME = "WeatherAirQualityDevice"
+GITHUB_REPO_NAME = "goszpeti/WeatherAirQualityDevice"
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 480
 

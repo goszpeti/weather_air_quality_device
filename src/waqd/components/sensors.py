@@ -508,7 +508,7 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
             co2: int = literal_eval(output).get("co2", "")
         except Exception as error:
             # errors happen fairly often, keep going
-            self._logger.error("MH-Z19: Can't read sensor - %s, Output: %s", str(error), output)
+            self._logger.error(f"MH-Z19: Can't read sensor - {str(error)} Output: {output}",)
             return
 
         self._set_co2(co2)

@@ -22,12 +22,16 @@ def testTTSParallel(base_fixture, capsys):
     assert "WARNING" not in captured.out
     assert "Sound: Cannot play sound" not in captured.out
 
-def testOnSoundDisabled(base_fixture):
+def testOnSoundDisabled(base_fixture, capsys):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(SOUND_ENABLED, "en")
     comps = ComponentRegistry(settings)
 
     tts = TextToSpeach(comps, settings)
     tts.say("Text1", "en")
-    # not a very good method of testing
-    assert not tts._tts_thread.is_alive()
+    # we can implicitly check, if the Thread has been started by us
+    assert "TTS" in tts._tts_thread.getName()
+    # test that no warning was thrown
+    captured = capsys.readouterr()
+    assert "WARNING" not in captured.out
+    assert "Sound: Cannot play sound" not in captured.out

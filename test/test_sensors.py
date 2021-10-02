@@ -72,7 +72,7 @@ def testMH_Z19(base_fixture, target_mockup_fixture, mocker):
 
 
 def testSR501(base_fixture, target_mockup_fixture, mocker):
-    sensor = sensors.SR501(pin=8)
+    sensor = sensors.SR501(pin=8) # TODO get from CI config file
     assert not sensor.motion_detected
     # the call blocks, so use a thread
     wake_up_thread = Thread(target=sensor._wake_up_from_sensor, args=[None, ])

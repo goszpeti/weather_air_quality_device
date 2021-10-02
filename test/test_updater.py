@@ -14,9 +14,17 @@ from waqd.base.components import ComponentRegistry
 RASPI_BASE_IMAGE = "raspi/raspbian_py:1"
 WAQD_IMAGE = "raspi/waqd_install:1"
 
+def testRepoIsReachable(base_fixture):
+    settings = Settings(base_fixture.testdata_path / "integration")
+    comps = ComponentRegistry(settings)
+    online_updater = OnlineUpdater(comps, enabled=True, use_beta_channel=True)
+    online_updater._connect_to_repository()
+    assert online_updater._repository # only check if object exists
+
+
 def testCheckShouldUpdate(base_fixture):
-    import waqd.components.updater as updater
-    settings = Settings(ini_folder=base_fixture.base_path / "src")
+    import waqd.components.updater as updater # import the module here, so we can access the loaded global var of WAQD version
+    settings = Settings(base_fixture.testdata_path / "integration")
     comps = ComponentRegistry(settings)
 
     online_updater = OnlineUpdater(comps, enabled=True, use_beta_channel=True)
