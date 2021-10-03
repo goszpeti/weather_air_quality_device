@@ -174,7 +174,7 @@ class ComponentRegistry():
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
             else:  # create a default instance that is disabled, so the watchdog
                 # won't try to instantiate a new one over and over
-                sensor = self._create_component_instance(sensors.TempSensor, [self._settings, True])
+                sensor = self._create_component_instance(sensors.TempSensor, [False, 1, True])
             self._sensors.update({sensors.TempSensor.__name__: sensor})
             sensor.select_for_temp_logging()
         return sensor
@@ -192,7 +192,8 @@ class ComponentRegistry():
             elif self._settings.get(BME_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
             else:  # create a default instance that is disabled
-                sensor = self._create_component_instance(sensors.HumiditySensor, [self._settings, True])
+                sensor = self._create_component_instance(
+                    sensors.HumiditySensor, [False, 1, True])
             self._sensors.update({sensors.HumiditySensor.__name__: sensor})
             sensor.select_for_hum_logging()
         return sensor
@@ -208,7 +209,8 @@ class ComponentRegistry():
             elif self._settings.get(BMP_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
             else:  # create a default instance that is disabled
-                sensor = self._create_component_instance(sensors.BarometricSensor, [self._settings, True])
+                sensor = self._create_component_instance(
+                    sensors.BarometricSensor, [False, 1, True])
             self._sensors.update({sensors.BarometricSensor.__name__: sensor})
             sensor.select_for_pres_logging()
         return sensor
@@ -225,7 +227,7 @@ class ComponentRegistry():
             elif self._settings.get(CCS811_ENABLED):
                 sensor = self._create_component_instance(sensors.CCS811, [self, self._settings])
             else:  # create a default instance that is disabled
-                sensor = self._create_component_instance(sensors.CO2Sensor, [self._settings, True])
+                sensor = self._create_component_instance(sensors.CO2Sensor, [False, 1, True])
             self._sensors.update({sensors.CO2Sensor.__name__: sensor})
             sensor.select_for_co2_logging()
         return sensor
@@ -239,7 +241,7 @@ class ComponentRegistry():
             if self._settings.get(CCS811_ENABLED):
                 sensor = self._create_component_instance(sensors.CCS811, [self, self._settings])
             else:  # create a default instance that is disabled
-                sensor = self._create_component_instance(sensors.TvocSensor, [self._settings, True])
+                sensor = self._create_component_instance(sensors.TvocSensor, [False, 1, True])
             self._sensors.update({sensors.TvocSensor.__name__: sensor})
             sensor.select_for_tvoc_logging()
         return sensor
@@ -253,7 +255,7 @@ class ComponentRegistry():
             # if self._settings.get(GP2Y1010AU0F_ENABLED):
             #     sensor = self.create_component_instance(sensors.GP2Y1010AU0F, [self, self._settings])
             # else:  # create a default instance that is disabled
-            sensor = self._create_component_instance(sensors.DustSensor, [self._settings, True])
+            sensor = self._create_component_instance(sensors.DustSensor, [False, 1, True])
             self._sensors.update({sensors.DustSensor.__name__: sensor})
             sensor.select_for_dust_logging()
         return sensor
@@ -267,7 +269,7 @@ class ComponentRegistry():
             # if self._settings.get(CGY302_ENABLED):
             #     sensor = self.create_component_instance(sensors.GY302, [self, self._settings])
             # else:  # create a default instance that is disabled
-            sensor = self._create_component_instance(sensors.LightSensor, [self._settings, True])
+            sensor = self._create_component_instance(sensors.LightSensor, [False, 1, True])
             self._sensors.update({sensors.LightSensor.__name__: sensor})
             sensor.select_for_light_logging()
         return sensor
