@@ -319,7 +319,7 @@ class ComponentRegistry():
 
             if self._unload_in_progress:
                 import time
-                time.sleep(100)
+                #time.sleep(100) TODO: do here something meaningful...
             self._logger.info("ComponentRegistry: Starting %s", name)
             if issubclass(class_ref, Component):
                 component = class_ref(*args)
