@@ -70,7 +70,6 @@ class SensorImpl():
         self._values_capacity = max_measure_points
         self._values = []
 
-
         # only check at init - options will reset this flag, with the exception of non-resettable sensors
         self._logging_enabled = logging_enabled
 
@@ -115,10 +114,10 @@ class TempSensor(SensorComponent):
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
         """ is_disabled is for the case, when no sensor can be instantiated """
         super().__init__(is_disabled)
-        MIN_VALUE = -30
-        MAX_VALUE = 60
-        LOG_TYPE_NAME = "temperature"
-        self._temp_impl = SensorImpl(logging_enabled, LOG_TYPE_NAME, MIN_VALUE, MAX_VALUE,
+        min_value = -30
+        max_value = 60
+        log_type_name = "temperature"
+        self._temp_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                      max_measure_points, default_value=22)
 
     def select_for_temp_logging(self):
@@ -139,10 +138,10 @@ class BarometricSensor(SensorComponent):
 
     def __init__(self, logging_enabled: bool, max_measure_points=5, is_disabled=False):
         super().__init__(is_disabled)
-        MIN_VALUE = 800
-        MAX_VALUE = 2000
-        LOG_TYPE_NAME = "pressure"
-        self._pres_impl = SensorImpl(logging_enabled, LOG_TYPE_NAME, MIN_VALUE, MAX_VALUE,
+        min_value = 800
+        max_value = 2000
+        log_type_name = "pressure"
+        self._pres_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                      max_measure_points, default_value=1000)
         self._disabled = is_disabled
 
@@ -164,10 +163,10 @@ class HumiditySensor(SensorComponent):
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
         super().__init__(is_disabled)
-        MIN_VALUE = 0
-        MAX_VALUE = 100
-        LOG_TYPE_NAME = "humidity"
-        self._hum_impl = SensorImpl(logging_enabled, LOG_TYPE_NAME, MIN_VALUE, MAX_VALUE,
+        min_value = 0
+        max_value = 100
+        log_type_name = "humidity"
+        self._hum_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                     max_measure_points, default_value=50)
         self._disabled = is_disabled
 
@@ -189,10 +188,10 @@ class TvocSensor(SensorComponent):
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
         super().__init__(is_disabled)
-        MIN_VALUE = 0
-        MAX_VALUE = 500
-        LOG_TYPE_NAME = "TVOC"
-        self._tvoc_impl = SensorImpl(logging_enabled, LOG_TYPE_NAME, MIN_VALUE, MAX_VALUE, max_measure_points)
+        min_value = 0
+        max_value = 500
+        log_type_name = "TVOC"
+        self._tvoc_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value, max_measure_points)
         self._disabled = is_disabled
 
     def select_for_tvoc_logging(self):
@@ -213,10 +212,10 @@ class CO2Sensor(SensorComponent):
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
         super().__init__(is_disabled)
-        MIN_VALUE = 400
-        MAX_VALUE = 5000
-        LOG_TYPE_NAME = "CO2"
-        self._co2_impl = SensorImpl(logging_enabled, LOG_TYPE_NAME, MIN_VALUE, MAX_VALUE,
+        min_value = 400
+        max_value = 5000
+        log_type_name = "CO2"
+        self._co2_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                     max_measure_points, default_value=450)
         self._disabled = is_disabled
 
@@ -238,10 +237,10 @@ class DustSensor(SensorComponent):
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
         super().__init__()
-        MIN_VALUE = 0
-        MAX_VALUE = 1000
-        LOG_TYPE_NAME = "dust"
-        self._dust_impl = SensorImpl(logging_enabled, LOG_TYPE_NAME, MIN_VALUE, MAX_VALUE,
+        min_value = 0
+        max_value = 1000
+        log_type_name = "dust"
+        self._dust_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                      max_measure_points, default_value=100)
         self._disabled = is_disabled
 
@@ -263,10 +262,10 @@ class LightSensor(SensorComponent):
 
     def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False):
         super().__init__(is_disabled)
-        MIN_VALUE = 0  # dark
-        MAX_VALUE = 100000 # direct sunlight
-        LOG_TYPE_NAME = "light"
-        self._dust_impl = SensorImpl(logging_enabled, LOG_TYPE_NAME, MIN_VALUE, MAX_VALUE,
+        min_value = 0  # dark
+        max_value = 100000 # direct sunlight
+        log_type_name = "light"
+        self._dust_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                     max_measure_points, default_value=10000)
         self._disabled = is_disabled
 

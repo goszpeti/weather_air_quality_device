@@ -58,7 +58,7 @@ class SensorDetailView(QtWidgets.QWidget):
                     if (current_time - timestamp) > timedelta(minutes=self.TIME_WINDOW_MINUTES):
                         break
                     self._time_value_pairs.append((timestamp, float(time_value_pair[1].strip())))
-        except:
+        except Exception:
             # delete when file is corrupted
             os.remove(log_file)
 
@@ -99,9 +99,10 @@ class SensorDetailView(QtWidgets.QWidget):
         chart.setBackgroundBrush(brush)
 
         # calculate delta of last hour
-        last_hour_time_value_pairs = list(filter(lambda time_value_pair:
-                                                 (current_time - time_value_pair[0]) < timedelta(minutes=60), self._time_value_pairs))
-        last_hour_values: List[float] = [time_value_pair[1] for time_value_pair in last_hour_time_value_pairs]
+        last_hour_time_val_pairs = list(filter(lambda time_value_pair:
+                                                 (current_time - time_value_pair[0]) < timedelta(minutes=60),
+                                                  self._time_value_pairs))
+        last_hour_values: List[float] = [time_value_pair[1] for time_value_pair in last_hour_time_val_pairs]
 
         delta_label = QtWidgets.QLabel(self)
         if last_hour_values:
@@ -144,4 +145,4 @@ class SensorDetailView(QtWidgets.QWidget):
         msg.setText("There are not enough logged values yet!")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.setIcon(QtWidgets.QMessageBox.Information)
-        reply = msg.exec_()
+        msg.exec_()

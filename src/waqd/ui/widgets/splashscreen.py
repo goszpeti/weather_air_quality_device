@@ -20,7 +20,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 try:
     from PyQt5.sip import voidptr # Windows x64
-except:
+except ImportError:
     from sip import voidptr # Raspberry
 from pyqtspinner.spinner import WaitingSpinner
 

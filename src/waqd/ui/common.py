@@ -30,7 +30,7 @@ from typing import Optional, Union
 
 from PyQt5 import QtCore, QtGui, QtSvg, QtWidgets
 
-import waqd.config as config
+from waqd import config
 from waqd.assets import get_asset_file
 from waqd.config import PROG_NAME
 from waqd.settings import LANG, LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN, Settings
@@ -266,22 +266,22 @@ def format_text(html_text: str, value: Union[str, int, float, None],
         tags[0].setAttribute("style", "color:" + color)
 
     # type scpecific handling
-    if disp_type == "float":
+    if disp_type == "float" and isinstance(value, float):
         text = "{:0.1f}".format(value)
-        text = text.split(".")
+        split_text = text.split(".")
         tags = html_dom.getElementsByTagName("span")
         if len(tags) >= 2:
-            tags[tag_id].firstChild.data = str(text[tag_id] + ".")
-            tags[tag_id+1].firstChild.data = str(int(text[tag_id+1]))
+            tags[tag_id].firstChild.data = str(split_text[tag_id] + ".")
+            tags[tag_id+1].firstChild.data = str(int(split_text[tag_id+1]))
             return html_dom.toxml()
 
-    if disp_type == "int":
+    if disp_type == "int" and isinstance(value, int):
         text = str(int(value))
         if tags:
             tags[tag_id].firstChild.data = text
             return html_dom.toxml()
 
-    if disp_type == "string":
+    if disp_type == "string" and isinstance(value, str):
         if tags:
             for tag in tags:
                 if tag.firstChild:

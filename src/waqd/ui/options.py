@@ -135,13 +135,13 @@ class OptionMainUi(QtWidgets.QDialog):
 
     def display_options(self):
         """ Set all elements to the display the current values and set up sliders """
-        settings=self._settings
+        settings = self._settings
 
         # read events
-        events_json_path=config.user_config_dir / "events.json"
+        events_json_path = config.user_config_dir / "events.json"
         if events_json_path.exists():
             with open(events_json_path, "r") as fp:
-                events_text=fp.read()
+                events_text = fp.read()
                 self._ui.event_config_text_browser.setText(events_text)
         self._ui.night_mode_begin_slider.setMaximum(24)
         self._ui.night_mode_begin_slider.setTickInterval(1)
@@ -176,9 +176,9 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.font_cbox.setCurrentText(settings.get(FONT_NAME))
         # try to get index - font-scaling can be set to anything
         try:
-            scaling_index=self.FONT_SCALING_VALUES.index(self._previous_scaling)
+            scaling_index = self.FONT_SCALING_VALUES.index(self._previous_scaling)
         except Exception:  # normal
-            scaling_index=1
+            scaling_index = 1
         self._ui.font_scaling_cbox.setCurrentIndex(scaling_index)
 
         # hw feature toggles
@@ -193,15 +193,15 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.dht22_pin_cbox.addItems(self.DHT_PIN_VALUES)
         # 0 is not in the list and means it is disabled, so it maps to 'Disabled'
         if str(settings.get(DHT_22_PIN)) not in self.DHT_PIN_VALUES:
-            selected_pin=0
+            selected_pin = 0
         else:
-            selected_pin=self.DHT_PIN_VALUES.index(str(settings.get(DHT_22_PIN)))
+            selected_pin = self.DHT_PIN_VALUES.index(str(settings.get(DHT_22_PIN)))
 
         self._ui.dht22_pin_cbox.setCurrentIndex(selected_pin)
 
         # set up display type combo box
-        display_dict={DISP_TYPE_RPI: "Org. RPi 7\" display",
-                      DISP_TYPE_WAVESHARE_5_LCD: "Waveshare touch LCD"}
+        display_dict = {DISP_TYPE_RPI: "Org. RPi 7\" display",
+                        DISP_TYPE_WAVESHARE_5_LCD: "Waveshare touch LCD"}
         self._ui.display_type_cbox.setDisabled(True)
         self._ui.display_type_cbox.addItems(display_dict.values())
 
@@ -225,15 +225,14 @@ class OptionMainUi(QtWidgets.QDialog):
 
         # set info labels
         self._ui.system_value.setText(self._runtime_system.platform)
-        [ipv4, _]=self._runtime_system.get_ip()
+        [ipv4, _] = self._runtime_system.get_ip()
         self._ui.ip_address_value.setText(ipv4)
 
         self._ui.location_combo_box.setCurrentText(settings.get(LOCATION))
         self._ui.lang_cbox.setCurrentText(settings.get(LANG))
-        
+
         # set to normal brightness - again, in case it was modified
         self._comps.display.set_brightness(self._settings.get(BRIGHTNESS))
-
 
     def close_ui(self):
         """
@@ -297,7 +296,7 @@ class OptionMainUi(QtWidgets.QDialog):
         settings.set(FORECAST_BG, self._ui.forecast_background_cbox.currentText())
         settings.set(FONT_NAME, self._ui.font_cbox.currentText())
 
-        if self._ui.dht22_pin_cbox.currentText() == self.DHT_PIN_VALUES[0]: # "Disabled"
+        if self._ui.dht22_pin_cbox.currentText() == self.DHT_PIN_VALUES[0]:  # "Disabled"
             settings.set(DHT_22_PIN, DHT_22_DISABLED)
         else:
             settings.set(DHT_22_PIN, int(self._ui.dht22_pin_cbox.currentText()))
@@ -306,7 +305,6 @@ class OptionMainUi(QtWidgets.QDialog):
         settings.set(BMP_280_ENABLED, self._ui.bmp280_enable_toggle.isChecked())
         settings.set(MH_Z19_ENABLED, self._ui.mh_z19_enable_toggle.isChecked())
         settings.set(CCS811_ENABLED, self._ui.ccs811_enable_toggle.isChecked())
-
 
         font_scaling = self.FONT_SCALING_VALUES[self._ui.font_scaling_cbox.currentIndex()]
         self._settings.set(FONT_SCALING, font_scaling)
@@ -324,7 +322,7 @@ class OptionMainUi(QtWidgets.QDialog):
         self.display_options()  # redraw values
 
     def _update_font(self):
-        font=self._ui.font_cbox.currentFont()
+        font = self._ui.font_cbox.currentFont()
         self.setFont(font)
         config.qt_app.setFont(font)
 
@@ -335,7 +333,6 @@ class OptionMainUi(QtWidgets.QDialog):
     def _update_preview_forecast(self):
         bgr_path = config.assets_path / "gui_bgrs" / self._ui.forecast_background_cbox.currentText()
         self._ui.preview_label.setPixmap(QtGui.QPixmap(str(bgr_path)))
-
 
     def _update_night_mode_slider(self):
         """ Callback to update value shown on night mode time silder. """
@@ -353,7 +350,7 @@ class OptionMainUi(QtWidgets.QDialog):
 
     def _update_motion_sensor_enabled(self):
         """ Callback to disable the timeout checkboxes, if motion sensor is checked. """
-        value=bool(
+        value = bool(
             self._ui.motion_sensor_enable_toggle.isChecked())
         self._ui.day_standby_timeout_cbox.setEnabled(value)
         self._ui.night_standby_timeout_cbox.setEnabled(value)
@@ -371,7 +368,7 @@ class OptionMainUi(QtWidgets.QDialog):
     def show_updater_ui(self):
         if self._runtime_system.is_target_system:
             # this is the default updater on RaspberryPi OS
-            os.system("sudo apt update") # TODO this takes a while, but is necessary
+            os.system("sudo apt update")  # TODO this takes a while, but is necessary
             os.system("pi-gpk-update-viewer&")
 
     def _cyclic_update(self):

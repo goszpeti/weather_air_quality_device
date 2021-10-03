@@ -48,9 +48,10 @@ class RuntimeSystem():
         self._platform = platform.system()
         self._determine_if_target_system()
 
+
     def _determine_if_target_system(self):
         # late import to be able to mock this
-        from adafruit_platformdetect import Detector
+        from adafruit_platformdetect import Detector  # pylint: disable=import-outside-toplevel
         detector = Detector()
         # late init of logger, so on non target hosts the file won't be used already
         self._is_target_system = detector.board.any_raspberry_pi
@@ -76,7 +77,7 @@ class RuntimeSystem():
         if self._is_target_system:
             os.system("shutdown -r now")
 
-    def get_ip(self) -> Tuple[str, str]: # "ipv4", "ipv6"
+    def get_ip(self) -> Tuple[str, str]:  # "ipv4", "ipv6"
         """ Gets IP 4 and 6 addresses on target system """
         ipv4 = ""
         ipv6 = ""
@@ -95,7 +96,7 @@ class RuntimeSystem():
         if ipv4 in ["localhost", "127.0.0.1"]:  # we want the LAN address
             ipv4 = ""
         return (ipv4, ipv6)
-    
+
     def check_internet_connection(self):
         """
         RPi fails often when WLAN conncetion is unstable.
@@ -124,16 +125,16 @@ class RuntimeSystem():
 
     def wait_for_network(self) -> bool:
         [ipv4, ipv6] = self.get_ip()
-        MAX_ERROR = 5
+        max_error = 5
         i = 0
 
-        while (not ipv4 and not ipv6) and i < MAX_ERROR + 1:
+        while (not ipv4 and not ipv6) and i < max_error + 1:
             Logger().info("Waiting for network...")
             sleep(1)
             [ipv4, ipv6] = self.get_ip()
             i += 1
 
-        if i == MAX_ERROR:
+        if i == max_error:
             return False
 
         return True

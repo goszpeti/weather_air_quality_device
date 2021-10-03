@@ -38,12 +38,12 @@ class Sound(Component):
         self._disabled = not enabled
         self._sound_thread = Thread()
         self._comps = components
+
     def play(self, audio_file: PathLike):
         if self._disabled:
             return
         self._sound_thread = Thread(
-            name="Sound", target=self._call_vlc, args=(audio_file,)
-        )
+            name="Sound", target=self._call_vlc, args=(audio_file,))
         self._sound_thread.start()
 
     def _call_vlc(self, audio_file: PathLike):
@@ -54,7 +54,7 @@ class Sound(Component):
             import vlc  # pylint: disable=import-outside-toplevel
             player: vlc.MediaPlayer = vlc.MediaPlayer(str(audio_file))
             vlc.libvlc_audio_set_volume(player, 140) # make it louder for passive loudspeake
-            if self._comps.energy_saver.night_mode_active: # lower volume at night
+            if self._comps and self._comps.energy_saver.night_mode_active:  # lower volume at night
                 player.audio_set_volume(50)
             with self.lock:  # wait for previous sound to end
                 player.play()

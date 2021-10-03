@@ -20,7 +20,6 @@
 import abc
 
 from typing import Callable
-from threading import Thread
 from PyQt5 import QtCore
 
 from waqd.base.logger import Logger

@@ -169,6 +169,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._option_ui = options.OptionMainUi(self, self._comp_ctrl, self._settings)
 
     def show_info_screen(self):
+        """ Shows the user help overlay (opaque)."""
         if not self._ui:
             return
         self._ui.overlay_background.setPixmap(QtGui.QPixmap(str(get_asset_file("gui_base", "info_overlay"))))
@@ -185,6 +186,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._ui.ol_title_label.show()
 
     def hide_info_screen(self):
+        """ Hides the user infro screen."""
         if not self._ui:
             return
         self._ui.overlay_background.hide()

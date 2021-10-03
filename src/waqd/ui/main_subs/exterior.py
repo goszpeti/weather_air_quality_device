@@ -98,8 +98,6 @@ class Exterior(sub_ui.SubUi):
             else:
                 bg_name = "bg_night_" + online_weather_category
 
-            a = str(get_asset_file("weather_bgrs", bg_name))
-            self._logger.debug(a)
             self._ui.exterior_background.set_image(str(get_asset_file("weather_bgrs", bg_name)))
 
             # set todays forecast

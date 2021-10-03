@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 from file_read_backwards import FileReadBackwards
-from waqd import config  # can change after import
+from waqd import config
 
 # helper functions for logs
 def delete_log_file(log_file_path: Path) -> bool:
@@ -38,7 +38,7 @@ def delete_log_file(log_file_path: Path) -> bool:
 
 
 def delete_large_logfile(log_file_path: Path, size_mbytes: float):
-    """ 
+    """
     Tries to delete file if older then  arg <time>. 
     Returns True, if deletion succeeded.
     """
@@ -48,6 +48,7 @@ def delete_large_logfile(log_file_path: Path, size_mbytes: float):
         if file_size_mbytes > size_mbytes:
             return delete_log_file(log_file_path)
 
+
 class Logger(logging.Logger):
     """
     Singleton instance for the global dual logger (file/console)
@@ -56,7 +57,7 @@ class Logger(logging.Logger):
 
     _instance: Optional[logging.Logger] = None
 
-    def __new__(cls, name:str=config.PROG_NAME, level:int=config.DEBUG_LEVEL, output_path: Path = config.user_config_dir):
+    def __new__(cls, output_path: Path = config.user_config_dir):
         if cls._instance is None:
             cls._instance = cls._init_logger(output_path)
         return cls._instance
@@ -67,7 +68,6 @@ class Logger(logging.Logger):
     @classmethod
     def _init_logger(cls, output_path):
         """ Set up format and a debug level and register loggers. """
-        from waqd import config  # can change after import
 
         # restrict root logger
         root = logging.getLogger()
@@ -122,7 +122,7 @@ class SensorLogger(logging.Logger):
         try:
             filename = Path("NonExistant")
             if isinstance(logger.handlers[0], logging.FileHandler):
-                filename = Path(logger.handlers[0].baseFilename) # can be any type of handler
+                filename = Path(logger.handlers[0].baseFilename)  # can be any type of handler
             return filename
         except Exception as e:
             print(f"WARNING: Can't find file handler for {sensor_name} logger.")
@@ -153,13 +153,10 @@ class SensorLogger(logging.Logger):
             # try to delete when file is corrupted
             delete_log_file(log_file_path)
         return time_value_pairs
-    
 
     @staticmethod
     def _init_logger(sensor_name: str, output_path: Path) -> logging.Logger:
         """ Logger used by sensors to store values to display in detail view """
-        from waqd import config  # can change after import
-
         logger = logging.getLogger(sensor_name)
 
         # return already initalized logger when calling multiple times

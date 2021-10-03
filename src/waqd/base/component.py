@@ -68,6 +68,7 @@ class Component:
         return self._disabled
 
     def stop(self):
+        """ Stop this component. """
         pass
 
 
@@ -98,7 +99,7 @@ class CyclicComponent(Component):
         return False
 
     def stop(self):
-        """ Stop this module, by sending a stop request. """
+        """ Stop this component, by sending a stop request. """
         if self._update_thread:
             self._ticker_event.set()
             if self._update_thread.is_alive():
@@ -130,6 +131,6 @@ class CyclicComponent(Component):
                 self._ticker_event.clear()
                 return
             if self._error_num == self.MAX_ERROR:
-                self._is_disabled = True
+                self._disabled = True
                 return
             update_func()

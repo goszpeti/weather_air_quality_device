@@ -50,7 +50,7 @@ class WeatherDetailView(QtWidgets.QWidget):
         # create series from weather points
         series = QtChart.QLineSeries(self)
         self._weather_points = weather_points
-        
+
         # sort weather points dataset?
 
         for point in weather_points:
@@ -84,7 +84,6 @@ class WeatherDetailView(QtWidgets.QWidget):
         series.setPointLabelsFormat("@yPoint")
         series.setPointLabelsClipping(True)
 
-
         # draw a dashed line at the first tick of y axis
         pen = QtGui.QPen(Qt.DashLine)
         pen.setColor(Qt.white)
@@ -92,7 +91,7 @@ class WeatherDetailView(QtWidgets.QWidget):
         dashed_line_series = QtChart.QLineSeries(self)  # QSplineSeries()
         dashed_line_series.setPen(pen)
         self.first_tick = round((max_temp - round(begin_temp)) / (5 - 1) +
-                           round(begin_temp), 1)  # chart.axisY().tickCount()
+                                round(begin_temp), 1)  # chart.axisY().tickCount()
 
         dashed_line_series.append(QtCore.QPointF(self.begin_hour, self.first_tick))
         dashed_line_series.append(QtCore.QPointF(self.end_hour, self.first_tick))
@@ -151,7 +150,7 @@ class WeatherDetailView(QtWidgets.QWidget):
         self._layout = QtWidgets.QVBoxLayout(self)
         self._layout.setGeometry(geo)
         self._layout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
-        
+
         self._layout.addWidget(chart_view)
         self._layout.addWidget(ok_button)
 
@@ -176,7 +175,7 @@ class WeatherDetailView(QtWidgets.QWidget):
                 icon_label.setGeometry(int(abs_point_pos.x()), int(abs_point_pos.y() - icon_height/2),
                                        icon_width, icon_height)
                 common.draw_svg(icon_label, point.icon, shadow=False, scale=scale)
-                icon_label.setStyleSheet("QLabel{background-color: %s}" % self.AREA_COLOR)
+                icon_label.setStyleSheet(f"QLabel{{background-color: {self.AREA_COLOR}}}")
                 icon_label.show()
 
         return super().eventFilter(source, event)

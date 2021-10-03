@@ -36,7 +36,6 @@ from typing import Dict, List, Optional, Tuple, Any
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
 from waqd.base.system import RuntimeSystem
-from waqd.settings import LOCATION, OW_API_KEY, OW_CITY_IDS
 
 
 def is_daytime(sunrise, sunset, date_time=None):
@@ -46,6 +45,7 @@ def is_daytime(sunrise, sunset, date_time=None):
     if date_time is None:
         date_time = datetime.now()
     return sunrise < date_time.time() < sunset
+
 
 @dataclass
 class Weather():
@@ -72,7 +72,7 @@ class Weather():
         if self.main:  # only set fetch_time if it is non-empty initiallized
             self.fetch_time = datetime.now()
 
-    def is_daytime(self, sunrise=None, sunset=None):
+    def is_daytime(self):
         """
         Helper function to determine if specified time is day or night
         """
@@ -108,6 +108,7 @@ class BeaufortScale(Enum):
     VIOLENT_STORM = 32.6
     HURRICANE = 32.7
 
+
 class WeatherQuality(Enum):
     """
     Describes goodness of weather conditions.
@@ -128,6 +129,7 @@ class WeatherQuality(Enum):
     SMOKE = 12
     CLOUDS = 13
     CLEAR = 14
+
 
 class OpenWeatherMap(Component):
     """
@@ -235,14 +237,14 @@ class OpenWeatherMap(Component):
                 weather_info.get("main", ""),
                 weather_info.get("description", ""),
                 entry_date_time,
-                self._get_condition_icon(weather_info.get("id"), is_day), 
+                self._get_condition_icon(weather_info.get("id"), is_day),
                 measurement_point.get("wind").get("speed"),
                 measurement_point.get("wind").get("deg"),
                 current_weather.sunrise, current_weather.sunset,
-                0,0, 0, # currently unused
+                0, 0, 0,  # currently unused
                 measurement_point.get("clouds").get("all"),
                 measurement_point.get("main").get("temp")
-                )
+            )
 
             if is_day:
                 daytime_forecast_points[day_idx].append(weather_point)
@@ -258,7 +260,7 @@ class OpenWeatherMap(Component):
             else:
                 if day_idx == 0:
                     if entry_date_time.time() > self._current_weather.sunset:
-                         if current_datetime.time() < self._current_weather.sunrise:
+                        if current_datetime.time() < self._current_weather.sunrise:
                             continue  # ignore for now
                     nighttime_forecast_points[0].append(weather_point)
                 else:
@@ -299,7 +301,7 @@ class OpenWeatherMap(Component):
                     overall_weather.icon = self._get_condition_icon("rain-windy", True)
                 if overall_weather.main == "Snow":
                     overall_weather.icon = self._get_condition_icon("snow-windy", True)
-            
+
             # init DailyWeather
             daily_weather = DailyWeather(
                 overall_weather.main,

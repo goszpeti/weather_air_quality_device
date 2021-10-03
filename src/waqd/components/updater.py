@@ -141,9 +141,9 @@ class OnlineUpdater(CyclicComponent):
         self._logger.info("Updater: Downloading new release")
         [update_file, _] = urllib.request.urlretrieve(
             self._repository.get_archive_link("tarball", tag_name))
-        tar = tarfile.open(str(update_file))
-        os.makedirs(self._new_version_path, exist_ok=True)
-        tar.extractall(path=self._new_version_path)
+        with tarfile.open(str(update_file)) as tar:
+            os.makedirs(self._new_version_path, exist_ok=True)
+            tar.extractall(path=self._new_version_path)
 
         # the repo will be in a randomly named dir, so we must scan for it
         update_dir = [f.path for f in os.scandir(self._new_version_path) if f.is_dir()]

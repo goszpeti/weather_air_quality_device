@@ -142,8 +142,9 @@ disable=print-statement,
         comprehension-escape,
         broad-except,
         wrong-import-position,
-        missing-module-docstring,
-        too-few-public-methods
+        missing-module-docstring, # leads often to inneficient docs
+        too-few-public-methods,
+        logging-fstring-interpolation # use f-strings at logging
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -252,7 +253,9 @@ good-names=i,
            ex,
            Run,
            ui,
-           fp,
+           fp, # file pointer
+           fd, # file descriptor
+           e, # for error
            _
 
 # Include a hint for the correct naming format with invalid-name.
@@ -343,6 +346,9 @@ single-line-if-stmt=no
 # function parameter format.
 logging-modules=logging
 
+# Format style used to check logging format string. `old` means using %
+# formatting, `new` is for `{}` formatting,and `fstr` is for f-strings.
+logging-format-style=old
 
 [MISCELLANEOUS]
 

@@ -21,20 +21,24 @@
 
 import threading
 # this allows to use forward declarations to avoid circular imports
-from typing import Dict, List, Optional, Type, Union, TypeVar, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional, Type, TypeVar, Union
 
-from waqd.base.logger import Logger
 from waqd.base.component import Component, CyclicComponent
-from waqd.settings import (AUTO_UPDATER_ENABLED, BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS,
-                           CCS811_ENABLED, DHT_22_DISABLED, DHT_22_PIN, LANG,
-                           DISPLAY_TYPE, LOCATION, MH_Z19_ENABLED, MOTION_SENSOR_ENABLED,
-                           MOTION_SENSOR_PIN, OW_CITY_IDS, OW_API_KEY, SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL,
+from waqd.base.logger import Logger
+from waqd.settings import (AUTO_UPDATER_ENABLED, BME_280_ENABLED,
+                           BMP_280_ENABLED, BRIGHTNESS, CCS811_ENABLED,
+                           DHT_22_DISABLED, DHT_22_PIN, DISPLAY_TYPE, LANG,
+                           LOCATION, MH_Z19_ENABLED, MOTION_SENSOR_ENABLED,
+                           MOTION_SENSOR_PIN, OW_API_KEY, OW_CITY_IDS,
+                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, Settings)
 
 if TYPE_CHECKING:
-    from waqd.components import (Display, ESaver, EventHandler, TextToSpeach, Sound, OpenWeatherMap, SR501,
-                                 OnlineUpdater, TempSensor, TvocSensor, BarometricSensor, HumiditySensor,
-                                 CO2Sensor, DustSensor, LightSensor, Prologue433, SensorComponent)
+    from waqd.components import (SR501, BarometricSensor, CO2Sensor, Display,
+                                 DustSensor, ESaver, EventHandler,
+                                 HumiditySensor, LightSensor, OnlineUpdater,
+                                 OpenWeatherMap, Prologue433, SensorComponent,
+                                 Sound, TempSensor, TextToSpeach, TvocSensor)
 
 
 class ComponentRegistry():
@@ -119,7 +123,8 @@ class ComponentRegistry():
         """ Access for Display singleton """
         from waqd.components import Display
         return self._create_component_instance(Display, [self._settings.get_string(DISPLAY_TYPE), self._settings.get_int(BRIGHTNESS),
-                            self._settings.get_int(WAVESHARE_DISP_BRIGHTNESS_PIN)])
+                                                         self._settings.get_int(WAVESHARE_DISP_BRIGHTNESS_PIN)])
+
     @property
     def event_handler(self) -> "EventHandler":
         """ Access for Greeter singleton """
@@ -157,12 +162,12 @@ class ComponentRegistry():
         """ Access for OnlineUpdater singleton """
         from waqd.components.updater import OnlineUpdater
         return self._create_component_instance(OnlineUpdater, [self, self._settings.get(AUTO_UPDATER_ENABLED),
-                             self._settings.get(UPDATER_USER_BETA_CHANNEL)])
+                                                               self._settings.get(UPDATER_USER_BETA_CHANNEL)])
 
     @property
     def temp_sensor(self) -> "TempSensor":
         """ Access for temperature sensor  """
-        import waqd.components.sensors as sensors
+        from waqd.components import sensors
         sensor = self._get_sensor(sensors.TempSensor)
         if not sensor:
             dht22_pin = self._settings.get(DHT_22_PIN)
@@ -182,7 +187,7 @@ class ComponentRegistry():
     @property
     def humidity_sensor(self) -> "HumiditySensor":
         """ Access for humidity sensor """
-        import waqd.components.sensors as sensors
+        from waqd.components import sensors
         sensor = self._get_sensor(sensors.HumiditySensor)
         if not sensor:
             # DHT-22 is prioritized, if both are available
@@ -201,7 +206,7 @@ class ComponentRegistry():
     @property
     def pressure_sensor(self) -> "BarometricSensor":
         """ Access for pressure sensor """
-        import waqd.components.sensors as sensors
+        from waqd.components import sensors
         sensor = self._get_sensor(sensors.BarometricSensor)
         if not sensor:
             if self._settings.get(BME_280_ENABLED):
@@ -218,7 +223,7 @@ class ComponentRegistry():
     @property
     def co2_sensor(self) -> "CO2Sensor":
         """ Access for air_quality_sensor """
-        import waqd.components.sensors as sensors
+        from waqd.components import sensors
         sensor = self._get_sensor(sensors.CO2Sensor)
         if not sensor:
             # MH_Z19 is prioritized, if both are available
@@ -235,7 +240,7 @@ class ComponentRegistry():
     @property
     def tvoc_sensor(self) -> "TvocSensor":
         """ Access for air_quality_sensor """
-        import waqd.components.sensors as sensors
+        from waqd.components import sensors
         sensor = self._get_sensor(sensors.TvocSensor)
         if not sensor:
             if self._settings.get(CCS811_ENABLED):
@@ -249,7 +254,7 @@ class ComponentRegistry():
     @property
     def dust_sensor(self) -> "DustSensor":
         """ Access for dust sensor """
-        import waqd.components.sensors as sensors
+        from waqd.components import sensors
         sensor = self._get_sensor(sensors.DustSensor)
         if not sensor:
             # if self._settings.get(GP2Y1010AU0F_ENABLED):
@@ -263,7 +268,7 @@ class ComponentRegistry():
     @property
     def light_sensor(self) -> "LightSensor":
         """ Access for light sensor """
-        import waqd.components.sensors as sensors
+        from waqd.components import sensors
         sensor = self._get_sensor(sensors.LightSensor)
         if not sensor:
             # if self._settings.get(CGY302_ENABLED):
@@ -277,7 +282,7 @@ class ComponentRegistry():
     @property
     def motion_detection_sensor(self) -> "SR501":
         """ Access for motion_detection_sensor singleton """
-        import waqd.components.sensors as sensors
+        from waqd.components import sensors
         internal_name = "MotionSensor"
         sensor = self._get_sensor(sensors.SR501)
         if not sensor:
@@ -295,7 +300,8 @@ class ComponentRegistry():
         from waqd.components.sensors import Prologue433
         return self._create_component_instance(Prologue433, [self._settings])
 
-    S = TypeVar('S', bound="SensorComponent") # can't import SensorComponent directly
+    S = TypeVar('S', bound="SensorComponent")  # can't import SensorComponent directly
+
     def _get_sensor(self, class_ref: Type[S]) -> Optional[S]:
         name = class_ref.__name__
         sensor = self._sensors.get(name)
@@ -305,6 +311,7 @@ class ComponentRegistry():
         return sensor
 
     T = TypeVar('T', bound=Component)
+
     def _create_component_instance(self, class_ref: Type[T], args: List = [], name_ref=None) -> T:
         """ Generic method for component creation and access. """
         name = class_ref.__name__
@@ -318,8 +325,8 @@ class ComponentRegistry():
                 return component
 
             if self._unload_in_progress:
-                import time
-                #time.sleep(100) TODO: do here something meaningful...
+                pass
+                # time.sleep(100) TODO: do here something meaningful...
             self._logger.info("ComponentRegistry: Starting %s", name)
             if issubclass(class_ref, Component):
                 component = class_ref(*args)
