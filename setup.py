@@ -26,7 +26,7 @@ REQUIRED = [
     "JsonSchema==3.2.0",  # MIT License - for events json schema validation
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
     "APScheduler==3.7.0",  # MIT License - Scheduler for Events function
-    "PyGithub==1.54.1",  # LGPL - Access to GitHub in AutoUpdater
+    "PyGithub==1.55",  # LGPL - Access to GitHub in AutoUpdater
     "File-Read-Backwards==2.0.0",  # MIT License - for performance in DetailView
     # Sound
     "gTTS==2.2.2",  # MIT License -Google TTS for speech
