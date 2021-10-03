@@ -143,5 +143,5 @@ class ComponentController():
                 if self._components.auto_updater == self._components.get(comp_name):
                     continue
             self._components.stop_component(comp_name, reload_intended)
-        Logger().info("ComponentRegistry: All components unloaded. ")
+        Logger().info("ComponentRegistry: All components unloaded.")
         self._components.set_unload_finished()

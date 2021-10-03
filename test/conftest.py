@@ -68,10 +68,10 @@ def mock_run_on_target(mocker):
     from target_pkgs.adafruit_platformdetect import Detector
     mocker.patch('adafruit_platformdetect.Detector', Detector)
     # need to patch RPi.GPIO - only installs on Linux 
-    if platform.system() == "Linux" and not platform.machine() == 'armv7l': # don't mock on RPi
-        mock_rpi_gpio = mocker.Mock()
-        from target_pkgs.RPi import GPIO
-        mocker.patch("RPi.GPIO", GPIO)
+    # if platform.system() == "Linux" and not platform.machine() == 'armv7l': # don't mock on RPi
+    #     mock_rpi_gpio = mocker.Mock()
+    #     from target_pkgs.RPi import GPIO
+    #     mocker.patch("RPi.GPIO", GPIO)
     mock_plaftorm = mocker.Mock()
     mock_plaftorm.return_value = 'Linux'
     mocker.patch('platform.system', mock_plaftorm)

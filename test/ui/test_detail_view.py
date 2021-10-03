@@ -17,7 +17,7 @@ def testSensorDetailView(base_fixture, qtbot):
         widget = SensorDetailView(log_file, "Celsius", parent)
     qtbot.addWidget(widget)
     widget.show()
-    qtbot.waitForWindowShown(widget)
+    qtbot.waitExposed(widget)
 
     # while True:
     #     QtWidgets.QApplication.processEvents()
@@ -44,7 +44,7 @@ def testWeatherDetailView(base_fixture, qtbot):
     widget = WeatherDetailView(daytime_forecast_points[0], settings, parent)
     qtbot.addWidget(widget)
     widget.show()
-    qtbot.waitForWindowShown(widget)
+    qtbot.waitExposed(widget)
 
     # while True:
     #     QtWidgets.QApplication.processEvents()
