@@ -1,6 +1,8 @@
 import os
 import platform
 
+from test.conftest import mock_run_on_target, mock_run_on_non_target
+
 def testInitOnNonTarget(base_fixture, mocker):
     mock_run_on_non_target(mocker)
 
