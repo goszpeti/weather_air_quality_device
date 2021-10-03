@@ -74,8 +74,7 @@ def start_remote_debug():
         port = 3003
         debugpy.listen(("0.0.0.0", port))
         if config.DEBUG_LEVEL > 2:
-            logger = Logger()
-            logger.info("Waiting to attach on port %s", port)
+            print("Waiting to attach on port %s", port)
             debugpy.wait_for_client()  # blocks execution until client is attached
 
 
@@ -171,10 +170,10 @@ def main(settings_path: Optional[Path] = None):
     
     handle_cmd_args(settings) # cmd args set Debug level for logger
 
-    Logger(output_path=config.user_config_dir) # singleton, no assigment needed
-
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
+
+    Logger(output_path=config.user_config_dir)  # singleton, no assigment needed
 
     comp_ctrl = ComponentController(settings)
     config.comp_ctrl = comp_ctrl

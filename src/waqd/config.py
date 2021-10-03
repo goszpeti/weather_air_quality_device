@@ -49,8 +49,6 @@ user_config_dir = Path().home() / ".waqd"
 # singleton with access to all backend components
 comp_ctrl: Optional["ComponentController"] = None
 
-# TODO re-add settings?
-
 # application instance singleton
 qt_app: Optional[QtWidgets.QApplication] = None
 

@@ -27,6 +27,26 @@ from typing import List, Optional, Tuple
 from file_read_backwards import FileReadBackwards
 from waqd import config  # can change after import
 
+# helper functions for logs
+def delete_log_file(log_file_path: Path) -> bool:
+    try:
+        os.remove(log_file_path)
+        return True
+    except Exception as e:
+        print(f"WARNING: Can't delete sensor logfile {log_file_path}: {str(e)}; will not log.")
+        return False
+
+
+def delete_large_logfile(log_file_path: Path, size_mbytes: float):
+    """ 
+    Tries to delete file if older then  arg <time>. 
+    Returns True, if deletion succeeded.
+    """
+    if log_file_path.exists():
+        file_size_bytes = os.path.getsize(str(log_file_path))
+        file_size_mbytes = file_size_bytes / (1024 * 1024)
+        if file_size_mbytes > size_mbytes:
+            return delete_log_file(log_file_path)
 
 class Logger(logging.Logger):
     """
@@ -63,9 +83,12 @@ class Logger(logging.Logger):
         # Create user config dir
         if not output_path.exists():
             os.makedirs(output_path)
+        log_file_path = output_path / cls.GLOBAL_LOGFILE_NAME
 
-        file_handler = logging.FileHandler(
-            str(output_path / cls.GLOBAL_LOGFILE_NAME), encoding="utf-8")
+        # delete old logfile
+        delete_large_logfile(log_file_path, size_mbytes=100)
+
+        file_handler = logging.FileHandler(str(log_file_path), encoding="utf-8")
         file_handler.setLevel(log_debug_level)
 
         console_handler = logging.StreamHandler(sys.stdout)
@@ -128,17 +151,9 @@ class SensorLogger(logging.Logger):
                     time_value_pairs.append((timestamp, float(time_value_pair[1].strip())))
         except:
             # try to delete when file is corrupted
-            SensorLogger.delete_log_file(log_file_path)
+            delete_log_file(log_file_path)
         return time_value_pairs
     
-    @staticmethod
-    def delete_log_file(log_file_path: Path)-> bool:
-        try:
-            os.remove(log_file_path)
-            return True
-        except Exception as e:
-            print(f"WARNING: Can't delete sensor logfile {log_file_path}: {str(e)}; will not log.")
-            return False
 
     @staticmethod
     def _init_logger(sensor_name: str, output_path: Path) -> logging.Logger:
@@ -156,15 +171,8 @@ class SensorLogger(logging.Logger):
         os.makedirs(output_path, exist_ok=True)
         log_file_path = output_path / (sensor_name + ".log")
 
-        # delete logs if older then 6 weeks
-        if log_file_path.exists():
-            created = os.stat(str(log_file_path)).st_ctime
-            file_date_time = datetime.fromtimestamp(created)
-            current_date_time = datetime.now()
-            if current_date_time - file_date_time > timedelta(days=5):
-                if not SensorLogger.delete_log_file(log_file_path):
-                    logger.disabled = True
-                    return logger
+        # delete old logfile
+        delete_large_logfile(log_file_path, size_mbytes=100)
 
         file_handler = logging.FileHandler(str(log_file_path), encoding="utf-8")
         formatter = logging.Formatter(r"%(asctime)s=%(message)s", "%Y-%m-%d %H:%M:%S")
