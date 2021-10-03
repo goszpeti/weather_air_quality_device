@@ -34,9 +34,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 
 from waqd.assets import get_asset_file
-from waqd.base.components import Component
+from waqd.base.component import Component
 from waqd.base.system import RuntimeSystem
-from waqd.settings import LOCATION, OW_API_KEY, OW_CITY_IDS
 
 
 def is_daytime(sunrise, sunset, date_time=None):
@@ -46,6 +45,7 @@ def is_daytime(sunrise, sunset, date_time=None):
     if date_time is None:
         date_time = datetime.now()
     return sunrise < date_time.time() < sunset
+
 
 @dataclass
 class Weather():
@@ -72,7 +72,7 @@ class Weather():
         if self.main:  # only set fetch_time if it is non-empty initiallized
             self.fetch_time = datetime.now()
 
-    def is_daytime(self, sunrise=None, sunset=None):
+    def is_daytime(self):
         """
         Helper function to determine if specified time is day or night
         """
@@ -108,6 +108,7 @@ class BeaufortScale(Enum):
     VIOLENT_STORM = 32.6
     HURRICANE = 32.7
 
+
 class WeatherQuality(Enum):
     """
     Describes goodness of weather conditions.
@@ -129,6 +130,7 @@ class WeatherQuality(Enum):
     CLOUDS = 13
     CLEAR = 14
 
+
 class OpenWeatherMap(Component):
     """
     Interface to data from OpenWeatherMap, to get Current weather or 5 day forecast data.
@@ -141,9 +143,18 @@ class OpenWeatherMap(Component):
         "http://api.openweathermap.org/data/2.5/forecast?id={cid}"
     API_POSTFIX = "&units=metric&APPID={apikey}"
 
-    def __init__(self, settings):
-        super().__init__(settings=settings)
-        self._city_id: str = ""  # use id, name is ambiguous
+    def __init__(self, city_id, api_key):
+        super().__init__()
+        self._city_id = city_id  # use id, name is ambiguous
+        self._api_key = api_key
+
+        if not self._city_id:
+            self._logger.error(f"{str(city_id)} - City Id for forecast is not available.")
+            self._disabled = True
+        if not api_key:
+            self._logger.error(f"{str(city_id)} - City Id for forecast is not available.")
+            self._disabled = True
+
         self._current_weather: Weather
         self._five_day_forecast: List[DailyWeather] = []
         # TODO this should be done with a mock
@@ -157,8 +168,8 @@ class OpenWeatherMap(Component):
             return None
 
         weather_info = current_info.get("weather", {})[0]
-        sunrise = datetime.fromtimestamp(current_info.get("sys").get("sunrise")).time()
-        sunset = datetime.fromtimestamp(current_info.get("sys").get("sunset")).time()
+        sunrise = datetime.fromtimestamp(current_info.get("sys", {}).get("sunrise", "")).time()
+        sunset = datetime.fromtimestamp(current_info.get("sys", {}).get("sunset", "")).time()
         is_day = is_daytime(sunrise, sunset)
 
         self._current_weather = Weather(
@@ -166,14 +177,14 @@ class OpenWeatherMap(Component):
             weather_info.get("description"),
             datetime.now(),
             self._get_condition_icon(weather_info.get("id"), is_day),
-            current_info.get("wind").get("speed"),
-            current_info.get("wind").get("deg"),
-            sunrise,sunset,
-            current_info.get("main").get("pressure"),
-            current_info.get("main").get("sea_level"),
-            current_info.get("main").get("humidity"),
-            current_info.get("clouds").get("all"),
-            current_info.get("main").get("temp"))
+            current_info.get("wind", {}).get("speed", 0.0),
+            current_info.get("wind", {}).get("deg", 0.0),
+            sunrise, sunset,
+            current_info.get("main", {}).get("pressure", 1000.0),
+            current_info.get("main", {}).get("sea_level", 1000.0),
+            current_info.get("main", {}).get("humidity", 0.0),
+            current_info.get("clouds", {}).get("all", 0.0),
+            current_info.get("main", {}).get("temp", 0.0))
         return self._current_weather
 
     def get_5_day_forecast(self) -> List[DailyWeather]:
@@ -196,19 +207,21 @@ class OpenWeatherMap(Component):
 
         return self._five_day_forecast
 
-    def get_forecast_points(self) -> Tuple[List[List[DailyWeather]], List[List[DailyWeather]]]:
+    def get_forecast_points(self) -> Tuple[List[List[Weather]], List[List[Weather]]]:
         """ Get all forecast points, separated into day and nighttime """
         forecast = self._call_ow_api(self.FORECAST_BY_CITY_ID_API_CMD)
         if not forecast:  # error from call, nothing to do
             return ([], [])
 
         # now aggregate the data - every 3 hours for 5 days and populate daily_forecast_points
-        daytime_forecast_points = [[] for i in range(7)]
-        nighttime_forecast_points = [[] for i in range(7)]
+        daytime_forecast_points: List[List[Weather]] = [[] for i in range(7)]
+        nighttime_forecast_points: List[List[Weather]] = [[] for i in range(7)]
         # we need sunrise and sunset info from current weather to know what day and night is
         current_weather = self.get_current_weather()
+        if not current_weather:
+            return ([], [])
         current_datetime = datetime.now()
-        for measurement_point in forecast.get("list"):
+        for measurement_point in forecast.get("list", []):
             # utc to local time
             entry_date_time = datetime.fromtimestamp(measurement_point.get("dt"))
             time_delta = entry_date_time.date() - current_datetime.date()
@@ -218,19 +231,20 @@ class OpenWeatherMap(Component):
             is_day = is_daytime(current_weather.sunrise, current_weather.sunset, entry_date_time)
             # api defines only one point, no defense needed - and if is, the functionilty will not work either
             weather_info: Dict[str, Any] = measurement_point.get("weather")[0]
-            
+            if not weather_info:
+                continue
             weather_point = Weather(
-                weather_info.get("main"),
-                weather_info.get("description"),
+                weather_info.get("main", ""),
+                weather_info.get("description", ""),
                 entry_date_time,
-                self._get_condition_icon(weather_info.get("id"), is_day), 
+                self._get_condition_icon(weather_info.get("id"), is_day),
                 measurement_point.get("wind").get("speed"),
                 measurement_point.get("wind").get("deg"),
                 current_weather.sunrise, current_weather.sunset,
-                0,0, 0, # currently unused
+                0, 0, 0,  # currently unused
                 measurement_point.get("clouds").get("all"),
                 measurement_point.get("main").get("temp")
-                )
+            )
 
             if is_day:
                 daytime_forecast_points[day_idx].append(weather_point)
@@ -246,14 +260,14 @@ class OpenWeatherMap(Component):
             else:
                 if day_idx == 0:
                     if entry_date_time.time() > self._current_weather.sunset:
-                         if current_datetime.time() < self._current_weather.sunrise:
+                        if current_datetime.time() < self._current_weather.sunrise:
                             continue  # ignore for now
                     nighttime_forecast_points[0].append(weather_point)
                 else:
                     nighttime_forecast_points[day_idx].append(weather_point)
         return (daytime_forecast_points, nighttime_forecast_points)
 
-    def _aggregate_forecast_points_to_days(self, daytime_forecast_points, nighttime_forecast_points):
+    def _aggregate_forecast_points_to_days(self, daytime_forecast_points: List[List[Weather]], nighttime_forecast_points: List[List[Weather]]):
         """ Calculate the daily weather form the points and set self._five_day_forecast """
 
         # determine overall weather and wind to set the shown icon
@@ -287,7 +301,7 @@ class OpenWeatherMap(Component):
                     overall_weather.icon = self._get_condition_icon("rain-windy", True)
                 if overall_weather.main == "Snow":
                     overall_weather.icon = self._get_condition_icon("snow-windy", True)
-            
+
             # init DailyWeather
             daily_weather = DailyWeather(
                 overall_weather.main,
@@ -305,8 +319,8 @@ class OpenWeatherMap(Component):
         # calculate min/max night and daytime temps
         self._set_min_max_temps(daytime_forecast_points, nighttime_forecast_points)
 
-    def _set_min_max_temps(self, daytime_forecast_points, nighttime_forecast_points):
-        for [day_idx, forecast_points] in enumerate(daytime_forecast_points):
+    def _set_min_max_temps(self, daytime_forecast_points: List[List[Weather]], nighttime_forecast_points: List[List[Weather]]):
+        for day_idx, forecast_points in enumerate(daytime_forecast_points):
             if not forecast_points:  # empty 0. day before midnight
                 if len(self._five_day_forecast) > day_idx:
                     self._five_day_forecast[day_idx].temp_max = float("inf")
@@ -317,7 +331,7 @@ class OpenWeatherMap(Component):
             min_temp = min([point.temp for point in forecast_points])
             self._five_day_forecast[day_idx].temp_min = min_temp
 
-        for [day_idx, forecast_points] in enumerate(nighttime_forecast_points):
+        for day_idx, forecast_points in enumerate(nighttime_forecast_points):
             if not forecast_points:  # empty 0. day before midnight
                 if len(self._five_day_forecast) > day_idx:
                     self._five_day_forecast[day_idx].temp_night_max = float("inf")
@@ -408,21 +422,13 @@ class OpenWeatherMap(Component):
 
     def _call_ow_api(self, command: str) -> Dict[str, Any]:
         """ Call the REST like API of OpenWeatherMap. Return response. """
-        assert self._settings, "Settings not available."
-        # get location
-        location = self._settings.get(LOCATION)
-        if not location:
-            self._logger.warning("No location given for forecast.")
-
-        # get city id from settings
-        self._city_id = self._settings.get(OW_CITY_IDS).get(location)
-        if not self._city_id:
-            self._logger.error(
-                "%s - City Id for forecast is not available.", location)
-
+        if self._disabled:
+            return {}
         # wait a little bit for connection
-        RuntimeSystem().wait_for_network()
-
+        is_connected = RuntimeSystem().wait_for_network()
+        if not is_connected:
+            # TODO error message
+            return {}
         response = []
         if self._cw_json_file and command == self.CURRENT_WEATHER_BY_CITY_ID_API_CMD:
             response.append(self._cw_json_file)
@@ -432,10 +438,9 @@ class OpenWeatherMap(Component):
             try:
                 response = urllib.request.urlretrieve(
                     command.format(cid=self._city_id) +
-                    self.API_POSTFIX.format(apikey=self._settings.get(OW_API_KEY)))
+                    self.API_POSTFIX.format(apikey=self._api_key))
             except Exception as error:
-                self._logger.error("Can't get current weather for %s : %s",
-                                   location, str(error))
+                self._logger.error(f"Can't get current weather for {self._city_id} : {str(error)}")
 
         if not response or not response or not os.path.exists(response[0]):
             return {}

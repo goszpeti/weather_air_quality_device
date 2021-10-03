@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-import os
 import threading
 import time
 
@@ -36,8 +35,6 @@ class ComponentController():
     def __init__(self, settings: Settings):
         self._components = ComponentRegistry(settings)
 
-        self.internet_connected = False
-        self.internet_reconnect_try = 0  # internal counter for wlan restart
         # thread for watchdog
         self._watch_thread: Optional[threading.Thread] = None # re-usable thread, assignment is in init_all
         self._stop_event = threading.Event()  # own stop event for watchdog
@@ -92,7 +89,7 @@ class ComponentController():
         Stop this module, by sending a stop request.
         Actual stop is asyncron.
         """
-        if self._watch_thread.is_alive():
+        if self._watch_thread and self._watch_thread.is_alive():
             self._stop_event.set()
 
     def _watchdog_loop(self):
@@ -107,39 +104,13 @@ class ComponentController():
             self._components.show()
             self._watch_components()
 
-    def _check_internet_connection(self):
-        """
-        RPi fails often when WLAN conncetion is unstable.
-        The restart of the adapter is black voodo magic, which is attempted after the second failure.
-        If that doesn't help, the RPi reboots on the next failure.
-        """
-        if self.internet_connected: # at least once connected:
-            if self.internet_reconnect_try == 2:
-                Logger().error("Watchdog: Restarting wlan...")
-                os.system("sudo systemctl restart dhcpcd")
-                time.sleep(2)
-                os.system("wpa_cli -i wlan0 reconfigure")
-                os.system("sudo dhclient")
-                time.sleep(5)
-            # failed 3 times straight - restart linux
-            if self.internet_reconnect_try == 3:
-                Logger().error("Watchdog: Restarting system - Net failure...")
-                RuntimeSystem().restart()
-        [ipv4, ipv6] = RuntimeSystem().get_ip()
-        if not ipv4 and not ipv6 or ipv4 in ["127.0.0.1", "localhost"]:
-            self.internet_reconnect_try += 1
-            time.sleep(5)
-        else:
-            self.internet_reconnect_try = 0
-            self.internet_connected = True
-
     def _watch_components(self):
         """
         Checks existence of global variable of each module and starts it.
         """
         # check and restart wifi
         if RuntimeSystem().is_target_system:
-            self._check_internet_connection()
+            RuntimeSystem().check_internet_connection()
 
         for comp_name in self._components.get_names():
             component = self._components.get(comp_name)
@@ -150,12 +121,12 @@ class ComponentController():
                     # call stop, so it will be initialized in the next cycle
                     self._components.stop_component(comp_name)
 
-        for sensor_name in self._components._sensors:
-            sensor = self._components._sensors[sensor_name]
+        for sensor_name in self._components.get_sensors():
+            sensor = self._components.get_sensors()[sensor_name]
             if not sensor:
                 break
             if isinstance(sensor, CyclicComponent) and sensor.is_ready and not sensor.is_alive:
-                self._components._sensors.pop(sensor_name)
+                self._components.get_sensors().pop(sensor_name)
 
     def _unload_all_components(self, reload_intended, updating):
         """
@@ -172,5 +143,5 @@ class ComponentController():
                 if self._components.auto_updater == self._components.get(comp_name):
                     continue
             self._components.stop_component(comp_name, reload_intended)
-        Logger().info("ComponentRegistry: All components unloaded. ")
+        Logger().info("ComponentRegistry: All components unloaded.")
         self._components.set_unload_finished()

@@ -34,6 +34,8 @@ class DisplayBar(ClickableLabel):
 
     def __init__(self, parent, color="#FFFFFF", type_text="N/A", font_size=24):
         super().__init__(parent=parent)
+        if not config.qt_app:
+            return
         self._font_size = font_size
         # for high dpi scaling
         self._pixel_ratio = config.qt_app.devicePixelRatio()
@@ -51,7 +53,7 @@ class DisplayBar(ClickableLabel):
         self._type_label.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 #        self._type_label.setFont(font)
         self._type_label.setStyleSheet("QLabel{color: rgb(255, 255, 255)}")
-        self._type_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self._type_label.setAlignment(Qt.AlignmentFlag(Qt.AlignLeft | Qt.AlignVCenter))
         self._type_label.setObjectName(type_text)
 
         extra_margin = 5
@@ -62,7 +64,7 @@ class DisplayBar(ClickableLabel):
         self._value_label.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
  #       self._value_label.setFont(font)
         self._value_label.setStyleSheet("QLabel{color: rgb(255, 255, 255)}")
-        self._value_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self._value_label.setAlignment(Qt.AlignmentFlag(Qt.AlignRight | Qt.AlignVCenter))
         self._value_label.setObjectName(type_text + "_value")
 
 

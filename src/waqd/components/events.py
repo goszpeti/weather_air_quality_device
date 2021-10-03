@@ -25,14 +25,17 @@ import threading
 import time
 from pathlib import Path
 from typing import List, Optional, Dict
+from PyQt5.QtCore import pyqtBoundSignal
 
 import jsonschema
 from apscheduler.schedulers.background import BackgroundScheduler
 from dateutil.parser import parse as parse_date
 from dateutil.relativedelta import relativedelta
+
 from waqd import config
 from waqd.assets import get_asset_file
-from waqd.base.components import Component, ComponentRegistry
+from waqd.base.component import Component
+from waqd.base.components import ComponentRegistry
 from waqd.base.logger import Logger
 from waqd.settings import EVENTS_ENABLED, LANG, NIGHT_MODE_END, Settings
 
@@ -198,7 +201,7 @@ class EventHandler(Component):
         if not settings.get(EVENTS_ENABLED):
             return
 
-        self.gui_background_update_sig = None
+        self.gui_background_update_sig: Optional[pyqtBoundSignal] = None
         self._config_events_file = config.user_config_dir / "events.json"
         self._events = parse_event_file(self._config_events_file)
         self._scheduler: Optional[BackgroundScheduler] = None
@@ -223,6 +226,7 @@ class EventHandler(Component):
         assert self._scheduler and self._settings, "Internal components not available."
         current_date_time = datetime.datetime.now()
         # Determine, if it would have run today, so it can be scheduled for immediate execution
+        # immediate exec does not log last exec!
         would_run_today = False
         if event.recurrence != "date":  # daily exec
             day_of_week_to_run = "*"

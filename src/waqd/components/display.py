@@ -22,10 +22,8 @@ import threading
 
 from rpi_backlight import Backlight
 
-from waqd.base.components import Component
-from waqd.settings import (Settings,
-                                BRIGHTNESS, DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD, DISPLAY_TYPE,
-                                WAVESHARE_DISP_BRIGHTNESS_PIN)
+from waqd.base.component import Component
+from waqd.settings import DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD
 
 
 class Display(Component):
@@ -33,21 +31,23 @@ class Display(Component):
     Abstracts brightness handling for different display types.
     """
 
-    def __init__(self, settings: Settings):
-        super().__init__(settings=settings)
+    def __init__(self, display_type: str, brightness: int=50, waveshare_brightness_pin: int=0):
+        super().__init__()
         self._brightness = 0
         self._reload_forbidden = True  # re-init flickers screen
+        self._display_type = display_type
+        self._waveshare_brightness_pin = waveshare_brightness_pin
 
-        if (self._settings.get(DISPLAY_TYPE) == DISP_TYPE_WAVESHARE_5_LCD and
+        if (display_type == DISP_TYPE_WAVESHARE_5_LCD and
                 self._runtime_system.is_target_system):
             # to set brightness, this display needs to be hacked and is switched off by default.
-            pin = self._settings.get(WAVESHARE_DISP_BRIGHTNESS_PIN)
+            pin = waveshare_brightness_pin
             # use compiled gpio because with python it flickers
             os.system("gpio -g mode " + str(pin) + " pwm")
             os.system("gpio pwmc 1000")
             os.system("gpio pwmr 1000")
         # set configured brightness at startup
-        self.set_brightness(self._settings.get(BRIGHTNESS))
+        self.set_brightness(brightness)
 
     def get_brightness(self) -> int:
         """ Returns the current display brightness in percent, e.g. 75"""
@@ -65,11 +65,11 @@ class Display(Component):
 
     def _set_brightness(self, brightness):
         try:
-            disp_type = self._settings.get(DISPLAY_TYPE)
+            disp_type = self._display_type
             if self._runtime_system.is_target_system:
                 if disp_type == DISP_TYPE_WAVESHARE_5_LCD:
                     pwm_val = brightness * 10  # actually 1023 is max
-                    pin = self._settings.get(WAVESHARE_DISP_BRIGHTNESS_PIN)
+                    pin = self._waveshare_brightness_pin
                     os.system("gpio -g pwm " + str(pin) + " " + str(pwm_val))
                 elif disp_type == DISP_TYPE_RPI:
                     backlight = Backlight()

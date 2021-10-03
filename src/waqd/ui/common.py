@@ -26,11 +26,11 @@ import time
 import datetime
 import xml.dom.minidom as dom
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from PyQt5 import QtCore, QtGui, QtSvg, QtWidgets
 
-import waqd.config as config
+from waqd import config
 from waqd.assets import get_asset_file
 from waqd.config import PROG_NAME
 from waqd.settings import LANG, LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN, Settings
@@ -41,10 +41,12 @@ logger = logging.getLogger(PROG_NAME)
 Qt = QtCore.Qt
 
 
-def get_font(font_name):
+def get_font(font_name) -> QtGui.QFont:
     # set up font
     font_file = get_asset_file("font", "franzo")
     font_id = QtGui.QFontDatabase.addApplicationFont(str(font_file))
+    if not config.qt_app:
+        return QtGui.QFont()
     font = config.qt_app.font()
     if font_id != -1:
         font_db = QtGui.QFontDatabase()
@@ -56,17 +58,20 @@ def get_font(font_name):
             logger.warning("Can't apply selected font file.")
     return font
 
-def apply_font(qt_root_obj, font_name):
+def apply_font(qt_root_obj: QtCore.QObject, font_name: str):
     font = get_font(font_name)
+    if not config.qt_app:
+        return
     config.qt_app.setFont(font)
     for qt_obj in qt_root_obj.findChildren(QtWidgets.QWidget):
         obj_font = qt_obj.font()
         obj_font.setFamily(font.family())
 
 
-def set_ui_language(qt_app: "QtWidgets.QApplication", settings: "Settings"):
+def set_ui_language(qt_app: QtWidgets.QApplication, settings: Settings):
     """ Set the ui language. Retranslate must be called afterwards."""
-    qt_app.removeTranslator(config.translator)
+    if config.translator:
+        qt_app.removeTranslator(config.translator)
     if settings.get(LANG) == LANG_ENGLISH:  # default case, ui is written in english
         return
 
@@ -107,11 +112,13 @@ def draw_svg(pyqt_obj: QtWidgets.QWidget, svg_path: Path, color="white", shadow=
     svg_drawing[0].setAttribute("fill", color)
 
     # create temporary svg and read into pyqt svg graphics object
-    svg_graphics: QtSvg.QGraphicsSvgItem = None
+    svg_name = ""
     with open(svg_path.parent / Path(svg_path.stem + "_white" + svg_path.suffix), "w+") as new_svg:
         new_svg.write(svg_dom.toxml())
         new_svg.close()
-        svg_graphics = QtSvg.QGraphicsSvgItem(new_svg.name)  # new_svg.name
+        svg_name = new_svg.name
+
+    svg_graphics = QtSvg.QGraphicsSvgItem(svg_name)
 
     # the gui needs a picture/painter to render the svg into
     pic = QtGui.QPicture()
@@ -238,12 +245,12 @@ def format_temp_text_minmax(html_text, min_val, max_val, color="white"):
     return html_text
 
 
-def format_text(html_text: str, value,
+def format_text(html_text: str, value: Union[str, int, float, None],
                 disp_type: str, tag_id=0, color="white") -> str:
     """
     Generic hmtl text formatting method.
     :param html_text: the html text containing the value.
-    :param value: the the value to be set
+    :param value: the value to be set
     :param disp_type: format for the html for "float", "int" or "string"
     :param tag_id: tag containing the value
     :param color: apply this html color
@@ -259,22 +266,22 @@ def format_text(html_text: str, value,
         tags[0].setAttribute("style", "color:" + color)
 
     # type scpecific handling
-    if disp_type == "float":
-        value = "{:0.1f}".format(value)
-        value = value.split(".")
+    if disp_type == "float" and isinstance(value, float):
+        text = "{:0.1f}".format(value)
+        split_text = text.split(".")
         tags = html_dom.getElementsByTagName("span")
         if len(tags) >= 2:
-            tags[tag_id].firstChild.data = str(value[tag_id] + ".")
-            tags[tag_id+1].firstChild.data = str(int(value[tag_id+1]))
+            tags[tag_id].firstChild.data = str(split_text[tag_id] + ".")
+            tags[tag_id+1].firstChild.data = str(int(split_text[tag_id+1]))
             return html_dom.toxml()
 
-    if disp_type == "int":
-        value = str(int(value))
+    if disp_type == "int" and isinstance(value, int):
+        text = str(int(value))
         if tags:
-            tags[tag_id].firstChild.data = value
+            tags[tag_id].firstChild.data = text
             return html_dom.toxml()
 
-    if disp_type == "string":
+    if disp_type == "string" and isinstance(value, str):
         if tags:
             for tag in tags:
                 if tag.firstChild:

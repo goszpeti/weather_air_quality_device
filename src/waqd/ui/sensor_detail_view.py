@@ -38,12 +38,12 @@ class SensorDetailView(QtWidgets.QWidget):
 
         # set up  window style and size
         # frameless modal window fullscreen (same as main ui)
-        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowType(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint))
         self.setWindowModality(Qt.WindowModal)
         self.setGeometry(main_ui.geometry())
 
         if not log_file.exists():
-            # TODO give some feedback!
+            self.not_enough_values_dialog()
             return
 
         # read log backwards, until we hit the time barrier from TIME_WINDOW_SECONDS - performance!
@@ -58,12 +58,13 @@ class SensorDetailView(QtWidgets.QWidget):
                     if (current_time - timestamp) > timedelta(minutes=self.TIME_WINDOW_MINUTES):
                         break
                     self._time_value_pairs.append((timestamp, float(time_value_pair[1].strip())))
-        except:
+        except Exception:
             # delete when file is corrupted
             os.remove(log_file)
 
         if len(self._time_value_pairs) < 2:  # insufficient data
-            return # TODO add message
+            self.not_enough_values_dialog()
+            return
 
         # add values to qt graph
         # time values are converted to "- <Minutes>" format
@@ -98,9 +99,10 @@ class SensorDetailView(QtWidgets.QWidget):
         chart.setBackgroundBrush(brush)
 
         # calculate delta of last hour
-        last_hour_time_value_pairs = list(filter(lambda time_value_pair:
-                                                 (current_time - time_value_pair[0]) < timedelta(minutes=60), self._time_value_pairs))
-        last_hour_values: List[float] = [time_value_pair[1] for time_value_pair in last_hour_time_value_pairs]
+        last_hour_time_val_pairs = list(filter(lambda time_value_pair:
+                                                 (current_time - time_value_pair[0]) < timedelta(minutes=60),
+                                                  self._time_value_pairs))
+        last_hour_values: List[float] = [time_value_pair[1] for time_value_pair in last_hour_time_val_pairs]
 
         delta_label = QtWidgets.QLabel(self)
         if last_hour_values:
@@ -136,3 +138,11 @@ class SensorDetailView(QtWidgets.QWidget):
         if event.type() == QtCore.QEvent.MouseButtonPress:
             self.close()
         return super().eventFilter(source, event)
+
+    def not_enough_values_dialog(self):
+        msg = QtWidgets.QMessageBox(parent=self)
+        msg.setWindowTitle("Nothing to display!")
+        msg.setText("There are not enough logged values yet!")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.exec_()

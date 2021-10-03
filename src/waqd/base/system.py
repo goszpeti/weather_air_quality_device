@@ -34,7 +34,9 @@ class RuntimeSystem():
     """
     _instance = None
     _is_target_system = False
-    _platform = None
+    _platform = ""
+    _internet_reconnect_try = 0  # internal counter for wlan restart
+    internet_connected = False
 
     def __new__(cls):
         if cls._instance is None:
@@ -46,19 +48,19 @@ class RuntimeSystem():
         self._platform = platform.system()
         self._determine_if_target_system()
 
+
     def _determine_if_target_system(self):
         # late import to be able to mock this
-        from adafruit_platformdetect import Detector
+        from adafruit_platformdetect import Detector  # pylint: disable=import-outside-toplevel
         detector = Detector()
         # late init of logger, so on non target hosts the file won't be used already
         self._is_target_system = detector.board.any_raspberry_pi
         self._platform = detector.board.id
 
-
     @property
     def platform(self) -> str:
         """ Return target platform (RPi version like Model B) or current platform name. """
-        return self._platform
+        return str(self._platform)
 
     @property
     def is_target_system(self) -> bool:
@@ -75,10 +77,10 @@ class RuntimeSystem():
         if self._is_target_system:
             os.system("shutdown -r now")
 
-    def get_ip(self) -> Tuple["ipv4", "ipv6"]:
+    def get_ip(self) -> Tuple[str, str]:  # "ipv4", "ipv6"
         """ Gets IP 4 and 6 addresses on target system """
-        ipv4 = None
-        ipv6 = None
+        ipv4 = ""
+        ipv6 = ""
         if self._is_target_system:
             ret = subprocess.check_output("hostname -I", shell=True)
             ret_str = ret.decode("utf-8")
@@ -91,14 +93,48 @@ class RuntimeSystem():
                     ipv6 = ip_adr
         else:
             ipv4 = socket.gethostbyname(socket.gethostname())
+        if ipv4 in ["localhost", "127.0.0.1"]:  # we want the LAN address
+            ipv4 = ""
         return (ipv4, ipv6)
 
-    def wait_for_network(self):
+    def check_internet_connection(self):
+        """
+        RPi fails often when WLAN conncetion is unstable.
+        The restart of the adapter is black voodo magic, which is attempted after the second failure.
+        If that doesn't help, the RPi reboots on the next failure.
+        """
+        if self.internet_connected:  # at least once connected:
+            if self._internet_reconnect_try == 2:
+                Logger().error("Watchdog: Restarting wlan...")
+                os.system("sudo systemctl restart dhcpcd")
+                sleep(2)
+                os.system("wpa_cli -i wlan0 reconfigure")
+                os.system("sudo dhclient")
+                sleep(5)
+            # failed 3 times straight - restart linux
+            if self._internet_reconnect_try == 3:
+                Logger().error("Watchdog: Restarting system - Net failure...")
+                self.restart()
         [ipv4, ipv6] = self.get_ip()
+        if not ipv4 and not ipv6:
+            self._internet_reconnect_try += 1
+            sleep(5)
+        else:
+            self.internet_reconnect_try = 0
+            self.internet_connected = True
 
+    def wait_for_network(self) -> bool:
+        [ipv4, ipv6] = self.get_ip()
+        max_error = 5
         i = 0
-        while (not ipv4 and not ipv6) and i < 6:
-            Logger().info("Waiting for network")
-            sleep(0.5)
+
+        while (not ipv4 and not ipv6) and i < max_error + 1:
+            Logger().info("Waiting for network...")
+            sleep(1)
             [ipv4, ipv6] = self.get_ip()
             i += 1
+
+        if i == max_error:
+            return False
+
+        return True

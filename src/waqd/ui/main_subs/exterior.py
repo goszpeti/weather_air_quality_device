@@ -38,7 +38,6 @@ class Exterior(sub_ui.SubUi):
 
     def __init__(self, main_ui, settings):
         super().__init__(main_ui, settings)
-
         self._online_info_date_time = None  # date when last online update occured
 
         # save default text to restore formatting
@@ -54,7 +53,7 @@ class Exterior(sub_ui.SubUi):
         self._ui.exterior_forecast_temps_value.setText(
             common.format_temp_text_minmax(self._default_min_max_text, None, None))
         # call once at begin
-        self._cyclic_update()
+        self.init_with_cyclic_update()
 
     def show_detail(self):
         """ Daily detail view popup """

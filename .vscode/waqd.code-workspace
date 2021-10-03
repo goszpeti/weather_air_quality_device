@@ -17,12 +17,14 @@
         ],
         "editor.formatOnPaste": true,
         "git.autofetch": true,
+        "python.linting.enabled": false,
         "python.linting.pylintEnabled": true,
-        "python.linting.enabled": true,
+        "python.linting.mypyEnabled": true,
         "pyqt-integration.qtdesigner.path": "pyqt5designer",
         "python.linting.lintOnSave": true,
         "python.linting.pylintUseMinimalCheckers": false,
         "python.linting.pylintCategorySeverity.refactor": "Information",
+        "python.terminal.activateEnvironment": true,
         "python.testing.pytestEnabled": true,
         "coverage-gutters.showLineCoverage": true,
         "coverage-gutters.showRulerCoverage": true,
@@ -41,8 +43,7 @@
         "python.venvPath": "${workspaceFolder}/.venv",
         "python.pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe",
         //"${workspaceFolder}/.venv/Scripts/python.exe", // "${workspaceFolder}/.venv/bin/python3"
-        "python.linting.mypyEnabled": true,
-        "python.terminal.activateEnvironment": true,
         "git.ignoreLimitWarning": true,
+        "python.analysis.stubPath": "test/mock",
     }
 }

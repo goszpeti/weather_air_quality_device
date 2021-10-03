@@ -23,6 +23,7 @@ Sets up cmd arguments, settings and starts the gui
 """
 
 import argparse
+import logging
 import os
 import sys
 import time
@@ -73,8 +74,7 @@ def start_remote_debug():
         port = 3003
         debugpy.listen(("0.0.0.0", port))
         if config.DEBUG_LEVEL > 2:
-            logger = Logger()
-            logger.info("Waiting to attach on port %s", port)
+            print("Waiting to attach on port %s", port)
             debugpy.wait_for_client()  # blocks execution until client is attached
 
 
@@ -84,7 +84,7 @@ def setup_on_non_target_system():
     sys.path = [str(mockup_path)] + sys.path
     os.environ["PYTHONPATH"] = str(mockup_path) # for mh-z19
     config.user_config_dir = config.base_path.parent
-    print("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
+    logging.getLogger("root").info("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
 
 
 def qt_app_setup(settings) -> QtWidgets.QApplication:
@@ -98,7 +98,6 @@ def qt_app_setup(settings) -> QtWidgets.QApplication:
 
     # set up global Qt Application instance
     qt_app = QtWidgets.QApplication([])
-
     # set icon
     icon_path = get_asset_file("gui_base", "icon")
     qt_app.setWindowIcon(QtGui.QIcon(str(icon_path)))
@@ -120,8 +119,7 @@ def loading_sequence(comp_ctrl: ComponentController, settings: Settings):
     comp_ctrl.init_all()
     app_main_ui = main_ui.WeatherMainUi(comp_ctrl, settings)
 
-    is_target_system = RuntimeSystem().is_target_system
-    if is_target_system:  # only remove titlebar on RPi
+    if RuntimeSystem().is_target_system:  # only remove titlebar on RPi
         app_main_ui.setWindowFlags(Qt.CustomizeWindowHint)
 
     # show splash screen
@@ -165,18 +163,22 @@ def main(settings_path: Optional[Path] = None):
     if not runtime_system.is_target_system:
         setup_on_non_target_system()
 
+    # All other classes depend on settings
     if not settings_path:
         settings_path = config.user_config_dir
     settings = Settings(ini_folder=settings_path)
+    
+    handle_cmd_args(settings) # cmd args set Debug level for logger
 
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
-    handle_cmd_args(settings)
+
+    Logger(output_path=config.user_config_dir)  # singleton, no assigment needed
 
     comp_ctrl = ComponentController(settings)
     config.comp_ctrl = comp_ctrl
-
-    comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
+    #if config.DEBUG_LEVEL > 0: # disable startup sound
+    #    comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
     display_type = settings.get(DISPLAY_TYPE)
 
     if display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:

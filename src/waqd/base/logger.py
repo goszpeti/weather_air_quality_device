@@ -18,48 +18,77 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 import logging
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
+from pathlib import Path
+from typing import List, Optional, Tuple
 
-from typing import Optional
+from file_read_backwards import FileReadBackwards
+from waqd import config
+
+# helper functions for logs
+def delete_log_file(log_file_path: Path) -> bool:
+    try:
+        os.remove(log_file_path)
+        return True
+    except Exception as e:
+        print(f"WARNING: Can't delete sensor logfile {log_file_path}: {str(e)}; will not log.")
+        return False
+
+
+def delete_large_logfile(log_file_path: Path, size_mbytes: float):
+    """
+    Tries to delete file if older then  arg <time>. 
+    Returns True, if deletion succeeded.
+    """
+    if log_file_path.exists():
+        file_size_bytes = os.path.getsize(str(log_file_path))
+        file_size_mbytes = file_size_bytes / (1024 * 1024)
+        if file_size_mbytes > size_mbytes:
+            return delete_log_file(log_file_path)
+
 
 class Logger(logging.Logger):
     """
     Singleton instance for the global dual logger (file/console)
     """
+    GLOBAL_LOGFILE_NAME = "waqd.log"
+
     _instance: Optional[logging.Logger] = None
 
-    def __new__(cls) -> logging.Logger:
+    def __new__(cls, output_path: Path = config.user_config_dir):
         if cls._instance is None:
-            # the user excepts a logger
-            cls._instance = cls._init_logger()
+            cls._instance = cls._init_logger(output_path)
         return cls._instance
 
-    def __init__(self, name="", level=0) -> None:
+    def __init__(self, output_path: Path = config.user_config_dir) -> None:
         return None
 
-    @staticmethod
-    def _init_logger() -> logging.Logger:
+    @classmethod
+    def _init_logger(cls, output_path):
         """ Set up format and a debug level and register loggers. """
-        from waqd import config # can change after import
 
         # restrict root logger
         root = logging.getLogger()
         root.setLevel(logging.ERROR)
 
-        # set up file logger - log everything in file and stdio
-        logger = logging.getLogger(config.PROG_NAME)
+        # set up file logger - log everything in file and stdout
+        logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
         log_debug_level = logging.INFO
         if config.DEBUG_LEVEL > 0:
             log_debug_level = logging.DEBUG
 
         # Create user config dir
-        if not config.user_config_dir.exists():
-            os.makedirs(config.user_config_dir)
+        if not output_path.exists():
+            os.makedirs(output_path)
+        log_file_path = output_path / cls.GLOBAL_LOGFILE_NAME
 
-        file_handler = logging.FileHandler(str(config.user_config_dir / "waqd.log"), encoding="utf-8")
+        # delete old logfile
+        delete_large_logfile(log_file_path, size_mbytes=100)
+
+        file_handler = logging.FileHandler(str(log_file_path), encoding="utf-8")
         file_handler.setLevel(log_debug_level)
 
         console_handler = logging.StreamHandler(sys.stdout)
@@ -77,11 +106,57 @@ class Logger(logging.Logger):
 
         return logger
 
-    @staticmethod
-    def sensor_logger(sensor_name):
-        """ Logger used by sensors to store values to display in detail view """
-        from waqd import config  # can change after import
 
+class SensorLogger(logging.Logger):
+    def __new__(cls, name: str, output_path: Path = config.user_config_dir / "sensor_logs"):
+        return cls._init_logger(name, output_path)
+
+    def __init__(self, name: str, output_path: Path = config.user_config_dir / "sensor_logs") -> None:
+        pass
+
+    @staticmethod
+    def get_sensor_logfile_path(sensor_name) -> Path:
+        logger = SensorLogger(sensor_name)
+        if logger.handlers == 0:
+            return Path("InvalidPath")
+        try:
+            filename = Path("NonExistant")
+            if isinstance(logger.handlers[0], logging.FileHandler):
+                filename = Path(logger.handlers[0].baseFilename)  # can be any type of handler
+            return filename
+        except Exception as e:
+            print(f"WARNING: Can't find file handler for {sensor_name} logger.")
+            return Path("InvalidPath")
+
+    @staticmethod
+    # zero reads the last value
+    def read_sensor_file(sensor_name: str, minutes_to_read: int = 0) -> List[Tuple[datetime, float]]:
+
+        log_file_path = SensorLogger.get_sensor_logfile_path(sensor_name)
+        if not log_file_path.exists():
+            return []
+        current_time = datetime.now()
+        time_value_pairs: List[Tuple[datetime, float]] = []
+        try:
+            with FileReadBackwards(str(log_file_path), encoding="utf-8") as fp:
+                # log has format 2021-03-12 18:51:16=55\n...
+                for line in fp:
+                    time_value_pair = line.split("=")
+                    timestamp = datetime.fromisoformat(time_value_pair[0])
+                    if not minutes_to_read:
+                        time_value_pair[1] = float(time_value_pair[1])  # always cast to float
+                        return [time_value_pair]
+                    if (current_time - timestamp) > timedelta(minutes=minutes_to_read):
+                        break
+                    time_value_pairs.append((timestamp, float(time_value_pair[1].strip())))
+        except:
+            # try to delete when file is corrupted
+            delete_log_file(log_file_path)
+        return time_value_pairs
+
+    @staticmethod
+    def _init_logger(sensor_name: str, output_path: Path) -> logging.Logger:
+        """ Logger used by sensors to store values to display in detail view """
         logger = logging.getLogger(sensor_name)
 
         # return already initalized logger when calling multiple times
@@ -90,16 +165,11 @@ class Logger(logging.Logger):
 
         logger.setLevel(logging.DEBUG)
 
-        os.makedirs(config.user_config_dir / "sensor_logs", exist_ok=True)
-        log_file_path = config.user_config_dir / "sensor_logs" / (sensor_name + ".log")
+        os.makedirs(output_path, exist_ok=True)
+        log_file_path = output_path / (sensor_name + ".log")
 
-        # delete logs if older then 6 weeks
-        if log_file_path.exists():
-            created =  os.stat(str(log_file_path)).st_ctime
-            file_date_time = datetime.fromtimestamp(created)
-            current_date_time = datetime.now()
-            if current_date_time - file_date_time > timedelta(days=5):
-                os.remove(log_file_path)
+        # delete old logfile
+        delete_large_logfile(log_file_path, size_mbytes=100)
 
         file_handler = logging.FileHandler(str(log_file_path), encoding="utf-8")
         formatter = logging.Formatter(r"%(asctime)s=%(message)s", "%Y-%m-%d %H:%M:%S")

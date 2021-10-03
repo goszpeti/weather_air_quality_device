@@ -72,6 +72,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
             # works currently with overriding the motion sensor
             if self._comps.motion_detection_sensor:
                 cbck_thread = threading.Thread(
+                    name="DisplayTurnOn",
                     target=self._comps.motion_detection_sensor._wake_up_from_sensor,
                     args=(None,), daemon=True)
                 cbck_thread.start()
@@ -86,7 +87,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._ui.setupUi(self)
 
         # scale before additional elments are initialized
-        common.scale_gui_elements(self, self._settings.get(FONT_SCALING))
+        common.scale_gui_elements(self, self._settings.get_float(FONT_SCALING))
 
         # initialize all modules
         if not self._interior_ui:
@@ -98,7 +99,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         if not self._exterior_ui:
             self._exterior_ui = exterior.Exterior(self, self._settings)
 
-        common.apply_font(self, self._settings.get(FONT_NAME))
+        common.apply_font(self, self._settings.get_string(FONT_NAME))
 
         common.apply_shadow_to_labels(self)
 
@@ -137,10 +138,10 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         del self._forecast_ui
         del self._infopane_ui
 
-        self._exterior_ui: exterior.Exterior = None
-        self._interior_ui: interior.Interior = None
-        self._forecast_ui: forecast.Forecast = None
-        self._infopane_ui: infopane.InfoPane = None
+        self._exterior_ui = None
+        self._interior_ui = None
+        self._forecast_ui = None
+        self._infopane_ui = None
 
     def _change_background(self, file_id: str):
         """ Slot for change background signal """
@@ -148,6 +149,8 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         if background and background.is_file():
             while not self.ready:
                 time.sleep(1)
+            if not self._ui:
+                return
             self._ui.interior_background.setPixmap(QtGui.QPixmap(str(background)))
 
     def show_options_window(self):
@@ -166,6 +169,9 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._option_ui = options.OptionMainUi(self, self._comp_ctrl, self._settings)
 
     def show_info_screen(self):
+        """ Shows the user help overlay (opaque)."""
+        if not self._ui:
+            return
         self._ui.overlay_background.setPixmap(QtGui.QPixmap(str(get_asset_file("gui_base", "info_overlay"))))
         self._ui.overlay_background.raise_()
         self._ui.overlay_background.show()
@@ -180,6 +186,9 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._ui.ol_title_label.show()
 
     def hide_info_screen(self):
+        """ Hides the user infro screen."""
+        if not self._ui:
+            return
         self._ui.overlay_background.hide()
         self._ui.ol_sensors_label.hide()
         self._ui.ol_wh_today_label.hide()

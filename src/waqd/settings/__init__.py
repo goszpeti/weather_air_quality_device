@@ -47,7 +47,6 @@ CCS811_ENABLED = "ccs811_enabled"
 MH_Z19_ENABLED = "mh_z19_enabled"
 LOG_SENSOR_DATA = "log_sensor_data"
 
-UPDATER_KEY = "updater_key"
 AUTO_UPDATER_ENABLED = "auto_updater_enabled"
 UPDATER_USER_BETA_CHANNEL = "updater_use_beta_channel"
 # gui

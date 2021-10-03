@@ -23,23 +23,30 @@ jobs:
     timeout-minutes: 15
     env:
       DISPLAY: ':0'
+      PYTEST_CMD: "source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append"
     steps:
     - uses: actions/checkout@v2
     - name: Install system libs
       run: | 
         sudo apt -y install python3-libgpiod python3-venv
-        sudo apt -y install qt5-default python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart
+        sudo apt -y install qt5-default python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart python3-sip
     - name: Setup pip and create venv
       run: | 
         python3 -m pip install --upgrade pip
         python3 -m venv .venv --system-site-packages
-    - name: Activate venv and test
+    - name: Activate venv and install test deps
       run: |
         source .venv/bin/activate
         pip3 install -r test/requirements.txt
         pip3 install -e .
-        pytest -v -m "integration" --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append --disable-pytest-warnings
-        pytest -v -m "not integration" --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append
+    - name: Test basic modules
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append test/basics
+    - name: Test components
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append  test/components
+    - name: Test ui
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append test/ui
+    - name: Test integration
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append  --disable-pytest-warnings test/integration
 
   testUpdaterOnTarget:
     runs-on: self-hosted

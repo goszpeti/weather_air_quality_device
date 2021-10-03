@@ -19,11 +19,21 @@
 #
 import abc
 
+from typing import Callable
 from PyQt5 import QtCore
 
 from waqd.base.logger import Logger
 from waqd.base.components import ComponentRegistry
 
+
+class WorkerObject(QtCore.QObject):
+
+    def __init__(self, target: Callable, parent = None):
+        super(self.__class__, self).__init__(parent)
+        self.target = target
+        
+    def run(self):
+        self.target()
 
 class SubUi(metaclass=abc.ABCMeta):
     """
@@ -40,9 +50,18 @@ class SubUi(metaclass=abc.ABCMeta):
 
         # set up update thread
         self._update_timer = QtCore.QTimer(main_ui)
+        self._update_timer.setObjectName("Update" + repr(self).split(" ")[0])
         self._update_timer.timeout.connect(self._cyclic_update)
         self._update_timer.start(self.UPDATE_TIME)
+        self._first_thread = QtCore.QThread(self._main_ui)
 
+    def init_with_cyclic_update(self):
+        self._first_thread.setObjectName("Init" + repr(self).split(" ")[0])
+        self.worker = WorkerObject(target=self._cyclic_update)
+        self.worker.moveToThread(self._first_thread)
+        self._first_thread.started.connect(self._cyclic_update)  # self.worker.run)
+        self._first_thread.start()
+  
     @abc.abstractmethod
     def _cyclic_update(self):
         """ implement ui update callback here """
@@ -50,4 +69,7 @@ class SubUi(metaclass=abc.ABCMeta):
 
     def stop(self):
         """ Stop the update loop. """
-        self._update_timer.stop()
+        if self._first_thread.isRunning():
+            self._first_thread.quit()
+        if self._update_timer.isActive():
+            self._update_timer.stop()

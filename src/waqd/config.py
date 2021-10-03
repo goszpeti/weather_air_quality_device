@@ -26,16 +26,20 @@ from pathlib import Path
 from typing import Optional
 from PyQt5 import QtWidgets, QtCore
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from waqd.base.component_ctrl import ComponentController
+
 ### Global constants ###
 PROG_NAME = "W.A.Q.D"
-GITHUB_REPO_NAME = "WeatherAirQualityDevice"
+GITHUB_REPO_NAME = "goszpeti/WeatherAirQualityDevice"
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 480
 
 ### Global variables ###
 # 0: No debug, 1 = logging on, 2: remote debugging on
 # 3: wait for remote debugger, 4: quick-load
-DEBUG_LEVEL = 1
+DEBUG_LEVEL = 0
 
 # paths to find folders
 base_path = Path(__file__).absolute().parent
@@ -43,9 +47,7 @@ assets_path = base_path / "assets"
 user_config_dir = Path().home() / ".waqd"
 
 # singleton with access to all backend components
-comp_ctrl: "ComponentController" = None
-
-# TODO re-add settings?
+comp_ctrl: Optional["ComponentController"] = None
 
 # application instance singleton
 qt_app: Optional[QtWidgets.QApplication] = None

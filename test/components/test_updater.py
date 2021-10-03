@@ -7,21 +7,27 @@ from distutils.file_util import copy_file
 import pytest
 from waqd import config
 from waqd import __version__ as VERSION
-from waqd.settings import UPDATER_KEY, Settings, UPDATER_USER_BETA_CHANNEL, AUTO_UPDATER_ENABLED
+from waqd.settings import Settings, UPDATER_USER_BETA_CHANNEL, AUTO_UPDATER_ENABLED
 from waqd.components.updater import OnlineUpdater
 from waqd.base.components import ComponentRegistry
 
 RASPI_BASE_IMAGE = "raspi/raspbian_py:1"
 WAQD_IMAGE = "raspi/waqd_install:1"
 
+def testRepoIsReachable(base_fixture):
+    settings = Settings(base_fixture.testdata_path / "integration")
+    comps = ComponentRegistry(settings)
+    online_updater = OnlineUpdater(comps, enabled=True, use_beta_channel=True)
+    online_updater._connect_to_repository()
+    assert online_updater._repository # only check if object exists
+
+
 def testCheckShouldUpdate(base_fixture):
-    import waqd.components.updater as updater
-    settings = Settings(ini_folder=base_fixture.base_path / "src")
-    settings.set(AUTO_UPDATER_ENABLED, True)
-    settings.set(UPDATER_USER_BETA_CHANNEL, True)
+    import waqd.components.updater as updater # import the module here, so we can access the loaded global var of WAQD version
+    settings = Settings(base_fixture.testdata_path / "integration")
     comps = ComponentRegistry(settings)
 
-    online_updater = OnlineUpdater(comps, settings)
+    online_updater = OnlineUpdater(comps, enabled=True, use_beta_channel=True)
     # Main versions to Main versions
     updater.WAQD_VERSION = "1.1.0"
     # same version -  no update
@@ -42,7 +48,7 @@ def testCheckShouldUpdate(base_fixture):
     assert online_updater._check_should_update("1.2.0b0")
 
     # beta flag disabled - no update
-    settings.set(UPDATER_USER_BETA_CHANNEL, False)
+    online_updater._use_beta_channel = False
     assert not online_updater._check_should_update("1.0.0b19")
     assert not online_updater._check_should_update("1.1.0b2")
 
@@ -53,10 +59,10 @@ def testCheckShouldUpdate(base_fixture):
     assert online_updater._check_should_update("1.2.0")
 
     # Beta Version to Beta Version
-    settings.set(UPDATER_USER_BETA_CHANNEL, True)
+    online_updater._use_beta_channel = True
     assert not online_updater._check_should_update("1.1.0b0")
     assert online_updater._check_should_update("1.1.0b2")
-    settings.set(UPDATER_USER_BETA_CHANNEL, False)
+    online_updater._use_beta_channel = False
     assert not online_updater._check_should_update("1.1.0b2")
 
     # Beta Version to Alpha Version
@@ -64,7 +70,7 @@ def testCheckShouldUpdate(base_fixture):
     assert not online_updater._check_should_update("1.1.0a2")
     # enable - higher version should work
     updater.config.DEBUG_LEVEL = 1
-    settings.set(UPDATER_USER_BETA_CHANNEL, True)
+    online_updater._use_beta_channel = True
     assert online_updater._check_should_update("1.1.0a2")
     # lower or equal should not
     assert not online_updater._check_should_update("1.1.0a1")
@@ -72,7 +78,7 @@ def testCheckShouldUpdate(base_fixture):
 
     # Alpha Version
     updater.WAQD_VERSION = "1.1.0a1"
-    settings.set(UPDATER_USER_BETA_CHANNEL, True)
+    online_updater._use_beta_channel = True
     updater.config.DEBUG_LEVEL = 1
     # to alpha
     assert online_updater._check_should_update("1.1.0a2")
@@ -122,9 +128,8 @@ def testUpdaterLegacy(base_fixture):
     if config.DEBUG_LEVEL == 0:
         pytest.skip("unsupported configuration")
     settings = Settings(ini_folder=base_fixture.base_path / "src")
-    key = settings.get(UPDATER_KEY)
     from github import Github
-    github = Github(key)
+    github = Github()
     repository = github.get_user().get_repo(config.GITHUB_REPO_NAME)
 
     # download as tar because direct support

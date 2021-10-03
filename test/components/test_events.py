@@ -55,7 +55,8 @@ def testDailyGreeting(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
         while not ev._scheduler:
             time.sleep(1)
         comps.motion_detection_sensor._motion_detected = 5
-        #time.sleep(20)
+
+        time.sleep(20)
 
         #comps.motion_detection_sensor._motion_detected = 0
         #time.sleep(30)
@@ -92,6 +93,10 @@ def testEventScheduler(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
 
         comps.motion_detection_sensor._motion_detected = 0
         time.sleep(10)
+        time.sleep(10)
+        time.sleep(10)
+        time.sleep(10)
+
 
     # with freeze_time("2020-12-24 22:59:57", tick=True):
     #     time.sleep(5)

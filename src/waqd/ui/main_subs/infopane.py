@@ -29,7 +29,7 @@ class InfoPane(sub_ui.SubUi):
     def __init__(self, main_ui, settings):
         super().__init__(main_ui, settings)
         # call once at begin
-        self._cyclic_update()
+        self.init_with_cyclic_update()
 
     def _cyclic_update(self):
         # get time

@@ -39,13 +39,13 @@ function updater() {
     sudo apt -y install xscreensaver
 
     echo "# Full system update..."
-    echo "Full system update..."
+    echo "Full system update... (Step 1/3)"
     sudo apt full-upgrade -y --force-yes
 
-    echo "# Setting up the system"
+    echo "# Setting up the system (Step 2/3)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
 
-    echo "# Installing application..."
+    echo "# Installing application... (Step 3/3)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --install
     # needs installed app
     export PYTHONPATH=${SRC_DIR}

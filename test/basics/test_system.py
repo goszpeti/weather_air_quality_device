@@ -1,8 +1,7 @@
 import os
 import platform
 
-from .conftest import mock_run_on_target, mock_run_on_non_target
-
+from test.conftest import mock_run_on_target, mock_run_on_non_target
 
 def testInitOnNonTarget(base_fixture, mocker):
     mock_run_on_non_target(mocker)
@@ -70,13 +69,13 @@ def testGetIPOnTarget(base_fixture, mocker):
     mocker.patch('subprocess.check_output', mock_call)
     [ip4, ip6] = cur_system.get_ip()
     assert ip4 == ip4_ref
-    assert ip6 is None
+    assert ip6 == ""
 
     # check only ip6
     mock_call.return_value = ip6_ref.encode("utf-8")
     mocker.patch('subprocess.check_output', mock_call)
     [ip4, ip6] = cur_system.get_ip()
-    assert ip4 is None
+    assert ip4 == ""
     assert ip6 == ip6_ref
 
     # check both ip4 and ip6
