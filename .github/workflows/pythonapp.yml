@@ -40,9 +40,9 @@ jobs:
         pip3 install -r test/requirements.txt
         pip3 install -e .
     - name: Test basic modules
-      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append $GITHUB_WORKSPACE/test/basic
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append test/basics
     - name: Test components
-      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append  ./test/components
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append  test/components
     - name: Test ui
       run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append test/ui
     - name: Test integration
