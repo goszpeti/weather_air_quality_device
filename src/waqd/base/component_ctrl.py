@@ -35,8 +35,6 @@ class ComponentController():
     def __init__(self, settings: Settings):
         self._components = ComponentRegistry(settings)
 
-        self.internet_connected = False
-        self.internet_reconnect_try = 0  # internal counter for wlan restart
         # thread for watchdog
         self._watch_thread: Optional[threading.Thread] = None # re-usable thread, assignment is in init_all
         self._stop_event = threading.Event()  # own stop event for watchdog

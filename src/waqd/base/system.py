@@ -35,6 +35,8 @@ class RuntimeSystem():
     _instance = None
     _is_target_system = False
     _platform = ""
+    _internet_reconnect_try = 0  # internal counter for wlan restart
+    internet_connected = False
 
     def __new__(cls):
         if cls._instance is None:
@@ -101,7 +103,7 @@ class RuntimeSystem():
         If that doesn't help, the RPi reboots on the next failure.
         """
         if self.internet_connected:  # at least once connected:
-            if self.internet_reconnect_try == 2:
+            if self._internet_reconnect_try == 2:
                 Logger().error("Watchdog: Restarting wlan...")
                 os.system("sudo systemctl restart dhcpcd")
                 sleep(2)
@@ -109,12 +111,12 @@ class RuntimeSystem():
                 os.system("sudo dhclient")
                 sleep(5)
             # failed 3 times straight - restart linux
-            if self.internet_reconnect_try == 3:
+            if self._internet_reconnect_try == 3:
                 Logger().error("Watchdog: Restarting system - Net failure...")
                 self.restart()
         [ipv4, ipv6] = self.get_ip()
         if not ipv4 and not ipv6:
-            self.internet_reconnect_try += 1
+            self._internet_reconnect_try += 1
             sleep(5)
         else:
             self.internet_reconnect_try = 0

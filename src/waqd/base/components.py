@@ -156,7 +156,7 @@ class ComponentRegistry():
     def auto_updater(self) -> "OnlineUpdater":
         """ Access for OnlineUpdater singleton """
         from waqd.components.updater import OnlineUpdater
-        return self._create_component_instance(OnlineUpdater, [self._settings.get(AUTO_UPDATER_ENABLED),
+        return self._create_component_instance(OnlineUpdater, [self, self._settings.get(AUTO_UPDATER_ENABLED),
                              self._settings.get(UPDATER_USER_BETA_CHANNEL)])
 
     @property
