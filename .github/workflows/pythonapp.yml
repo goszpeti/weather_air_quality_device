@@ -40,13 +40,13 @@ jobs:
         pip3 install -r test/requirements.txt
         pip3 install -e .
     - name: Test basic modules
-      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --junit-xml=result.xml --cov-append test/basic
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append test/basic
     - name: Test components
-      run: "$PYTEST_CMD" test/components
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append  test/components
     - name: Test ui
-      run: $PYTEST_CMD test/ui
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append test/ui
     - name: Test integration
-      run: $PYTEST_CMD --disable-pytest-warnings test/integration
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append  --disable-pytest-warnings test/integration
 
   testUpdaterOnTarget:
     runs-on: self-hosted
