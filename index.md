@@ -1,4 +1,4 @@
-# <img src="https://github.com/goszpeti/WeatherAirQualityDevice/blob/master/doc/images/loading_screen.jpg" width="300">
+# <img src="https://github.com/goszpeti/WeatherAirQualityDevice/blob/master/doc/images/loading_screen.jpg?raw=true" width="300">
 
 # Weather and Air Quality Device - based on Raspberry Pi
 
@@ -13,14 +13,14 @@ The project will be written with the usage of Qt in Python.
 
 ## Features
 
-# <img src="https://github.com/goszpeti/WeatherAirQualityDevice/blob/master/doc/images/main_gui.jpg" width="600">
+# <img src="https://github.com/goszpeti/WeatherAirQualityDevice/blob/master/doc/images/main_gui.jpg?raw=true" width="600">
 
 * Info pane witch clock and date
 * Interior with sensor display
 * Exterior with online or remote sensor temperature
 * 3 day forecast
 
-# <img src="https://github.com/goszpeti/WeatherAirQualityDevice/blob/master//doc/images/options.jpg" width="600">
+# <img src="https://github.com/goszpeti/WeatherAirQualityDevice/blob/master//doc/images/options.jpg?raw=true" width="600">
 
 * Options for
   * display settings
@@ -47,7 +47,7 @@ There is a 3D-printable sensor case for holding up to 4 sensors, which is optimi
 You will need 4 M3x30 screws, and they will fit exactly on the back of the SmartiPi Touch 2 case.
 
 
-# <img src="https://github.com/goszpeti/WeatherAirQualityDevice/blob/master/doc/images/sensor_case.png" width="400">
+# <img src="https://github.com/goszpeti/WeatherAirQualityDevice/blob/master/doc/images/sensor_case.png?raw=true" width="400">
 
 ### Touchscreen
 
