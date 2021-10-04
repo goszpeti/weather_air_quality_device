@@ -37,7 +37,7 @@ REQUIRED = [
     #"Adafruit-PlatformDetect==2.4.0",  # MIT License - target and model detection - up to 3.10 not working with BMP280
     "Adafruit-CircuitPython-DHT==3.6.1",  # MIT License - temp/hum sensor
     "Adafruit-CircuitPython-CCS811==1.3.4",  # MIT License - co2/tvoc sensor
-    "Adafruit-CircuitPython-BME280==2.6.2",  # MIT License - temp/hum/baro sensor
+    "Adafruit-CircuitPython-BME280==2.6.6",  # MIT License - temp/hum/baro sensor
     "Adafruit-CircuitPython-BMP280==3.2.8",  # MIT License - temp/baro sensor
     "Adafruit-Circuitpython-BH1750==1.0.5",  # MIT License - light sensor
     "Adafruit-Circuitpython-ADS1x15==2.2.8",  # MIT License - currently only this ADC is used for analog sensors
