@@ -29,7 +29,7 @@ REQUIRED = [
     "PyGithub==1.55",  # LGPL - Access to GitHub in AutoUpdater
     "File-Read-Backwards==2.0.0",  # MIT License - for performance in DetailView
     # Sound
-    "gTTS==2.2.2",  # MIT License -Google TTS for speech
+    "gTTS==2.2.3",  # MIT License -Google TTS for speech
     "Python-VLC==3.0.12118",  # LGPLv2+ - use VLC for playing sounds
     # HW
     "RPi-Backlight==2.4.1",  # MIT License
