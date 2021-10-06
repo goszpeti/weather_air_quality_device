@@ -9,8 +9,8 @@ from typing import List, Dict
 
 USERNAME = os.environ.get("SUDO_USER", "")  # the original user
 if not USERNAME:
-    USERNAME = os.environ.get("USER", "")
-HOME = Path("/home") / USERNAME
+    USERNAME = os.environ.get("USER", "pi")
+HOME = Path(os.environ.get("HOME", ""))
 
 LOCAL_BIN_PATH = HOME / ".local" / "bin"
 INSTALL_TARGET_ROOT = HOME / ".local" / "pipx" / "venvs"
@@ -34,7 +34,7 @@ def setup_logger(file_dir: Path):
 def set_write_premissions(path: Path):
     os.makedirs(path, exist_ok=True)
     logging.info(f"Adding write permission for {str(path)}")
-    os.system(f"chmod ugo+rwx {path}")
+    os.system(f"chmod ugo+rwx {path}") # TODO can this fail if path does not exist?
 
 
 def get_waqd_install_path(package_root_dir: Path = installer_root_dir) -> Path:
@@ -47,16 +47,16 @@ def get_waqd_install_path(package_root_dir: Path = installer_root_dir) -> Path:
 
 def get_waqd_bin_name(package_root_dir: Path = installer_root_dir) -> str:
     waqd_version = get_waqd_version(package_root_dir)
-    suffix = INSTALL_DIR_SUFFIX.format(version=waqd_version)
+    suffix = INSTALL_DIR_SUFFIX.format(version=waqd_version).replace(".", "-")
     return "waqd" + suffix
 
 
 def get_waqd_version(package_root_dir: Path = installer_root_dir) -> str:
-    # determine version from config file - need to read it manually,
-    # importing is not possible without dependencies
+    """ Determine version from config file - need to read it manually,
+    # importing is not possible without dependencies """
     about: Dict[str, str] = {}
-    with open(os.path.join(package_root_dir, "src", "waqd", '__init__.py')) as f:
-        exec(f.read(), about)
+    with open(os.path.join(package_root_dir, "src", "waqd", '__init__.py')) as fd:
+        exec(fd.read(), about)  # pylint: disable=exec-used
     return about["__version__"]
 
 
@@ -65,8 +65,7 @@ def add_to_autostart(cmd_to_add: str, remove_items: List[str] = [], autostart_fi
     os.makedirs(autostart_file.parent, exist_ok=True)
     # append the current cmd to remove items- we don't want it twice
     remove_items.append(cmd_to_add)
-    if not autostart_file.exists():
-        open(autostart_file, "w").close()
+    autostart_file.touch(exist_ok=True)
     with open(autostart_file, "r+") as fd:
         entries = fd.readlines()
         # delete all entries in the file

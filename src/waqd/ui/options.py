@@ -92,7 +92,7 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.cancel_button.clicked.connect(self.close_ui)
         self._ui.shutdown_button.clicked.connect(self.call_shutdown)
         self._ui.restart_button.clicked.connect(self.call_restart)
-        self._ui.check_updates_button.clicked.connect(self.show_updater_ui)
+        self._ui.connect_wlan_button.clicked.connect(self.connect_wlan)
 
         self._ui.lang_cbox.currentTextChanged.connect(self._update_language_cbox)
         self._ui.forecast_background_cbox.currentTextChanged.connect(self._update_preview_forecast)
@@ -370,6 +370,16 @@ class OptionMainUi(QtWidgets.QDialog):
             # this is the default updater on RaspberryPi OS
             os.system("sudo apt update")  # TODO this takes a while, but is necessary
             os.system("pi-gpk-update-viewer&")
+
+    def connect_wlan(self):
+        ssid_name = "Connect_WAQD"
+        msg = QtWidgets.QMessageBox(parent=self)
+        msg.setWindowTitle("Connect to WLAN")
+        msg.setText(f"Connect to WLAN '{ssid_name}'' on your phone or pc, where you can select your network and enter your password!")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.exec_()
+        os.system(f'sudo wifi-connect -s "{ssid_name}"')
 
     def _cyclic_update(self):
         pass

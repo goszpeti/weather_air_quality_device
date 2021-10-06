@@ -52,7 +52,7 @@ def disable_screensaver():
                 new_lines.append(line)
             fd.writelines(new_lines)
     logging.info("Add the screensaver to autostart")
-    add_to_autostart("xscreensaver -no-splash")
+    add_to_autostart("xscreensaver -no-splash", [])
 
 
 def hide_mouse_cursor():
@@ -110,7 +110,7 @@ def setup_supported_locales():
             logging.error(str(e))
 
 
-def set_wallpaper(install_path: Path):  
+def set_wallpaper(install_path: Path):
     # Can't be run as sudo, or as sudo -runuser. Needs desktop manager running.
     # set wallpaper - get image from install dir
     lib_paths = (install_path / "lib").iterdir()
@@ -124,9 +124,12 @@ def set_wallpaper(install_path: Path):
                 logging.error(str(e))
             break
 
-def clean_desktop():
+
+def clean_lxde_desktop(desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/desktop-items-0.conf")):
     logging.info("Cleanup desktop icons...")
-    with open(HOME / ".config/pcmanfm/LXDE-pi/desktop-items-0.conf", "r+") as fd:
+    if not desktop_conf_path.exists():
+        return
+    with open(desktop_conf_path, "r+") as fd:
         lines = fd.readlines()
         fd.seek(0)
         new_lines = []
@@ -149,7 +152,7 @@ def do_setup():
     add_to_autostart("pcmanfm --desktop --profile LXDE-pi", ["lxpanel --profile"])
 
     # Cosmetic setup
-    clean_desktop()
+    clean_lxde_desktop()
     customize_splash_screen()
     hide_mouse_cursor()
     disable_screensaver()

@@ -4,15 +4,15 @@ from distutils.file_util import copy_file
 from pathlib import Path
 
 from waqd import __version__
+from installer import common, setup_system
 
 
 def testAddToAutostart(base_fixture):
-    from installer import common
     auto_update_file = base_fixture.testdata_path / "auto_updater" / "autostart.txt"
     temp_autostart_file = Path(tempfile.gettempdir()) / "tmp.txt"
 
     copy_file(str(auto_update_file), str(temp_autostart_file))
-    common.add_to_autostart("xscreensaver -no-splash", ["waqd"], temp_autostart_file)
+    setup_system.add_to_autostart("xscreensaver -no-splash", ["waqd"], temp_autostart_file)
     with open(temp_autostart_file) as ft:
         read = ft.readlines()
     assert read[0] == "@lxpanel --profile LXDE-pi\n"
@@ -20,7 +20,7 @@ def testAddToAutostart(base_fixture):
     assert read[2] == "@xscreensaver -no-splash\n"
     
     # 2nd run - don't change anything
-    common.add_to_autostart("xscreensaver -no-splash", [], temp_autostart_file)
+    setup_system.add_to_autostart("xscreensaver -no-splash", [], temp_autostart_file)
     with open(temp_autostart_file) as ft:
         read = ft.readlines()
     assert read[0] == "@lxpanel --profile LXDE-pi\n"
@@ -29,13 +29,11 @@ def testAddToAutostart(base_fixture):
     assert len(read) == 3
 
 def testGetVersion():
-    from installer import common
     assert common.get_waqd_version(common.installer_root_dir) == __version__
 
 
 def testGetWaqdBinName():
-    from installer import common
-    assert common.get_waqd_bin_name() == "waqd." + __version__
+    assert common.get_waqd_bin_name() == ("waqd." + __version__).replace(".", "-")
 
 
 def testGetInstallPath():
@@ -76,3 +74,36 @@ def testRegisterAutostart(base_fixture):
     assert read[0] == "@lxpanel --profile LXDE-pi\n"
     assert read[1] == "@pcmanfm --desktop --profile LXDE-pi\n"
     assert read[2] == "@" + str(start_waqd_path) + "\n"
+
+
+def testCleanDesktop():
+    # no error should happen if file does not exist
+    desktop_path = Path("nonexistant/bullshit.conf")
+    setup_system.clean_lxde_desktop(desktop_path) 
+    assert not desktop_path.exists()
+
+    desktop_path = Path(tempfile.gettempdir()) / "tmp.conf"
+    with open(desktop_path, "w") as fd:
+        fd.write("sometext\n")
+        fd.write("\tshow_trash=1\n")
+        fd.write("\tshow_mounts=1\n")
+        fd.write("someothertext\n")
+    setup_system.clean_lxde_desktop(desktop_path)
+    text = ""
+    with open(desktop_path, "r") as fd:
+        text = fd.read()
+    assert "someothertext" in text
+    assert "show_trash=0" in text
+    assert "show_mounts=0" in text
+
+# TODO
+# def testEnableHwAccess
+#     setup_system.
+
+# def testHideMouseCursor
+
+# def testCustomizeSplashScreen
+
+# def testSetupSupportedLocales
+
+# def testSetWallpaper

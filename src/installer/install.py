@@ -18,8 +18,8 @@ def install_waqd(waqd_version: str):
     # -- suffix creates a version specific dir. "." will be converted to "-" in the name
     suffix = INSTALL_DIR_SUFFIX.format(version=waqd_version)
     # must be executed as user
-    os.system(
-        f'runuser - {USERNAME} -c "pipx install --force --verbose --system-site-packages --suffix {suffix} {installer_root_dir}"')
+    args = f"--force --verbose --system-site-packages --suffix {suffix} {installer_root_dir}"
+    os.system(f'runuser - {USERNAME} -c "python3 -m pipx install {args}"')
 
 
 def register_waqd_autostart(bin_path: Path = LOCAL_BIN_PATH, autostart_file: Path = AUTOSTART_FILE):
@@ -34,7 +34,7 @@ def register_waqd_autostart(bin_path: Path = LOCAL_BIN_PATH, autostart_file: Pat
         sleep 1
     done
     """
-    with open(waqd_start_bin_path, "w") as fd:
+    with open(waqd_start_bin_path, "w", encoding="utf-8") as fd:
         fd.write(waqd_bin_content)
     # chmod +x
     os.chmod(waqd_start_bin_path, os.stat(waqd_start_bin_path).st_mode | stat.S_IEXEC)
