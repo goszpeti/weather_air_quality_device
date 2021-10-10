@@ -53,6 +53,8 @@ def do_install():
     install_waqd(get_waqd_version())
 
     register_waqd_autostart()
-
-    os.system("sudo reboot")
-    logging.info("Restarting in one minute...")
+    # restart only if not in docker (for testing)
+    ret = os.system("grep -q docker /proc/1/cgroup")
+    if ret != 0:
+        os.system("sudo reboot")
+        logging.info("Restarting in one minute...")
