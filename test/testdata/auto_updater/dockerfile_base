@@ -1,3 +1,4 @@
+# Create with: docker build . -t goszpeti/waqd:latest -f ./test/testdata/auto_updater/dockerfile_base'
 FROM navikey/raspbian-buster
 ENV DISPLAY=:99.0
 ENV DEBIAN_FRONTEND=noninteractive

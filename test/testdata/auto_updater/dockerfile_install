@@ -1,5 +1,5 @@
 # docker build . -t raspi/waqd:v1.5 -f ./test/testdata/auto_updater/dockerfile_install
-FROM goszpeti/waqd:1
+FROM goszpeti/waqd:latest
 USER pi
 WORKDIR /home/pi
 ENV COPY_PATH=/home/pi/waqd-dev
