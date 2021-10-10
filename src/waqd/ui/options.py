@@ -374,12 +374,17 @@ class OptionMainUi(QtWidgets.QDialog):
     def connect_wlan(self):
         ssid_name = "Connect_WAQD"
         msg = QtWidgets.QMessageBox(parent=self)
-        msg.setWindowTitle("Connect to WLAN")
-        msg.setText(f"Connect to WLAN '{ssid_name}'' on your phone or pc, where you can select your network and enter your password!")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        msg.setIcon(QtWidgets.QMessageBox.Information)
+        try: # TODO does this work?
+            os.system(f'sudo wifi-connect -s "{ssid_name}"')
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+            msg.setWindowTitle("Connect to WLAN")
+            msg.setText(f"Connect to WLAN '{ssid_name}'' on your phone or pc, where you can select your network and enter your password!")
+        except Exception as e:
+            msg.setIcon(QtWidgets.QMessageBox.Warning)
+            msg.setWindowTitle("Error while opening connection to WLAN")
+            msg.setText(f"Cannot start WLAN connection portal: {str(e)}")
         msg.exec_()
-        os.system(f'sudo wifi-connect -s "{ssid_name}"')
 
     def _cyclic_update(self):
         pass
