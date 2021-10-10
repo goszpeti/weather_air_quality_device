@@ -28,29 +28,26 @@ def testInstallInDockerWithoutGUI(base_fixture):
     # check if pipx installed
     res = cont.exec_run("python3 -m pipx --version", user="pi")
     assert res.exit_code == 0
-    # qtchooser -l
+    # check if pyqt-5 is installed
+    res = cont.exec_run("qtchooser -l", user="pi")
+    assert b"qt5" in res.output
     # check if waqd is installed
-    #arch = cont.get_archive("/home/pi/.config/lxsession/LXDE-pi/autostart")
+    res = cont.exec_run("/home/pi/.local/bin/waqd.{VERSION} --version")
+    assert VERSION in res.output.decode("utf-8")
+    # get waqd-start executable
+
+    # check if it was set for autostart
+
     # check system setup
     # autostart
+    #arch = cont.get_archive("/home/pi/.config/lxsession/LXDE-pi/autostart")
+
     # ... TODO
     #cont.attach()
 
     cont.stop()
     
     client.images.prune()
-    # TODO: cleanup stop running containers and delete them
-
-    # . /home/pi/waqd-dev/script/installer/exec_install.sh && waqd_install
-    # DEBUG: run manually
-    # /home/pi/waqd-dev/script/installer/start_installer.sh > system_install.log
-    # export DISPLAY=192.168.1.103:0
-    # source /usr/local/waqd/1.5.0b0/bin/activate
-
-#RUN sudo /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX  && waqd.1.6.0b2
-# assertions
-#RUN cat /home/pi/.local/pipx/venvs/waqd-1-6-0a6/lib/python3.7/site-packages/waqd/__init__.py
-
 
 # @pytest.mark.updater
 # def testUpdaterLegacy(base_fixture):
