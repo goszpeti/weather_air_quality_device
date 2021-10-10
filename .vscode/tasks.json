@@ -16,22 +16,13 @@
     "tasks": [
         {
             "group": "test",
-            "label": "create python venv",
+            "label": "Create python venv",
             "type": "shell",
             "command": "${config:python.pythonPath} -m venv .venv ",
             "problemMatcher": []
         },
-        // {
-        //     "group": "test",
-        //     "label": "activate venv",
-        //     "type": "shell",
-        //     "command": "./.venv/Scripts/activate.bat",
-        //     "runOptions": {
-        //         "runOn": "default"
-        //     }
-        // },
         {
-            "label": "restart",
+            "label": "Restart Target",
             "type": "shell",
             "command": "ssh pi@${input:raspiHost} sudo shutdown -r now",
             "problemMatcher": [
@@ -39,7 +30,7 @@
             ]
         },
         {
-            "label": "shutdown",
+            "label": "Shutdown Target",
             "type": "shell",
             "command": "ssh pi@${input:raspiHost}sudo shutdown -h now",
             "problemMatcher": [
@@ -61,24 +52,24 @@
         {
             "label": "Install package in editable mode",
             "type": "shell",
-            "runOptions": {
-                "runOn": "folderOpen"
-            },
+            // "runOptions": {
+            //     "runOn": "folderOpen"
+            // },
             "command": "${config:python.pythonPath} -m pip install -e .",
             "problemMatcher": []
         },
         {
             "label": "Install dev and test dependencies",
             "type": "shell",
-            "runOptions": {
-                "runOn": "folderOpen"
-            },
+            // "runOptions": {
+            //     "runOn": "folderOpen"
+            // },
             "upgrade_pip": "${config:python.pythonPath} -m pip install --upgrade pip ;",
             "command": "${config:python.pythonPath} -m pip install -r test/requirements.txt",
             "problemMatcher": []
         },
         {
-            "label": "CompileGui",
+            "label": "Compile gui",
             "type": "shell",
             "command": "${workspaceRoot}/script/build/compileGui.sh",
             "problemMatcher": [],
@@ -88,7 +79,7 @@
             }
         },
         {
-            "label": "CompileGui",
+            "label": "Add license headers",
             "type": "shell",
             "command": "python -m licenseheaders -t agpl-v3 -y 2019-2021 -o 'Péter Gosztolya & Contributors' -n WAQD -u https://github.com/goszpeti/WeatherAirQualityDevice -d ./src",
             "problemMatcher": [],
