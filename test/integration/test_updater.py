@@ -3,8 +3,7 @@ import tarfile
 import platform
 from urllib import request
 from distutils.file_util import copy_file
-
-from docker.client import DockerClient
+import docker
 import pytest
 from waqd import config
 from waqd import __version__ as VERSION
@@ -17,7 +16,7 @@ WAQD_IMAGE = "goszpeti/waqd_installed:1"
 @pytest.mark.updater
 def testInstallInDockerWithoutGUI(base_fixture):
     """ Start an installation with the installer running without the updater ui. """
-    client = DockerClient()
+    client = docker.from_env()
 
     docker_base_cmd = f"docker build {str(base_fixture.base_path)} -t {WAQD_IMAGE} -f ./test/testdata/auto_updater/dockerfile_install"
     if platform.system() == "Linux":
