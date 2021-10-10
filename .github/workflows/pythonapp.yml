@@ -60,4 +60,4 @@ jobs:
         pip3 install -e .
         source .venv/bin/activate & pytest -v --capture=no -m "updater" --disable-pytest-warnings
     - name: Cleanup
-      run: docker stop $(docker ps -q)
+      run: docker stop $(docker ps -q) || true

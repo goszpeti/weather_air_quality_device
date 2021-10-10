@@ -30,7 +30,6 @@ def testInitOnTarget(base_fixture, mocker):
 def testShutdown(base_fixture, mocker):
     from waqd.base.system import RuntimeSystem
 
-    # TODO this would be really cool in Docker with an actual system
     mock_run_on_target(mocker)
     mocker.patch('os.system')
     cur_system = RuntimeSystem()
@@ -43,7 +42,6 @@ def testShutdown(base_fixture, mocker):
 def testRestart(base_fixture, mocker):
     from waqd.base.system import RuntimeSystem
 
-    # TODO this would be really cool in Docker with an actual system
     mock_run_on_target(mocker)
     mocker.patch('os.system')
     cur_system = RuntimeSystem()

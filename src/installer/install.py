@@ -54,8 +54,5 @@ def do_install():
 
     register_waqd_autostart()
 
-    # restart only if not in docker (for testing)
-    ret = os.system("grep -q docker /proc/1/cgroup")
-    if ret != 0:
-        os.system("sudo reboot")
-        logging.info("Restarting in one minute...")
+    os.system("sudo reboot")
+    logging.info("Restarting in one minute...")

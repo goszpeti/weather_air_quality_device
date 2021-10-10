@@ -15,15 +15,15 @@ WAQD_IMAGE = "goszpeti/waqd_installed:1"
 @pytest.mark.updater
 def testInstallInDockerWithoutGUI(base_fixture):
     """ Start an installation with the installer running without the updater ui. """
-    client = DockerClient.from_env()
+    client = DockerClient()
 
     docker_base_cmd = f"docker build {str(base_fixture.base_path)} -t {WAQD_IMAGE} -f ./test/testdata/auto_updater/dockerfile_install"
     if platform.system() == "Linux":
         docker_base_cmd = docker_base_cmd + " | tee install.log"
     ret = os.system(docker_base_cmd)
     assert ret == 0
-
-    cont = client.containers.create(WAQD_IMAGE, name="waqd-install-test", stdin_open=True, auto_remove=True)
+    cont = client.containers.create(
+        WAQD_IMAGE, name="waqd-install-test", stdin_open=True, auto_remove=True)
     cont.start()
     # check if pipx installed
     res = cont.exec_run("python3 -m pipx --version", user="pi")
@@ -37,7 +37,8 @@ def testInstallInDockerWithoutGUI(base_fixture):
     #cont.attach()
 
     cont.stop()
-    # client.containers.prune()
+    
+    client.images.prune()
     # TODO: cleanup stop running containers and delete them
 
     # . /home/pi/waqd-dev/script/installer/exec_install.sh && waqd_install
