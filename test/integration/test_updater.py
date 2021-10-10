@@ -1,7 +1,6 @@
 import os
 import tarfile
 import platform
-from urllib import request
 from distutils.file_util import copy_file
 import docker
 import pytest

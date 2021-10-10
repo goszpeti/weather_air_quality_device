@@ -58,5 +58,6 @@ jobs:
       run: |
         pip3 install -r test/requirements.txt
         pip3 install -e .
-        pytest -v -m "updater" --junit-xml=result.xml --disable-pytest-warnings
-        docker stop $(docker ps -q)
+        source .venv/bin/activate & pytest -v --capture=no -m "updater" --disable-pytest-warnings
+    - name: Cleanup
+      run: docker stop $(docker ps -q)
