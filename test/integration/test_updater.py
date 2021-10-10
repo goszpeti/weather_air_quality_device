@@ -11,12 +11,12 @@ from waqd.settings import Settings, UPDATER_USER_BETA_CHANNEL, AUTO_UPDATER_ENAB
 from waqd.components.updater import OnlineUpdater
 from waqd.base.components import ComponentRegistry
 
-RASPI_BASE_IMAGE = "raspi/raspbian_py:1"
-WAQD_IMAGE = "raspi/waqd_install:1"
+RASPI_BASE_IMAGE = "goszpeti/waqd:1"
+WAQD_IMAGE = "goszpeti/waqd_installed:1"
 
 @pytest.mark.updater
 def testCreateBaseImageInDocker(base_fixture):
-    docker_base_cmd = f"docker build {str(base_fixture.base_path)} -t {WAQD_IMAGE} -f ./test/testdata/auto_updater/dockerfile_install"
+    docker_base_cmd = f"docker build {str(base_fixture.base_path)} -t {RASPI_BASE_IMAGE} -f ./test/testdata/auto_updater/dockerfile_base"
     ret = os.system(docker_base_cmd)
     assert ret == 0
     # from docker.client import DockerClient

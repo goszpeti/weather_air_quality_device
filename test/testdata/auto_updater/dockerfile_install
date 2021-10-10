@@ -1,5 +1,5 @@
 # docker build . -t raspi/waqd:v1.5 -f ./test/testdata/auto_updater/dockerfile_install
-FROM raspi/raspbian_py:1
+FROM goszpeti/waqd:1
 USER pi
 WORKDIR /home/pi
 ENV COPY_PATH=/home/pi/waqd-dev
@@ -14,7 +14,7 @@ COPY --chown=pi ./README.md ${COPY_PATH}/
 
 RUN chmod +x ${COPY_PATH}/script/installer/start_installer.sh
 RUN chmod +x ${COPY_PATH}/script/installer/exec_install.sh
-
-#RUN ${COPY_PATH}/script/installer/start_installer.sh
+# only works in bash
+RUN bash -lic ". /home/pi/waqd-dev/script/installer/exec_install.sh && waqd_install"
 
 ENTRYPOINT bash
