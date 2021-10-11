@@ -33,9 +33,8 @@ def setup_logger(file_dir: Path):
 
 
 def set_write_premissions(path: Path):
-    os.makedirs(path, exist_ok=True)
-    os.system(f"chmod ugo+rwx {path}") # TODO can this fail if path does not exist?
-
+    os.system(f"sudo chown {USERNAME} {str(path)}")
+    os.system(f"chmod ugo+rwx {str(path)}")
 
 def get_waqd_install_path(package_root_dir: Path = installer_root_dir) -> Path:
     # determine path to installation
@@ -63,6 +62,7 @@ def get_waqd_version(package_root_dir: Path = installer_root_dir) -> str:
 def add_to_autostart(cmd_to_add: str, remove_items: List[str] = [], autostart_file: Path = AUTOSTART_FILE):
     """ Uses LXDE autostart file and format """
     os.makedirs(autostart_file.parent, exist_ok=True)
+    os.system(f"sudo chown {USERNAME} {str(autostart_file.parent)}")
     # append the current cmd to remove items- we don't want it twice
     remove_items.append(cmd_to_add)
     autostart_file.touch(exist_ok=True)

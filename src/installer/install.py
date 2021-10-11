@@ -26,6 +26,7 @@ def register_waqd_autostart(bin_path: Path = LOCAL_BIN_PATH, autostart_file: Pat
     # Create an executable with auto restart for the current user
     # TODO: This would be nicer? with systemctl -> Restart=on-failure..
     os.makedirs(bin_path, exist_ok=True)
+    
     waqd_start_bin_path = bin_path / "waqd-start"
     waqd_bin_name = get_waqd_bin_name()
     waqd_bin_content = f"""#!/bin/bash

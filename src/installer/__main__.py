@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 from installer import install, setup_system, common
 
 
@@ -14,8 +15,10 @@ if __name__ == '__main__':
                        action='store_true')
     args = parser.parse_args()
     # ensure, that the config dir exists and is writable
+    os.makedirs(str(common.USER_CONFIG_PATH), exist_ok=True)
     common.set_write_premissions(common.USER_CONFIG_PATH)
     common.setup_logger(common.USER_CONFIG_PATH)
+
     if args.install:
         install.do_install()
     elif args.setup_system:
