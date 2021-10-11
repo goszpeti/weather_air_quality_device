@@ -4,6 +4,7 @@ USER pi
 WORKDIR /home/pi
 ENV COPY_PATH=/home/pi/waqd-dev
 ENV DISPLAY=:99.0
+ENV HOME=/home/pi
 
 # copy src
 COPY --chown=pi ./src/ ${COPY_PATH}/src
