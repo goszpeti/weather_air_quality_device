@@ -11,7 +11,7 @@ from typing import List, Dict
 USERNAME = os.environ.get("SUDO_USER", "")  # the original user
 if not USERNAME:
     USERNAME = os.environ.get("USER", "pi")
-HOME = Path(os.environ.get("HOME", ""))
+HOME = Path("/home") / USERNAME
 
 LOCAL_BIN_PATH = HOME / ".local" / "bin"
 INSTALL_TARGET_ROOT = HOME / ".local" / "pipx" / "venvs"

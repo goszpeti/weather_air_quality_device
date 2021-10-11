@@ -15,10 +15,10 @@ jobs:
     steps:
       - name: Runner workspace path
         run: |
-          echo "Cleaning up previous run"
-          rm -rf "${{ github.workspace }}"
           echo "Stopping Docker containers"
           run: docker stop $(docker ps -q) || true
+          echo "Cleaning up previous run"
+          rm -rf "${{ github.workspace }}"
 
   # testOnTarget:
   #   runs-on: self-hosted
