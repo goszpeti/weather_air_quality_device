@@ -3,6 +3,7 @@
 
 import logging
 import os
+import sys
 from pathlib import Path
 from typing import List, Dict
 
@@ -28,7 +29,7 @@ def setup_logger(file_dir: Path):
     logging.basicConfig(level=logging.DEBUG,
                         filename=str(file_dir / "waqd_install.log"),
                         format=r"%(asctime)s :: %(levelname)s :: %(message)s")
-    logging.getLogger().addHandler(logging.StreamHandler())
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def set_write_premissions(path: Path):
