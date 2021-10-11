@@ -54,7 +54,7 @@ jobs:
 
   testUpdaterOnTarget:
     runs-on: self-hosted
-  #  needs: testOnTarget
+    needs: cleaner
     steps:
     - uses: actions/checkout@v2
     - name: Run tests
