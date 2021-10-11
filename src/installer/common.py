@@ -34,7 +34,6 @@ def setup_logger(file_dir: Path):
 
 def set_write_premissions(path: Path):
     os.makedirs(path, exist_ok=True)
-    logging.info(f"Adding write permission for {str(path)}")
     os.system(f"chmod ugo+rwx {path}") # TODO can this fail if path does not exist?
 
 

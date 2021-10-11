@@ -43,11 +43,6 @@ def register_waqd_autostart(bin_path: Path = LOCAL_BIN_PATH, autostart_file: Pat
     add_to_autostart(str(waqd_start_bin_path), ["waqd", "PiWeather"], autostart_file)
 
 def do_install():
-    # ensure, that the config dir exists and is writable
-    set_write_premissions(USER_CONFIG_PATH)
-
-    setup_logger(USER_CONFIG_PATH)
-
     # install and add to autostart
     set_write_premissions(INSTALL_TARGET_ROOT)
     install_waqd(get_waqd_version())
