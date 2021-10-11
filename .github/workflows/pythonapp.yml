@@ -17,6 +17,9 @@ jobs:
         run: |
           echo "Cleaning up previous run"
           rm -rf "${{ github.workspace }}"
+          echo "Stopping Docker containers"
+          run: docker stop $(docker ps -q) || true
+
   # testOnTarget:
   #   runs-on: self-hosted
   #   needs: cleaner
@@ -55,10 +58,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run tests
-      continue-on-error: true
       run: |
         pip3 install -r test/requirements.txt
         pip3 install -e .
         source .venv/bin/activate & pytest -v --capture=no -m "updater" --disable-pytest-warnings
-    - name: Cleanup
-      run: docker stop $(docker ps -q) || true
