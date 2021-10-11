@@ -55,7 +55,7 @@ QPushButton::on {
 }
 QTextBrowser{background-color: transparent;color: white;border: 1px solid white}
 QLabel{background-color: transparent;color: white;}
-QMessageBox{background-color: grey;color: black}</string>
+QMessageBox{background-color: rgb(138,166,211);color: black}</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
