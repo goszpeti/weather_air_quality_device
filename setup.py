@@ -22,7 +22,7 @@ REQUIRES_PYTHON = '>=3.7.0'
 # What packages are required for this module to be executed?
 REQUIRED = [
     # Backend
-    "DebugPy==1.4.3",  # MS VSCode debugger for dynamic debugging
+    "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
     "JsonSchema==4.0.1",  # MIT License - for events json schema validation
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
     "APScheduler==3.8.0",  # MIT License - Scheduler for Events function
