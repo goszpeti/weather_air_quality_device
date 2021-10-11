@@ -16,7 +16,7 @@ jobs:
       - name: Runner workspace path
         run: |
           echo "Stopping Docker containers"
-          run: docker stop $(docker ps -q) || true
+          docker stop $(docker ps -q) || true
           echo "Cleaning up previous run"
           rm -rf "${{ github.workspace }}"
 
