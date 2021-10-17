@@ -38,17 +38,22 @@ def set_write_premissions(path: Path):
 
 def get_waqd_install_path(package_root_dir: Path = installer_root_dir) -> Path:
     # determine path to installation
-    dir_name = get_waqd_bin_name(package_root_dir)
+    dir_name = get_waqd_bindir_name(package_root_dir)
     install_path = INSTALL_TARGET_ROOT / dir_name
     return install_path
 
 
-def get_waqd_bin_name(package_root_dir: Path = installer_root_dir) -> str:
+def get_waqd_bindir_name(package_root_dir: Path = installer_root_dir) -> str:
     waqd_version = get_waqd_version(package_root_dir)
     # replace . with - (pipx does this)
     suffix = INSTALL_DIR_SUFFIX.format(version=waqd_version).replace(".", "-")
     return "waqd" + suffix
 
+
+def get_waqd_bin_name(package_root_dir: Path = installer_root_dir) -> str:
+    waqd_version = get_waqd_version(package_root_dir)
+    suffix = INSTALL_DIR_SUFFIX.format(version=waqd_version)
+    return "waqd" + suffix
 
 def get_waqd_version(package_root_dir: Path = installer_root_dir) -> str:
     """ Determine version from config file - need to read it manually,

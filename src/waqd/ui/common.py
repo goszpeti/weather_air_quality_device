@@ -224,7 +224,7 @@ def format_float_temp_text(html_text: str, value: Optional[float], color="white"
     if value is None:
         temp_val = format_text(html_text, "N/A", "string", color=color)
     else:
-        temp_val = format_text(html_text, value, "float", color=color)
+        temp_val = format_text(html_text, float(value), "float", color=color)
     return temp_val
 
 

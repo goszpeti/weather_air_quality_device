@@ -17,6 +17,12 @@ def testDebugDisabledForRelease():
 
 
 @pytest.mark.integration
+def testVersionNumberValid():
+    from waqd import __version__ as VERSION
+    from distutils.version import StrictVersion as Version
+    assert Version(VERSION)
+
+@pytest.mark.integration
 def testSmoke(base_fixture):
     backup = sys.argv
     sys.argv = []
