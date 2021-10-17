@@ -1,8 +1,3 @@
-import os
-import tarfile
-
-from urllib import request
-from distutils.file_util import copy_file
 
 import pytest
 from waqd import config
