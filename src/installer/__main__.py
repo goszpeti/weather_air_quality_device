@@ -17,7 +17,9 @@ if __name__ == '__main__':
     # ensure, that the config dir exists and is writable
     os.makedirs(str(common.USER_CONFIG_PATH), exist_ok=True)
     common.set_write_premissions(common.USER_CONFIG_PATH)
-    common.setup_logger(common.USER_CONFIG_PATH)
+    log_file = common.USER_CONFIG_PATH / "waqd_install.log"
+    common.set_write_premissions(log_file)
+    common.setup_logger(log_file)
 
     if args.install:
         install.do_install()

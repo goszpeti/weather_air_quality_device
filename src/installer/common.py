@@ -24,17 +24,17 @@ current_dir = Path(os.path.abspath(os.path.dirname(__file__)))
 installer_root_dir = current_dir.parent.parent
 
 
-def setup_logger(file_dir: Path):
+def setup_logger(log_file: Path):
     # set up file logger - log everything in file and stdio
     logging.basicConfig(level=logging.DEBUG,
-                        filename=str(file_dir / "waqd_install.log"),
+                        filename=str(log_file),
                         format=r"%(asctime)s :: %(levelname)s :: %(message)s")
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def set_write_premissions(path: Path):
+    os.system(f"sudo chmod ugo+rwx {str(path)}")
     os.system(f"sudo chown {USERNAME} {str(path)}")
-    os.system(f"chmod ugo+rwx {str(path)}")
 
 def get_waqd_install_path(package_root_dir: Path = installer_root_dir) -> Path:
     # determine path to installation
