@@ -62,6 +62,9 @@ def handle_cmd_args(settings):
 
     args = parser.parse_args()
     config.DEBUG_LEVEL = args.debug
+    debug_env_var = os.getenv("WAQD_DEBUG")
+    if debug_env_var:
+        config.DEBUG_LEVEL = int(debug_env_var)
     if args.headless:
         settings.set(DISPLAY_TYPE, DISP_TYPE_HEADLESS)
 
