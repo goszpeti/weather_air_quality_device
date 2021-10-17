@@ -38,7 +38,7 @@ def set_write_premissions(path: Path):
 
 def get_waqd_install_path(package_root_dir: Path = installer_root_dir) -> Path:
     # determine path to installation
-    dir_name = get_waqd_bin_name(package_root_dir)
+    dir_name = get_waqd_bindir_name(package_root_dir)
     install_path = INSTALL_TARGET_ROOT / dir_name
     return install_path
 
