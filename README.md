@@ -106,6 +106,7 @@ Use virtualenv:
 
 * Weather Icons licensed under [SIL OFL 1.1](http://scripts.sil.org/OFL) from http://weathericons.io)
 * Franzo Font under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) from https://fontlibrary.org/en/font/franzo
+* wifi-connect under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) from https://github.com/balena-os/wifi-connect
 * Images from Unsplash under [Unsplash license](https://unsplash.com/license) from https://unsplash.com
   * https://unsplash.com/photos/VjMJmwZOs9M from Jesse Borovnica
   * https://unsplash.com/photos/GLf7bAwCdYg from Adrian Infernus

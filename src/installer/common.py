@@ -3,6 +3,7 @@
 
 import logging
 import os
+import sys
 from pathlib import Path
 from typing import List, Dict
 
@@ -10,7 +11,7 @@ from typing import List, Dict
 USERNAME = os.environ.get("SUDO_USER", "")  # the original user
 if not USERNAME:
     USERNAME = os.environ.get("USER", "pi")
-HOME = Path(os.environ.get("HOME", ""))
+HOME = Path("/home") / USERNAME
 
 LOCAL_BIN_PATH = HOME / ".local" / "bin"
 INSTALL_TARGET_ROOT = HOME / ".local" / "pipx" / "venvs"
@@ -23,30 +24,28 @@ current_dir = Path(os.path.abspath(os.path.dirname(__file__)))
 installer_root_dir = current_dir.parent.parent
 
 
-def setup_logger(file_dir: Path):
+def setup_logger(log_file: Path):
     # set up file logger - log everything in file and stdio
     logging.basicConfig(level=logging.DEBUG,
-                        filename=str(file_dir / "waqd_install.log"),
+                        filename=str(log_file),
                         format=r"%(asctime)s :: %(levelname)s :: %(message)s")
-    logging.getLogger().addHandler(logging.StreamHandler())
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def set_write_premissions(path: Path):
-    os.makedirs(path, exist_ok=True)
-    logging.info(f"Adding write permission for {str(path)}")
-    os.system(f"chmod ugo+rwx {path}") # TODO can this fail if path does not exist?
-
+    os.system(f"sudo chmod ugo+rwx {str(path)}")
+    os.system(f"sudo chown {USERNAME} {str(path)}")
 
 def get_waqd_install_path(package_root_dir: Path = installer_root_dir) -> Path:
     # determine path to installation
     dir_name = get_waqd_bin_name(package_root_dir)
-    # replace . with - (pipx does this)
     install_path = INSTALL_TARGET_ROOT / dir_name
     return install_path
 
 
 def get_waqd_bin_name(package_root_dir: Path = installer_root_dir) -> str:
     waqd_version = get_waqd_version(package_root_dir)
+    # replace . with - (pipx does this)
     suffix = INSTALL_DIR_SUFFIX.format(version=waqd_version).replace(".", "-")
     return "waqd" + suffix
 
@@ -63,6 +62,7 @@ def get_waqd_version(package_root_dir: Path = installer_root_dir) -> str:
 def add_to_autostart(cmd_to_add: str, remove_items: List[str] = [], autostart_file: Path = AUTOSTART_FILE):
     """ Uses LXDE autostart file and format """
     os.makedirs(autostart_file.parent, exist_ok=True)
+    os.system(f"sudo chown {USERNAME} {str(autostart_file.parent)}")
     # append the current cmd to remove items- we don't want it twice
     remove_items.append(cmd_to_add)
     autostart_file.touch(exist_ok=True)

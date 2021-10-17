@@ -15,8 +15,11 @@ jobs:
     steps:
       - name: Runner workspace path
         run: |
+          echo "Stopping Docker containers"
+          docker stop $(docker ps -q) || true
           echo "Cleaning up previous run"
           rm -rf "${{ github.workspace }}"
+
   testOnTarget:
     runs-on: self-hosted
     needs: cleaner
@@ -47,15 +50,15 @@ jobs:
     - name: Test ui
       run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append test/ui
     - name: Test integration
-      run: source .venv/bin/activate & pytest -m "integration" -v --cov-report=term --cov=waqd --cov-branch --cov-append  --disable-pytest-warnings test/integration
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append  --disable-pytest-warnings test/integration
 
   testUpdaterOnTarget:
     runs-on: self-hosted
-    needs: testOnTarget
+    needs: cleaner
     steps:
     - uses: actions/checkout@v2
     - name: Run tests
       run: |
         pip3 install -r test/requirements.txt
         pip3 install -e .
-        pytest -v -m "updater" --junit-xml=result.xml --disable-pytest-warnings
+        source .venv/bin/activate & pytest -v --capture=no -m "updater" --disable-pytest-warnings

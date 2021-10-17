@@ -1,4 +1,6 @@
 import argparse
+import logging
+import os
 from installer import install, setup_system, common
 
 
@@ -12,6 +14,12 @@ if __name__ == '__main__':
     group.add_argument("--set_wallpaper",
                        action='store_true')
     args = parser.parse_args()
+    # ensure, that the config dir exists and is writable
+    os.makedirs(str(common.USER_CONFIG_PATH), exist_ok=True)
+    common.set_write_premissions(common.USER_CONFIG_PATH)
+    log_file = common.USER_CONFIG_PATH / "waqd_install.log"
+    common.set_write_premissions(log_file)
+    common.setup_logger(log_file)
 
     if args.install:
         install.do_install()
@@ -19,3 +27,5 @@ if __name__ == '__main__':
         setup_system.do_setup()
     elif args.set_wallpaper: # need to handle this separately
         setup_system.set_wallpaper(common.get_waqd_install_path())
+    else:
+        logging.info("Nothing to do!")

@@ -1,4 +1,5 @@
 # python requirements for the tests for CT
+docker
 freezegun
 pylint
 mypy

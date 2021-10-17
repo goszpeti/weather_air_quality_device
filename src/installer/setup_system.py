@@ -143,10 +143,6 @@ def clean_lxde_desktop(desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/de
 
 
 def do_setup():
-    # ensure, that the config dir exists and is writable
-    set_write_premissions(USER_CONFIG_PATH)
-    setup_logger(USER_CONFIG_PATH)
-
     # System setup
     # Start only the desktop, but not the taskbar
     add_to_autostart("pcmanfm --desktop --profile LXDE-pi", ["lxpanel --profile"])

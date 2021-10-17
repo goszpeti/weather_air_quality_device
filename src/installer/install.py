@@ -26,6 +26,7 @@ def register_waqd_autostart(bin_path: Path = LOCAL_BIN_PATH, autostart_file: Pat
     # Create an executable with auto restart for the current user
     # TODO: This would be nicer? with systemctl -> Restart=on-failure..
     os.makedirs(bin_path, exist_ok=True)
+    
     waqd_start_bin_path = bin_path / "waqd-start"
     waqd_bin_name = get_waqd_bin_name()
     waqd_bin_content = f"""#!/bin/bash
@@ -43,17 +44,11 @@ def register_waqd_autostart(bin_path: Path = LOCAL_BIN_PATH, autostart_file: Pat
     add_to_autostart(str(waqd_start_bin_path), ["waqd", "PiWeather"], autostart_file)
 
 def do_install():
-    # ensure, that the config dir exists and is writable
-    set_write_premissions(USER_CONFIG_PATH)
-
-    setup_logger(USER_CONFIG_PATH)
-
     # install and add to autostart
     set_write_premissions(INSTALL_TARGET_ROOT)
     install_waqd(get_waqd_version())
 
     register_waqd_autostart()
-
     # restart only if not in docker (for testing)
     ret = os.system("grep -q docker /proc/1/cgroup")
     if ret != 0:
