@@ -313,7 +313,7 @@ class OpenWeatherMap(Component):
                 overall_weather.sunrise, overall_weather.sunset,
                 0, 0, 0,  # currently unused
                 overall_weather.clouds,
-                overall_weather.temp
+                float(overall_weather.temp)
             )
             self._five_day_forecast.append(daily_weather)
         # calculate min/max night and daytime temps
