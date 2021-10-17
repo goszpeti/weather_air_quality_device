@@ -33,7 +33,11 @@ def testGetVersion():
 
 
 def testGetWaqdBinName():
-    assert common.get_waqd_bin_name() == ("waqd." + __version__).replace(".", "-")
+    assert common.get_waqd_bin_name() == ("waqd." + __version__)
+
+
+def testGetWaqdBinDirName():
+    assert common.get_waqd_bindir_name() == ("waqd." + __version__).replace(".", "-")
 
 
 def testGetInstallPath():

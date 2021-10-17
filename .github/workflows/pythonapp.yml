@@ -50,8 +50,7 @@ jobs:
     - name: Test ui
       run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append test/ui
     - name: Test integration
-      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append  --disable-pytest-warnings test/integration
-
+      run: source .venv/bin/activate & pytest -v --cov-report=term --cov=waqd --cov-branch --cov-append -m integration
   testUpdaterOnTarget:
     runs-on: self-hosted
     needs: cleaner
