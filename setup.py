@@ -33,7 +33,7 @@ REQUIRED = [
     "Python-VLC==3.0.12118",  # LGPLv2+ - use VLC for playing sounds
     # HW
     "RPi-Backlight==2.4.1",  # MIT License
-    "Adafruit-Blinka==6.9.1",
+    "Adafruit-Blinka==6.15.0",
     #"Adafruit-PlatformDetect==2.4.0",  # MIT License - target and model detection - up to 3.10 not working with BMP280
     "Adafruit-CircuitPython-DHT==3.6.1",  # MIT License - temp/hum sensor
     "Adafruit-CircuitPython-CCS811==1.3.4",  # MIT License - co2/tvoc sensor
