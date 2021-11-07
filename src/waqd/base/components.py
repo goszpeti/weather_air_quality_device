@@ -103,16 +103,17 @@ class ComponentRegistry():
 
     def stop_component(self, name, reload_intended=False):
         """ Stops a component. CyclicComponentRegistry can take some time. """
-        component = self._components.pop(name)
-        if not component:
-            return
-        # don't do anything, when reload is intended and the component forbids it
-        if reload_intended and component.reload_forbidden:
-            return
-        self._logger.info("ComponentRegistry: Stopping %s", name)
-        component.stop()
-        # call destructors
-        del component
+        with self.comp_init_lock:
+            component = self._components.pop(name)
+            if not component:
+                return
+            # don't do anything, when reload is intended and the component forbids it
+            if reload_intended and component.reload_forbidden:
+                return
+            self._logger.info("ComponentRegistry: Stopping %s", name)
+            component.stop()
+            # call destructors
+            del component
 
     def show(self):
         """ Check all components and thus initialize them """
