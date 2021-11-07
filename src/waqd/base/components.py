@@ -48,7 +48,7 @@ class ComponentRegistry():
     """
     # Constants for Component names to an alternitave method to access components
 
-    comp_init_lock = threading.RLock()  # lock to only instantiate one component at a time
+    comp_init_lock = threading.Lock()  # lock to only instantiate one component at a time
 
     def __init__(self, settings: Settings):
         self._logger = Logger()
@@ -94,10 +94,12 @@ class ComponentRegistry():
                 self._stop_thread.start()
                 break
         # also remove sensor instances
+        sensors_to_delete = []
         for sensor in self._sensors:
             if instance is self._sensors[sensor]:
-                self._sensors.pop(sensor)
-                break
+                sensors_to_delete.append(sensor)
+        for sensor in sensors_to_delete:
+            self._sensors.pop(sensor)
 
     def stop_component(self, name, reload_intended=False):
         """ Stops a component. CyclicComponentRegistry can take some time. """

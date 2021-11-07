@@ -129,8 +129,8 @@ class TempSensor(SensorComponent):
             return None
         return self._temp_impl.get_value()
 
-    def _set_temperature(self, value):
-        self._temp_impl.set_value(value)
+    def _set_temperature(self, value) -> bool:
+        return self._temp_impl.set_value(value)
 
 
 class BarometricSensor(SensorComponent):
@@ -327,17 +327,19 @@ class DHT22(TempSensor, HumiditySensor, CyclicComponent):
             temperature = self._sensor_driver.temperature
         except Exception as error:
             self._error_num += 1
-            if self._error_num == 3:
-                self._logger.error("DHT22: Restarting sensor after 3 errors")
-                self._comps.stop_component_instance(self)
-
             # errors happen fairly often, keep going
             self._logger.error("DHT22: Can't read sensor - %s", str(error))
+            return
+        if self._error_num >= 3:
+            self._logger.error("DHT22: Restarting sensor after 3 errors")
+            self._comps.stop_component_instance(self)
             return
         self._error_num = 0
 
         self._set_humidity(humidity)
-        self._set_temperature(temperature)
+        valid = self._set_temperature(temperature)
+        if not valid:
+            self._error_num += 1
 
         self._logger.debug("DHT22: Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(
             temperature, humidity))
