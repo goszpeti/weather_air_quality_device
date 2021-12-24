@@ -229,9 +229,15 @@ QLabel{background-color: transparent;color: white;}\n</string>
        <height>71</height>
       </rect>
      </property>
-     <layout class="QGridLayout" name="exterior_current_day_forecast_grid" columnstretch="1,2,1" columnminimumwidth="0,80,0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>1</number>
+      </property>
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMinAndMaxSize</enum>
+      </property>
       <property name="leftMargin">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
@@ -239,10 +245,7 @@ QLabel{background-color: transparent;color: white;}\n</string>
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <property name="horizontalSpacing">
-       <number>4</number>
-      </property>
-      <item row="0" column="0" rowspan="2">
+      <item>
        <widget class="ClickableLabel" name="exterior_forecast_icon">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -258,8 +261,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="maximumSize">
          <size>
-          <width>512</width>
-          <height>512</height>
+          <width>80</width>
+          <height>75</height>
          </size>
         </property>
         <property name="sizeIncrement">
@@ -300,7 +303,7 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" rowspan="2">
+      <item>
        <widget class="QLabel" name="exterior_forecast_temps_value">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -312,6 +315,12 @@ QLabel{background-color: transparent;color: white;}\n</string>
          <size>
           <width>70</width>
           <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>85</width>
+          <height>16777215</height>
          </size>
         </property>
         <property name="font">
@@ -354,18 +363,65 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+      <item>
+       <widget class="QLabel" name="exterior_forecast_hum_value">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-        <property name="sizeHint" stdset="0">
+        <property name="minimumSize">
          <size>
-          <width>40</width>
-          <height>20</height>
+          <width>100</width>
+          <height>0</height>
          </size>
         </property>
-       </spacer>
+        <property name="maximumSize">
+         <size>
+          <width>120</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>17</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+          <kerning>true</kerning>
+         </font>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel{background-color: transparent;color: white}</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="text">
+         <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;&lt;span&gt;RH:&lt;/span&gt;&lt;span&gt;50&lt;/span&gt;&lt;span&gt;%&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::AutoText</enum>
+        </property>
+        <property name="scaledContents">
+         <bool>false</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="indent">
+         <number>-1</number>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

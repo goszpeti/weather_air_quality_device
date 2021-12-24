@@ -30,7 +30,7 @@ from github import Github, Repository
 import waqd.config as config
 from waqd import __version__ as WAQD_VERSION
 from waqd.base.component import CyclicComponent
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 
 class OnlineUpdater(CyclicComponent):
     """

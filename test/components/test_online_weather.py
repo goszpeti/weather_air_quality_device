@@ -1,6 +1,6 @@
 from freezegun import freeze_time
 
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 from waqd.components.online_weather import OpenWeatherMap
 from waqd.settings import LOCATION, Settings
 

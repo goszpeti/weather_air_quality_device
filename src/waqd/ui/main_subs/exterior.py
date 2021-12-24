@@ -34,7 +34,7 @@ class Exterior(sub_ui.SubUi):
     Exterior segment of the main ui.
     Displays the outside temperature, current-day forecast and temperature icon.
     """
-    UPDATE_TIME = 600 * 1000  # 10 minutes in microseconds
+    UPDATE_TIME = 10 * 1000  # 10 s in microseconds
 
     def __init__(self, main_ui, settings):
         super().__init__(main_ui, settings)
@@ -42,6 +42,7 @@ class Exterior(sub_ui.SubUi):
 
         # save default text to restore formatting
         self._default_temp_text = self._ui.exterior_temp_value.text()
+        self._default_hum_text = self._ui.exterior_forecast_hum_value.text()
 
         day_icon = get_asset_file("weather_icons", "day-800")
         common.draw_svg(self._ui.exterior_forecast_icon, day_icon, scale=3)
@@ -68,20 +69,21 @@ class Exterior(sub_ui.SubUi):
             return
         forecast = self._comps.weather_info.get_5_day_forecast()
         current_weather = self._comps.weather_info.get_current_weather()
+        temp_value = None
+        hum_value = None
 
         if not current_weather or not forecast:  # handling for no connection - throw away value after an hour
-            if not self._online_info_date_time:  # never got any value
-                online_temp_value = None
-            else:  # look, if last value is older than 5 minutes
+            if self._online_info_date_time:  # look, if last value is older than 5 minutes
                 current_date_time = datetime.datetime.now()
                 time_delta = current_date_time - self._online_info_date_time
                 if time_delta.seconds > 300:  # 5 minutes
-                    online_temp_value = None
+                    temp_value = None
                 else:
                     return  # forecast still valid, don't change displayed value
         else:
             self._online_info_date_time = current_weather.fetch_time
-            online_temp_value = current_weather.temp  # for later use
+            temp_value = current_weather.temp  # for later use
+            hum_value = current_weather.humidity
             online_weather_desc = current_weather.description
             self._logger.debug("ExteriorGui: Current weather condition is %s",
                                online_weather_desc)
@@ -122,15 +124,20 @@ class Exterior(sub_ui.SubUi):
                 common.format_temp_text_minmax(self._default_min_max_text,
                                                temp_min, temp_max))
 
-        # if sensor is not available switch to online data
-        temp_value = online_temp_value
-        if self._comps.remote_temp_sensor and self._comps.remote_temp_sensor.is_active:
+        # if sensor is available use it
+        if self._comps.remote_temp_sensor and not self._comps.remote_temp_sensor.is_disabled:
             temp_value = self._comps.remote_temp_sensor.get_temperature()
+        if self._comps.remote_temp_sensor and not self._comps.remote_temp_sensor.is_disabled:
+            hum_value = self._comps.remote_temp_sensor.get_humidity()
 
         # format and set values to temperature display
-        temp_val_text = common.format_float_temp_text(
-            self._default_temp_text, temp_value)
+        temp_val_text = common.format_float_temp_text(self._default_temp_text, temp_value)
         self._ui.exterior_temp_value.setText(temp_val_text)
+
+        # format and set values to humidity display
+        self._ui.exterior_forecast_hum_value.setText(common.format_int_meas_text(self._default_hum_text,
+                                                                                 hum_value,
+                                                                                 tag_id=1))
 
         # set temperature icon
         common.draw_svg(self._ui.exterior_temp_icon, common.get_temperature_icon(temp_value))

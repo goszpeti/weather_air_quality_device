@@ -23,7 +23,7 @@ from typing import Callable
 from PyQt5 import QtCore
 
 from waqd.base.logger import Logger
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 
 
 class WorkerObject(QtCore.QObject):

@@ -1,6 +1,6 @@
 from waqd.components.speech import TextToSpeach
 from waqd.settings import SOUND_ENABLED, Settings
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 
 import time
 

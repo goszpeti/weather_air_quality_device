@@ -26,7 +26,7 @@ from threading import Thread, ThreadError
 from gtts import gTTS
 from waqd import config
 from waqd.assets import get_asset_file
-from waqd.base.components import Component, ComponentRegistry
+from waqd.base.component_reg import Component, ComponentRegistry
 from waqd.base.logger import Logger
 from waqd.base.system import RuntimeSystem
 from waqd.settings import LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN

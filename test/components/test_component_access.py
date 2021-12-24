@@ -2,7 +2,7 @@ import logging
 import time
 
 from freezegun import freeze_time
-from waqd.base.components import (Component, ComponentRegistry,
+from waqd.base.component_reg import (Component, ComponentRegistry,
                                        CyclicComponent)
 from waqd.settings import (BME_280_ENABLED, DHT_22_PIN, MOTION_SENSOR_ENABLED, Settings)
 

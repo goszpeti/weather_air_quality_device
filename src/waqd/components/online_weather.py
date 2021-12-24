@@ -445,7 +445,7 @@ class OpenWeatherMap(Component):
         if not response or not response or not os.path.exists(response[0]):
             return {}
 
-        with open(response[0]) as response_json:
+        with open(response[0], encoding="utf-8") as response_json:
             return json.load(response_json)
 
     @staticmethod

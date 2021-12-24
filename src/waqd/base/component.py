@@ -30,7 +30,7 @@ from waqd.base.system import RuntimeSystem
 from waqd.settings import Settings
 
 if TYPE_CHECKING:
-    from waqd.base.components import ComponentRegistry
+    from waqd.base.component_reg import ComponentRegistry
 
 
 class Component:

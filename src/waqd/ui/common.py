@@ -200,7 +200,7 @@ def get_temperature_icon(temp_value: Optional[float]) -> Path:
 #### Formatting ####
 
 
-def format_int_meas_text(html_text: str, value: int, color="white"):
+def format_int_meas_text(html_text: str, value: Optional[Union[int, float]], color="white", tag_id=0):
     """
     Returns a given html string by switching out the value with the given number.
     :param html_text: the html text containing the value. Can only contain one value.
@@ -208,9 +208,9 @@ def format_int_meas_text(html_text: str, value: int, color="white"):
     """
     # converting of values to formatted display data
     if value is None:
-        temp_val = format_text(html_text, "N/A", "string", color=color)
+        temp_val = format_text(html_text, "N/A", "string", color=color, tag_id=tag_id)
     else:
-        temp_val = format_text(html_text, value, "int", color=color)
+        temp_val = format_text(html_text, int(value), "int", color=color, tag_id=tag_id)
     return temp_val
 
 
@@ -276,7 +276,7 @@ def format_text(html_text: str, value: Union[str, int, float, None],
             return html_dom.toxml()
 
     if disp_type == "int" and isinstance(value, int):
-        text = str(int(value))
+        text = str(value)
         if tags:
             tags[tag_id].firstChild.data = text
             return html_dom.toxml()

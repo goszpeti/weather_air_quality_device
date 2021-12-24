@@ -35,7 +35,7 @@ from dateutil.relativedelta import relativedelta
 from waqd import config
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 from waqd.base.logger import Logger
 from waqd.settings import EVENTS_ENABLED, LANG, NIGHT_MODE_END, Settings
 

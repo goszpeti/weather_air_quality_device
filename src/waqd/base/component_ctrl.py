@@ -23,9 +23,9 @@ import time
 from typing import Optional
 
 from waqd.base.logger import Logger
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 from waqd.base.system import RuntimeSystem
-from waqd.base.components import CyclicComponent
+from waqd.base.component_reg import CyclicComponent
 from waqd.settings import Settings
 
 class ComponentController():

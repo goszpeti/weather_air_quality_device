@@ -10,7 +10,7 @@ from waqd.components.power import (BRIGHTNESS, DAY_STANDBY_TIMEOUT,
                                         NIGHTMODE_WAKEUP_DELTA_BRIGHTNESS,
                                         STANDBY_BRIGHTNESS, ESaver)
 from waqd.settings import Settings
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 
 
 def testNoStandbyIfSensorIsDisabled(base_fixture):

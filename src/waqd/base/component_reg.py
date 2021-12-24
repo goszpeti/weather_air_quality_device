@@ -37,8 +37,8 @@ if TYPE_CHECKING:
     from waqd.components import (SR501, BarometricSensor, CO2Sensor, Display,
                                  DustSensor, ESaver, EventHandler,
                                  HumiditySensor, LightSensor, OnlineUpdater,
-                                 OpenWeatherMap, Prologue433, SensorComponent,
-                                 Sound, TempSensor, TextToSpeach, TvocSensor)
+                                 OpenWeatherMap, WAQDRemoteSensor, SensorComponent,
+                                 Sound, TempSensor, TextToSpeach, TvocSensor, Server)
 
 
 class ComponentRegistry():
@@ -104,12 +104,13 @@ class ComponentRegistry():
     def stop_component(self, name, reload_intended=False):
         """ Stops a component. CyclicComponentRegistry can take some time. """
         with self.comp_init_lock:
-            component = self._components.pop(name)
+            component = self._components.get(name)
             if not component:
                 return
             # don't do anything, when reload is intended and the component forbids it
             if reload_intended and component.reload_forbidden:
                 return
+            self._components.pop(name)
             self._logger.info("ComponentRegistry: Stopping %s", name)
             component.stop()
             # call destructors
@@ -118,7 +119,7 @@ class ComponentRegistry():
     def show(self):
         """ Check all components and thus initialize them """
         return [self.display, self.sound, self.auto_updater, self.tts, self.temp_sensor, self.humidity_sensor,
-                self.tvoc_sensor, self.pressure_sensor, self.co2_sensor, self.remote_temp_sensor,
+                self.tvoc_sensor, self.pressure_sensor, self.co2_sensor, self.server,
                 self.motion_detection_sensor, self.energy_saver, self.weather_info, self.event_handler]
 
     @property
@@ -298,10 +299,22 @@ class ComponentRegistry():
         return sensor
 
     @property
-    def remote_temp_sensor(self) -> "Prologue433":
+    def server(self) -> "Server":
+        from waqd.components import Server
+        return self._create_component_instance(Server, [self, self._settings])
+
+    @property
+    def remote_temp_sensor(self) -> "WAQDRemoteSensor":
         """ Access for remote_temp_sensor singleton """
-        from waqd.components.sensors import Prologue433
-        return self._create_component_instance(Prologue433, [self._settings])
+        from waqd.components.sensors import WAQDRemoteSensor
+
+        sensor = self._get_sensor(WAQDRemoteSensor)
+        if not sensor:
+            sensor = self._create_component_instance(WAQDRemoteSensor, [self._settings])
+            sensor.select_for_hum_logging()
+            sensor.select_for_temp_logging()
+            self._sensors.update({WAQDRemoteSensor.__name__: sensor})
+        return sensor
 
     S = TypeVar('S', bound="SensorComponent")  # can't import SensorComponent directly
 

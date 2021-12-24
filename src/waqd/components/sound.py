@@ -22,7 +22,7 @@ from os import PathLike
 from threading import Lock, Thread
 import time
 
-from waqd.base.components import Component, ComponentRegistry
+from waqd.base.component_reg import Component, ComponentRegistry
 from waqd.settings import SOUND_ENABLED
 
 

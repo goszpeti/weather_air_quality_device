@@ -138,7 +138,7 @@ class Interior(sub_ui.SubUi):
             if co2_value is not None:
                 if not self._comps.co2_sensor.readings_stabilized:
                     label_color = "yellow"
-                elif co2_value >= 1200:
+                elif co2_value >= 1000:
                     label_color = "red"
                 self._co2_bar.set_value_label(f"{int(co2_value)} ppm", color=label_color)
             else:

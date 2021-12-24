@@ -20,7 +20,7 @@
 import datetime
 import time
 
-from waqd.base.components import ComponentRegistry, CyclicComponent
+from waqd.base.component_reg import ComponentRegistry, CyclicComponent
 from waqd.settings import (BRIGHTNESS, DAY_STANDBY_TIMEOUT,
                                 MOTION_SENSOR_ENABLED, NIGHT_MODE_BEGIN,
                                 NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT)
