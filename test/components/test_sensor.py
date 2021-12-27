@@ -8,7 +8,7 @@ def testServer(base_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     comps = ComponentRegistry(settings)
     #Server(comps, settings)
-    url = 'http://localhost:9003/remoteSensor1'
+    url = 'http://localhost:8080/remoteExtSensor'
     myobj = {"api_ver": "0.1", 'temp': "25.1", "hum": "80.2"}
 
     x = requests.post(url, json=myobj)

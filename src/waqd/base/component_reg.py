@@ -304,13 +304,29 @@ class ComponentRegistry():
         return self._create_component_instance(Server, [self, self._settings])
 
     @property
-    def remote_temp_sensor(self) -> "WAQDRemoteSensor":
-        """ Access for remote_temp_sensor singleton """
+    def remote_exterior_sensor(self) -> "WAQDRemoteSensor":
+        """ Access for remote_exterior_sensor singleton """
         from waqd.components.sensors import WAQDRemoteSensor
 
         sensor = self._get_sensor(WAQDRemoteSensor)
         if not sensor:
-            sensor = self._create_component_instance(WAQDRemoteSensor, [self._settings])
+            sensor = self._create_component_instance(
+                WAQDRemoteSensor, [self._settings, WAQDRemoteSensor.EXTERIOR_MODE])
+            # TODO check features - diff ext and int
+            sensor.select_for_hum_logging()
+            sensor.select_for_temp_logging()
+            self._sensors.update({WAQDRemoteSensor.__name__: sensor})
+        return sensor
+
+    @property
+    def remote_interior_sensor(self) -> "WAQDRemoteSensor":
+        """ Access for remote_interior_sensor singleton """
+        from waqd.components.sensors import WAQDRemoteSensor
+
+        sensor = self._get_sensor(WAQDRemoteSensor)
+        if not sensor:
+            sensor = self._create_component_instance(
+                WAQDRemoteSensor, [self._settings, WAQDRemoteSensor.INTERIOR_MODE])
             sensor.select_for_hum_logging()
             sensor.select_for_temp_logging()
             self._sensors.update({WAQDRemoteSensor.__name__: sensor})

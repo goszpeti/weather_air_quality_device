@@ -38,7 +38,7 @@ def testDefaultComponentCreation(base_fixture, target_mockup_fixture):
     assert co2
     tvoc = comps.tvoc_sensor
     assert tvoc
-    rt = comps.remote_temp_sensor
+    rt = comps.remote_exterior_sensor
     assert rt
     ev = comps.event_handler
     assert ev

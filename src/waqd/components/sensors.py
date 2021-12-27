@@ -818,7 +818,7 @@ class WAQDRemoteSensor(TempSensor, HumiditySensor):
     def read_callback(self, temperature, humidity):
         """
         """
-
+        self._disabled = False
         self._set_temperature(temperature)
         self._set_humidity(humidity)
 
