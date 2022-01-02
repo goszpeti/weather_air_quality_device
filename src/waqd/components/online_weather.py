@@ -36,6 +36,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
 from waqd.base.system import RuntimeSystem
+from waqd.base.logger import Logger
 
 
 def is_daytime(sunrise, sunset, date_time=None):
@@ -67,6 +68,7 @@ class Weather():
     humidity: float
     clouds: float
     temp: float
+    altitude: float
 
     def __post_init__(self):
         if self.main:  # only set fetch_time if it is non-empty initiallized
@@ -131,6 +133,41 @@ class WeatherQuality(Enum):
     CLEAR = 14
 
 
+class OpenTopoData():
+    QUERY = "https://api.opentopodata.org/v1/eudem25m?locations={lat},{long}"
+
+    def __init__(self):
+        super().__init__()
+        self._altitude_info = {}
+
+    def get_altitude(self, latitude: float, longitude: float) -> float:
+        location_data = self._altitude_info.get("location")
+        if location_data and location_data.get("lat") == latitude and location_data.get("lng") == longitude:
+            return self._altitude_info.get("elevation", 0.0)
+
+        # wait a little bit for connection
+        is_connected = RuntimeSystem().wait_for_network()
+        if not is_connected:
+            # TODO error message
+            return 0
+        response_file = None
+        try:
+            response_file = urllib.request.urlretrieve(
+                self.QUERY.format(lat=latitude, long=longitude))
+        except Exception as error:
+            Logger().error(f"Can't get altitude for {latitude} {longitude} : {str(error)}")
+
+        if not response_file:
+            return 0
+
+        with open(response_file[0], encoding="utf-8") as response_json:
+            response = json.load(response_json)
+            if response.get("status", "") != "OK":
+                return 0
+            self._altitude_info = response.get("results")[0]  # TODO guard
+            return self._altitude_info.get("elevation")
+
+
 class OpenWeatherMap(Component):
     """
     Interface to data from OpenWeatherMap, to get Current weather or 5 day forecast data.
@@ -147,6 +184,7 @@ class OpenWeatherMap(Component):
         super().__init__()
         self._city_id = city_id  # use id, name is ambiguous
         self._api_key = api_key
+        self._topo_data = OpenTopoData()
 
         if not self._city_id:
             self._logger.error(f"{str(city_id)} - City Id for forecast is not available.")
@@ -155,7 +193,7 @@ class OpenWeatherMap(Component):
             self._logger.error(f"{str(city_id)} - City Id for forecast is not available.")
             self._disabled = True
 
-        self._current_weather: Weather
+        self._current_weather: Weather = None
         self._five_day_forecast: List[DailyWeather] = []
         # TODO this should be done with a mock
         self._cw_json_file: str = ""  # for testing access
@@ -163,6 +201,14 @@ class OpenWeatherMap(Component):
 
     def get_current_weather(self) -> Optional[Weather]:
         """ Public API function to get the current weather. """
+        # return if data is up-to-date in a window of 5 minutes
+        current_date_time = datetime.now()
+        if self._current_weather:
+                if self._current_weather.fetch_time:
+                    time_delta = current_date_time - self._current_weather.fetch_time
+                    if time_delta.seconds < 60 * 5:  # 5 minutes
+                        return self._current_weather
+
         current_info = self._call_ow_api(self.CURRENT_WEATHER_BY_CITY_ID_API_CMD)
         if not current_info:
             return None
@@ -171,6 +217,7 @@ class OpenWeatherMap(Component):
         sunrise = datetime.fromtimestamp(current_info.get("sys", {}).get("sunrise", "")).time()
         sunset = datetime.fromtimestamp(current_info.get("sys", {}).get("sunset", "")).time()
         is_day = is_daytime(sunrise, sunset)
+        coord = current_info.get("coord", {})
 
         self._current_weather = Weather(
             weather_info.get("main"),
@@ -184,7 +231,9 @@ class OpenWeatherMap(Component):
             current_info.get("main", {}).get("sea_level", 1000.0),
             current_info.get("main", {}).get("humidity", 0.0),
             current_info.get("clouds", {}).get("all", 0.0),
-            current_info.get("main", {}).get("temp", 0.0))
+            current_info.get("main", {}).get("temp", 0.0),
+            self._topo_data.get_altitude(coord.get("lat", 0.0), coord.get("lon", 0.0))
+            )
         return self._current_weather
 
     def get_5_day_forecast(self) -> List[DailyWeather]:
@@ -193,9 +242,8 @@ class OpenWeatherMap(Component):
         current_date_time = datetime.now()
         if len(self._five_day_forecast) > 1:
             if self._five_day_forecast[1].fetch_time:
-                time_delta = self._five_day_forecast[1].fetch_time - \
-                    current_date_time
-                if 0 < time_delta.seconds < 1800:  # 0.5 h
+                time_delta = current_date_time -self._five_day_forecast[1].fetch_time
+                if time_delta.seconds < 1800:  # 0.5 h
                     return self._five_day_forecast
 
         [daytime_forecast_points, nighttime_forecast_points] = self.get_forecast_points()
@@ -243,7 +291,8 @@ class OpenWeatherMap(Component):
                 current_weather.sunrise, current_weather.sunset,
                 0, 0, 0,  # currently unused
                 measurement_point.get("clouds").get("all"),
-                measurement_point.get("main").get("temp")
+                measurement_point.get("main").get("temp"),
+                current_weather.altitude
             )
 
             if is_day:
@@ -313,7 +362,8 @@ class OpenWeatherMap(Component):
                 overall_weather.sunrise, overall_weather.sunset,
                 0, 0, 0,  # currently unused
                 overall_weather.clouds,
-                float(overall_weather.temp)
+                float(overall_weather.temp),
+                overall_weather.altitude
             )
             self._five_day_forecast.append(daily_weather)
         # calculate min/max night and daytime temps
@@ -461,6 +511,7 @@ class OpenWeatherMap(Component):
         if not file_path:
             file_path = get_asset_file("gui_base", "dummy.png")
         return file_path
+
 
 ### Currently unused code ###
 # class AccuWeather():
