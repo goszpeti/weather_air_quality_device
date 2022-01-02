@@ -19,6 +19,7 @@
 #
 import time
 import os
+from subprocess import check_call
 from typing import TYPE_CHECKING
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
@@ -375,8 +376,9 @@ class OptionMainUi(QtWidgets.QDialog):
         ssid_name = "Connect_WAQD"
         msg = QtWidgets.QMessageBox(parent=self)
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        try: # TODO does this work?
-            os.system(f'sudo wifi-connect -s "{ssid_name}"')
+        msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
+        try:
+            check_call(f'sudo wifi-connect -s "{ssid_name}"')
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.setWindowTitle("Connect to WLAN")
             msg.setText(f"Connect to WLAN '{ssid_name}'' on your phone or pc, where you can select your network and enter your password!")
@@ -384,6 +386,9 @@ class OptionMainUi(QtWidgets.QDialog):
             msg.setIcon(QtWidgets.QMessageBox.Warning)
             msg.setWindowTitle("Error while opening connection to WLAN")
             msg.setText(f"Cannot start WLAN connection portal: {str(e)}")
+        # needed because of CustomizeWindowHint
+        msg.move(int((self._main_ui.geometry().width() - self.height()) / 2),
+                 int((self._main_ui.geometry().height() - msg.height()) / 2))
         msg.exec_()
 
     def _cyclic_update(self):

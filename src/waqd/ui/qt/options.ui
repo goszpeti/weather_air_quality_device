@@ -55,7 +55,7 @@ QPushButton::on {
 }
 QTextBrowser{background-color: transparent;color: white;border: 1px solid white}
 QLabel{background-color: transparent;color: white;}
-QMessageBox{background-color: grey;color: black}</string>
+QMessageBox{background-color: rgb(138,166,211);color: black}</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -1515,7 +1515,7 @@ to preview! </string>
           <height>371</height>
          </rect>
         </property>
-        <layout class="QGridLayout" name="info_layout" rowstretch="0,0,0,0" columnstretch="3,0">
+        <layout class="QGridLayout" name="info_layout" rowstretch="0,0,0" columnstretch="3,0">
          <property name="topMargin">
           <number>10</number>
          </property>
@@ -1528,16 +1528,10 @@ to preview! </string>
          <property name="verticalSpacing">
           <number>6</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="system_label">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
+         <item row="1" column="1">
+          <widget class="QLabel" name="ip_address_value">
            <property name="text">
-            <string>System Platform</string>
+            <string>192.168.1.1</string>
            </property>
           </widget>
          </item>
@@ -1548,10 +1542,16 @@ to preview! </string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="ip_address_value">
+         <item row="0" column="0">
+          <widget class="QLabel" name="system_label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
-            <string>192.168.1.1</string>
+            <string>System Platform</string>
            </property>
           </widget>
          </item>
@@ -1581,34 +1581,21 @@ to preview! </string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.875pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;WAQD Copyright (c) 2021 Péter Gosztolya&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Used Software:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;- Weather Icons licensed under  SIL OFL 1.1 (http://scripts.sil.org/OFL) from http://weathericons.io&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;- Franzo Font under  Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0) from https://fontlibrary.org/en/font/franzo&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;- Weather Icons licensed under SIL OFL 1.1 (http://scripts.sil.org/OFL) from http://weathericons.io&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;- Franzo Font under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0) from https://fontlibrary.org/en/font/franzo&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;- wifi-connect under Apache 2.0 https://www.apache.org/licenses/LICENSE-2.0) from https://github.com/balena-os/wifi-connect&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;- Images from Unsplash under Unsplash license (https://unsplash.com/license) from https://unsplash.com&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;- Qt5 (LGPL 3.0) via PyQt5 (GPL3) Python Bindings&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;For further used software see https://github.com/goszpeti/WeatherAirQualityDevice.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;WAQD Copyright (c) 2021 Péter Gosztolya&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;For further used software see https://github.com/goszpeti/WeatherAirQualityDevice.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="textInteractionFlags">
             <set>Qt::NoTextInteraction</set>
            </property>
           </widget>
-         </item>
-         <item row="3" column="0">
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>18</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>
