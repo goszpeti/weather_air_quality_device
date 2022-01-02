@@ -126,9 +126,12 @@ class Exterior(sub_ui.SubUi):
 
         # if sensor is available use it
         if self._comps.remote_exterior_sensor and not self._comps.remote_exterior_sensor.is_disabled:
-            temp_value = self._comps.remote_exterior_sensor.get_temperature()
-        if self._comps.remote_exterior_sensor and not self._comps.remote_exterior_sensor.is_disabled:
-            hum_value = self._comps.remote_exterior_sensor.get_humidity()
+            sensor_temp_value = self._comps.remote_exterior_sensor.get_temperature()
+            if sensor_temp_value:
+                temp_value = sensor_temp_value
+            sensor_hum_value = self._comps.remote_exterior_sensor.get_humidity()
+            if sensor_hum_value:
+                hum_value = sensor_hum_value
 
         # format and set values to temperature display
         temp_val_text = common.format_float_temp_text(self._default_temp_text, temp_value)
