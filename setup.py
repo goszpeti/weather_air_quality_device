@@ -24,6 +24,8 @@ REQUIRED = [
     # Backend
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
     "JsonSchema==4.0.1",  # MIT License - for events json schema validation
+    "bottle==0.12.19", # webserver for remote sensors
+    "paste==3.5.0", # server backend for bottle
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
     "APScheduler==3.8.0",  # MIT License - Scheduler for Events function
     "PyGithub==1.55",  # LGPL - Access to GitHub in AutoUpdater
@@ -33,13 +35,13 @@ REQUIRED = [
     "Python-VLC==3.0.12118",  # LGPLv2+ - use VLC for playing sounds
     # HW
     "RPi-Backlight==2.4.1",  # MIT License
-    "Adafruit-Blinka==6.9.1",
+    "Adafruit-Blinka==7.1.1",
     #"Adafruit-PlatformDetect==2.4.0",  # MIT License - target and model detection - up to 3.10 not working with BMP280
     "Adafruit-CircuitPython-DHT==3.6.1",  # MIT License - temp/hum sensor
     "Adafruit-CircuitPython-CCS811==1.3.4",  # MIT License - co2/tvoc sensor
-    "Adafruit-CircuitPython-BME280==2.6.2",  # MIT License - temp/hum/baro sensor
+    "Adafruit-CircuitPython-BME280==2.6.10",  # MIT License - temp/hum/baro sensor
     "Adafruit-CircuitPython-BMP280==3.2.8",  # MIT License - temp/baro sensor
-    "Adafruit-Circuitpython-BH1750==1.0.5",  # MIT License - light sensor
+    "Adafruit-Circuitpython-BH1750==1.0.7",  # MIT License - light sensor
     "Adafruit-Circuitpython-ADS1x15==2.2.8",  # MIT License - currently only this ADC is used for analog sensors
     # QT Widgets
     "QtWidgets==0.18",  # MIT License - for touch friendly Toggle Switch
@@ -89,7 +91,7 @@ setup(
     packages=find_packages("src"),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
-    package_data={"": ["ui/qt/*.ui", "ui/qt/*.qm", "assets/**/*.*"]},
+    package_data={"": ["ui/qt/*.ui", "ui/widgets/*.ui", "ui/qt/*.qm", "assets/**/*.*"]},
     install_requires=REQUIRED,
     include_package_data=True,
     license='AGPL',
