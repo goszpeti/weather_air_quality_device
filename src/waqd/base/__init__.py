@@ -21,4 +21,4 @@
 These modules must be initializable without the usage of any external dependencies, except each other.
 """
 
-from waqd.base import components, component_ctrl, logger, system
+from waqd.base import component_reg, component_ctrl, logger, system

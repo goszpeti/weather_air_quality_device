@@ -2,10 +2,9 @@ import time
 from threading import Thread
 
 from waqd.components import sensors
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 from waqd.settings import Settings
 from waqd.base.system import RuntimeSystem
-from waqd.base.logger import  SensorLogger
 
 from test.conftest import mock_run_on_non_target
 

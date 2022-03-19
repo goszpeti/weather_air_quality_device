@@ -1,9 +1,16 @@
 from freezegun import freeze_time
 
-from waqd.base.components import ComponentRegistry
-from waqd.components.online_weather import OpenWeatherMap
+from waqd.base.component_reg import ComponentRegistry
+from waqd.components.online_weather import OpenTopoData, OpenWeatherMap
 from waqd.settings import LOCATION, Settings
 
+def testOpenTopo(base_fixture):
+    op = OpenTopoData()
+    alt = op.get_altitude(48.2085, 12.3989)
+    assert alt > 439 and alt < 440
+    op._altitude_info["elevation"] = 0
+    alt = op.get_altitude(48.2085, 12.3989)
+    assert alt == 0
 
 def testOpenWeatherCurrentWeatherApiCall(base_fixture):
     test_json = base_fixture.testdata_path / "online_weather/ow_current_weather.json"

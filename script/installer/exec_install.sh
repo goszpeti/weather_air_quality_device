@@ -29,7 +29,7 @@ function waqd_install() {
     sudo apt -y install python3-libgpiod python3-venv 
     # PyQt doesnt work with pip on raspi - SVG and Charts are needed, too
     # It does compile - but it takes several hours...
-    sudo apt -y install qt5-default python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart
+    sudo apt -y install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart
     # install pipx for venv based app creation
     python3 -m pip install --user pipx==0.16.3
     python3 -m pipx ensurepath

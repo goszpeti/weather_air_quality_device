@@ -2,7 +2,7 @@ import logging
 import time
 
 from freezegun import freeze_time
-from waqd.base.components import (Component, ComponentRegistry,
+from waqd.base.component_reg import (Component, ComponentRegistry,
                                        CyclicComponent)
 from waqd.settings import (BME_280_ENABLED, DHT_22_PIN, MOTION_SENSOR_ENABLED, Settings)
 
@@ -38,7 +38,7 @@ def testDefaultComponentCreation(base_fixture, target_mockup_fixture):
     assert co2
     tvoc = comps.tvoc_sensor
     assert tvoc
-    rt = comps.remote_temp_sensor
+    rt = comps.remote_exterior_sensor
     assert rt
     ev = comps.event_handler
     assert ev

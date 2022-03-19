@@ -23,9 +23,9 @@ import time
 from typing import Optional
 
 from waqd.base.logger import Logger
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 from waqd.base.system import RuntimeSystem
-from waqd.base.components import CyclicComponent
+from waqd.base.component_reg import CyclicComponent
 from waqd.settings import Settings
 
 class ComponentController():
@@ -112,21 +112,28 @@ class ComponentController():
         if RuntimeSystem().is_target_system:
             RuntimeSystem().check_internet_connection()
 
-        for comp_name in self._components.get_names():
-            component = self._components.get(comp_name)
-            if not component:
-                break
-            if issubclass(type(component), CyclicComponent):
-                if component.is_ready and not component.is_alive and not component.is_disabled:
-                    # call stop, so it will be initialized in the next cycle
-                    self._components.stop_component(comp_name)
+        try:
+            for comp_name in self._components.get_names():
+                component = self._components.get(comp_name)
+                if not component:
+                    break
+                if issubclass(type(component), CyclicComponent):
+                    if component.is_ready and not component.is_alive and not component.is_disabled:
+                        # call stop, so it will be initialized in the next cycle
+                        self._components.stop_component(comp_name)
 
-        for sensor_name in self._components.get_sensors():
-            sensor = self._components.get_sensors()[sensor_name]
-            if not sensor:
-                break
-            if isinstance(sensor, CyclicComponent) and sensor.is_ready and not sensor.is_alive:
+            sensors_to_remove = []
+            for sensor_name in self._components.get_sensors():
+                sensor = self._components.get_sensors()[sensor_name]
+                if not sensor:
+                    break
+                if isinstance(sensor, CyclicComponent) and sensor.is_ready and not sensor.is_alive:
+                    sensors_to_remove.append(sensor_name)
+            for sensor_name in sensors_to_remove:
                 self._components.get_sensors().pop(sensor_name)
+        except Exception as e:
+            Logger().debug(f"ERROR: Watchdog crashed: {str(e)}")
+
 
     def _unload_all_components(self, reload_intended, updating):
         """

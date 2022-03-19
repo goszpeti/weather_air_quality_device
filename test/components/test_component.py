@@ -1,7 +1,7 @@
 import logging
 import time
 
-from waqd.base.components import (Component, ComponentRegistry,
+from waqd.base.component_reg import (Component, ComponentRegistry,
                                        CyclicComponent)
 from waqd.base.system import RuntimeSystem
 from waqd.settings import Settings

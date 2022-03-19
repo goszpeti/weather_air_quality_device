@@ -20,3 +20,4 @@
 """ This module holds all gui relevant classes. """
 
 from waqd.ui import common, options, main_ui, qt, widgets
+

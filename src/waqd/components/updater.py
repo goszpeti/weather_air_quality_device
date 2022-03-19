@@ -30,7 +30,7 @@ from github import Github, Repository
 import waqd.config as config
 from waqd import __version__ as WAQD_VERSION
 from waqd.base.component import CyclicComponent
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 
 class OnlineUpdater(CyclicComponent):
     """
@@ -44,8 +44,7 @@ class OnlineUpdater(CyclicComponent):
 
 
     def __init__(self, components: ComponentRegistry, enabled=True, use_beta_channel=False):
-        super().__init__(components)
-        self._disabled = not enabled
+        super().__init__(components, enabled=enabled)
         if self._disabled:
             return
         self._use_beta_channel = use_beta_channel

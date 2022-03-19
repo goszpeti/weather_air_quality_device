@@ -36,6 +36,7 @@ DHT_22_DISABLED = 0
 LANG = "lang"
 SOUND_ENABLED = "sound_enabled"
 EVENTS_ENABLED = "events_enabled"
+SERVER_ENABLED = "server_enabled"
 # general hw
 DISPLAY_TYPE = "display_type"
 DHT_22_PIN = "dht_22_pin"  # on if not DHT_22_DISABLED (0)
@@ -45,6 +46,7 @@ MOTION_SENSOR_PIN = "motion_sensor_pin"
 WAVESHARE_DISP_BRIGHTNESS_PIN = "waveshare_disp_brightness_pin"
 CCS811_ENABLED = "ccs811_enabled"
 MH_Z19_ENABLED = "mh_z19_enabled"
+MH_Z19_VALUE_OFFSET = "mh_z19_value_offset"
 LOG_SENSOR_DATA = "log_sensor_data"
 
 AUTO_UPDATER_ENABLED = "auto_updater_enabled"

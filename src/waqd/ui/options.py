@@ -30,6 +30,7 @@ from waqd import config
 from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.system import RuntimeSystem
+from waqd.components.sensors import MH_Z19
 from waqd.settings import (BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS, CCS811_ENABLED,
                            DAY_STANDBY_TIMEOUT, DHT_22_DISABLED, DHT_22_PIN, DISP_TYPE_RPI,
                            DISP_TYPE_WAVESHARE_5_LCD, DISPLAY_TYPE,
@@ -37,8 +38,9 @@ from waqd.settings import (BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS, CCS811_
                            LANG, LOCATION, MOTION_SENSOR_ENABLED, MH_Z19_ENABLED,
                            NIGHT_MODE_BEGIN, NIGHT_MODE_END, INTERIOR_BG, FORECAST_BG,
                            NIGHT_STANDBY_TIMEOUT, OW_CITY_IDS, LOG_SENSOR_DATA,
-                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, Settings)
+                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, MH_Z19_VALUE_OFFSET, Settings)
 from waqd.ui import common
+from waqd.ui.main_subs import sub_ui
 from waqd.ui.widgets.fader_widget import FaderWidget
 from waqd.ui.widgets.splashscreen import SplashScreen
 
@@ -93,7 +95,9 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.cancel_button.clicked.connect(self.close_ui)
         self._ui.shutdown_button.clicked.connect(self.call_shutdown)
         self._ui.restart_button.clicked.connect(self.call_restart)
-        self._ui.connect_wlan_button.clicked.connect(self.connect_wlan)
+        self._ui.connect_wlan_button.clicked.connect(self._connect_wlan)
+        self._ui.mh_z19_calibrate_button.clicked.connect(self._calibrate_mh_z19)
+        self._ui.motion_sensor_test_button.clicked.connect(self._test_motion_sensor)
 
         self._ui.lang_cbox.currentTextChanged.connect(self._update_language_cbox)
         self._ui.forecast_background_cbox.currentTextChanged.connect(self._update_preview_forecast)
@@ -133,6 +137,59 @@ class OptionMainUi(QtWidgets.QDialog):
         # minimal wait to show the button feedback
         time.sleep(0.3)
         self.show()
+
+    def _calibrate_mh_z19(self):
+        #self._mh_z19_calib_dialog = 
+        self._calib_dialog_ui = uic.loadUi(config.base_path / "ui" /
+                                           "widgets" / "calibration.ui", baseinstance=QtWidgets.QDialog())
+        # TODO check if it is he correct one
+        if not isinstance(self._comps.co2_sensor, MH_Z19):
+            return
+        offset = self._settings.get_int(MH_Z19_VALUE_OFFSET)
+        self._calib_dialog_ui.calib_spin_box.setValue(offset)
+        self._calib_dialog_ui.calib_spin_box.valueChanged.connect(self._update_calib_value)
+        self._calib_dialog_ui.zero_button.clicked.connect(self._comps.co2_sensor.zero_calibraton)
+        self._calib_dialog_ui.setModal(True)
+        self._calib_dialog_ui.button_box.button(
+            QtWidgets.QDialogButtonBox.Save).clicked.connect(self._save_mh_z19_calib)
+        self._update_calib_value()
+        self._calib_dialog_ui.exec_()
+
+    def _update_calib_value(self):
+        offset = self._calib_dialog_ui.calib_spin_box.value()
+        meas_value = self._comps.co2_sensor.get_co2()
+        self._calib_dialog_ui.measure_value_label.setText(str(meas_value))
+        if meas_value:
+            self._calib_dialog_ui.display_value_label.setText(str(meas_value + offset))
+
+
+    def _save_mh_z19_calib(self):
+        if self._calib_dialog_ui:
+            offset = self._calib_dialog_ui.calib_spin_box.value()
+            self._settings.set(MH_Z19_VALUE_OFFSET, offset)
+            self._comps.stop_component_instance(self._comps.co2_sensor)
+
+    def _test_motion_sensor(self):
+        class MotionSensorTestDialog(sub_ui.SubUi):
+            def __init__(self, comps, settings) -> None:
+                self._comps = comps
+                self._dialog = QtWidgets.QDialog()
+                ui = uic.loadUi(config.base_path / "ui" /
+                                                   "widgets" / "value_test.ui", baseinstance=self._dialog)
+                sub_ui.SubUi.__init__(self, self._dialog, ui, settings)
+                
+            def _cyclic_update(self):
+                if self._comps.motion_detection_sensor.motion_detected:
+                    self._ui.text_browser.append("Motion registered")
+                else:
+                    self._ui.text_browser.append("No Motion registered")
+
+            def exec_(self):
+                self._dialog.exec_()
+
+        dialog = MotionSensorTestDialog(self._comps, self._settings)
+        dialog.exec_()
+
 
     def display_options(self):
         """ Set all elements to the display the current values and set up sliders """
@@ -372,7 +429,7 @@ class OptionMainUi(QtWidgets.QDialog):
             os.system("sudo apt update")  # TODO this takes a while, but is necessary
             os.system("pi-gpk-update-viewer&")
 
-    def connect_wlan(self):
+    def _connect_wlan(self):
         ssid_name = "Connect_WAQD"
         msg = QtWidgets.QMessageBox(parent=self)
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)

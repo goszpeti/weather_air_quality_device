@@ -23,7 +23,7 @@ from typing import Callable
 from PyQt5 import QtCore
 
 from waqd.base.logger import Logger
-from waqd.base.components import ComponentRegistry
+from waqd.base.component_reg import ComponentRegistry
 
 
 class WorkerObject(QtCore.QObject):
@@ -41,15 +41,14 @@ class SubUi(metaclass=abc.ABCMeta):
     """
     UPDATE_TIME = 1000  # microseconds
 
-    def __init__(self, main_ui: QtCore.QObject, settings):
-        self._main_ui = main_ui
-        self._ui = main_ui.ui
-        self._comps: ComponentRegistry = main_ui._comps
+    def __init__(self, parent: QtCore.QObject, ui, settings):
+        self._main_ui = parent
+        self._ui = ui
         self._logger = Logger()
         self._settings = settings
 
         # set up update thread
-        self._update_timer = QtCore.QTimer(main_ui)
+        self._update_timer = QtCore.QTimer(parent)
         self._update_timer.setObjectName("Update" + repr(self).split(" ")[0])
         self._update_timer.timeout.connect(self._cyclic_update)
         self._update_timer.start(self.UPDATE_TIME)
