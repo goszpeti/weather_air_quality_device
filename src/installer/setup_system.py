@@ -127,7 +127,7 @@ def set_wallpaper(install_path: Path):
 
 def clean_lxde_desktop(desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/desktop-items-0.conf")):
     logging.info("Cleanup desktop icons...")
-    if not desktop_conf_path.exists():
+    if not desktop_conf_path.exists(): # TODO Does not exist on fresh install...
         return
     with open(desktop_conf_path, "r+") as fd:
         lines = fd.readlines()
