@@ -41,7 +41,7 @@ REQUIRED = [
     "Adafruit-CircuitPython-CCS811==1.3.4",  # MIT License - co2/tvoc sensor
     "Adafruit-CircuitPython-BME280==2.6.10",  # MIT License - temp/hum/baro sensor
     "Adafruit-CircuitPython-BMP280==3.2.8",  # MIT License - temp/baro sensor
-    "Adafruit-Circuitpython-BH1750==1.0.5",  # MIT License - light sensor
+    "Adafruit-Circuitpython-BH1750==1.0.7",  # MIT License - light sensor
     "Adafruit-Circuitpython-ADS1x15==2.2.8",  # MIT License - currently only this ADC is used for analog sensors
     # QT Widgets
     "QtWidgets==0.18",  # MIT License - for touch friendly Toggle Switch
