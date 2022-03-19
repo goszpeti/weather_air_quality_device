@@ -32,7 +32,7 @@ REQUIRED = [
     "File-Read-Backwards==2.0.0",  # MIT License - for performance in DetailView
     # Sound
     "gTTS==2.2.4",  # MIT License -Google TTS for speech
-    "Python-VLC==3.0.12118",  # LGPLv2+ - use VLC for playing sounds
+    "Python-VLC==3.0.16120",  # LGPLv2+ - use VLC for playing sounds
     # HW
     "RPi-Backlight==2.4.1",  # MIT License
     "Adafruit-Blinka==7.1.1",
@@ -42,7 +42,7 @@ REQUIRED = [
     "Adafruit-CircuitPython-BME280==2.6.10",  # MIT License - temp/hum/baro sensor
     "Adafruit-CircuitPython-BMP280==3.2.8",  # MIT License - temp/baro sensor
     "Adafruit-Circuitpython-BH1750==1.0.7",  # MIT License - light sensor
-    "Adafruit-Circuitpython-ADS1x15==2.2.8",  # MIT License - currently only this ADC is used for analog sensors
+    "Adafruit-Circuitpython-ADS1x15==2.2.12",  # MIT License - currently only this ADC is used for analog sensors
     # QT Widgets
     "QtWidgets==0.18",  # MIT License - for touch friendly Toggle Switch
     "PyQtSpinner==0.1.1"  # MIT License - a loading Spinner
