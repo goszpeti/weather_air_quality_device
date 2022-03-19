@@ -37,8 +37,9 @@ class Exterior(sub_ui.SubUi):
     UPDATE_TIME = 10 * 1000  # 10 s in microseconds
 
     def __init__(self, main_ui, settings):
-        super().__init__(main_ui, settings)
+        super().__init__(main_ui, main_ui.ui, settings)
         self._online_info_date_time = None  # date when last online update occured
+        self._comps = main_ui._comps
 
         # save default text to restore formatting
         self._default_temp_text = self._ui.exterior_temp_value.text()

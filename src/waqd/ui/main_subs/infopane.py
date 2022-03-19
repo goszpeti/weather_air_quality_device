@@ -27,7 +27,9 @@ class InfoPane(sub_ui.SubUi):
     UPDATE_TIME = 5000  # 5 seconds
 
     def __init__(self, main_ui, settings):
-        super().__init__(main_ui, settings)
+        super().__init__(main_ui, main_ui.ui, settings)
+        self._comps = main_ui._comps
+
         # call once at begin
         self.init_with_cyclic_update()
 

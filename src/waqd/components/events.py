@@ -196,11 +196,12 @@ class EventHandler(Component):
     Scheduler for configured events.
     """
 
-    def __init__(self,  components: ComponentRegistry, settings: Settings):
-        super().__init__(components, settings)
-        if not settings.get(EVENTS_ENABLED):
+    def __init__(self,  components: ComponentRegistry, lang: str, night_mode_end: int, enabled=True):
+        super().__init__(components, enabled=enabled)
+        if not enabled:
             return
-
+        self._lang = lang
+        self._night_mode_end = night_mode_end
         self.gui_background_update_sig: Optional[pyqtBoundSignal] = None
         self._config_events_file = config.user_config_dir / "events.json"
         self._events = parse_event_file(self._config_events_file)
@@ -223,7 +224,7 @@ class EventHandler(Component):
 
     def _register_event(self, event: Event):
         self._logger.debug("EventHandler: Registering " + event.name)
-        assert self._scheduler and self._settings, "Internal components not available."
+        assert self._scheduler, "Internal components not available."
         current_date_time = datetime.datetime.now()
         # Determine, if it would have run today, so it can be scheduled for immediate execution
         # immediate exec does not log last exec!
@@ -238,7 +239,7 @@ class EventHandler(Component):
                     would_run_today = True
             self._scheduler.add_job(self._start_execute_event, name=event.name, args=[event],
                                     trigger="cron", day_of_week=day_of_week_to_run,
-                                    hour=self._settings.get(NIGHT_MODE_END))
+                                    hour=self._night_mode_end)
         elif event.recurrence == "date":
             date_obj = None
             try:
@@ -277,7 +278,7 @@ class EventHandler(Component):
 
     def _execute_event(self, event: Event):
         self._logger.debug("EventHandler: Executing now " + event.name)
-        assert self._scheduler and self._settings and self._comps, "Internal components not available."
+        assert self._scheduler and self._comps, "Internal components not available."
 
         current_date_time = datetime.datetime.now()
         if "background" in event.actions:
@@ -308,9 +309,9 @@ class EventHandler(Component):
             text = event.actions.get("text_2_speach")
             if text:  # replace known patterns
                 text = text.replace("${day_time_greeting}", self._comps.tts.get_tts_string(
-                    get_time_of_day(), self._settings.get(LANG)))
+                    get_time_of_day(), self._lang))
 
-            self._comps.tts.say(text, self._settings.get(LANG))
+            self._comps.tts.say(text, self._lang)
 
         if "play_sound" in event.actions:
             self._comps.sound.play(event.actions.get("play_sound"))

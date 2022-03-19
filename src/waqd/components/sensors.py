@@ -36,14 +36,13 @@ from typing import Optional
 from waqd.base.component import Component, CyclicComponent
 from waqd.base.component_reg import ComponentRegistry
 from waqd.base.logger import Logger, SensorLogger
-from waqd.settings import LOG_SENSOR_DATA, Settings
+from waqd.settings import LOG_SENSOR_DATA, MH_Z19_VALUE_OFFSET, Settings
 
 
 class SensorComponent(Component):
-    def __init__(self, is_disabled=False):
-        super().__init__()
+    def __init__(self, enabled=True):
+        super().__init__(enabled=enabled)
         self._readings_stabilized = False
-        self._disabled = is_disabled
 
     @property
     def readings_stabilized(self) -> bool:
@@ -135,9 +134,9 @@ class SensorImpl():
 class TempSensor(SensorComponent):
     """ Base class for all temperature sensors """
 
-    def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False, log_type_name="temperature", invalidation_time_s=15):
+    def __init__(self, logging_enabled, max_measure_points=5, enabled=True, log_type_name="temperature", invalidation_time_s=15):
         """ is_disabled is for the case, when no sensor can be instantiated """
-        super().__init__(is_disabled)
+        SensorComponent.__init__(self, enabled=enabled)
         min_value = -30
         max_value = 60
         self._temp_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
@@ -157,13 +156,12 @@ class TempSensor(SensorComponent):
 class BarometricSensor(SensorComponent):
     """ Base class for all barometric sensors """
 
-    def __init__(self, logging_enabled: bool, max_measure_points=5, is_disabled=False, log_type_name="pressure", invalidation_time_s=15):
-        super().__init__(is_disabled)
+    def __init__(self, logging_enabled: bool, max_measure_points=5, enabled=True, log_type_name="pressure", invalidation_time_s=15):
+        SensorComponent.__init__(self, enabled=enabled)
         min_value = 800
         max_value = 2000
         self._pres_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                      max_measure_points, 1000, invalidation_time_s)
-        self._disabled = is_disabled
 
     def select_for_pres_logging(self):
         self._pres_impl.log_to_file = True
@@ -183,14 +181,13 @@ class BarometricSensor(SensorComponent):
 class HumiditySensor(SensorComponent):
     """ Base class for all humidity sensors """
 
-    def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False, log_type_name="humidity", invalidation_time_s=15):
-        super().__init__(is_disabled)
+    def __init__(self, logging_enabled, max_measure_points=5, enabled=True, log_type_name="humidity", invalidation_time_s=15):
+        SensorComponent.__init__(self, enabled=enabled)
         min_value = 0
         max_value = 100
 
         self._hum_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                     max_measure_points, 50, invalidation_time_s)
-        self._disabled = is_disabled
 
     def select_for_hum_logging(self):
         self._hum_impl.log_to_file = True
@@ -206,13 +203,12 @@ class HumiditySensor(SensorComponent):
 class TvocSensor(SensorComponent):
     """ Base class for all TVOC sensors """
 
-    def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False, log_type_name="TVOC", invalidation_time_s=15):
-        super().__init__(is_disabled)
+    def __init__(self, logging_enabled, max_measure_points=5, enabled=True, log_type_name="TVOC", invalidation_time_s=15):
+        SensorComponent.__init__(self, enabled=enabled)
         min_value = 0
         max_value = 500
         self._tvoc_impl = SensorImpl(logging_enabled, log_type_name, min_value,
                                      max_value, max_measure_points, 0, invalidation_time_s)
-        self._disabled = is_disabled
 
     def select_for_tvoc_logging(self):
         self._tvoc_impl.log_to_file = True
@@ -228,13 +224,12 @@ class TvocSensor(SensorComponent):
 class CO2Sensor(SensorComponent):
     """ Base class for all CO2 sensors """
 
-    def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False, log_type_name="CO2", invalidation_time_s=15):
-        super().__init__(is_disabled)
+    def __init__(self, logging_enabled, max_measure_points=5, enabled=True, log_type_name="CO2", invalidation_time_s=15):
+        SensorComponent.__init__(self, enabled=enabled)
         min_value = 400
         max_value = 5000
         self._co2_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                     max_measure_points, 450, invalidation_time_s)
-        self._disabled = is_disabled
 
     def select_for_co2_logging(self):
         self._co2_impl.log_to_file = True
@@ -250,13 +245,12 @@ class CO2Sensor(SensorComponent):
 class DustSensor(SensorComponent):
     """ Base class for all dust sensors """
 
-    def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False, log_type_name="dust", invalidation_time_s=15):
-        super().__init__()
+    def __init__(self, logging_enabled, max_measure_points=5, enabled=True, log_type_name="dust", invalidation_time_s=15):
+        SensorComponent.__init__(self, enabled=enabled)
         min_value = 0
         max_value = 1000
         self._dust_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                      max_measure_points, 100, invalidation_time_s)
-        self._disabled = is_disabled
 
     def select_for_dust_logging(self):
         self._dust_impl.log_to_file = True
@@ -272,13 +266,12 @@ class DustSensor(SensorComponent):
 class LightSensor(SensorComponent):
     """ Base class for all light sensors """
 
-    def __init__(self, logging_enabled, max_measure_points=5, is_disabled=False, log_type_name="light", invalidation_time_s=15):
-        super().__init__(is_disabled)
+    def __init__(self, logging_enabled, max_measure_points=5, enabled=True, log_type_name="light", invalidation_time_s=15):
+        SensorComponent.__init__(self, enabled=enabled)
         min_value = 0  # dark
         max_value = 100000  # direct sunlight
         self._light_impl = SensorImpl(logging_enabled, log_type_name, min_value, max_value,
                                       max_measure_points, 10000, invalidation_time_s)
-        self._disabled = is_disabled
 
     def select_for_light_logging(self):
         self._light_impl.log_to_file = True
@@ -496,6 +489,7 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
         log_values = bool(settings.get(LOG_SENSOR_DATA))
         CO2Sensor.__init__(self, log_values, self.MEASURE_POINTS)
         CyclicComponent.__init__(self)
+        self._offset = settings.get_int(MH_Z19_VALUE_OFFSET)
         self._start_time = datetime.datetime.now()
         self._readings_stabilized = False
         self._start_update_loop(self._init_sensor, self._read_sensor)
@@ -507,7 +501,7 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
         if self._runtime_system.is_target_system:
             os.system(f"sudo {sys.executable} -m mh_z19 --detection_range_2000")
             # disable auto calibration -> it will never read true 400ppm...
-            os.system(f"sudo {sys.executable} -m mh_z19 --abc_off")
+            #os.system(f"sudo {sys.executable} -m mh_z19 --abc_off")
 
     def _read_sensor(self):
         co2 = 0
@@ -529,7 +523,7 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
             self._logger.error(f"MH-Z19: Can't read sensor - {str(error)} Output: {output}",)
             return
 
-        self._set_co2(co2)
+        self._set_co2(co2 + self._offset)
 
         # eval stabilizer time
         stab_time = datetime.timedelta(minutes=self.STABILIZE_TIME_MINUTES)
@@ -539,6 +533,9 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
         # log if value is readable
         self._logger.debug(
             'MH-Z19: CO2={0:0.1f}ppm'.format(co2))
+
+    def zero_calibraton(self):
+        os.system(f"sudo {sys.executable} -m mh_z19 --zero_point_calibration")
 
 
 class CCS811(CO2Sensor, TvocSensor, CyclicComponent):  # pylint: disable=invalid-name
@@ -820,7 +817,7 @@ class Prologue433(TempSensor, CyclicComponent):
 class WAQDRemoteSensor(TempSensor, HumiditySensor):
     """ Remote sensor via WAQD HTTP service """
 
-    MEASURE_POINTS = 1
+    MEASURE_POINTS = 3
     EXTERIOR_MODE = 0
     INTERIOR_MODE = 1
 

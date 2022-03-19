@@ -20,8 +20,7 @@
 import json
 import os
 import time
-from pathlib import Path
-from threading import Thread, ThreadError
+from threading import Thread
 
 from gtts import gTTS
 from waqd import config

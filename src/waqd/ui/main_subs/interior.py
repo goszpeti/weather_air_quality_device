@@ -37,7 +37,8 @@ class Interior(sub_ui.SubUi):
     PRES_BAR_OPTS = ["#7A3699", "#B48EC6", "BARO"]
 
     def __init__(self, main_ui, settings):
-        super().__init__(main_ui, settings)
+        super().__init__(main_ui, main_ui.ui, settings)
+        self._comps = main_ui._comps
         self._tvoc_ui_bar = None
         self._humidity_ui_bar = None
         self._pressure_ui_bar = None

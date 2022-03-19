@@ -36,13 +36,13 @@ if TYPE_CHECKING:
 class Component:
     """ Base class for all components """
 
-    def __init__(self, components: "ComponentRegistry" = None, settings: Settings = None):
+    def __init__(self, components: "ComponentRegistry" = None, settings: Settings = None, enabled=True):
         self._comps = components
         self._settings = settings  # TODO remove
         self._logger = Logger()
         self._runtime_system = RuntimeSystem()
         self._reload_forbidden = False  # must be set manually in the child class
-        self._disabled = False
+        self._disabled = not enabled
         self._ready = True
 
     @property
@@ -82,8 +82,8 @@ class CyclicComponent(Component):
     STOP_TIMEOUT: int = 2 * UPDATE_TIME
     MAX_ERROR = 5  # max error before reset
 
-    def __init__(self, components=None, settings=None):
-        super().__init__(components, settings)
+    def __init__(self, components=None, settings=None, enabled=True):
+        super().__init__(components, settings, enabled)
         self._ticker_event = threading.Event()
         self._update_thread: Optional[threading.Thread] = None
         self._ready = False

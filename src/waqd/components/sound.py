@@ -53,7 +53,7 @@ class Sound(Component):
             # import needs libs and can can crash appplication
             import vlc  # pylint: disable=import-outside-toplevel
             player: vlc.MediaPlayer = vlc.MediaPlayer(str(audio_file))
-            vlc.libvlc_audio_set_volume(player, 140) # make it louder for passive loudspeake
+            vlc.libvlc_audio_set_volume(player, 120) # make it louder for passive loudspeake
             if self._comps and self._comps.energy_saver.night_mode_active:  # lower volume at night
                 player.audio_set_volume(50)
             with self.lock:  # wait for previous sound to end

@@ -10,10 +10,13 @@ if TYPE_CHECKING:
     from waqd.base.component_reg import ComponentRegistry
     from waqd.settings import Settings
 
+
 class Server(Component):
 
-    def __init__(self, components: "ComponentRegistry" = None, settings: "Settings" = None):
-        super().__init__(components=components, settings=settings)
+    def __init__(self, components: "ComponentRegistry"=None, enabled=True):
+        super().__init__(components, enabled=enabled)
+        if not enabled:
+            return
         self._app = default_app()
         self._run_thread = Thread(
             name="RunServer", target=self._run_server, daemon=True)
@@ -23,7 +26,7 @@ class Server(Component):
         pass
 
     def _entrypoint(self):
-        response =  """
+        response = """
         <!DOCTYPE html>
         <html>
         <head>
@@ -53,7 +56,6 @@ class Server(Component):
         response += "</body></html>"
         return response
 
-
     def _receive_sensor_values(self):
         from waqd.config import comp_ctrl
         if not comp_ctrl:
@@ -71,9 +73,8 @@ class Server(Component):
 
         if "remoteExtSensor" in request.fullpath:
             comp_ctrl.components.remote_exterior_sensor.read_callback(temp, hum)
-        elif "remoteIntSensor" in  request.fullpath:
+        elif "remoteIntSensor" in request.fullpath:
             comp_ctrl.components.remote_interior_sensor.read_callback(temp, hum)
-
 
     def _run_server(self):
         route('/remoteExtSensor', 'POST', self._receive_sensor_values)
@@ -83,11 +84,9 @@ class Server(Component):
         route('/', 'GET', self._entrypoint)
         # Can't start server rom bottle, because it does not support stopping it without a hack
         from paste import httpserver
-        self._server = httpserver.serve(self._app, host='0.0.0.0', port='8080', daemon_threads=True, start_loop=False)
+        self._server = httpserver.serve(self._app, host='0.0.0.0', port='8080',
+                                        daemon_threads=True, start_loop=False)
         self._server.serve_forever()
 
     def stop(self):
         self._server.server_close()
-
-
-

@@ -44,8 +44,7 @@ class OnlineUpdater(CyclicComponent):
 
 
     def __init__(self, components: ComponentRegistry, enabled=True, use_beta_channel=False):
-        super().__init__(components)
-        self._disabled = not enabled
+        super().__init__(components, enabled=enabled)
         if self._disabled:
             return
         self._use_beta_channel = use_beta_channel
