@@ -24,7 +24,7 @@ REQUIRED = [
     # Backend
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
     "JsonSchema==4.0.1",  # MIT License - for events json schema validation
-    "bottle==0.12.19", # webserver for remote sensors
+    "bottle==0.12.20", # webserver for remote sensors
     "paste==3.5.0", # server backend for bottle
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
     "APScheduler==3.8.0",  # MIT License - Scheduler for Events function
