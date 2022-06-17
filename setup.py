@@ -27,7 +27,7 @@ REQUIRED = [
     "bottle==0.12.21", # webserver for remote sensors
     "paste==3.5.0", # server backend for bottle
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
-    "APScheduler==3.8.0",  # MIT License - Scheduler for Events function
+    "APScheduler==3.9.1",  # MIT License - Scheduler for Events function
     "PyGithub==1.55",  # LGPL - Access to GitHub in AutoUpdater
     "File-Read-Backwards==2.0.0",  # MIT License - for performance in DetailView
     # Sound
