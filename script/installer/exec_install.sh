@@ -31,7 +31,7 @@ function waqd_install() {
     # It does compile - but it takes several hours...
     sudo apt -y install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart python3-pyrsistent
     # install pipx for venv based app creation
-    python3 -m pip install --user pipx==0.16.3
+    python3 -m pip install --user pipx==1.1.0
     python3 -m pipx ensurepath
     # xscreensaver - for no auto screen turn off
     sudo apt -y install xscreensaver
