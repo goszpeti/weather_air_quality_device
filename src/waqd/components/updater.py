@@ -83,7 +83,10 @@ class OnlineUpdater(CyclicComponent):
     def _connect_to_repository(self):
         """ Get Github repo object """
         github = Github()
-        self._repository = github.get_repo(config.GITHUB_REPO_NAME)
+        try:
+            self._repository = github.get_repo(config.GITHUB_REPO_NAME)
+        except Exception as e:
+            self._logger.warning(f"Can't connect to update repo: {str(e)}")
 
     def _get_latest_version_tag(self) -> str:
         """ Check, if an update is found and return it's version. """

@@ -144,77 +144,77 @@
         <translation>Hardware</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1345"/>
+        <location filename="options.ui" line="1295"/>
         <source>Enable CCS-811</source>
         <translation>CCS-811 einschalten</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1296"/>
+        <location filename="options.ui" line="1354"/>
         <source>DHT-22 PIN (BCM/GPIO)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="options.ui" line="1257"/>
+        <location filename="options.ui" line="1337"/>
         <source>Display Type</source>
         <translation>Anzeigetyp</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1377"/>
+        <location filename="options.ui" line="1418"/>
         <source>Enable BMP-280</source>
         <translation>BMP-280 einschalten</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1419"/>
+        <location filename="options.ui" line="1308"/>
         <source>Enable MH-Z19</source>
         <translation>MH-Z19 einschalten</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1448"/>
+        <location filename="options.ui" line="1408"/>
         <source>Enable Motion Sensor</source>
         <translation>Bewegungssensor aktivieren</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1507"/>
+        <location filename="options.ui" line="1521"/>
         <source>Info</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1540"/>
+        <location filename="options.ui" line="1554"/>
         <source>System Platform</source>
         <translation>System Plattform</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1547"/>
+        <location filename="options.ui" line="1561"/>
         <source>IP Address</source>
         <translation>IP Adresse</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1554"/>
+        <location filename="options.ui" line="1568"/>
         <source>192.168.1.1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="options.ui" line="1567"/>
+        <location filename="options.ui" line="1581"/>
         <source>Raspberry Pi 3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="options.ui" line="1675"/>
+        <location filename="options.ui" line="1691"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="options.ui" line="1699"/>
+        <location filename="options.ui" line="1715"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1720"/>
+        <location filename="options.ui" line="1736"/>
         <source>Shutdown</source>
         <translation>Ausschalten</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1741"/>
+        <location filename="options.ui" line="1757"/>
         <source>Reboot</source>
         <translation>Neu starten</translation>
     </message>
@@ -277,7 +277,7 @@ auswählen! </translation>
     <message>
         <location filename="options.ui" line="382"/>
         <source>Check for System Updates</source>
-        <translation>System Updates suchen</translation>
+        <translation type="obsolete">System Updates suchen</translation>
     </message>
     <message>
         <location filename="options.ui" line="291"/>
@@ -286,35 +286,68 @@ auswählen! </translation>
     </message>
     <message>
         <location filename="options.ui" line="1580"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+        <source>&amp;lt;!DOCTYPE HTML PUBLIC &amp;quot;-//W3C//DTD HTML 4.0//EN&amp;quot; &amp;quot;http://www.w3.org/TR/REC-html40/strict.dtd&amp;quot;&amp;gt;
+&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;meta name=&amp;quot;qrichtext&amp;quot; content=&amp;quot;1&amp;quot; /&amp;gt;&amp;lt;style type=&amp;quot;text/css&amp;quot;&amp;gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.875pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;WAQD Copyright (c) 2021 Péter Gosztolya&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Bahnschrift&apos;; font-size:16pt; font-weight:600;&quot;&gt;Used Software:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Bahnschrift&apos;; font-size:14pt;&quot;&gt;- Weather Icons from http://weathericons.io&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Bahnschrift&apos;; font-size:14pt;&quot;&gt;- Franzo Font from https://fontlibrary.org/en/font/franzo&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Bahnschrift&apos;; font-size:14pt;&quot;&gt;- Qt5 via PyQt5 Python Bindings&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Bahnschrift&apos;; font-size:14pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Bahnschrift&apos;; font-size:14pt;&quot;&gt;For further used software see https://github.com/goszpeti/WeatherAirQualityDevice.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+&amp;lt;/style&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body style=&amp;quot; font-family:'MS Shell Dlg 2'; font-size:7.875pt; font-weight:400; font-style:normal;&amp;quot;&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-size:14pt; font-weight:600;&amp;quot;&amp;gt;WAQD Copyright (c) 2021 Péter Gosztolya&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt; font-weight:600;&amp;quot;&amp;gt;&amp;lt;br /&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:'Bahnschrift'; font-size:16pt; font-weight:600;&amp;quot;&amp;gt;Used Software:&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:'Bahnschrift'; font-size:14pt;&amp;quot;&amp;gt;- Weather Icons from http://weathericons.io&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:'Bahnschrift'; font-size:14pt;&amp;quot;&amp;gt;- Franzo Font from https://fontlibrary.org/en/font/franzo&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:'Bahnschrift'; font-size:14pt;&amp;quot;&amp;gt;- Qt5 via PyQt5 Python Bindings&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Bahnschrift'; font-size:14pt;&amp;quot;&amp;gt;&amp;lt;br /&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:'Bahnschrift'; font-size:14pt;&amp;quot;&amp;gt;For further used software see https://github.com/goszpeti/WeatherAirQualityDevice.&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;</source>
+        <translation type="obsolete">&amp;lt;!DOCTYPE HTML PUBLIC &amp;quot;-//W3C//DTD HTML 4.0//EN&amp;quot; &amp;quot;http://www.w3.org/TR/REC-html40/strict.dtd&amp;quot;&amp;gt;
+&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;meta name=&amp;quot;qrichtext&amp;quot; content=&amp;quot;1&amp;quot; /&amp;gt;&amp;lt;style type=&amp;quot;text/css&amp;quot;&amp;gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.875pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;WAQD Copyright (c) 2021 Péter Gosztolya&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt; font-weight:600;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Bahnschrift&apos;; font-size:16pt; font-weight:600;&quot;&gt;Verwendete Software:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Bahnschrift&apos;; font-size:14pt;&quot;&gt;- Weather Icons von http://weathericons.io&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Bahnschrift&apos;; font-size:14pt;&quot;&gt;- Franzo Font von https://fontlibrary.org/en/font/franzo&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Bahnschrift&apos;; font-size:14pt;&quot;&gt;- Qt5 via PyQt5 Python Bindings&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;Bahnschrift&apos;; font-size:14pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Bahnschrift&apos;; font-size:14pt;&quot;&gt;Für Weitere siehe https://github.com/goszpeti/WeatherAirQualityDevice.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&amp;lt;/style&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body style=&amp;quot; font-family:'MS Shell Dlg 2'; font-size:7.875pt; font-weight:400; font-style:normal;&amp;quot;&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-size:14pt; font-weight:600;&amp;quot;&amp;gt;WAQD Copyright (c) 2021 Péter Gosztolya&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt; font-weight:600;&amp;quot;&amp;gt;&amp;lt;br /&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:'Bahnschrift'; font-size:16pt; font-weight:600;&amp;quot;&amp;gt;Verwendete Software:&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:'Bahnschrift'; font-size:14pt;&amp;quot;&amp;gt;- Weather Icons von http://weathericons.io&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:'Bahnschrift'; font-size:14pt;&amp;quot;&amp;gt;- Franzo Font von https://fontlibrary.org/en/font/franzo&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:'Bahnschrift'; font-size:14pt;&amp;quot;&amp;gt;- Qt5 via PyQt5 Python Bindings&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Bahnschrift'; font-size:14pt;&amp;quot;&amp;gt;&amp;lt;br /&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:'Bahnschrift'; font-size:14pt;&amp;quot;&amp;gt;Für Weitere siehe https://github.com/goszpeti/WeatherAirQualityDevice.&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;</translation>
     </message>
     <message>
-        <location filename="options.ui" line="1409"/>
+        <location filename="options.ui" line="1344"/>
         <source>Enable BME-280</source>
         <translation>BME-280 einschalten</translation>
+    </message>
+    <message>
+        <location filename="options.ui" line="382"/>
+        <source>Connect to WLAN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options.ui" line="1505"/>
+        <source>Calibrate and Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options.ui" line="1512"/>
+        <source>Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="options.ui" line="1594"/>
+        <source>&amp;lt;!DOCTYPE HTML PUBLIC &amp;quot;-//W3C//DTD HTML 4.0//EN&amp;quot; &amp;quot;http://www.w3.org/TR/REC-html40/strict.dtd&amp;quot;&amp;gt;
+&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;meta name=&amp;quot;qrichtext&amp;quot; content=&amp;quot;1&amp;quot; /&amp;gt;&amp;lt;style type=&amp;quot;text/css&amp;quot;&amp;gt;
+p, li { white-space: pre-wrap; }
+&amp;lt;/style&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body style=&amp;quot; font-family:'MS Shell Dlg 2'; font-size:7.875pt; font-weight:400; font-style:normal;&amp;quot;&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-size:14pt;&amp;quot;&amp;gt;WAQD Copyright (c) 2021 Péter Gosztolya&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt;&amp;quot;&amp;gt;&amp;lt;br /&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-size:14pt;&amp;quot;&amp;gt;Used Software:&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-size:12pt;&amp;quot;&amp;gt;- Weather Icons licensed under  SIL OFL 1.1 (http://scripts.sil.org/OFL) from http://weathericons.io&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-size:12pt;&amp;quot;&amp;gt;- Franzo Font under  Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0) from https://fontlibrary.org/en/font/franzo&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-size:12pt;&amp;quot;&amp;gt;- wifi-connect under Apache 2.0 https://www.apache.org/licenses/LICENSE-2.0) from https://github.com/balena-os/wifi-connect&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-size:12pt;&amp;quot;&amp;gt;- Images from Unsplash under Unsplash license (https://unsplash.com/license) from https://unsplash.com&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-size:12pt;&amp;quot;&amp;gt;- Qt5 (LGPL 3.0) via PyQt5 (GPL3) Python Bindings&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:14pt;&amp;quot;&amp;gt;&amp;lt;br /&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-size:14pt;&amp;quot;&amp;gt;For further used software see https://github.com/goszpeti/WeatherAirQualityDevice.&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -330,12 +363,12 @@ p, li { white-space: pre-wrap; }
         <translation>Außen</translation>
     </message>
     <message>
-        <location filename="weather.ui" line="532"/>
+        <location filename="weather.ui" line="588"/>
         <source>Interior</source>
         <translation>Innen</translation>
     </message>
     <message>
-        <location filename="weather.ui" line="1511"/>
+        <location filename="weather.ui" line="1567"/>
         <source>Forecast</source>
         <translation>Ausblick</translation>
     </message>
@@ -345,32 +378,32 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Ausschalten</translation>
     </message>
     <message>
-        <location filename="weather.ui" line="2511"/>
+        <location filename="weather.ui" line="2567"/>
         <source>Options</source>
         <translation>Optionen</translation>
     </message>
     <message>
-        <location filename="weather.ui" line="2177"/>
+        <location filename="weather.ui" line="2233"/>
         <source>Help</source>
         <translation>Hilfe</translation>
     </message>
     <message>
-        <location filename="weather.ui" line="2591"/>
+        <location filename="weather.ui" line="2647"/>
         <source>Show Weather Today</source>
         <translation>Wetter Details für heute</translation>
     </message>
     <message>
-        <location filename="weather.ui" line="2612"/>
+        <location filename="weather.ui" line="2668"/>
         <source>Show Values over time</source>
         <translation>Sensorwerte über die Zeit</translation>
     </message>
     <message>
-        <location filename="weather.ui" line="2633"/>
+        <location filename="weather.ui" line="2689"/>
         <source>Show Weather for selected day</source>
         <translation>Wetter Details für den Tag</translation>
     </message>
     <message>
-        <location filename="weather.ui" line="2657"/>
+        <location filename="weather.ui" line="2713"/>
         <source>Click to show additional information!</source>
         <translation>Für zusätzliche Anzeigen klicken!</translation>
     </message>

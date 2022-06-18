@@ -29,7 +29,7 @@ function waqd_install() {
     sudo apt -y install python3-libgpiod python3-venv 
     # PyQt doesnt work with pip on raspi - SVG and Charts are needed, too
     # It does compile - but it takes several hours...
-    sudo apt -y install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart
+    sudo apt -y install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart python3-pyrsistent
     # install pipx for venv based app creation
     python3 -m pip install --user pipx==0.16.3
     python3 -m pipx ensurepath
@@ -42,14 +42,15 @@ function waqd_install() {
     echo "# Install Wifi Connector... (Step 3/5)"
     bash <(curl -L https://github.com/balena-io/wifi-connect/raw/master/scripts/raspbian-install.sh) -y
 
-    echo "# Setting up the system (Step 4/5)"
-    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
-
-    echo "# Installing application... (Step 5/5)"
+    echo "# Installing application... (Step 4/5)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --install
+
     # needs installed app
     export PYTHONPATH=${SRC_DIR}
     python3 -m installer --set_wallpaper
+
+    echo "# Setting up the system (Step 5/5)"
+    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
 
     echo "# Waiting for restart..."
 }

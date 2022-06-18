@@ -27,6 +27,7 @@ from waqd.settings import (BRIGHTNESS, DAY_STANDBY_TIMEOUT,
 
 STANDBY_BRIGHTNESS = 20
 NIGHT_MODE_BRIGHTNESS = 0
+NIGHT_STANDBY_BRIGHTNESS = 10
 NIGHTMODE_WAKEUP_DELTA_BRIGHTNESS = 20
 
 
@@ -59,7 +60,10 @@ class ESaver(CyclicComponent):
         """ Runs periodically. Does the actual switch between the modes and sets brightness """
         # get value from motion sensor - if available
         if self._settings.get(MOTION_SENSOR_ENABLED):
-            self._is_awake = self._comps.motion_detection_sensor.motion_detected
+            NIGHT_MODE_BRIGHTNESS = 0
+        else:
+            NIGHT_MODE_BRIGHTNESS = NIGHT_STANDBY_BRIGHTNESS
+        self._is_awake = self._comps.motion_detection_sensor.motion_detected
 
         # determine sleep and wake time
         current_date_time = datetime.datetime.now()
@@ -97,7 +101,7 @@ class ESaver(CyclicComponent):
                 self._comps.display.set_brightness(self._settings.get(BRIGHTNESS))
                 time.sleep(self._settings.get(DAY_STANDBY_TIMEOUT))
         else:
-            if self.night_mode_active and self._comps.display.get_brightness() > 0:
+            if self.night_mode_active and self._comps.display.get_brightness() > NIGHT_STANDBY_BRIGHTNESS:
                 self._logger.debug("ESaver: Re-entering night mode after wake-up")
                 self._comps.display.set_brightness(NIGHT_MODE_BRIGHTNESS)
             elif not self.night_mode_active and (current_date_time <= wake_time or current_date_time >= sleep_time):

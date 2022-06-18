@@ -113,12 +113,12 @@ def setup_supported_locales():
 def set_wallpaper(install_path: Path):
     # Can't be run as sudo, or as sudo -runuser. Needs desktop manager running.
     # set wallpaper - get image from install dir
-    lib_paths = (install_path / "lib").iterdir()
+    lib_paths = (install_path / "lib").iterdir() # TODO does not work anymore
     for lib_path in lib_paths:
         if "python" in lib_path.name:
             image = lib_path / "site-packages/waqd/assets/gui_base/pre_loading_screen.png"
             try:
-                logging.info("Setting wallpaper...")
+                logging.info("Setting wallpaper..." + f'pcmanfm --set-wallpaper="{image}"')
                 os.system(f'pcmanfm --set-wallpaper="{image}"')
             except Exception as e:
                 logging.error(str(e))
@@ -146,6 +146,8 @@ def do_setup():
     # System setup
     # Start only the desktop, but not the taskbar
     add_to_autostart("pcmanfm --desktop --profile LXDE-pi", ["lxpanel --profile"])
+
+    # TODO need to add dtoverlay=rpi-backlight to /boot/config.ini
 
     # Cosmetic setup
     clean_lxde_desktop()

@@ -366,7 +366,7 @@ class DHT22(TempSensor, HumiditySensor, CyclicComponent):
 
 class BMP280(TempSensor, BarometricSensor, CyclicComponent):
     """
-    Implements access to the BME280 temperature/pressure sensor.
+    Implements access to the BMP280 temperature/pressure sensor.
     """
     UPDATE_TIME = 5  # in seconds
 
@@ -439,10 +439,10 @@ class BME280(TempSensor, BarometricSensor, HumiditySensor, CyclicComponent):
         """
         Initialize sensor (simply save the module), no complicated init needed.
         """
-        import adafruit_bme280
+        from adafruit_bme280.advanced import Adafruit_BME280_I2C
         import board  # pylint: disable=import-outside-toplevel
         i2c = board.I2C()   # uses board.SCL and board.SDA
-        self._sensor_driver = adafruit_bme280.Adafruit_BME280_I2C(i2c, address=0x76)
+        self._sensor_driver = Adafruit_BME280_I2C(i2c, address=0x76)
 
     def _read_sensor(self):
         """
@@ -501,7 +501,7 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
         if self._runtime_system.is_target_system:
             os.system(f"sudo {sys.executable} -m mh_z19 --detection_range_2000")
             # disable auto calibration -> it will never read true 400ppm...
-            #os.system(f"sudo {sys.executable} -m mh_z19 --abc_off")
+            os.system(f"sudo {sys.executable} -m mh_z19 --abc_off")
 
     def _read_sensor(self):
         co2 = 0
@@ -753,9 +753,7 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
         if pin == 0:
             self._disabled = True
             return
-
-        Process = threading.Thread
-        self._init_thread = Process(name="SR501_Init",
+        self._init_thread = threading.Thread(name="SR501_Init",
                                     target=self._register_callback,
                                     daemon=True)
         self._init_thread.start()

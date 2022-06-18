@@ -118,9 +118,10 @@ class ComponentRegistry():
 
     def show(self):
         """ Check all components and thus initialize them """
-        return [self.display, self.sound, self.auto_updater, self.tts, self.temp_sensor, self.humidity_sensor,
-                self.tvoc_sensor, self.pressure_sensor, self.co2_sensor, self.server,
-                self.motion_detection_sensor, self.energy_saver, self.weather_info, self.event_handler]
+        return [
+                self.display, self.sound, self.auto_updater, self.tts, self.temp_sensor, self.humidity_sensor,
+                self.tvoc_sensor, self.pressure_sensor, self.co2_sensor, self.motion_detection_sensor,
+                self.server, self.energy_saver,  self.weather_info, self.event_handler]
 
     @property
     def display(self) -> "Display":

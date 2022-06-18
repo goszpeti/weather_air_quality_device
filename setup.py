@@ -57,7 +57,7 @@ REQUIRED_LINUX = [ # this package does not install on windows, because it can't 
     ]
 #epd-library=0.2.3 GPL v3GPLv3 - Waveshare 2.9 inch epaper 296×128
 
-if not platform.machine().startswith("armv7"):
+if not platform.machine().startswith("armv"):
     REQUIRED += REQUIRED_NON_RPI
 if platform.system() == "Linux":
     REQUIRED += REQUIRED_LINUX
