@@ -17,4 +17,27 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-__version__ = "1.6.0b4"
+
+"""
+Contains global constants and basic/ui variables.
+"""
+
+from pathlib import Path
+
+__version__ = "1.6.0b5"
+
+### Global constants ###
+PROG_NAME = "W.A.Q.D"
+GITHUB_REPO_NAME = "goszpeti/WeatherAirQualityDevice"
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 480
+
+### Global variables ###
+# 0: No debug, 1 = logging on, 2: remote debugging on
+# 3: wait for remote debugger, 4: quick-load
+DEBUG_LEVEL = 0
+
+# paths to find folders
+base_path = Path(__file__).absolute().parent
+assets_path = base_path / "assets"
+user_config_dir = Path().home() / ".waqd"

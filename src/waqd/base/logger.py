@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 from file_read_backwards import FileReadBackwards
-from waqd import config
+import waqd
 
 # helper functions for logs
 def delete_log_file(log_file_path: Path) -> bool:
@@ -57,12 +57,12 @@ class Logger(logging.Logger):
 
     _instance: Optional[logging.Logger] = None
 
-    def __new__(cls, output_path: Path = config.user_config_dir):
+    def __new__(cls, output_path: Path = waqd.user_config_dir):
         if cls._instance is None:
             cls._instance = cls._init_logger(output_path)
         return cls._instance
 
-    def __init__(self, output_path: Path = config.user_config_dir) -> None:
+    def __init__(self, output_path: Path = waqd.user_config_dir) -> None:
         return None
 
     @classmethod
@@ -77,7 +77,7 @@ class Logger(logging.Logger):
         logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
         log_debug_level = logging.INFO
-        if config.DEBUG_LEVEL > 0:
+        if waqd.DEBUG_LEVEL > 0:
             log_debug_level = logging.DEBUG
 
         # Create user config dir
@@ -108,10 +108,10 @@ class Logger(logging.Logger):
 
 
 class SensorLogger(logging.Logger):
-    def __new__(cls, name: str, output_path: Path = config.user_config_dir / "sensor_logs"):
+    def __new__(cls, name: str, output_path: Path = waqd.user_config_dir / "sensor_logs"):
         return cls._init_logger(name, output_path)
 
-    def __init__(self, name: str, output_path: Path = config.user_config_dir / "sensor_logs") -> None:
+    def __init__(self, name: str, output_path: Path = waqd.user_config_dir / "sensor_logs") -> None:
         pass
 
     @staticmethod

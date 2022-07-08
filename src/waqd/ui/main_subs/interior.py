@@ -19,7 +19,7 @@
 #
 from PyQt5 import QtGui
 
-from waqd import config
+import waqd
 from waqd.settings import INTERIOR_BG, FONT_NAME
 from waqd.ui import common
 from waqd.ui.main_subs import sub_ui
@@ -48,7 +48,7 @@ class Interior(sub_ui.SubUi):
 
         # set background
         self._ui.interior_background.setPixmap(QtGui.QPixmap(
-            str(config.assets_path / "gui_bgrs" / settings.get(INTERIOR_BG))))
+            str(waqd.assets_path / "gui_bgrs" / settings.get(INTERIOR_BG))))
 
         self._ui.interior_1_bar.hide()
         self._ui.interior_2_bar.hide()
@@ -147,5 +147,5 @@ class Interior(sub_ui.SubUi):
 
     def show_detail(self, sensor_type: str, sensor_value_unit: str):
         """ Placholder for daily detail view popup """
-        log_file = config.user_config_dir / "sensor_logs" / (sensor_type + ".log")
+        log_file = waqd.user_config_dir / "sensor_logs" / (sensor_type + ".log")
         self.det = SensorDetailView(log_file, sensor_value_unit, self._main_ui)

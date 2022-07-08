@@ -26,9 +26,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 
 from waqd import __version__ as WAQD_VERSION
-from waqd import config
+import waqd
 from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
+from waqd.base.network import Network
 from waqd.base.system import RuntimeSystem
 from waqd.components.sensors import MH_Z19
 from waqd.settings import (BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS, CCS811_ENABLED,
@@ -43,6 +44,8 @@ from waqd.ui import common
 from waqd.ui.main_subs import sub_ui
 from waqd.ui.widgets.fader_widget import FaderWidget
 from waqd.ui.widgets.splashscreen import SplashScreen
+from PyQt5.QtWidgets import QScroller, QApplication
+from .qt.options_ui import Ui_Dialog
 
 # define Qt so we can use it like the namespace in C++
 Qt = QtCore.Qt
@@ -56,7 +59,7 @@ class OptionMainUi(QtWidgets.QDialog):
     EXTRA_SCALING = 1.15  # make items bigger in this menu
     # matches strings to seconds in dropdown of timeouts
     TIME_CBOX_VALUES = [5, 30, 120, 600, 1800]  # seconds
-    FONT_SCALING_VALUES = [1, 1.2, 1.4]
+    FONT_SCALING_VALUES = [0.7, 0.85, 1]
     DHT_PIN_VALUES = ["Disabled", "4", "8", "22"]
 
     def __init__(self, main_ui: "WeatherMainUi", comp_ctrl: ComponentController, settings: Settings):
@@ -72,8 +75,7 @@ class OptionMainUi(QtWidgets.QDialog):
         # create qt base objects
         self.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint | Qt.FramelessWindowHint))
 
-        ui_type = uic.loadUiType(config.base_path / "ui" / "qt" / "options.ui")
-        self._ui = ui_type[0]()  # 0th element is always the UI class
+        self._ui = Ui_Dialog()
         self._ui.setupUi(self)
 
         self.setGeometry(main_ui.geometry())
@@ -85,7 +87,7 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.version_label.setText(WAQD_VERSION)
 
         # set up fix background image
-        self._ui.background_label.setPixmap(QtGui.QPixmap(str(get_asset_file("gui_base", "background-full"))))
+        #self._ui.background_label.setPixmap(QtGui.QPixmap(str(get_asset_file("gui_base", "background-full"))))
 
         # display current options
         self.display_options()
@@ -124,7 +126,18 @@ class OptionMainUi(QtWidgets.QDialog):
             self._update_motion_sensor_enabled)
 
         # set starting tab to first tab
-        self._ui.options_tabs.setCurrentIndex(0)
+        #self._ui.options_tabs.setCurrentIndex(0)
+        QScroller.grabGesture(self._ui.hw_scroll_area, QScroller.LeftMouseButtonGesture)
+
+        #self._tst = common.CustomTabStyle()
+        #self._ui.options_tabs.tabBar().setStyle(self._tst)
+        
+        # # self.tab_widget = QTabWidget(self)
+        # # self.tab_widget.count
+        # for i in range(self._ui.options_tabs.count()):
+        #    # self.tab_widget.tabBar().tabButton
+        #     self._ui.options_tabs.tabBar().setTabButton(i, QTabBar.LeftSide, QLabel(self._ui.options_tabs.tabText(i)))
+
 
         # set to normal brightness
         self._comps.display.set_brightness(self._settings.get_int(BRIGHTNESS))
@@ -140,7 +153,7 @@ class OptionMainUi(QtWidgets.QDialog):
 
     def _calibrate_mh_z19(self):
         #self._mh_z19_calib_dialog = 
-        self._calib_dialog_ui = uic.loadUi(config.base_path / "ui" /
+        self._calib_dialog_ui = uic.loadUi(waqd.base_path / "ui" /
                                            "widgets" / "calibration.ui", baseinstance=QtWidgets.QDialog())
         # TODO check if it is he correct one
         if not isinstance(self._comps.co2_sensor, MH_Z19):
@@ -174,7 +187,7 @@ class OptionMainUi(QtWidgets.QDialog):
             def __init__(self, comps, settings) -> None:
                 self._comps = comps
                 self._dialog = QtWidgets.QDialog()
-                ui = uic.loadUi(config.base_path / "ui" /
+                ui = uic.loadUi(waqd.base_path / "ui" /
                                                    "widgets" / "value_test.ui", baseinstance=self._dialog)
                 sub_ui.SubUi.__init__(self, self._dialog, ui, settings)
                 
@@ -196,7 +209,7 @@ class OptionMainUi(QtWidgets.QDialog):
         settings = self._settings
 
         # read events
-        events_json_path = config.user_config_dir / "events.json"
+        events_json_path = waqd.user_config_dir / "events.json"
         if events_json_path.exists():
             with open(events_json_path, "r") as fp:
                 events_text = fp.read()
@@ -224,7 +237,7 @@ class OptionMainUi(QtWidgets.QDialog):
 
         # themes
         # set background images
-        bgr_path = config.assets_path / "gui_bgrs"
+        bgr_path = waqd.assets_path / "gui_bgrs"
         for bgr_file in bgr_path.iterdir():
             self._ui.interior_background_cbox.addItem(bgr_file.name)
             self._ui.forecast_background_cbox.addItem(bgr_file.name)
@@ -265,11 +278,11 @@ class OptionMainUi(QtWidgets.QDialog):
 
         try:
             self._ui.display_type_cbox.setCurrentIndex(
-                list(display_dict.values()).index(display_dict.get(settings.get(DISPLAY_TYPE))))
+                list(display_dict.values()).index(display_dict[settings.get_string(DISPLAY_TYPE)]))
             self._ui.day_standby_timeout_cbox.setCurrentIndex(
-                self.TIME_CBOX_VALUES.index(settings.get(DAY_STANDBY_TIMEOUT)))
+                self.TIME_CBOX_VALUES.index(settings.get_int(DAY_STANDBY_TIMEOUT)))
             self._ui.night_standby_timeout_cbox.setCurrentIndex(
-                self.TIME_CBOX_VALUES.index(settings.get(NIGHT_STANDBY_TIMEOUT)))
+                self.TIME_CBOX_VALUES.index(settings.get_int(NIGHT_STANDBY_TIMEOUT)))
         except Exception:  # leave default
             pass
 
@@ -282,8 +295,8 @@ class OptionMainUi(QtWidgets.QDialog):
             self._ui.location_combo_box.addItem(city)
 
         # set info labels
-        self._ui.system_value.setText(self._runtime_system.platform)
-        [ipv4, _] = self._runtime_system.get_ip()
+        self._ui.system_value.setText(self._runtime_system.platform.replace("_", " "))
+        [ipv4, _] = Network().get_ip()
         self._ui.ip_address_value.setText(ipv4)
 
         self._ui.location_combo_box.setCurrentText(settings.get(LOCATION))
@@ -310,17 +323,17 @@ class OptionMainUi(QtWidgets.QDialog):
         loading_minimum_time = 3  # seconds
         start = time.time()
         while not self._comp_ctrl.all_unloaded or (time.time() < start + loading_minimum_time):
-            config.qt_app.processEvents()
+            QtWidgets.QApplication.processEvents()
 
         self._comp_ctrl.init_all()
 
         while not self._comp_ctrl.all_ready:
-            config.qt_app.processEvents()
+            QtWidgets.QApplication.processEvents()
 
         self._main_ui.init_gui()
         start = time.time()
         while not self._main_ui.ready or (time.time() < start + loading_minimum_time):
-            config.qt_app.processEvents()
+            QtWidgets.QApplication.processEvents()
 
         self._splash_screen.finish(self._main_ui)
 
@@ -375,21 +388,21 @@ class OptionMainUi(QtWidgets.QDialog):
     def _update_language_cbox(self):
         """ Change language in the current ui on value change. """
         self._settings.set(LANG, self._ui.lang_cbox.currentText())
-        common.set_ui_language(config.qt_app, self._settings)
+        common.set_ui_language(QApplication.instance(), self._settings)
         self._ui.retranslateUi(self)
         self.display_options()  # redraw values
 
     def _update_font(self):
         font = self._ui.font_cbox.currentFont()
         self.setFont(font)
-        config.qt_app.setFont(font)
+        QApplication.instance().setFont(font)
 
     def _update_preview_interior(self):
-        bgr_path = config.assets_path / "gui_bgrs" / self._ui.interior_background_cbox.currentText()
+        bgr_path = waqd.assets_path / "gui_bgrs" / self._ui.interior_background_cbox.currentText()
         self._ui.preview_label.setPixmap(QtGui.QPixmap(str(bgr_path)))
 
     def _update_preview_forecast(self):
-        bgr_path = config.assets_path / "gui_bgrs" / self._ui.forecast_background_cbox.currentText()
+        bgr_path = waqd.assets_path / "gui_bgrs" / self._ui.forecast_background_cbox.currentText()
         self._ui.preview_label.setPixmap(QtGui.QPixmap(str(bgr_path)))
 
     def _update_night_mode_slider(self):
@@ -435,10 +448,10 @@ class OptionMainUi(QtWidgets.QDialog):
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
         try:
-            check_call(f'sudo wifi-connect -s "{ssid_name}"')
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.setWindowTitle("Connect to WLAN")
             msg.setText(f"Connect to WLAN '{ssid_name}'' on your phone or pc, where you can select your network and enter your password!")
+            check_call(f'sudo wifi-connect -s "{ssid_name}"')
         except Exception as e:
             msg.setIcon(QtWidgets.QMessageBox.Warning)
             msg.setWindowTitle("Error while opening connection to WLAN")

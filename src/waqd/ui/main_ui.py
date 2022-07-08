@@ -22,14 +22,15 @@ import time
 
 from typing import Optional
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-from waqd import config
+import waqd
 from waqd.base.component_ctrl import ComponentController
 from waqd.assets import get_asset_file
 from waqd.settings import FONT_SCALING, FONT_NAME, Settings
 from waqd.ui.main_subs import exterior, forecast, infopane, interior
 from waqd.ui import common, options
+from .qt.weather_ui import Ui_MainWindow
 
 # define Qt so we can use it like the namespace in C++
 Qt = QtCore.Qt
@@ -42,6 +43,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
     OBJ_NAME = "WeatherMainUi"
 
     change_background_sig = QtCore.pyqtSignal(str)  # str arg is the message
+    network_available_sig = QtCore.pyqtSignal()
 
     def __init__(self, comp_ctrl: ComponentController, settings: Settings):
         super().__init__()
@@ -82,8 +84,10 @@ class WeatherMainUi(QtWidgets.QMainWindow):
     def init_gui(self):
         """ Retranslates, then loads all SubUi elements. """
 
-        ui_type = uic.loadUiType(config.base_path / "ui" / "qt" / "weather.ui")
-        self._ui = ui_type[0]()  # 0th element is always the UI class
+        #ui_type = uic.loadUiType(config.base_path / "ui" / "qt" / "weather.ui")
+        #self._ui = ui_type[0]()  # 0th element is always the UI class
+        #self._ui.setupUi(self)
+        self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
         # scale before additional elments are initialized

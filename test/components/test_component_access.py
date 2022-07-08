@@ -1,4 +1,3 @@
-import logging
 import time
 
 from freezegun import freeze_time

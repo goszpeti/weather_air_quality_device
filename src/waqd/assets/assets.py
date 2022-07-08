@@ -20,7 +20,7 @@
 import json
 from pathlib import Path
 
-from waqd import config
+import waqd
 from waqd.base.logger import Logger
 
 TOC_FILE_NAME = "filetoc.json"
@@ -36,7 +36,7 @@ def get_asset_file(rsc_dir: str, rsc_id: str) -> Path:
     if rsc_id == "dummy-pic": # specal case for a dummy picture
         rsc_dir = "gui_base"
     # read filetoc.json
-    rsc_path = config.assets_path / rsc_dir
+    rsc_path = waqd.assets_path / rsc_dir
     ftoc_path = rsc_path / TOC_FILE_NAME
     content = {}
     logger = Logger()

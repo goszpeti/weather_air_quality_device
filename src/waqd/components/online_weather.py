@@ -35,7 +35,7 @@ from typing import Dict, List, Optional, Tuple, Any
 
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
-from waqd.base.system import RuntimeSystem
+from waqd.base.network import Network
 from waqd.base.logger import Logger
 
 
@@ -146,7 +146,7 @@ class OpenTopoData():
             return self._altitude_info.get("elevation", 0.0)
 
         # wait a little bit for connection
-        is_connected = RuntimeSystem().wait_for_network()
+        is_connected = Network().wait_for_network()
         if not is_connected:
             # TODO error message
             return 0
@@ -204,10 +204,10 @@ class OpenWeatherMap(Component):
         # return if data is up-to-date in a window of 5 minutes
         current_date_time = datetime.now()
         if self._current_weather:
-                if self._current_weather.fetch_time:
-                    time_delta = current_date_time - self._current_weather.fetch_time
-                    if time_delta.seconds < 60 * 5:  # 5 minutes
-                        return self._current_weather
+            if self._current_weather.fetch_time:
+                time_delta = current_date_time - self._current_weather.fetch_time
+                if time_delta.seconds < 60 * 5:  # 5 minutes
+                    return self._current_weather
 
         current_info = self._call_ow_api(self.CURRENT_WEATHER_BY_CITY_ID_API_CMD)
         if not current_info:
@@ -475,7 +475,7 @@ class OpenWeatherMap(Component):
         if self._disabled:
             return {}
         # wait a little bit for connection
-        is_connected = RuntimeSystem().wait_for_network()
+        is_connected = Network().wait_for_network()
         if not is_connected:
             # TODO error message
             return {}

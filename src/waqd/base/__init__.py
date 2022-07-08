@@ -18,7 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 """
-These modules must be initializable without the usage of any external dependencies, except each other.
+These modules handle the basic fcns, which are needed to boostrap the actual functionality
 """
 
-from waqd.base import component_reg, component_ctrl, logger, system
+from waqd.base import component_reg, component_ctrl, logger, network, system

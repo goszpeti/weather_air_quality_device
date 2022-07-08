@@ -21,7 +21,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
 from waqd.ui.widgets import ClickableLabel
-from waqd import config
 from waqd.ui.common import get_font
 
 
@@ -34,11 +33,11 @@ class DisplayBar(ClickableLabel):
 
     def __init__(self, parent, color="#FFFFFF", type_text="N/A", font_size=24):
         super().__init__(parent=parent)
-        if not config.qt_app:
+        if not QtWidgets.QApplication.instance():
             return
         self._font_size = font_size
         # for high dpi scaling
-        self._pixel_ratio = config.qt_app.devicePixelRatio()
+        self._pixel_ratio = QtWidgets.QApplication.instance().devicePixelRatio()
 
         self._value_label = QtWidgets.QLabel(self)
         self._value_label.setText("N/A")

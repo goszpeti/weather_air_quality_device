@@ -1,20 +1,23 @@
-# docker build . -t raspi/waqd:v1.5 -f ./test/testdata/auto_updater/dockerfile_install
-FROM goszpeti/waqd:latest
-USER pi
+# docker build . -t goszpeti/waqd:latest -f ./test/testdata/auto_updater/dockerfile_install
+FROM --platform=linux/arm64 goszpeti/rpi-bullseye-desktop:latest
+#USER pi
 WORKDIR /home/pi
 ENV COPY_PATH=/home/pi/waqd-dev
 ENV DISPLAY=:99.0
 
-# copy src
-COPY --chown=pi ./src/ ${COPY_PATH}/src
-COPY --chown=pi ./script/ ${COPY_PATH}/script/
-COPY --chown=pi ./setup.py ${COPY_PATH}/
-COPY --chown=pi ./MANIFEST.in ${COPY_PATH}/
-COPY --chown=pi ./README.md ${COPY_PATH}/
+# # install virtual screen
+# RUN apt install xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 -y
 
-RUN chmod +x ${COPY_PATH}/script/installer/start_installer.sh
-RUN chmod +x ${COPY_PATH}/script/installer/exec_install.sh
-# only works in bash
-RUN bash -lic ". /home/pi/waqd-dev/script/installer/exec_install.sh && waqd_install"
+# # copy src
+# COPY --chown=pi ./src/ ${COPY_PATH}/src
+# COPY --chown=pi ./script/ ${COPY_PATH}/script/
+# COPY --chown=pi ./setup.py ${COPY_PATH}/
+# COPY --chown=pi ./MANIFEST.in ${COPY_PATH}/
+# COPY --chown=pi ./README.md ${COPY_PATH}/
 
-ENTRYPOINT bash
+# RUN chmod +x ${COPY_PATH}/script/installer/start_installer.sh
+# RUN chmod +x ${COPY_PATH}/script/installer/exec_install.sh
+
+VOLUME [ "/sys/fs/cgroup" ]
+
+CMD ["/usr/sbin/init"]

@@ -40,8 +40,12 @@ class Server(Component):
         <h1>Welcome to the Weather Air Quality Device!</h1>
         <p>&nbsp;</p>
         """
+        assert self._comps
+
         for sensor_name in self._comps.get_names():
             sensor = self._comps.get(sensor_name)
+            if not sensor:
+                continue
             sensor_class = sensor.__class__
             name = str(sensor_class).replace("'>", "").split(".")
 
@@ -57,7 +61,7 @@ class Server(Component):
         return response
 
     def _receive_sensor_values(self):
-        from waqd.config import comp_ctrl
+        from waqd.app import comp_ctrl
         if not comp_ctrl:
             return
         data = request.json

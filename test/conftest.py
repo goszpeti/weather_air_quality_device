@@ -8,7 +8,7 @@ import pytest
 import waqd.base.logger
 import waqd.base.system
 from PyQt5 import QtCore, QtWidgets
-from waqd import config
+import waqd
 
 # enable scaling
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
@@ -37,9 +37,9 @@ def target_mockup_fixture():
 def base_fixture(request):
     # yield "base_fixture"  # return after setup
     paths = PathSetup()
-    config.assets_path = paths.base_path / "src" / "waqd" / "assets"
-    config.user_config_dir = Path(gettempdir()) / "waqd_test"
-    shutil.rmtree(config.user_config_dir, ignore_errors=True)
+    waqd.assets_path = paths.base_path / "src" / "waqd" / "assets"
+    waqd.user_config_dir = Path(gettempdir()) / "waqd_test"
+    shutil.rmtree(waqd.user_config_dir, ignore_errors=True)
 
     def teardown():
         # reset singletons

@@ -12,8 +12,8 @@ from subprocess import Popen
 
 @pytest.mark.integration
 def testDebugDisabledForRelease():
-    from waqd import config
-    assert config.DEBUG_LEVEL == 0  # debug level should be 0 for release
+    import waqd
+    assert waqd.DEBUG_LEVEL == 0  # debug level should be 0 for release
 
 
 @pytest.mark.integration

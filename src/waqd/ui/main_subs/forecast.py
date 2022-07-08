@@ -19,23 +19,27 @@
 #
 import datetime
 import time
+from typing import TYPE_CHECKING
 
 from PyQt5 import QtGui
 
-from waqd import config
+import waqd
 from waqd.assets import get_asset_file
 from waqd.settings import FORECAST_ENABLED, FORECAST_BG
 from waqd.ui import common
 from waqd.ui.main_subs import sub_ui
+from waqd.base.network import Network
 
 from waqd.ui.weather_detail_view import WeatherDetailView
 
+if TYPE_CHECKING:
+    from waqd.ui.main_ui import WeatherMainUi
 
 class Forecast(sub_ui.SubUi):
     """  Forecast segment of the main ui. Displays the forecast for 3 days. """
     UPDATE_TIME = 600 * 1000  # 10 minutes in microseconds
 
-    def __init__(self, main_ui, settings):
+    def __init__(self, main_ui: "WeatherMainUi", settings):
         super().__init__(main_ui, main_ui.ui, settings)
         self._default_min_max_text = self._ui.forecast_d1_day_temps_value.text()
         self._comps = main_ui._comps
@@ -46,7 +50,7 @@ class Forecast(sub_ui.SubUi):
         night_icon = get_asset_file("weather_icons", "night-800")
 
         self._ui.forecast_background.setPixmap(QtGui.QPixmap(
-            str(config.assets_path / "gui_bgrs" / settings.get(FORECAST_BG))))
+            str(waqd.assets_path / "gui_bgrs" / settings.get(FORECAST_BG))))
 
         common.draw_svg(self._ui.forecast_d1_day_icon, day_icon)
         common.draw_svg(self._ui.forecast_d2_day_icon, day_icon)
@@ -64,6 +68,7 @@ class Forecast(sub_ui.SubUi):
         self._ui.forecast_d3_icon.clicked.connect(lambda: self.show_detail(3))
 
         # call once at begin
+        Network().register_network_notification(main_ui.network_available_sig, self._cyclic_update)
         self.init_with_cyclic_update()
 
     def _init_dummy_values(self):

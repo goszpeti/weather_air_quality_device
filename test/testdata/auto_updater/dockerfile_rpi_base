@@ -24,5 +24,6 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN mkdir /etc/systemd/system/getty@tty1.service.d
 RUN echo '[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin pi --noclear %I 38400 linux' >> /etc/systemd/system/getty@tty1.service.d/autologin.conf
 
+VOLUME [ "/sys/fs/cgroup" ]
 
 CMD ["/usr/sbin/init"]

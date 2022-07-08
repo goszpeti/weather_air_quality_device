@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 class Component:
     """ Base class for all components """
 
-    def __init__(self, components: "ComponentRegistry" = None, settings: Settings = None, enabled=True):
+    def __init__(self, components: Optional["ComponentRegistry"]=None, settings: Optional[Settings]=None, enabled=True):
         self._comps = components
         self._settings = settings  # TODO remove
         self._logger = Logger()
@@ -105,8 +105,8 @@ class CyclicComponent(Component):
             if self._update_thread.is_alive():
                 self._update_thread.join(self.STOP_TIMEOUT)
 
-    def _start_update_loop(self, init_func: Callable = None,
-                           update_func: Callable = None):
+    def _start_update_loop(self, init_func: Optional[Callable]=None,
+                           update_func: Optional[Callable]=None):
         """
         Generic set up function for cyclic thread.
         Has to be called with own init and update function in child class.

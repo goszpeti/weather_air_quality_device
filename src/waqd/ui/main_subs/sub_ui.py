@@ -19,12 +19,14 @@
 #
 import abc
 
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 from PyQt5 import QtCore
 
 from waqd.base.logger import Logger
-from waqd.base.component_reg import ComponentRegistry
+from waqd.base.network import Network
 
+if TYPE_CHECKING:
+    from waqd.ui.main_ui import WeatherMainUi
 
 class WorkerObject(QtCore.QObject):
 
@@ -41,7 +43,7 @@ class SubUi(metaclass=abc.ABCMeta):
     """
     UPDATE_TIME = 1000  # microseconds
 
-    def __init__(self, parent: QtCore.QObject, ui, settings):
+    def __init__(self, parent: "WeatherMainUi", ui, settings):
         self._main_ui = parent
         self._ui = ui
         self._logger = Logger()
@@ -55,6 +57,10 @@ class SubUi(metaclass=abc.ABCMeta):
         self._first_thread = QtCore.QThread(self._main_ui)
 
     def init_with_cyclic_update(self):
+        if not Network().internet_connected:
+            # skip waiting for network in GUI thread - it will cause hanging
+            # register callback?
+            return
         self._first_thread.setObjectName("Init" + repr(self).split(" ")[0])
         self.worker = WorkerObject(target=self._cyclic_update)
         self.worker.moveToThread(self._first_thread)

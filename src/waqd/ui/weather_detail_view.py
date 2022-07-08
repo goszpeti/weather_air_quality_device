@@ -24,7 +24,7 @@ from typing import List
 
 from PyQt5 import QtChart, QtCore, QtGui, QtWidgets
 
-from waqd.config import PROG_NAME, SCREEN_HEIGHT, SCREEN_WIDTH
+from waqd import PROG_NAME, SCREEN_HEIGHT, SCREEN_WIDTH
 from waqd.settings import LOCATION
 from waqd.ui import common
 from waqd.components.online_weather import Weather

@@ -24,7 +24,8 @@ from typing import Optional
 
 from waqd.base.logger import Logger
 from waqd.base.component_reg import ComponentRegistry
-from waqd.base.system import RuntimeSystem
+from waqd.base.network import Network
+from waqd.base.signal import QtSignalRegistry
 from waqd.base.component_reg import CyclicComponent
 from waqd.settings import Settings
 
@@ -79,6 +80,7 @@ class ComponentController():
         Start unloading modules. modules_unloaded signals finish.
         """
         self._components.set_unload_in_progress()
+        QtSignalRegistry().clear_registry()
         Logger().info("Start unloading all components")
         self._unload_thread = threading.Thread(
             name="UnloadModules", target=self._unload_all_components, args=[reload_intended, updating])
@@ -87,7 +89,7 @@ class ComponentController():
     def stop(self):
         """
         Stop this module, by sending a stop request.
-        Actual stop is asyncron.
+        Actual stop is asynchronous.
         """
         if self._watch_thread and self._watch_thread.is_alive():
             self._stop_event.set()
@@ -109,8 +111,8 @@ class ComponentController():
         Checks existence of global variable of each module and starts it.
         """
         # check and restart wifi
-        if RuntimeSystem().is_target_system:
-            RuntimeSystem().check_internet_connection()
+        #if RuntimeSystem().is_target_system:
+        Network().check_internet_connection()
 
         try:
             for comp_name in self._components.get_names():

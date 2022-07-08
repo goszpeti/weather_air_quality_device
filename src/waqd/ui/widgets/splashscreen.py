@@ -24,7 +24,7 @@ except ImportError:
     from sip import voidptr # Raspberry
 from pyqtspinner.spinner import WaitingSpinner
 
-from waqd import config
+import waqd
 from waqd import __version__ as WAQD_VERSION
 from waqd.assets import get_asset_file
 
@@ -54,13 +54,13 @@ class SplashScreen(QtWidgets.QSplashScreen):
             pixmap = QtGui.QPixmap(str(get_asset_file("gui_base", "loading")))
             pixmap = pixmap.scaled(800, 480, transformMode=Qt.SmoothTransformation)
         else:
-            if not config.qt_app:
+            if not QtWidgets.QApplication.instance():
                 return # can not really happen...
-            screen = config.qt_app.primaryScreen()
+            screen = QtWidgets.QApplication.instance().primaryScreen()
             pixmap = screen.grabWindow(voidptr(0))
 
         QtWidgets.QSplashScreen.__init__(self, pixmap)
-        if config.DEBUG_LEVEL > 0: # unlock gui when debugging
+        if waqd.DEBUG_LEVEL > 0: # unlock gui when debugging
             self.setWindowFlags(Qt.FramelessWindowHint)
 
     def mousePressEvent(self, event):  # pylint: disable=unused-argument, invalid-name, no-self-use

@@ -47,14 +47,14 @@ class Settings():
 
     def __init__(self, ini_folder=None):
         """
-        Read config.ini file to load settings.
-        Verify config.ini existence, if folder is passed.
+        Read waqd.ini file to load settings.
+        Verify waqd.ini existence, if folder is passed.
         """
         self._logger = logging.getLogger("root")
         self._parser = configparser.ConfigParser()
         self._ini_file_path = Path()
         if ini_folder is not None:
-            self._ini_file_path = Path(ini_folder) / "config.ini"
+            self._ini_file_path = Path(ini_folder) / "waqd.ini"
         # create Settings ini file, if not available for first start
         if not self._ini_file_path.is_file():
             os.makedirs(self._ini_file_path.parent, exist_ok=True)

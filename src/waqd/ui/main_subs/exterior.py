@@ -20,11 +20,18 @@
 import datetime
 
 from PyQt5 import QtCore
-
+from typing import TYPE_CHECKING
 from waqd.assets import get_asset_file
+from waqd.base.network import Network
 from waqd.ui import common
 from waqd.ui.main_subs import sub_ui
 from waqd.ui.weather_detail_view import WeatherDetailView
+from PyQt5.QtCore import pyqtSignal
+
+
+if TYPE_CHECKING:
+    from waqd.ui.main_ui import WeatherMainUi
+
 
 Qt = QtCore.Qt
 
@@ -36,7 +43,8 @@ class Exterior(sub_ui.SubUi):
     """
     UPDATE_TIME = 10 * 1000  # 10 s in microseconds
 
-    def __init__(self, main_ui, settings):
+
+    def __init__(self, main_ui: "WeatherMainUi", settings):
         super().__init__(main_ui, main_ui.ui, settings)
         self._online_info_date_time = None  # date when last online update occured
         self._comps = main_ui._comps
@@ -55,6 +63,7 @@ class Exterior(sub_ui.SubUi):
         self._ui.exterior_forecast_temps_value.setText(
             common.format_temp_text_minmax(self._default_min_max_text, None, None))
         # call once at begin
+        Network().register_network_notification(main_ui.network_available_sig, self._cyclic_update)
         self.init_with_cyclic_update()
 
     def show_detail(self):

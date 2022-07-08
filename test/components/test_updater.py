@@ -1,6 +1,6 @@
 
 import pytest
-from waqd import config
+import waqd
 from waqd import __version__ as VERSION
 from waqd.settings import Settings, UPDATER_USER_BETA_CHANNEL, AUTO_UPDATER_ENABLED
 from waqd.components.updater import OnlineUpdater
@@ -64,7 +64,7 @@ def testCheckShouldUpdate(base_fixture):
     # negative test, not enabled
     assert not online_updater._check_should_update("1.1.0a2")
     # enable - higher version should work
-    updater.config.DEBUG_LEVEL = 1
+    updater.waqd.DEBUG_LEVEL = 1
     online_updater._use_beta_channel = True
     assert online_updater._check_should_update("1.1.0a2")
     # lower or equal should not
@@ -74,7 +74,7 @@ def testCheckShouldUpdate(base_fixture):
     # Alpha Version
     updater.WAQD_VERSION = "1.1.0a1"
     online_updater._use_beta_channel = True
-    updater.config.DEBUG_LEVEL = 1
+    updater.waqd.DEBUG_LEVEL = 1
     # to alpha
     assert online_updater._check_should_update("1.1.0a2")
     assert not online_updater._check_should_update("1.1.0a0")
@@ -89,7 +89,7 @@ def testCheckShouldUpdate(base_fixture):
     assert online_updater._check_should_update("1.2.0")
     assert not online_updater._check_should_update("1.0.0")
     # disabled debug level - only update to beta or main
-    updater.config.DEBUG_LEVEL = 0
+    updater.waqd.DEBUG_LEVEL = 0
     # TODO: updates from alpha to alpha
     assert online_updater._check_should_update("1.1.0a2")
     assert online_updater._check_should_update("1.1.0b1")

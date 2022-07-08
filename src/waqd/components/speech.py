@@ -23,11 +23,11 @@ import time
 from threading import Thread
 
 from gtts import gTTS
-from waqd import config
+import waqd
 from waqd.assets import get_asset_file
 from waqd.base.component_reg import Component, ComponentRegistry
 from waqd.base.logger import Logger
-from waqd.base.system import RuntimeSystem
+from waqd.base.network import Network
 from waqd.settings import LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN
 
 # map settings to internal shortened lang names
@@ -49,7 +49,7 @@ class TextToSpeach(Component):
         super().__init__(components)
         self._lang = lang
         self._tts_thread = Thread()
-        self._save_dir = config.user_config_dir / "tts"
+        self._save_dir = waqd.user_config_dir / "tts"
         # ensure dir exists
         os.makedirs(self._save_dir, exist_ok=True)
 
@@ -115,7 +115,7 @@ class TextToSpeach(Component):
             audio_file = self._save_dir / f"{normalized_text}_{lang}.mp3"
             # only download, if file does not exist
             if not audio_file.is_file():
-                RuntimeSystem().wait_for_network()
+                Network().wait_for_network()
                 gtts = gTTS(text, lang=lang)
                 gtts.save(audio_file)
             if self._comps:

@@ -28,16 +28,8 @@
     <height>480</height>
    </size>
   </property>
-  <property name="font">
-   <font>
-    <pointsize>13</pointsize>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>WAQD</string>
-  </property>
-  <property name="autoFillBackground">
-   <bool>false</bool>
   </property>
   <property name="styleSheet">
    <string notr="true">QPushButton {
@@ -54,7 +46,8 @@ QPushButton::hover {
 QPushButton::on {
     border: 2px solid grey;color: grey;
 }
-QLabel{background-color: transparent;color: white;}\n</string>
+QLabel{background-color: transparent;color: white;}
+</string>
   </property>
   <property name="windowFilePath">
    <string notr="true"/>
@@ -86,6 +79,11 @@ QLabel{background-color: transparent;color: white;}\n</string>
      <width>800</width>
      <height>480</height>
     </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>Franzo</family>
+    </font>
    </property>
    <widget class="QFrame" name="exterior_frame">
     <property name="geometry">
@@ -229,9 +227,9 @@ QLabel{background-color: transparent;color: white;}\n</string>
        <height>71</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,0">
       <property name="spacing">
-       <number>1</number>
+       <number>2</number>
       </property>
       <property name="sizeConstraint">
        <enum>QLayout::SetMinAndMaxSize</enum>
@@ -319,13 +317,14 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="maximumSize">
          <size>
-          <width>85</width>
+          <width>95</width>
           <height>16777215</height>
          </size>
         </property>
         <property name="font">
          <font>
-          <pointsize>17</pointsize>
+          <family>Franzo</family>
+          <pointsize>21</pointsize>
           <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
@@ -385,7 +384,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>17</pointsize>
+          <family>Franzo</family>
+          <pointsize>21</pointsize>
           <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
@@ -417,6 +417,9 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="margin">
+         <number>6</number>
         </property>
         <property name="indent">
          <number>-1</number>
@@ -460,7 +463,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>66</pointsize>
+       <family>Franzo</family>
+       <pointsize>79</pointsize>
        <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
@@ -572,7 +576,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>32</pointsize>
+       <family>Franzo</family>
+       <pointsize>38</pointsize>
        <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
@@ -757,7 +762,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>66</pointsize>
+       <family>Franzo</family>
+       <pointsize>79</pointsize>
        <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
@@ -882,7 +888,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>14</pointsize>
+          <family>Franzo</family>
+          <pointsize>17</pointsize>
           <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
@@ -936,7 +943,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>14</pointsize>
+          <family>Franzo</family>
+          <pointsize>17</pointsize>
           <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
@@ -1048,7 +1056,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>13</pointsize>
+          <family>Franzo</family>
+          <pointsize>15</pointsize>
           <weight>75</weight>
           <bold>true</bold>
           <kerning>true</kerning>
@@ -1197,7 +1206,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>14</pointsize>
+          <family>Franzo</family>
+          <pointsize>17</pointsize>
           <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
@@ -1300,7 +1310,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>14</pointsize>
+          <family>Franzo</family>
+          <pointsize>17</pointsize>
           <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
@@ -1513,7 +1524,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>13</pointsize>
+          <family>Franzo</family>
+          <pointsize>15</pointsize>
           <weight>75</weight>
           <bold>true</bold>
           <kerning>true</kerning>
@@ -1550,7 +1562,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>27</pointsize>
+          <family>Franzo</family>
+          <pointsize>38</pointsize>
           <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
@@ -1636,7 +1649,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>13</pointsize>
+          <family>Franzo</family>
+          <pointsize>15</pointsize>
           <weight>75</weight>
           <bold>true</bold>
           <kerning>true</kerning>
@@ -1678,7 +1692,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>14</pointsize>
+          <family>Franzo</family>
+          <pointsize>17</pointsize>
           <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
@@ -1732,7 +1747,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
         </property>
         <property name="font">
          <font>
-          <pointsize>14</pointsize>
+          <family>Franzo</family>
+          <pointsize>17</pointsize>
           <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
@@ -1901,7 +1917,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>26</pointsize>
+       <family>Franzo</family>
+       <pointsize>37</pointsize>
        <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
@@ -2217,7 +2234,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>12</pointsize>
+       <family>Franzo</family>
+       <pointsize>16</pointsize>
        <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
@@ -2551,7 +2569,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>12</pointsize>
+       <family>Franzo</family>
+       <pointsize>16</pointsize>
        <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
@@ -2581,7 +2600,8 @@ QLabel{background-color: transparent;color: white;}\n</string>
      </property>
      <property name="font">
       <font>
-       <pointsize>30</pointsize>
+       <family>Franzo</family>
+       <pointsize>42</pointsize>
        <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>

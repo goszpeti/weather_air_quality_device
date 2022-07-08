@@ -28,8 +28,8 @@ def testReadFromFile(base_fixture):
 def testSaveToFile(base_fixture):
     # copy testdata to temp
     temp_dir = tempfile.gettempdir()
-    temp_ini_path = os.path.join(temp_dir, "config.ini")
-    shutil.copy(base_fixture.testdata_path / "settings/write/config.ini", temp_dir)
+    temp_ini_path = os.path.join(temp_dir, "waqd.ini")
+    shutil.copy(base_fixture.testdata_path / "settings/write/waqd.ini", temp_dir)
     sets = Settings(ini_folder=temp_dir)
 
     lang = "MyLanguage"

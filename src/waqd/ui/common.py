@@ -28,30 +28,30 @@ import xml.dom.minidom as dom
 from pathlib import Path
 from typing import Optional, Union
 
-from PyQt5 import QtCore, QtGui, QtSvg, QtWidgets
-
-from waqd import config
+from PyQt5 import QtCore, QtSvg, QtGui, QtWidgets
+from PyQt5.QtGui import QFont, QFontDatabase
+from PyQt5.QtWidgets import QApplication, QWidget
+import waqd
+import waqd.app as app
 from waqd.assets import get_asset_file
-from waqd.config import PROG_NAME
 from waqd.settings import LANG, LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN, Settings
 
-logger = logging.getLogger(PROG_NAME)
+logger = logging.getLogger(waqd.PROG_NAME)
 
 # define Qt so it can be used like the namespace in C++
 Qt = QtCore.Qt
 
-
-def get_font(font_name) -> QtGui.QFont:
+def get_font(font_name) -> QFont:
     # set up font
     font_file = get_asset_file("font", "franzo")
-    font_id = QtGui.QFontDatabase.addApplicationFont(str(font_file))
-    if not config.qt_app:
-        return QtGui.QFont()
-    font = config.qt_app.font()
+    font_id = QFontDatabase.addApplicationFont(str(font_file))
+    if not QApplication.instance():
+        return QFont()
+    font = QApplication.instance().font()
     if font_id != -1:
-        font_db = QtGui.QFontDatabase()
+        font_db = QFontDatabase()
         font_styles = font_db.styles(font_name)
-        font_families = QtGui.QFontDatabase.applicationFontFamilies(font_id)
+        font_families = QFontDatabase.applicationFontFamilies(font_id)
         if font_families:
             font = font_db.font(font_families[0], font_styles[0], 13)
         else:
@@ -60,37 +60,35 @@ def get_font(font_name) -> QtGui.QFont:
 
 def apply_font(qt_root_obj: QtCore.QObject, font_name: str):
     font = get_font(font_name)
-    if not config.qt_app:
-        return
-    config.qt_app.setFont(font)
-    for qt_obj in qt_root_obj.findChildren(QtWidgets.QWidget):
+    QApplication.instance().setFont(font)
+    for qt_obj in qt_root_obj.findChildren(QWidget):
         obj_font = qt_obj.font()
         obj_font.setFamily(font.family())
 
 
-def set_ui_language(qt_app: QtWidgets.QApplication, settings: Settings):
+def set_ui_language(qt_app: QApplication, settings: Settings):
     """ Set the ui language. Retranslate must be called afterwards."""
-    if config.translator:
-        qt_app.removeTranslator(config.translator)
+    if app.translator:
+        qt_app.removeTranslator(app.translator)
     if settings.get(LANG) == LANG_ENGLISH:  # default case, ui is written in english
         return
 
-    if not config.translator:
-        config.translator = QtCore.QTranslator(qt_app)
+    if not app.translator:
+        app.translator = QtCore.QTranslator(qt_app)
 
     tr_file = Path("NULL")
     if settings.get(LANG) == LANG_GERMAN:
-        tr_file = config.base_path / "ui/qt/german.qm"
+        tr_file = waqd.base_path / "ui/qt/german.qm"
     if settings.get(LANG) == LANG_HUNGARIAN:
-        tr_file = config.base_path / "ui/qt/hungarian.qm"
+        tr_file = waqd.base_path / "ui/qt/hungarian.qm"
     if not tr_file.exists():
         logger.error("Cannot find %s translation file.", str(tr_file))
 
-    config.translator.load(str(tr_file))
-    qt_app.installTranslator(config.translator)
+    app.translator.load(str(tr_file))
+    qt_app.installTranslator(app.translator)
 
 
-def draw_svg(pyqt_obj: QtWidgets.QWidget, svg_path: Path, color="white", shadow=False, scale=1):
+def draw_svg(pyqt_obj: QWidget, svg_path: Path, color="white", shadow=False, scale: float=1.0):
     """
     Sets an svg in the desired color for a QtWidget.
     :param color: the disired color as a string in html compatible name
@@ -139,7 +137,7 @@ def draw_svg(pyqt_obj: QtWidgets.QWidget, svg_path: Path, color="white", shadow=
     painter.end()
 
 
-def scale_gui_elements(qt_root_obj: QtWidgets.QWidget, font_scaling: float,
+def scale_gui_elements(qt_root_obj: QWidget, font_scaling: float,
                        previous_scaling: float = 1, extra_scaling=1):
     """
     Applies font resize for all QLabel, QPushButton and QTabWidget children of the qt_root_obj.

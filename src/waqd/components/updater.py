@@ -27,7 +27,8 @@ from time import sleep
 
 from github import Github, Repository
 
-import waqd.config as config
+import waqd
+import waqd.app as app
 from waqd import __version__ as WAQD_VERSION
 from waqd.base.component import CyclicComponent
 from waqd.base.component_reg import ComponentRegistry
@@ -48,7 +49,7 @@ class OnlineUpdater(CyclicComponent):
         if self._disabled:
             return
         self._use_beta_channel = use_beta_channel
-        self._base_path = config.base_path  # save for multiprocessing
+        self._base_path = waqd.base_path  # save for multiprocessing
         self._repository: Repository.Repository
 
         self._new_version_path = Path.home() / ".waqd" / "updater"
@@ -84,7 +85,7 @@ class OnlineUpdater(CyclicComponent):
         """ Get Github repo object """
         github = Github()
         try:
-            self._repository = github.get_repo(config.GITHUB_REPO_NAME)
+            self._repository = github.get_repo(waqd.GITHUB_REPO_NAME)
         except Exception as e:
             self._logger.warning(f"Can't connect to update repo: {str(e)}")
 
@@ -114,7 +115,7 @@ class OnlineUpdater(CyclicComponent):
             # alpha and beta release handling
             if latest_version.prerelease:
                 # alpha - only with debug mode on - switch is possible from b3 to a4
-                if latest_version.prerelease[0] == "a" and config.DEBUG_LEVEL > 0 \
+                if latest_version.prerelease[0] == "a" and waqd.DEBUG_LEVEL > 0 \
                         and self._use_beta_channel and current_version.prerelease:
                     if latest_version.prerelease[1] > current_version.prerelease[1]:
                         return True
@@ -166,9 +167,9 @@ class OnlineUpdater(CyclicComponent):
                 return
             try:
                 # shutdown other components gracefully
-                if config.comp_ctrl:
-                    config.comp_ctrl.unload_all(updating=True)
-                    while not config.comp_ctrl.all_unloaded:
+                if app.comp_ctrl:
+                    app.comp_ctrl.unload_all(updating=True)
+                    while not app.comp_ctrl.all_unloaded:
                         sleep(1)
                 self._logger.info("Updater: Starting updater")
                 os.system("chmod +x " + str(installer_script))
