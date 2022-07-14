@@ -17,26 +17,30 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-from PyQt5 import QtGui
+from typing import TYPE_CHECKING, Tuple
 
 import waqd
-from waqd.settings import INTERIOR_BG, FONT_NAME
+from PyQt5 import QtGui
+from waqd.settings import FONT_NAME, INTERIOR_BG
 from waqd.ui import common
 from waqd.ui.main_subs import sub_ui
-
 from waqd.ui.sensor_detail_view import SensorDetailView
+
+if TYPE_CHECKING:
+    from waqd.ui.main_ui import WeatherMainUi
+    from waqd.settings import Settings
 
 class Interior(sub_ui.SubUi):
     """ Interior segment of the main ui. Displays the interior sensor data. """
     UPDATE_TIME = 4 * 1000  # microseconds
     ASSETS_SUBFOLDER = "gui_base"
     BAR_TEXT_SIZE = 24
-    HUM_BAR_OPTS = ["#125FCC", "#5A90DC", "RH"]
-    CO2_BAR_OPTS = ["#FF9F05", "#FFD623", "CO2"]
-    TVOC_BAR_OPTS = ["#2B9E36", "#B6FF00", "TVOC"]
-    PRES_BAR_OPTS = ["#7A3699", "#B48EC6", "BARO"]
+    HUM_BAR_OPTS = ("#125FCC", "#5A90DC", "RH")
+    CO2_BAR_OPTS = ("#FF9F05", "#FFD623", "CO2")
+    TVOC_BAR_OPTS = ("#2B9E36", "#B6FF00", "TVOC")
+    PRES_BAR_OPTS = ("#7A3699", "#B48EC6", "BARO")
 
-    def __init__(self, main_ui, settings):
+    def __init__(self, main_ui: "WeatherMainUi", settings: "Settings"):
         super().__init__(main_ui, main_ui.ui, settings)
         self._comps = main_ui._comps
         self._tvoc_ui_bar = None
@@ -48,7 +52,7 @@ class Interior(sub_ui.SubUi):
 
         # set background
         self._ui.interior_background.setPixmap(QtGui.QPixmap(
-            str(waqd.assets_path / "gui_bgrs" / settings.get(INTERIOR_BG))))
+            str(waqd.assets_path / "gui_bgrs" / settings.get_string(INTERIOR_BG))))
 
         self._ui.interior_1_bar.hide()
         self._ui.interior_2_bar.hide()
@@ -84,7 +88,7 @@ class Interior(sub_ui.SubUi):
         # call once at begin
         self.init_with_cyclic_update()
 
-    def set_available_bar(self, bar_opts, font_name):
+    def set_available_bar(self, bar_opts: Tuple[str,str,str], font_name: str):
         for bar in self._ui_bars:
             if bar.isHidden():
                 bar.setup_attributes(
@@ -112,7 +116,6 @@ class Interior(sub_ui.SubUi):
                 self._humidity_ui_bar.set_value_label(f"{int(hum_value)} %")
             else:
                 self._humidity_ui_bar.set_value_label("NA")
-
 
         # set pressure
         if self._pressure_ui_bar:

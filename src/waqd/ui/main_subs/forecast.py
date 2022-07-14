@@ -34,12 +34,13 @@ from waqd.ui.weather_detail_view import WeatherDetailView
 
 if TYPE_CHECKING:
     from waqd.ui.main_ui import WeatherMainUi
+    from waqd.settings import Settings
 
 class Forecast(sub_ui.SubUi):
     """  Forecast segment of the main ui. Displays the forecast for 3 days. """
     UPDATE_TIME = 600 * 1000  # 10 minutes in microseconds
 
-    def __init__(self, main_ui: "WeatherMainUi", settings):
+    def __init__(self, main_ui: "WeatherMainUi", settings: "Settings"): 
         super().__init__(main_ui, main_ui.ui, settings)
         self._default_min_max_text = self._ui.forecast_d1_day_temps_value.text()
         self._comps = main_ui._comps
@@ -50,7 +51,7 @@ class Forecast(sub_ui.SubUi):
         night_icon = get_asset_file("weather_icons", "night-800")
 
         self._ui.forecast_background.setPixmap(QtGui.QPixmap(
-            str(waqd.assets_path / "gui_bgrs" / settings.get(FORECAST_BG))))
+            str(waqd.assets_path / "gui_bgrs" / settings.get_string(FORECAST_BG))))
 
         common.draw_svg(self._ui.forecast_d1_day_icon, day_icon)
         common.draw_svg(self._ui.forecast_d2_day_icon, day_icon)

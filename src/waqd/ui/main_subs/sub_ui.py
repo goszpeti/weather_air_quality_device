@@ -27,6 +27,8 @@ from waqd.base.network import Network
 
 if TYPE_CHECKING:
     from waqd.ui.main_ui import WeatherMainUi
+    from waqd.settings import Settings
+    from waqd.ui.qt.weather_ui import Ui_MainWindow
 
 class WorkerObject(QtCore.QObject):
 
@@ -43,7 +45,7 @@ class SubUi(metaclass=abc.ABCMeta):
     """
     UPDATE_TIME = 1000  # microseconds
 
-    def __init__(self, parent: "WeatherMainUi", ui, settings):
+    def __init__(self, parent: "WeatherMainUi", ui: "Ui_MainWindow", settings: "Settings"):
         self._main_ui = parent
         self._ui = ui
         self._logger = Logger()

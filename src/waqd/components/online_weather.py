@@ -193,7 +193,7 @@ class OpenWeatherMap(Component):
             self._logger.error(f"{str(city_id)} - City Id for forecast is not available.")
             self._disabled = True
 
-        self._current_weather: Weather = None
+        self._current_weather: Optional[Weather] = None
         self._five_day_forecast: List[DailyWeather] = []
         # TODO this should be done with a mock
         self._cw_json_file: str = ""  # for testing access
@@ -223,7 +223,7 @@ class OpenWeatherMap(Component):
             weather_info.get("main"),
             weather_info.get("description"),
             datetime.now(),
-            self._get_condition_icon(weather_info.get("id"), is_day),
+            self.get_condition_icon(weather_info.get("id"), is_day),
             current_info.get("wind", {}).get("speed", 0.0),
             current_info.get("wind", {}).get("deg", 0.0),
             sunrise, sunset,
@@ -249,9 +249,11 @@ class OpenWeatherMap(Component):
         [daytime_forecast_points, nighttime_forecast_points] = self.get_forecast_points()
         if not daytime_forecast_points:  # error from url call, nothing to do
             return []
-
+        current_weather = self.get_current_weather()
+        if not current_weather:
+            return []
         self._aggregate_forecast_points_to_days(
-            daytime_forecast_points, nighttime_forecast_points)
+            daytime_forecast_points, nighttime_forecast_points, current_weather)
 
         return self._five_day_forecast
 
@@ -285,7 +287,7 @@ class OpenWeatherMap(Component):
                 weather_info.get("main", ""),
                 weather_info.get("description", ""),
                 entry_date_time,
-                self._get_condition_icon(weather_info.get("id"), is_day),
+                self.get_condition_icon(weather_info.get("id"), is_day),
                 measurement_point.get("wind").get("speed"),
                 measurement_point.get("wind").get("deg"),
                 current_weather.sunrise, current_weather.sunset,
@@ -298,7 +300,7 @@ class OpenWeatherMap(Component):
             if is_day:
                 daytime_forecast_points[day_idx].append(weather_point)
             # this counts as night of the previous day
-            elif entry_date_time.time() < self._current_weather.sunrise:
+            elif entry_date_time.time() < current_weather.sunrise:
                 if day_idx == 0:  # separate handling for today before and after midnight
                     nighttime_forecast_points[0].append(weather_point)
                 # elif day_idx == 1:  # skip todays night points that fall on next day
@@ -308,15 +310,17 @@ class OpenWeatherMap(Component):
                     nighttime_forecast_points[day_idx-1].append(weather_point)
             else:
                 if day_idx == 0:
-                    if entry_date_time.time() > self._current_weather.sunset:
-                        if current_datetime.time() < self._current_weather.sunrise:
+                    if entry_date_time.time() > current_weather.sunset:
+                        if current_datetime.time() < current_weather.sunrise:
                             continue  # ignore for now
                     nighttime_forecast_points[0].append(weather_point)
                 else:
                     nighttime_forecast_points[day_idx].append(weather_point)
         return (daytime_forecast_points, nighttime_forecast_points)
 
-    def _aggregate_forecast_points_to_days(self, daytime_forecast_points: List[List[Weather]], nighttime_forecast_points: List[List[Weather]]):
+    def _aggregate_forecast_points_to_days(self, daytime_forecast_points: List[List[Weather]],
+                                           nighttime_forecast_points: List[List[Weather]],
+                                           current_weather: Weather):
         """ Calculate the daily weather form the points and set self._five_day_forecast """
 
         # determine overall weather and wind to set the shown icon
@@ -324,9 +328,9 @@ class OpenWeatherMap(Component):
             forecast_points = daytime_forecast_points[day_idx]
             if day_idx == 0:
                 current_time = datetime.now().time()
-                if current_time < self._current_weather.sunrise:  # after midnight
+                if current_time < current_weather.sunrise:  # after midnight
                     forecast_points = nighttime_forecast_points[day_idx]
-                elif current_time > self._current_weather.sunset:  # before midnight
+                elif current_time > current_weather.sunset:  # before midnight
                     forecast_points = nighttime_forecast_points[day_idx]
                     if not forecast_points:
                         forecast_points = nighttime_forecast_points[day_idx + 1]
@@ -343,13 +347,13 @@ class OpenWeatherMap(Component):
             # as an extra condition
             if max_wind_speed > BeaufortScale.FRESH_BREEZE.value:
                 if overall_weather.main == "Clear":
-                    overall_weather.icon = self._get_condition_icon("windy", True)
+                    overall_weather.icon = self.get_condition_icon("windy", True)
                 if overall_weather.main == "Clouds":
-                    overall_weather.icon = self._get_condition_icon("cloudy-windy", True)
+                    overall_weather.icon = self.get_condition_icon("cloudy-windy", True)
                 if overall_weather.main == "Rain":
-                    overall_weather.icon = self._get_condition_icon("rain-windy", True)
+                    overall_weather.icon = self.get_condition_icon("rain-windy", True)
                 if overall_weather.main == "Snow":
-                    overall_weather.icon = self._get_condition_icon("snow-windy", True)
+                    overall_weather.icon = self.get_condition_icon("snow-windy", True)
 
             # init DailyWeather
             daily_weather = DailyWeather(
@@ -499,7 +503,7 @@ class OpenWeatherMap(Component):
             return json.load(response_json)
 
     @staticmethod
-    def _get_condition_icon(ident, is_day) -> Path:
+    def get_condition_icon(ident, is_day) -> Path:
         if is_day:
             ident = "day-" + str(ident)
         else:

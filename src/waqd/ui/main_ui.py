@@ -64,7 +64,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._infopane_ui: Optional[infopane.InfoPane] = None
 
     @property
-    def ui(self):
+    def ui(self) -> Ui_MainWindow:
         """ Contains all gui objects defined in Qt .ui file. Subclasses need access to this. """
         return self._ui
 

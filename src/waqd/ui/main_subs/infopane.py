@@ -18,17 +18,19 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 import datetime
+from typing import TYPE_CHECKING
 
 from waqd.ui.main_subs import sub_ui
-
+if TYPE_CHECKING:
+    from waqd.ui.main_ui import WeatherMainUi
+    from waqd.settings import Settings
 
 class InfoPane(sub_ui.SubUi):
     """  Infopane segment of the main ui. Displays the date, clock, Options and Shutdown button """
     UPDATE_TIME = 5000  # 5 seconds
 
-    def __init__(self, main_ui, settings):
+    def __init__(self, main_ui: "WeatherMainUi", settings: "Settings"):
         super().__init__(main_ui, main_ui.ui, settings)
-        self._comps = main_ui._comps
 
         # call once at begin
         self.init_with_cyclic_update()

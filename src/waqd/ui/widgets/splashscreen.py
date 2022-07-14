@@ -19,9 +19,10 @@
 #
 from PyQt5 import QtCore, QtGui, QtWidgets
 try:
-    from PyQt5.sip import voidptr # Windows x64
+    from sip import voidptr  # Raspberry
 except ImportError:
-    from sip import voidptr # Raspberry
+    from PyQt5.sip import voidptr  # Windows x64
+
 from pyqtspinner.spinner import WaitingSpinner
 
 import waqd
@@ -34,7 +35,7 @@ Qt = QtCore.Qt
 
 class SplashScreen(QtWidgets.QSplashScreen):
     """
-    Generic splashcreen. Must always be spawned in a new thread, while the original thread
+    Generic splashscreen. Must always be spawned in a new thread, while the original thread
     executes qt_app.processEvents() in a while loop, until it should be stopped.
     """
 
@@ -54,8 +55,6 @@ class SplashScreen(QtWidgets.QSplashScreen):
             pixmap = QtGui.QPixmap(str(get_asset_file("gui_base", "loading")))
             pixmap = pixmap.scaled(800, 480, transformMode=Qt.SmoothTransformation)
         else:
-            if not QtWidgets.QApplication.instance():
-                return # can not really happen...
             screen = QtWidgets.QApplication.instance().primaryScreen()
             pixmap = screen.grabWindow(voidptr(0))
 
@@ -85,7 +84,7 @@ class SplashScreen(QtWidgets.QSplashScreen):
                                      self._spinner.width(),
                                      self._spinner.height())
         else:
-            self._spinner.setColor("white")
+            self._spinner.setColor(Qt.white)
             self._spinner.setInnerRadius(40)
             self._spinner.setLineLength(40)
             self._spinner.setLineWidth(8)

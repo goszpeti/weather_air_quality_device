@@ -48,6 +48,7 @@ class OnlineUpdater(CyclicComponent):
         super().__init__(components, enabled=enabled)
         if self._disabled:
             return
+        self._comps: ComponentRegistry
         self._use_beta_channel = use_beta_channel
         self._base_path = waqd.base_path  # save for multiprocessing
         self._repository: Repository.Repository
@@ -77,8 +78,7 @@ class OnlineUpdater(CyclicComponent):
         update_available = self._check_should_update(latest_tag)
         if update_available:
             self._logger.info("Updater: Found newer version %s", latest_tag)
-            if self._comps:
-                self._comps.tts.say_internal("new_version", [latest_tag])
+            self._comps.tts.say_internal("new_version", [latest_tag])
             self._install_update(latest_tag)
 
     def _connect_to_repository(self):
@@ -156,8 +156,7 @@ class OnlineUpdater(CyclicComponent):
         update_dir = Path(update_dir[0])
 
         # Wait for previous peach to finish berfore this app intance is killed
-        if self._comps:
-            self._comps.tts.wait_for_tts()
+        self._comps.tts.wait_for_tts()
 
         # start updater script - location hardcoded
         if self._runtime_system.is_target_system:

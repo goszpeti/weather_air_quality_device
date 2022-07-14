@@ -91,7 +91,7 @@ class SensorImpl():
                     f"Cant initialize {log_type_name} sensor from log. Invalid log format.")
             else:
                 try:
-                    last_date = datetime.datetime.fromisoformat(log_values[0][0])
+                    last_date = log_values[0][0]
                 except:
                     return
                 if (last_date - datetime.datetime.now()) < datetime.timedelta(hours=3):
@@ -295,6 +295,7 @@ class DHT22(TempSensor, HumiditySensor, CyclicComponent):
         TempSensor.__init__(self, log_values)
         HumiditySensor.__init__(self, log_values)
         CyclicComponent.__init__(self, components, log_values)
+        self._comps: ComponentRegistry
         self._pin = pin
         if not self._pin:
             self._logger.error("DHT22: No pin, disabled")
@@ -372,11 +373,12 @@ class BMP280(TempSensor, BarometricSensor, CyclicComponent):
 
     def __init__(self, components: ComponentRegistry, settings: Settings):
         log_values = bool(settings.get(LOG_SENSOR_DATA))
+        self._comps: ComponentRegistry
         TempSensor.__init__(self, log_values)
         BarometricSensor.__init__(self, log_values)
         CyclicComponent.__init__(self, components, settings)
 
-        self._sensor_driver = None
+        self._sensor_driver: "adafruit_bmp280.Adafruit_BMP280_I2C"
         self._start_update_loop(self._init_sensor, self._read_sensor)
 
     def _init_sensor(self):
@@ -427,12 +429,13 @@ class BME280(TempSensor, BarometricSensor, HumiditySensor, CyclicComponent):
 
     def __init__(self, components: ComponentRegistry, settings: Settings):
         log_values = bool(settings.get(LOG_SENSOR_DATA))
+        self._comps: ComponentRegistry
         TempSensor.__init__(self, log_values)
         BarometricSensor.__init__(self, log_values, self.MEASURE_POINTS)
         HumiditySensor.__init__(self, log_values, self.MEASURE_POINTS)
         CyclicComponent.__init__(self, components, settings)
 
-        self._sensor_driver = None
+        self._sensor_driver: "Adafruit_BME280_I2C"
         self._start_update_loop(self._init_sensor, self._read_sensor)
 
     def _init_sensor(self):
@@ -552,9 +555,11 @@ class CCS811(CO2Sensor, TvocSensor, CyclicComponent):  # pylint: disable=invalid
         CO2Sensor.__init__(self, log_values, self.MEASURE_POINTS)
         TvocSensor.__init__(self, log_values, self.MEASURE_POINTS)
         CyclicComponent.__init__(self, components)
+        self._comps: ComponentRegistry
+
         self._start_time = datetime.datetime.now()
         self._reload_forbidden = True
-        self._sensor_driver: "CCS811" = None
+        self._sensor_driver: "adafruit_ccs811.CCS811"
         self._error_num = 0
 
         self._start_update_loop(self._init_sensor, self._read_sensor)
@@ -604,6 +609,8 @@ class CCS811(CO2Sensor, TvocSensor, CyclicComponent):  # pylint: disable=invalid
         temperature = self._comps.temp_sensor.get_temperature()
         humidity = self._comps.humidity_sensor.get_humidity()
         # wait for values to stabilize
+        if not temperature or humidity:
+            return
         while not 15 < temperature < 50:
             time.sleep(2)
 
@@ -657,7 +664,7 @@ class BH1750(LightSensor, CyclicComponent):
         LightSensor.__init__(self, log_values, MEASURE_POINTS)
         CyclicComponent.__init__(self)
 
-        self._sensor_driver = None
+        self._sensor_driver: "adafruit_bh1750.BH1750"
         self._start_update_loop(self._init_sensor, self._read_sensor)
 
     def _init_sensor(self):
@@ -749,7 +756,7 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
         super().__init__()
         self._pin = pin
         self._motion_detected = 0
-        self._sensor_driver: "RPi.GPIO" = None
+        self._sensor_driver: "RPi.GPIO"
         if pin == 0:
             self._disabled = True
             return
@@ -760,7 +767,7 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
 
     def __del__(self):
         """ Cleanup GPIO """
-        if not self._sensor_driver:
+        if self._disabled:
             return
         self._sensor_driver.setmode(self._sensor_driver.BCM)
         self._sensor_driver.remove_event_detect(self._pin)

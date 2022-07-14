@@ -8,15 +8,15 @@ from threading import Thread
 from waqd.components.sensors import BarometricSensor, CO2Sensor, HumiditySensor, TempSensor
 if TYPE_CHECKING:
     from waqd.base.component_reg import ComponentRegistry
-    from waqd.settings import Settings
 
 
 class Server(Component):
 
-    def __init__(self, components: "ComponentRegistry"=None, enabled=True):
+    def __init__(self, components: "ComponentRegistry", enabled=True):
         super().__init__(components, enabled=enabled)
         if not enabled:
             return
+        self._comps: "ComponentRegistry"
         self._app = default_app()
         self._run_thread = Thread(
             name="RunServer", target=self._run_server, daemon=True)
@@ -40,7 +40,6 @@ class Server(Component):
         <h1>Welcome to the Weather Air Quality Device!</h1>
         <p>&nbsp;</p>
         """
-        assert self._comps
 
         for sensor_name in self._comps.get_names():
             sensor = self._comps.get(sensor_name)

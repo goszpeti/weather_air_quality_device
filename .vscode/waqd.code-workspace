@@ -45,5 +45,7 @@
         //"${workspaceFolder}/.venv/Scripts/python.exe", // "${workspaceFolder}/.venv/bin/python3"
         "git.ignoreLimitWarning": true,
         "python.analysis.stubPath": "test/mock",
+        "python.terminal.activateEnvInCurrentTerminal": true,
+        "scm.defaultViewMode": "tree",
     }
 }

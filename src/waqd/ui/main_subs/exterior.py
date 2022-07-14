@@ -26,8 +26,6 @@ from waqd.base.network import Network
 from waqd.ui import common
 from waqd.ui.main_subs import sub_ui
 from waqd.ui.weather_detail_view import WeatherDetailView
-from PyQt5.QtCore import pyqtSignal
-
 
 if TYPE_CHECKING:
     from waqd.ui.main_ui import WeatherMainUi

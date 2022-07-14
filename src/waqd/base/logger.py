@@ -143,6 +143,7 @@ class SensorLogger(logging.Logger):
                 for line in fp:
                     time_value_pair = line.split("=")
                     timestamp = datetime.fromisoformat(time_value_pair[0])
+                    time_value_pair[0] = timestamp
                     if not minutes_to_read:
                         time_value_pair[1] = float(time_value_pair[1])  # always cast to float
                         return [time_value_pair]

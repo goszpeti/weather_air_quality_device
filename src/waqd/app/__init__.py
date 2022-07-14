@@ -38,7 +38,7 @@ import waqd
 from PyQt5 import QtCore, QtGui, QtWidgets
 from waqd import DEBUG_LEVEL, PROG_NAME
 from waqd import __version__ as WAQD_VERSION
-from waqd import base_path, user_config_dir
+from waqd import base_path
 from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.logger import Logger
@@ -82,8 +82,8 @@ def main(settings_path: Optional[Path] = None):
     sys.excepthook = crash_hook
 
     # Create user config dir
-    if not user_config_dir.exists():
-        os.makedirs(user_config_dir)
+    if not waqd.user_config_dir.exists():
+        os.makedirs(waqd.user_config_dir)
 
     # System is first, is_target_system is the most basic check
     runtime_system = RuntimeSystem()
@@ -92,7 +92,7 @@ def main(settings_path: Optional[Path] = None):
 
     # All other classes depend on settings
     if not settings_path:
-        settings_path = user_config_dir
+        settings_path = waqd.user_config_dir
     settings = Settings(ini_folder=settings_path)
 
     handle_cmd_args(settings)  # cmd args set Debug level for logger
@@ -100,7 +100,7 @@ def main(settings_path: Optional[Path] = None):
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
 
-    Logger(output_path=user_config_dir)  # singleton, no assigment needed
+    Logger(output_path=waqd.user_config_dir)  # singleton, no assigment needed
 
     comp_ctrl = ComponentController(settings)
     comp_ctrl = comp_ctrl
