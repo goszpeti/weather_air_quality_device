@@ -29,7 +29,7 @@ from waqd.settings import (AUTO_UPDATER_ENABLED, BME_280_ENABLED,
                            BMP_280_ENABLED, BRIGHTNESS, CCS811_ENABLED,
                            DHT_22_DISABLED, DHT_22_PIN, DISPLAY_TYPE, EVENTS_ENABLED, LANG,
                            LOCATION, MH_Z19_ENABLED, MOTION_SENSOR_ENABLED,
-                           MOTION_SENSOR_PIN, NIGHT_MODE_END, OW_API_KEY, OW_CITY_IDS, SERVER_ENABLED,
+                           MOTION_SENSOR_PIN, NIGHT_MODE_END, OW_API_KEY, OW_CITY_IDS, REMOTE_MODE_URL, SERVER_ENABLED,
                            SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, Settings)
 
@@ -184,12 +184,14 @@ class ComponentRegistry():
         sensor = self._get_sensor(sensors.TempSensor)
         if not sensor:
             dht22_pin = self._settings.get(DHT_22_PIN)
-            if dht22_pin != DHT_22_DISABLED:
-                sensor = self._create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
+            if self._settings.get_string(REMOTE_MODE_URL):
+                sensor = self._create_component_instance(sensors.WAQDRemoteStation, [self, self._settings])
             elif self._settings.get(BME_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
             elif self._settings.get(BMP_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
+            elif dht22_pin != DHT_22_DISABLED:
+                            sensor = self._create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
             else:  # create a default instance that is disabled, so the watchdog
                 # won't try to instantiate a new one over and over
                 sensor = self._create_component_instance(sensors.TempSensor, [False, 1, False])
@@ -205,7 +207,9 @@ class ComponentRegistry():
         if not sensor:
             # DHT-22 is prioritized, if both are available
             dht22_pin = self._settings.get(DHT_22_PIN)
-            if dht22_pin != DHT_22_DISABLED:
+            if self._settings.get_string(REMOTE_MODE_URL):
+                sensor = self._create_component_instance(sensors.WAQDRemoteStation, [self, self._settings])
+            elif dht22_pin != DHT_22_DISABLED:
                 sensor = self._create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
             elif self._settings.get(BME_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
@@ -222,7 +226,9 @@ class ComponentRegistry():
         from waqd.components import sensors
         sensor = self._get_sensor(sensors.BarometricSensor)
         if not sensor:
-            if self._settings.get(BME_280_ENABLED):
+            if self._settings.get_string(REMOTE_MODE_URL):
+                sensor = self._create_component_instance(sensors.WAQDRemoteStation, [self, self._settings])
+            elif self._settings.get(BME_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
             elif self._settings.get(BMP_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
@@ -240,7 +246,9 @@ class ComponentRegistry():
         sensor = self._get_sensor(sensors.CO2Sensor)
         if not sensor:
             # MH_Z19 is prioritized, if both are available
-            if self._settings.get(MH_Z19_ENABLED):
+            if self._settings.get_string(REMOTE_MODE_URL):
+                sensor = self._create_component_instance(sensors.WAQDRemoteStation, [self, self._settings])
+            elif self._settings.get(MH_Z19_ENABLED):
                 sensor = self._create_component_instance(sensors.MH_Z19, [self._settings])
             elif self._settings.get(CCS811_ENABLED):
                 sensor = self._create_component_instance(sensors.CCS811, [self, self._settings])

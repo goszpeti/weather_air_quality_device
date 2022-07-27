@@ -31,12 +31,19 @@ import time
 from ast import literal_eval
 from statistics import mean
 from subprocess import check_output
-from typing import Optional
+import requests
+from typing import Optional, TYPE_CHECKING
 
+from pint import Quantity
+from waqd.app import unit_reg
 from waqd.base.component import Component, CyclicComponent
 from waqd.base.component_reg import ComponentRegistry
 from waqd.base.logger import Logger, SensorLogger
-from waqd.settings import LOG_SENSOR_DATA, MH_Z19_VALUE_OFFSET, Settings
+from waqd.base.network import Network
+from waqd.settings import LAST_ALTITUDE_M_VALUE, LAST_TEMP_C_OUTSIDE_VALUE, LOG_SENSOR_DATA, MH_Z19_VALUE_OFFSET, REMOTE_MODE_URL, Settings
+
+if TYPE_CHECKING:
+    from waqd.components.server import SensorApi_0_1
 
 
 class SensorComponent(Component):
@@ -109,7 +116,7 @@ class SensorImpl():
         else:
             return mean(self._values)
 
-    def set_value(self, value) -> bool:
+    def set_value(self, value: float) -> bool:
         """ Generic method to write values into the measurement list and manage its length """
         if not self._min_value <= value <= self._max_value:
             Logger().warning("%s: %s out of bounds %s", self.__class__.__name__,
@@ -145,11 +152,15 @@ class TempSensor(SensorComponent):
     def select_for_temp_logging(self):
         self._temp_impl.log_to_file = True
 
-    def get_temperature(self) -> Optional[float]:
+    def get_temperature(self) -> Optional[Quantity]:
         """ Return temperature in degree Celsius """
-        return self.get_value_with_status(self._temp_impl)
+        value = self.get_value_with_status(self._temp_impl)
+        if value:
+            return Quantity(value, unit_reg.degC)
+        else:
+            return None
 
-    def _set_temperature(self, value) -> bool:
+    def _set_temperature(self, value: float) -> bool:
         return self._temp_impl.set_value(value)
 
 
@@ -464,13 +475,16 @@ class BME280(TempSensor, BarometricSensor, HumiditySensor, CyclicComponent):
             self._logger.error("BME280: Can't read sensor - %s", str(error))
             return
         # change this to match the location's pressure (hPa) at sea level
-        weather = self._comps.weather_info.get_current_weather()
-        if weather:
-            altitude = weather.altitude
-            temp_outside = weather.temp
-            self._set_pressure(self._convert_abs_pres_to_asl(pressure, altitude, temp_outside))
+        if Network().internet_connected:
+            weather = self._comps.weather_info.get_current_weather()
+            if weather:
+                altitude = weather.altitude
+                temp_outside = weather.temp
         else:
-            self._set_pressure(pressure)
+            self._settings.get(LAST_ALTITUDE_M_VALUE)
+            self._settings.get(LAST_TEMP_C_OUTSIDE_VALUE)
+
+        self._set_pressure(self._convert_abs_pres_to_asl(pressure, altitude, temp_outside))
         self._set_temperature(temperature)
         self._set_humidity(humidity)
 
@@ -517,10 +531,10 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
                 cmd = [sys.executable, "-m", "mh_z19"]
             output = check_output(cmd).decode("utf-8")
             output.strip()
-            if not output or "null" in output.lower():
+            if not output or not "co2" in output.lower():
                 self._logger.error("MH-Z19: Can't read sensor")
                 return
-            co2: int = literal_eval(output).get("co2", "")
+            co2 = int(literal_eval(output).get("co2", ""))
         except Exception as error:
             # errors happen fairly often, keep going
             self._logger.error(f"MH-Z19: Can't read sensor - {str(error)} Output: {output}",)
@@ -761,8 +775,8 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
             self._disabled = True
             return
         self._init_thread = threading.Thread(name="SR501_Init",
-                                    target=self._register_callback,
-                                    daemon=True)
+                                             target=self._register_callback,
+                                             daemon=True)
         self._init_thread.start()
 
     def __del__(self):
@@ -804,21 +818,6 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
         self._motion_detected -= 1
 
 
-class Prologue433(TempSensor, CyclicComponent):
-    """ Dummy class for future implementation """
-
-    def __init__(self, settings):
-        super().__init__(settings)
-        self._disabled = True
-        self._is_active = None
-        if not self.check_connection():
-            return
-
-    def check_connection(self):
-        """ Check, if sensor can be found """
-        self.is_active = False
-
-
 class WAQDRemoteSensor(TempSensor, HumiditySensor):
     """ Remote sensor via WAQD HTTP service """
 
@@ -841,6 +840,46 @@ class WAQDRemoteSensor(TempSensor, HumiditySensor):
 
         self._set_temperature(temperature)
         self._set_humidity(humidity)
-
         self._logger.debug("WAQDExtTempSensor: Temp={0:0.1f}*C Humidity={1:0.1f}%".format(
             temperature, humidity))
+
+
+class WAQDRemoteStation(TempSensor, HumiditySensor, BarometricSensor, CO2Sensor, CyclicComponent):
+    MEASURE_POINTS = 1
+    EXTERIOR_MODE = 0
+    INTERIOR_MODE = 1
+    INIT_WAIT_TIME = 5
+    UPDATE_TIME = 10
+
+    def __init__(self, components: ComponentRegistry, settings: Settings):
+        log_values = bool(settings.get(LOG_SENSOR_DATA))
+        TempSensor.__init__(self, log_values, self.MEASURE_POINTS)
+        HumiditySensor.__init__(self, log_values, self.MEASURE_POINTS)
+        BarometricSensor.__init__(self, log_values, self.MEASURE_POINTS)
+        CO2Sensor.__init__(self, log_values, self.MEASURE_POINTS)
+        CyclicComponent.__init__(self, components, log_values)
+        self._start_update_loop(self._init_sensor, self._read_sensor)
+        self._url = settings.get_string(REMOTE_MODE_URL)
+        self._readings_stabilized = True # init with stabilized values, we know nothing about it
+
+    def _init_sensor(self):
+        """
+        """
+        return
+
+    def _read_sensor(self):
+        Network().wait_for_network()
+        try:
+            response = requests.get("http://" + self._url + "/remoteIntSensor")
+        except Exception as e:
+            Logger().warning(f"Cannot reach {self._url}")
+            return
+        content: "SensorApi_0_1" = response.json()
+        if content["temp"] != "None":
+            self._set_temperature(float(content["temp"]))
+        if content["hum"] != "None":
+            self._set_humidity(float(content["hum"]))
+        if content["baro"] != "None":
+            self._set_pressure(float(content["baro"]))
+        if content["co2"] != "None":
+            self._set_co2(float(content["co2"]))

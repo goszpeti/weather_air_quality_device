@@ -1,0 +1,21 @@
+    <div id="waqd_view" class="block">
+        <div id="weather_overall" class="row" style="text-align: center;padding-bottom: 0px">
+            <img class="svg-white" src="static/{{weather_icon}}" alt="weather_icon" style="width: 50%;">
+        </div>
+        <div id="temp" class="row">
+            <img class="svg-white" src="static/weather_icons/wi-thermometer_full.svg" alt="temp_icon" width="15%">
+            {{temp}}
+        </div>
+        <div id="humidity" class="row">
+            <img class="svg-white" src="static/weather_icons/wi-humidity.svg" alt="baro_icon" width="15%">
+            {{humidity}}
+        </div>
+        <div id="baro" class="row">
+            <img class="svg-white" src="static/weather_icons/wi-barometer.svg" alt="baro_icon" width="15%">
+            {{pressure}}
+        </div>
+        <div id="co2" class="row">
+            <p style="font-size: 1em;margin-top: 0cm;">
+            CO<sub>2</sub> {{co2}}</p>
+        </div>
+    </div>

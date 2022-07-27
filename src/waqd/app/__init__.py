@@ -23,6 +23,7 @@ Entry module of WAQD
 Sets up cmd arguments, settings and starts the gui
 """
 
+from pint import UnitRegistry
 from typing import TYPE_CHECKING
 import argparse
 import logging
@@ -35,8 +36,7 @@ from pathlib import Path
 from typing import Optional
 
 import waqd
-from PyQt5 import QtCore, QtGui, QtWidgets
-from waqd import DEBUG_LEVEL, PROG_NAME
+from waqd import PROG_NAME
 from waqd import __version__ as WAQD_VERSION
 from waqd import base_path
 from waqd.assets import get_asset_file
@@ -47,16 +47,12 @@ from waqd.settings import (DISP_TYPE_HEADLESS, DISP_TYPE_RPI,
                            DISP_TYPE_WAVESHARE_5_LCD,
                            DISP_TYPE_WAVESHARE_EPAPER_2_9, DISPLAY_TYPE,
                            Settings)
-from waqd.ui import common, main_ui
-from waqd.ui.widgets.fader_widget import FaderWidget
-from waqd.ui.widgets.splashscreen import SplashScreen
 
-# define Qt so we can use it like the namespace in C++
-Qt = QtCore.Qt
-
-
+# don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
     from waqd.base.component_ctrl import ComponentController
+    from PyQt5 import QtCore, QtWidgets
+    Qt = QtCore.Qt
 
 if platform.system() == "Windows":
     # Workaround for Windows, so that on the taskbar the
@@ -71,8 +67,8 @@ if platform.system() == "Windows":
 # singleton with access to all backend components
 comp_ctrl: Optional["ComponentController"] = None
 # translator for qt app translation singleton
-translator: Optional[QtCore.QTranslator] = None
-
+translator: Optional["QtCore.QTranslator"] = None
+unit_reg = UnitRegistry()
 
 def main(settings_path: Optional[Path] = None):
     """
@@ -101,6 +97,8 @@ def main(settings_path: Optional[Path] = None):
     start_remote_debug()
 
     Logger(output_path=waqd.user_config_dir)  # singleton, no assigment needed
+    if waqd.DEBUG_LEVEL > 0:
+        Logger().info(f"DEBUG level set to {waqd.DEBUG_LEVEL}")
 
     comp_ctrl = ComponentController(settings)
     comp_ctrl = comp_ctrl
@@ -147,7 +145,7 @@ def handle_cmd_args(settings):
     waqd.DEBUG_LEVEL = args.debug_level
     debug_env_var = os.getenv("WAQD_DEBUG")
     if debug_env_var:
-        DEBUG_LEVEL = int(debug_env_var)
+        waqd.DEBUG_LEVEL = int(debug_env_var)
     if args.headless:
         settings.set(DISPLAY_TYPE, DISP_TYPE_HEADLESS)
 
@@ -155,11 +153,11 @@ def handle_cmd_args(settings):
 def start_remote_debug():
     """ Start remote debugging from level 2 and wait on it from level 3"""
     runtime_system = RuntimeSystem()
-    if DEBUG_LEVEL > 1 and runtime_system.is_target_system:
+    if waqd.DEBUG_LEVEL > 1 and runtime_system.is_target_system:
         import debugpy  # pylint: disable=import-outside-toplevel
         port = 3003
         debugpy.listen(("0.0.0.0", port))
-        if DEBUG_LEVEL > 2:
+        if waqd.DEBUG_LEVEL > 2:
             print("Waiting to attach on port %s", port)
             debugpy.wait_for_client()  # blocks execution until client is attached
 
@@ -173,11 +171,15 @@ def setup_on_non_target_system():
     logging.getLogger("root").info("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
 
 
-def qt_app_setup(settings) -> QtWidgets.QApplication:
+def qt_app_setup(settings) -> "QtWidgets.QApplication":
     """
     Set up all Qt application specific attributes, which can't be changed later on
     Returns qt_app object.
     """
+    from PyQt5 import QtCore, QtGui, QtWidgets
+    from waqd.ui import common
+    Qt = QtCore.Qt
+
     # apply Qt attributes (only at init possible)
     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
@@ -187,6 +189,7 @@ def qt_app_setup(settings) -> QtWidgets.QApplication:
     # set icon
     icon_path = get_asset_file("gui_base", "icon")
     qt_app.setWindowIcon(QtGui.QIcon(str(icon_path)))
+    from waqd.ui import common
 
     # install translator
     common.set_ui_language(qt_app, settings)
@@ -203,10 +206,14 @@ def loading_sequence(comp_ctrl: ComponentController, settings: Settings):
 
     # start init for all components
     comp_ctrl.init_all()
+    from PyQt5 import QtCore, QtWidgets
+    from waqd.ui import main_ui
+    from waqd.ui.widgets.fader_widget import FaderWidget
+    from waqd.ui.widgets.splashscreen import SplashScreen
     app_main_ui = main_ui.WeatherMainUi(comp_ctrl, settings)
 
     if RuntimeSystem().is_target_system:  # only remove titlebar on RPi
-        app_main_ui.setWindowFlags(Qt.CustomizeWindowHint)
+        app_main_ui.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
 
     # show splash screen
     splash_screen = SplashScreen()
@@ -222,7 +229,7 @@ def loading_sequence(comp_ctrl: ComponentController, settings: Settings):
     start = time.time()
     while (not app_main_ui.ready or not comp_ctrl.all_ready) \
         or (time.time() < start + loading_minimum_time) \
-            and DEBUG_LEVEL <= 3:
+            and waqd.DEBUG_LEVEL <= 3:
         QtWidgets.QApplication.processEvents()
 
     # splash screen can be disabled - with fader

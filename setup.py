@@ -24,8 +24,9 @@ REQUIRED = [
     # Backend
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
     "JsonSchema==4.0.1",  # MIT License - for events json schema validation
-    "bottle==0.12.21", # webserver for remote sensors
+    "bottle==0.12.21",  # MIT License - webserver for remote sensors
     "paste==3.5.0", # server backend for bottle
+    "pint==0.19.2"  # BSD 3-clause style license - physical units for sensors
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
     "APScheduler==3.8.0",  # MIT License - Scheduler for Events function
     "PyGithub==1.55",  # LGPL - Access to GitHub in AutoUpdater
@@ -48,11 +49,11 @@ REQUIRED = [
     "PyQtSpinner==0.1.1"  # MIT License - a loading Spinner
 ]
 REQUIRED_NON_RPI = [
-    # UI # 5.11.3 on RPi
+    # UI
     "PyQt5>=5.12.3",  # GPLv3 - Must be compiled on RPi (takes an eternity) - so use system libs
     "PyQtChart>=5.12.0",  # GPLv3 - for DetailView
 ]
-REQUIRED_LINUX = [ # this package does not install on windows, because it can't decode an UTF-8 char
+REQUIRED_LINUX = [  # this package does not install on windows, because of RPi.GPIO dependency
     "MH-Z19==3.0.2", # MIT License
     ]
 #epd-library=0.2.3 GPL v3GPLv3 - Waveshare 2.9 inch epaper 296×128
@@ -101,9 +102,8 @@ setup(
         "License:: OSI Approved:: GNU Affero General Public License v3"
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: CPython'
     ],
     entry_points={

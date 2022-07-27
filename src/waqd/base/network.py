@@ -35,7 +35,7 @@ import socket
 import subprocess
 from typing import Callable, List, Tuple
 from time import sleep
-
+import requests
 from waqd.base.logger import Logger
 from waqd.base.system import RuntimeSystem
 from waqd.base.signal import QtSignalRegistry
@@ -50,6 +50,8 @@ class Network():
     _internet_reconnect_try = 0  # internal counter for wlan restart
     _runtime_system = RuntimeSystem()
     _disable_network = False
+    _wait_for_network_counter = 0
+    _wait_for_internet_counter = 0
     internet_connected_once = False
 
     def __new__(cls):
@@ -63,11 +65,20 @@ class Network():
 
     @property
     def internet_connected(self) -> bool:
+        if self._disable_network:
+            return False
+        try:
+            socket.create_connection(("1.1.1.1", 53))
+            return True
+        except OSError:
+            pass
+        return False
+    
+    @property
+    def network_connected(self) -> bool:
         [ipv4, ipv6] = self.get_ip()
         if not ipv4 and not ipv6 or self._disable_network:
             return False
-        if not self.internet_connected_once:
-            self.internet_connected_once = True
         return True
 
     def get_ip(self) -> Tuple[str, str]:  # "ipv4", "ipv6"
@@ -113,6 +124,7 @@ class Network():
                 sleep(5)
             # failed 3 times straight - restart linux
             if self._internet_reconnect_try == 3:
+                # TODO dialog!
                 Logger().error("Watchdog: Restarting system - Net failure...")
                 self._runtime_system.restart()
         if not self.internet_connected:
@@ -124,16 +136,28 @@ class Network():
                 QtSignalRegistry().emit_sig_callback(self.NW_READY_SIG_NAME)
 
     def wait_for_network(self) -> bool:
-        # todo make static and save connection and provide expections for calling functions
         max_error = 5
-        i = 0
-        while not self.internet_connected and i < max_error:
-            Logger().info("Waiting for network...")
+        while not self.network_connected and self._wait_for_network_counter < max_error:
             sleep(1)
-            [ipv4, ipv6] = self.get_ip()
-            i += 1
+            self._wait_for_network_counter += 1
+            if self._wait_for_network_counter == 0:
+                Logger().info("Waiting for network...")
 
-        if i == max_error:
+        self._wait_for_network_counter = 0
+        if self._wait_for_network_counter == max_error:
             return False
+        return True
+    
+    def wait_for_internet(self) -> bool:
+        self.wait_for_network()
+        max_error = 5
+        while not self.internet_connected and self._wait_for_internet_counter < max_error:
+            sleep(1)
+            self._wait_for_internet_counter += 1
+            if self._wait_for_internet_counter == 0:
+                Logger().info("Waiting for network...")
 
+        if self._wait_for_internet_counter == max_error:
+            return False
+        self._wait_for_internet_counter = 0
         return True

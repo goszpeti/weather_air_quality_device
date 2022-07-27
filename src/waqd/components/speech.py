@@ -115,7 +115,7 @@ class TextToSpeach(Component):
             audio_file = self._save_dir / f"{normalized_text}_{lang}.mp3"
             # only download, if file does not exist
             if not audio_file.is_file():
-                Network().wait_for_network()
+                Network().wait_for_internet()
                 gtts = gTTS(text, lang=lang)
                 gtts.save(audio_file)
             if self._comps:

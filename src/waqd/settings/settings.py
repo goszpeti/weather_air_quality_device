@@ -23,10 +23,10 @@ import os
 from pathlib import Path
 from typing import Union, Dict
 
-from waqd.settings import (AUTO_UPDATER_ENABLED,
-    CCS811_ENABLED, FORECAST_BG, INTERIOR_BG, MH_Z19_ENABLED, AW_API_KEY, EVENTS_ENABLED, FONT_NAME,
+from waqd.settings import (ALLOW_UNATTENDED_UPDATES, AUTO_UPDATER_ENABLED,
+    CCS811_ENABLED, FORECAST_BG, INTERIOR_BG, LAST_ALTITUDE_M_VALUE, LAST_TEMP_C_OUTSIDE_VALUE, MH_Z19_ENABLED, AW_API_KEY, EVENTS_ENABLED, FONT_NAME,
     AW_CITY_IDS, BRIGHTNESS, DAY_STANDBY_TIMEOUT, DISP_TYPE_RPI,
-    DISPLAY_TYPE, FONT_SCALING, FORECAST_ENABLED, LANG, MH_Z19_VALUE_OFFSET, UPDATER_USER_BETA_CHANNEL,
+    DISPLAY_TYPE, FONT_SCALING, FORECAST_ENABLED, LANG, MH_Z19_VALUE_OFFSET, REMOTE_MODE_URL, UPDATER_USER_BETA_CHANNEL,
     LANG_GERMAN, LOCATION, MOTION_SENSOR_ENABLED, MOTION_SENSOR_PIN,
     NIGHT_MODE_BEGIN, NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT, OW_API_KEY,
     OW_CITY_IDS, PREFER_ACCU_WEATHER, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED, BMP_280_ENABLED,
@@ -54,7 +54,7 @@ class Settings():
         self._parser = configparser.ConfigParser()
         self._ini_file_path = Path()
         if ini_folder is not None:
-            self._ini_file_path = Path(ini_folder) / "waqd.ini"
+            self._ini_file_path = Path(ini_folder) / "config.ini"
         # create Settings ini file, if not available for first start
         if not self._ini_file_path.is_file():
             os.makedirs(self._ini_file_path.parent, exist_ok=True)
@@ -76,15 +76,19 @@ class Settings():
                 BME_280_ENABLED: False,
                 BMP_280_ENABLED: False,
                 DHT_22_PIN: DHT_22_DISABLED,
-                MOTION_SENSOR_PIN: 15,
+                MOTION_SENSOR_PIN: 23,
                 WAVESHARE_DISP_BRIGHTNESS_PIN: 18,
                 AUTO_UPDATER_ENABLED: True,
                 UPDATER_USER_BETA_CHANNEL: False,
                 LOG_SENSOR_DATA: True,
-                SERVER_ENABLED: True
+                SERVER_ENABLED: True,
+                ALLOW_UNATTENDED_UPDATES: True,
+                LAST_ALTITUDE_M_VALUE: 400.0,
+                LAST_TEMP_C_OUTSIDE_VALUE: 23.5,
+                REMOTE_MODE_URL: ""
             },
             self._GUI_SECTION_NAME: {
-                FONT_SCALING: 1.3,
+                FONT_SCALING: 1.0,
                 FONT_NAME : "Franzo",
                 INTERIOR_BG: "background_s8.jpg",
                 FORECAST_BG: "background_s9.jpg"
@@ -95,7 +99,8 @@ class Settings():
                 BRIGHTNESS: 90,
                 MOTION_SENSOR_ENABLED: True,
                 DAY_STANDBY_TIMEOUT: 600,
-                NIGHT_STANDBY_TIMEOUT: 600, },
+                NIGHT_STANDBY_TIMEOUT: 600
+            },
             self._FORECAST_SECTION_NAME: {
                 FORECAST_ENABLED: True,
                 PREFER_ACCU_WEATHER: False,
@@ -110,10 +115,10 @@ class Settings():
 
     def get(self, name: str) -> Union[str, int, float, bool, Dict[str,str]]:
         """ Get a specific setting """
-        value = None
+        value = ""
         for section in self._values:
             if name in self._values[section]:
-                value = self._values[section].get(name)
+                value = self._values[section].get(name, "")
                 break
         return value
 

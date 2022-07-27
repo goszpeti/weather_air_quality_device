@@ -222,7 +222,7 @@ QLabel{background-color: transparent;color: white;}
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>80</y>
+       <y>90</y>
        <width>281</width>
        <height>71</height>
       </rect>
@@ -464,7 +464,7 @@ QLabel{background-color: transparent;color: white;}
      <property name="font">
       <font>
        <family>Franzo</family>
-       <pointsize>79</pointsize>
+       <pointsize>82</pointsize>
        <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
@@ -763,7 +763,7 @@ QLabel{background-color: transparent;color: white;}
      <property name="font">
       <font>
        <family>Franzo</family>
-       <pointsize>79</pointsize>
+       <pointsize>82</pointsize>
        <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>

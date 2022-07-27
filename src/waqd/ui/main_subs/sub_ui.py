@@ -59,10 +59,6 @@ class SubUi(metaclass=abc.ABCMeta):
         self._first_thread = QtCore.QThread(self._main_ui)
 
     def init_with_cyclic_update(self):
-        if not Network().internet_connected:
-            # skip waiting for network in GUI thread - it will cause hanging
-            # register callback?
-            return
         self._first_thread.setObjectName("Init" + repr(self).split(" ")[0])
         self.worker = WorkerObject(target=self._cyclic_update)
         self.worker.moveToThread(self._first_thread)

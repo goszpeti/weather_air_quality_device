@@ -20,6 +20,7 @@
 
 """
 Contains global constants and basic/ui variables.
+Should not contain any 3rd party imports!
 """
 
 from pathlib import Path

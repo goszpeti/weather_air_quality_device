@@ -51,6 +51,11 @@ LOG_SENSOR_DATA = "log_sensor_data"
 
 AUTO_UPDATER_ENABLED = "auto_updater_enabled"
 UPDATER_USER_BETA_CHANNEL = "updater_use_beta_channel"
+ALLOW_UNATTENDED_UPDATES = "unattended_updates"
+
+LAST_ALTITUDE_M_VALUE = "last_alitude_value"
+LAST_TEMP_C_OUTSIDE_VALUE  = "last_temp_outside_value"
+REMOTE_MODE_URL = "remote_mode_url"
 # gui
 FONT_SCALING = "font_scaling"
 FONT_NAME = "font_name"

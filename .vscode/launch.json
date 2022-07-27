@@ -6,7 +6,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/waqd/__main__.py",
-            "args": ["--debug=2"],
+            "args": ["-D=3"],
             "console": "integratedTerminal",
             "subProcess": true,
             "justMyCode": true
@@ -30,12 +30,23 @@
             "pathMappings": [
                 {
                     "localRoot": "${workspaceFolder}/src/waqd", // ssh://myraspberry2You may also manually specify the directory containing your source code.
-                    "remoteRoot": "/usr/local/waqd/1.6.0b3/lib/python3.7/site-packages/waqd" // Linux example; adjust as necessary for your OS and situation.
+                    "remoteRoot": "/home/pi/.local/pipx/venvs/waqd-1-6-0b4/lib64/python3.9/site-packages/waqd/" // Linux example; adjust as necessary for your OS and situation.
                 }
             ],
             "port": 3003,
-            "host": "IP",
+            "host": "mypi",
             "justMyCode": false
+        },
+        {
+            "name": "Python: Testing",
+            "type": "python",
+            "request": "test",
+            "console": "integratedTerminal", // needed, so that venv activates
+            "subProcess": true,
+            "justMyCode": false,
+            "python": "${command:python.interpreterPath}",
+            "env": {
+            },
         },
     ]
 }

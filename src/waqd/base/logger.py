@@ -57,7 +57,7 @@ class Logger(logging.Logger):
 
     _instance: Optional[logging.Logger] = None
 
-    def __new__(cls, output_path: Path = waqd.user_config_dir):
+    def __new__(cls, output_path: Path=Path(".")):
         if cls._instance is None:
             cls._instance = cls._init_logger(output_path)
         return cls._instance
@@ -108,15 +108,15 @@ class Logger(logging.Logger):
 
 
 class SensorLogger(logging.Logger):
-    def __new__(cls, name: str, output_path: Path = waqd.user_config_dir / "sensor_logs"):
+    def __new__(cls, name: str, output_path: Path = Path(".")):
         return cls._init_logger(name, output_path)
 
-    def __init__(self, name: str, output_path: Path = waqd.user_config_dir / "sensor_logs") -> None:
+    def __init__(self, name: str, output_path: Path = Path(".")) -> None:
         pass
 
     @staticmethod
     def get_sensor_logfile_path(sensor_name) -> Path:
-        logger = SensorLogger(sensor_name)
+        logger = SensorLogger(sensor_name, output_path=waqd.user_config_dir / "sensor_logs")
         if logger.handlers == 0:
             return Path("InvalidPath")
         try:

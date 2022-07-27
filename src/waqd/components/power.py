@@ -18,6 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 import datetime
+from threading import Timer
 import time
 
 from waqd.base.component_reg import ComponentRegistry, CyclicComponent
@@ -47,17 +48,28 @@ class ESaver(CyclicComponent):
 
         self._night_mode_active = False
         self._is_awake = False
+        self._sleep_timer = None
         self._start_update_loop(update_func=self._set_day_night_mode)
 
     @property
     def is_awake(self):
         """ Display is in awake mode (higher brightness) """
+        motion_detected = self._comps.motion_detection_sensor.motion_detected
+        self._is_awake = self._is_awake or motion_detected
         return self._is_awake
-
+    
     @property
     def night_mode_active(self):
         """ Return true, if current time is im the timeframe set up in settings """
         return self._night_mode_active
+    
+    def wake_up(self, seconds: float):
+        self._is_awake = True
+        self._sleep_timer = Timer(seconds, self.sleep)
+        self._sleep_timer.start()
+
+    def sleep(self):
+        self._is_awake = False
 
     def _set_day_night_mode(self):
         """ Runs periodically. Does the actual switch between the modes and sets brightness """
@@ -66,7 +78,6 @@ class ESaver(CyclicComponent):
             NIGHT_MODE_BRIGHTNESS = 0
         else:
             NIGHT_MODE_BRIGHTNESS = NIGHT_STANDBY_BRIGHTNESS
-        self._is_awake = self._comps.motion_detection_sensor.motion_detected
 
         # determine sleep and wake time
         current_date_time = datetime.datetime.now()
@@ -93,7 +104,7 @@ class ESaver(CyclicComponent):
             return
 
         # switch through the different modes
-        if self._is_awake:  # wake from motion sensor
+        if self.is_awake:  # wake from motion sensor
             if self.night_mode_active:
                 self._logger.debug("ESaver: Wake-up at night")
                 self._comps.display.set_brightness(

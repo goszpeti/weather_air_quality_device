@@ -109,7 +109,8 @@ class Forecast(sub_ui.SubUi):
         if not self._settings.get(FORECAST_ENABLED):
             self._logger.debug("ForecastGui: forecast disabled")
             return
-
+        if not Network().internet_connected:
+            return
         # set up titles
         current_date_time = datetime.datetime.now()
 

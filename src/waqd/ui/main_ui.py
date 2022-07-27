@@ -72,12 +72,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         """ Callback, to turn on the display on touch. """
         if event.type() == QtCore.QEvent.MouseButtonPress:
             # works currently with overriding the motion sensor
-            if self._comps.motion_detection_sensor:
-                cbck_thread = threading.Thread(
-                    name="DisplayTurnOn",
-                    target=self._comps.motion_detection_sensor._wake_up_from_sensor,
-                    args=(None,), daemon=True)
-                cbck_thread.start()
+            self._comps.energy_saver.wake_up(10)
             self.hide_info_screen()
         return super().eventFilter(source, event)
 

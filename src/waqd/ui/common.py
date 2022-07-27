@@ -27,15 +27,16 @@ import datetime
 import xml.dom.minidom as dom
 from pathlib import Path
 from typing import Optional, Union
+from pint import Quantity
 
 from PyQt5 import QtCore, QtSvg, QtGui, QtWidgets
 from PyQt5.QtGui import QFont, QFontDatabase
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 import waqd
 import waqd.app as app
 from waqd.assets import get_asset_file
 from waqd.settings import LANG, LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN, Settings
-
+from waqd.components.online_weather import Weather
 logger = logging.getLogger(waqd.PROG_NAME)
 
 # define Qt so it can be used like the namespace in C++
@@ -45,9 +46,10 @@ def get_font(font_name) -> QFont:
     # set up font
     font_file = get_asset_file("font", "franzo")
     font_id = QFontDatabase.addApplicationFont(str(font_file))
-    if not QApplication.instance():
+    qapp = QApplication.instance()
+    if qapp is None:
         return QFont()
-    font = QApplication.instance().font()
+    font = qapp.font()
     if font_id != -1:
         font_db = QFontDatabase()
         font_styles = font_db.styles(font_name)
@@ -60,7 +62,10 @@ def get_font(font_name) -> QFont:
 
 def apply_font(qt_root_obj: QtCore.QObject, font_name: str):
     font = get_font(font_name)
-    QApplication.instance().setFont(font)
+    qapp = QApplication.instance()
+    if qapp is None:
+        return
+    qapp.setFont(font)
     for qt_obj in qt_root_obj.findChildren(QWidget):
         obj_font = qt_obj.font()
         obj_font.setFamily(font.family())
@@ -88,7 +93,7 @@ def set_ui_language(qt_app: QApplication, settings: Settings):
     qt_app.installTranslator(app.translator)
 
 
-def draw_svg(pyqt_obj: QWidget, svg_path: Path, color="white", shadow=False, scale: float=1.0):
+def draw_svg(pyqt_obj: QLabel, svg_path: Path, color="white", shadow=False, scale: float=1.0):
     """
     Sets an svg in the desired color for a QtWidget.
     :param color: the disired color as a string in html compatible name
@@ -145,6 +150,8 @@ def scale_gui_elements(qt_root_obj: QWidget, font_scaling: float,
     :param previous_scaling: old multiplicator
     :param extra_scaling: for platform specific font size
     """
+    if font_scaling > 1: # normalize to 0-1
+        font_scaling = 1
     # scale all fonts by font_scaling setting
     for qt_list in (
             qt_root_obj.findChildren(QtWidgets.QLabel),
@@ -164,7 +171,7 @@ def apply_shadow_to_labels(qt_root_obj):
         effect.setOffset(2, 2)
         label.setGraphicsEffect(effect)
 
-def get_temperature_icon(temp_value: Optional[float]) -> Path:
+def get_temperature_icon(temp_value: Optional[Quantity]) -> Path:
     """
     Return the path of the image resource for the appropriate temperature input.
     t < 0: empty
@@ -177,18 +184,18 @@ def get_temperature_icon(temp_value: Optional[float]) -> Path:
     # set dummy as default
     icon_path = get_asset_file(assets_subfolder, "thermometer_empty")
     # return dummy for invalid value
-    if not temp_value:
+    if temp_value is None:
         return icon_path
-
+    temp_deg_c = temp_value.m_as(app.unit_reg.degC)
     # set up ranges for the 5 icons
-    if temp_value <= 0:
+    if temp_deg_c <= 0:
         icon_path = get_asset_file(assets_subfolder, "thermometer_empty")
-    elif temp_value < 10:
+    elif temp_deg_c < 10:
         icon_path = get_asset_file(
             assets_subfolder, "thermometer_almost_empty")
-    elif temp_value < 22:
+    elif temp_deg_c < 22:
         icon_path = get_asset_file(assets_subfolder, "thermometer_half")
-    elif temp_value < 30:
+    elif temp_deg_c < 30:
         icon_path = get_asset_file(
             assets_subfolder, "thermometer_almost_full")
     else:
@@ -212,7 +219,7 @@ def format_int_meas_text(html_text: str, value: Optional[Union[int, float]], col
     return temp_val
 
 
-def format_float_temp_text(html_text: str, value: Optional[float], color="white"):
+def format_float_temp_text(html_text: str, value: Optional[Quantity], color="white"):
     """
     Returns a given html string by switching out the value with the given number.
     :param html_text: the html text containing the value. Can only contain one value.
@@ -222,7 +229,7 @@ def format_float_temp_text(html_text: str, value: Optional[float], color="white"
     if value is None:
         temp_val = format_text(html_text, "N/A", "string", color=color)
     else:
-        temp_val = format_text(html_text, float(value), "float", color=color)
+        temp_val = format_text(html_text, value.m_as(app.unit_reg.degC), "float", color=color)
     return temp_val
 
 
@@ -236,10 +243,14 @@ def format_temp_text_minmax(html_text, min_val, max_val, color="white"):
     if min_val is None or max_val is None:
         html_text = format_text(html_text, "N/A", "string", tag_id=0, color=color)
     else:
-        min_val = round(min_val)
-        max_val = round(max_val)
-        html_text = format_text(html_text, min_val, "int", tag_id=0, color=color)
-        html_text = format_text(html_text, max_val, "int", tag_id=3, color=color)
+        # try-except, to avoid crashes, when values cannot be rounded (e.g. value is infinity)
+        try:
+            min_val = round(min_val)
+            max_val = round(max_val)
+            html_text = format_text(html_text, min_val, "int", tag_id=0, color=color)
+            html_text = format_text(html_text, max_val, "int", tag_id=3, color=color)
+        except Exception as e:
+            logger.error(f"Cannot format text: {str(e)}.")
     return html_text
 
 

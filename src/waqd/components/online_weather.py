@@ -81,10 +81,19 @@ class Weather():
         return is_daytime(self.sunrise, self.sunset, self.date_time)
 
 
-# @dataclass
-# class CurrentWeather(Weather):
-#     current_temp: float
+    def get_background_image(self):
+        # set weather description specific background image
+        online_weather_category = self.main.lower()
+        cloudiness = self.clouds
 
+        if cloudiness > 65 and online_weather_category == "clouds":
+            online_weather_category = "heavy_clouds"
+
+        if self.is_daytime():
+            bg_name = "bg_day_" + online_weather_category
+        else:
+            bg_name = "bg_night_" + online_weather_category
+        return get_asset_file("weather_bgrs", bg_name)
 
 @dataclass
 class DailyWeather(Weather):
@@ -146,7 +155,7 @@ class OpenTopoData():
             return self._altitude_info.get("elevation", 0.0)
 
         # wait a little bit for connection
-        is_connected = Network().wait_for_network()
+        is_connected = Network().wait_for_internet()
         if not is_connected:
             # TODO error message
             return 0
@@ -479,7 +488,7 @@ class OpenWeatherMap(Component):
         if self._disabled:
             return {}
         # wait a little bit for connection
-        is_connected = Network().wait_for_network()
+        is_connected = Network().wait_for_internet()
         if not is_connected:
             # TODO error message
             return {}

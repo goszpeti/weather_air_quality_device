@@ -58,7 +58,7 @@ class Interior(sub_ui.SubUi):
         self._ui.interior_2_bar.hide()
         self._ui.interior_3_bar.hide()
 
-        font_name = self._settings.get(FONT_NAME)
+        font_name = self._settings.get_string(FONT_NAME)
         # check, which sensor are available:
         if not self._comps.humidity_sensor.is_disabled:
             self._humidity_ui_bar = self.set_available_bar(self.HUM_BAR_OPTS, font_name)

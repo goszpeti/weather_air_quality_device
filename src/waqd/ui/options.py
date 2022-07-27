@@ -44,7 +44,7 @@ from waqd.ui import common
 from waqd.ui.main_subs import sub_ui
 from waqd.ui.widgets.fader_widget import FaderWidget
 from waqd.ui.widgets.splashscreen import SplashScreen
-from PyQt5.QtWidgets import QScroller, QApplication
+from PyQt5.QtWidgets import QScroller, QApplication, QPushButton
 from .qt.options_ui import Ui_Dialog
 
 # define Qt so we can use it like the namespace in C++
@@ -89,6 +89,15 @@ class OptionMainUi(QtWidgets.QDialog):
         # set up fix background image
         #self._ui.background_label.setPixmap(QtGui.QPixmap(str(get_asset_file("gui_base", "background-full"))))
 
+        # TODO: connect tab toggling
+        self._ui.general_button.clicked.connect(self._switch_pages)
+        self._ui.display_button.clicked.connect(self._switch_pages)
+        self._ui.theme_button.clicked.connect(self._switch_pages)
+        self._ui.events_button.clicked.connect(self._switch_pages)
+        self._ui.hw_button.clicked.connect(self._switch_pages)
+        self._ui.about_button.clicked.connect(self._switch_pages)
+
+        self._ui.general_button.click()
         # display current options
         self.display_options()
 
@@ -150,6 +159,24 @@ class OptionMainUi(QtWidgets.QDialog):
         # minimal wait to show the button feedback
         time.sleep(0.3)
         self.show()
+        
+    def _switch_pages(self):
+        sender_button = self.sender()
+        assert isinstance(sender_button, QPushButton), "Switch page can only be triggered from a button!"
+        obj_name = sender_button.objectName()
+        if obj_name == "display_button":
+            self._ui.page_stacked_widget.setCurrentWidget(self._ui.display_page)
+        elif obj_name == "general_button":
+            self._ui.page_stacked_widget.setCurrentWidget(self._ui.general_page)
+        elif obj_name == "theme_button":
+            self._ui.page_stacked_widget.setCurrentWidget(self._ui.theme_page)
+        elif obj_name == "events_button":
+            self._ui.page_stacked_widget.setCurrentWidget(self._ui.events_page)
+        elif obj_name == "hw_button":
+            self._ui.page_stacked_widget.setCurrentWidget(self._ui.hw_page)
+        elif obj_name == "about_button":
+            self._ui.page_stacked_widget.setCurrentWidget(self._ui.about_page)
+
 
     def _calibrate_mh_z19(self):
         #self._mh_z19_calib_dialog = 
@@ -217,18 +244,18 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.night_mode_begin_slider.setMaximum(24)
         self._ui.night_mode_begin_slider.setTickInterval(1)
         self._ui.night_mode_begin_value.setText(str(settings.get(NIGHT_MODE_BEGIN)))
-        self._ui.night_mode_begin_slider.setSliderPosition(settings.get(NIGHT_MODE_BEGIN))
+        self._ui.night_mode_begin_slider.setSliderPosition(settings.get_int(NIGHT_MODE_BEGIN))
 
         self._ui.night_mode_end_slider.setMaximum(24)
         self._ui.night_mode_end_slider.setTickInterval(1)
         self._ui.night_mode_end_value.setText(str(settings.get(NIGHT_MODE_END)))
-        self._ui.night_mode_end_slider.setSliderPosition(settings.get(NIGHT_MODE_END))
+        self._ui.night_mode_end_slider.setSliderPosition(settings.get_int(NIGHT_MODE_END))
 
         self._ui.brightness_slider.setMaximum(100)
         self._ui.brightness_slider.setMinimum(30)
         self._ui.brightness_slider.setTickInterval(5)
         self._ui.brightness_value.setText(str(settings.get(BRIGHTNESS)))
-        self._ui.brightness_slider.setSliderPosition(settings.get(BRIGHTNESS))
+        self._ui.brightness_slider.setSliderPosition(settings.get_int(BRIGHTNESS))
 
         self._ui.events_enable_toggle.setChecked(settings.get(EVENTS_ENABLED))
         self._ui.auto_updater_enable_toggle.setChecked(settings.get(AUTO_UPDATER_ENABLED))
@@ -242,9 +269,9 @@ class OptionMainUi(QtWidgets.QDialog):
             self._ui.interior_background_cbox.addItem(bgr_file.name)
             self._ui.forecast_background_cbox.addItem(bgr_file.name)
 
-        self._ui.interior_background_cbox.setCurrentText(settings.get(INTERIOR_BG))
-        self._ui.forecast_background_cbox.setCurrentText(settings.get(FORECAST_BG))
-        self._ui.font_cbox.setCurrentText(settings.get(FONT_NAME))
+        self._ui.interior_background_cbox.setCurrentText(settings.get_string(INTERIOR_BG))
+        self._ui.forecast_background_cbox.setCurrentText(settings.get_string(FORECAST_BG))
+        self._ui.font_cbox.setCurrentText(settings.get_string(FONT_NAME))
         # try to get index - font-scaling can be set to anything
         try:
             scaling_index = self.FONT_SCALING_VALUES.index(self._previous_scaling)
@@ -253,12 +280,12 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.font_scaling_cbox.setCurrentIndex(scaling_index)
 
         # hw feature toggles
-        self._ui.sound_enable_toggle.setChecked(settings.get(SOUND_ENABLED))
-        self._ui.motion_sensor_enable_toggle.setChecked(settings.get(MOTION_SENSOR_ENABLED))
-        self._ui.ccs811_enable_toggle.setChecked(settings.get(CCS811_ENABLED))
-        self._ui.bmp280_enable_toggle.setChecked(settings.get(BMP_280_ENABLED))
-        self._ui.bme280_enable_toggle.setChecked(settings.get(BME_280_ENABLED))
-        self._ui.mh_z19_enable_toggle.setChecked(settings.get(MH_Z19_ENABLED))
+        self._ui.sound_enable_toggle.setChecked(settings.get_bool(SOUND_ENABLED))
+        self._ui.motion_sensor_enable_toggle.setChecked(settings.get_bool(MOTION_SENSOR_ENABLED))
+        self._ui.ccs811_enable_toggle.setChecked(settings.get_bool(CCS811_ENABLED))
+        self._ui.bmp280_enable_toggle.setChecked(settings.get_bool(BMP_280_ENABLED))
+        self._ui.bme280_enable_toggle.setChecked(settings.get_bool(BME_280_ENABLED))
+        self._ui.mh_z19_enable_toggle.setChecked(settings.get_bool(MH_Z19_ENABLED))
 
         # set up DHT22 combo box
         self._ui.dht22_pin_cbox.addItems(self.DHT_PIN_VALUES)
@@ -287,8 +314,8 @@ class OptionMainUi(QtWidgets.QDialog):
             pass
 
         # enable / disable standby based on motion sensor
-        self._ui.day_standby_timeout_cbox.setEnabled(settings.get(MOTION_SENSOR_ENABLED))
-        self._ui.night_standby_timeout_cbox.setEnabled(settings.get(MOTION_SENSOR_ENABLED))
+        self._ui.day_standby_timeout_cbox.setEnabled(settings.get_bool(MOTION_SENSOR_ENABLED))
+        self._ui.night_standby_timeout_cbox.setEnabled(settings.get_bool(MOTION_SENSOR_ENABLED))
 
         # populate location dropdown- only ow for now
         for city in settings.get(OW_CITY_IDS):
@@ -299,11 +326,11 @@ class OptionMainUi(QtWidgets.QDialog):
         [ipv4, _] = Network().get_ip()
         self._ui.ip_address_value.setText(ipv4)
 
-        self._ui.location_combo_box.setCurrentText(settings.get(LOCATION))
-        self._ui.lang_cbox.setCurrentText(settings.get(LANG))
+        self._ui.location_combo_box.setCurrentText(settings.get_string(LOCATION))
+        self._ui.lang_cbox.setCurrentText(settings.get_string(LANG))
 
         # set to normal brightness - again, in case it was modified
-        self._comps.display.set_brightness(self._settings.get(BRIGHTNESS))
+        self._comps.display.set_brightness(self._settings.get_int(BRIGHTNESS))
 
     def close_ui(self):
         """

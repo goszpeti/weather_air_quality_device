@@ -20,9 +20,11 @@
 import datetime
 
 from PyQt5 import QtCore
+from pint import Quantity
 from typing import TYPE_CHECKING
 from waqd.assets import get_asset_file
 from waqd.base.network import Network
+from waqd.app import unit_reg
 from waqd.ui import common
 from waqd.ui.main_subs import sub_ui
 from waqd.ui.weather_detail_view import WeatherDetailView
@@ -50,9 +52,17 @@ class Exterior(sub_ui.SubUi):
         # save default text to restore formatting
         self._default_temp_text = self._ui.exterior_temp_value.text()
         self._default_hum_text = self._ui.exterior_forecast_hum_value.text()
+        # set default values
+        temp_val_text = common.format_float_temp_text(self._default_temp_text, None)
+        self._ui.exterior_temp_value.setText(temp_val_text)
+        self._ui.exterior_forecast_hum_value.setText(common.format_int_meas_text(self._default_hum_text,
+                                                                                 None,
+                                                                                 tag_id=1))
 
-        day_icon = get_asset_file("weather_icons", "day-800")
-        common.draw_svg(self._ui.exterior_forecast_icon, day_icon, scale=3)
+        na_icon = get_asset_file("weather_icons", "N/A")
+        # common.draw_svg(self._ui.exterior_forecast_icon, na_icon, scale=3)
+        common.draw_svg(self._ui.exterior_temp_icon, common.get_temperature_icon(
+            Quantity(22, unit_reg.degC)))
 
         self._ui.exterior_forecast_icon.clicked.connect(self.show_detail)
 
@@ -75,6 +85,8 @@ class Exterior(sub_ui.SubUi):
         self._logger.debug("ExteriorGui: update")
         if not self._comps.weather_info:
             return
+        if not Network().internet_connected:
+            return
         forecast = self._comps.weather_info.get_5_day_forecast()
         current_weather = self._comps.weather_info.get_current_weather()
         temp_value = None
@@ -90,25 +102,13 @@ class Exterior(sub_ui.SubUi):
                     return  # forecast still valid, don't change displayed value
         else:
             self._online_info_date_time = current_weather.fetch_time
-            temp_value = current_weather.temp  # for later use
+            temp_value = Quantity(current_weather.temp, unit_reg.degC)  # for later use
             hum_value = current_weather.humidity
             online_weather_desc = current_weather.description
             self._logger.debug("ExteriorGui: Current weather condition is %s",
                                online_weather_desc)
-
-            # set weather description specific background image
-            online_weather_category = current_weather.main.lower()
-            cloudiness = current_weather.clouds
-
-            if cloudiness > 65 and online_weather_category == "clouds":
-                online_weather_category = "heavy_clouds"
-
-            if current_weather.is_daytime():
-                bg_name = "bg_day_" + online_weather_category
-            else:
-                bg_name = "bg_night_" + online_weather_category
-
-            self._ui.exterior_background.set_image(str(get_asset_file("weather_bgrs", bg_name)))
+            weather_icon = current_weather.get_background_image()
+            self._ui.exterior_background.set_image(str(weather_icon))
 
             # set todays forecast
             if not forecast[0]:
@@ -118,7 +118,7 @@ class Exterior(sub_ui.SubUi):
             if not current_weather.is_daytime():
                 temp_min = forecast[0].temp_night_min
                 temp_max = forecast[0].temp_night_max
-                if temp_min == -float("inf") or temp_max == float("inf"):
+                if temp_min == -float("inf") or temp_max == float("inf"): # TODO
                     temp_min = forecast[0].temp_min
                     temp_max = forecast[0].temp_max
             else:
@@ -134,9 +134,7 @@ class Exterior(sub_ui.SubUi):
 
         # if sensor is available use it
         if self._comps.remote_exterior_sensor and not self._comps.remote_exterior_sensor.is_disabled:
-            sensor_temp_value = self._comps.remote_exterior_sensor.get_temperature()
-            if sensor_temp_value:
-                temp_value = sensor_temp_value
+            temp_value = self._comps.remote_exterior_sensor.get_temperature()
             sensor_hum_value = self._comps.remote_exterior_sensor.get_humidity()
             if sensor_hum_value:
                 hum_value = sensor_hum_value

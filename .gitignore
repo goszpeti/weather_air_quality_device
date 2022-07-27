@@ -14,7 +14,7 @@ doc/users_manual_DE.pdf
 script/installer/waqd.log
 v1.4.4
 
-src/waqd.ini
+src/config.ini
 src/waqd.log
 src/events.json
 src/sensor_logs/*

@@ -41,7 +41,9 @@ The project will be written with the usage of Qt in Python.
 ### Case
 
 #### SmartiPi Touch 2
-  * recommended because of cable management and supports all RPi Versions up to RPi4.
+* recommended because of cable management and supports all RPi Versions up to RPi4.
+
+# <img src="./doc/images/waqd_station.jpg" width="300">
 
 ##### Sensor holding case:
 
@@ -140,13 +142,13 @@ Use virtualenv:
 
 ## Needed Software
 
-* Raspberry PI OS - 32 bit (Buster) - 64 bit is still missing some libraries.
+* Raspberry Pi OS - 64 bit (Bullseye) - 32 bit no longer supported
   * LightDM desktop manager
   * XFCE desktop environment with pcmanfm
   * Plymouth for boot screen customization
   * raspi-config
-  * Python 3.7
+  * Python 3.9
 
 ## Author:
 
-Copyright (c) 2021 Péter Gosztolya and contributors.
+Copyright (c) 2022 Péter Gosztolya and contributors.

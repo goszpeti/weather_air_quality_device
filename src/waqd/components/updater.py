@@ -32,6 +32,7 @@ import waqd.app as app
 from waqd import __version__ as WAQD_VERSION
 from waqd.base.component import CyclicComponent
 from waqd.base.component_reg import ComponentRegistry
+from waqd.base.network import Network
 
 class OnlineUpdater(CyclicComponent):
     """
@@ -40,7 +41,7 @@ class OnlineUpdater(CyclicComponent):
     This entry point should not be changed!
     """
     UPDATE_TIME = 600  # 10 minutes in seconds
-    INIT_WAIT_TIME = 10  # don't start updating until the station is ready
+    INIT_WAIT_TIME = 20  # don't start updating until the station is ready
     STOP_TIMEOUT = 2  # override because of long update time
 
 
@@ -66,9 +67,11 @@ class OnlineUpdater(CyclicComponent):
 
     def _updater_sequence(self):
         """ Check, that runs continously and start the installation if a new version is available. """
+        if not Network().wait_for_internet():
+            return
         try:
             self._connect_to_repository()
-        except:
+        except Exception:
             self._logger.error("Updater: Cannot connect to updater Server.")
             return
 
@@ -84,10 +87,7 @@ class OnlineUpdater(CyclicComponent):
     def _connect_to_repository(self):
         """ Get Github repo object """
         github = Github()
-        try:
-            self._repository = github.get_repo(waqd.GITHUB_REPO_NAME)
-        except Exception as e:
-            self._logger.warning(f"Can't connect to update repo: {str(e)}")
+        self._repository = github.get_repo(waqd.GITHUB_REPO_NAME)
 
     def _get_latest_version_tag(self) -> str:
         """ Check, if an update is found and return it's version. """

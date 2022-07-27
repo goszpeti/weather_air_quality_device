@@ -1,3 +1,7 @@
+#!/bin/bash
+
+# currently unused in favor of wifi-connect
+
 sudo apt purge openresolv dhcpcd5
 wget https://davesteele.github.io/comitup/latest/davesteele-comitup-apt-source_latest.deb
 sudo dpkg -i --force-all davesteele-comitup-apt-source_latest.deb
