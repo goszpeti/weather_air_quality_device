@@ -24,13 +24,13 @@ from pathlib import Path
 from typing import Union, Dict
 
 from waqd.settings import (ALLOW_UNATTENDED_UPDATES, AUTO_UPDATER_ENABLED,
-    CCS811_ENABLED, FORECAST_BG, INTERIOR_BG, LAST_ALTITUDE_M_VALUE, LAST_TEMP_C_OUTSIDE_VALUE, MH_Z19_ENABLED, AW_API_KEY, EVENTS_ENABLED, FONT_NAME,
-    AW_CITY_IDS, BRIGHTNESS, DAY_STANDBY_TIMEOUT, DISP_TYPE_RPI,
-    DISPLAY_TYPE, FONT_SCALING, FORECAST_ENABLED, LANG, MH_Z19_VALUE_OFFSET, REMOTE_MODE_URL, UPDATER_USER_BETA_CHANNEL,
-    LANG_GERMAN, LOCATION, MOTION_SENSOR_ENABLED, MOTION_SENSOR_PIN,
-    NIGHT_MODE_BEGIN, NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT, OW_API_KEY,
-    OW_CITY_IDS, PREFER_ACCU_WEATHER, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED, BMP_280_ENABLED,
-    WAVESHARE_DISP_BRIGHTNESS_PIN, DHT_22_DISABLED, LOG_SENSOR_DATA, SERVER_ENABLED)
+                           CCS811_ENABLED, FORECAST_BG, INTERIOR_BG, LAST_ALTITUDE_M_VALUE, LAST_TEMP_C_OUTSIDE_VALUE, MH_Z19_ENABLED, AW_API_KEY, EVENTS_ENABLED, FONT_NAME,
+                           AW_CITY_IDS, BRIGHTNESS, DAY_STANDBY_TIMEOUT, DISP_TYPE_RPI,
+                           DISPLAY_TYPE, FONT_SCALING, FORECAST_ENABLED, LANG, MH_Z19_VALUE_OFFSET, REMOTE_MODE_URL, UPDATER_USER_BETA_CHANNEL,
+                           LANG_GERMAN, LOCATION, MOTION_SENSOR_ENABLED, MOTION_SENSOR_PIN,
+                           NIGHT_MODE_BEGIN, NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT, OW_API_KEY,
+                           OW_CITY_IDS, PREFER_ACCU_WEATHER, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED, BMP_280_ENABLED,
+                           WAVESHARE_DISP_BRIGHTNESS_PIN, DHT_22_DISABLED, LOG_SENSOR_DATA, SERVER_ENABLED)
 
 
 class Settings():
@@ -45,7 +45,7 @@ class Settings():
     _FORECAST_SECTION_NAME = "Forecast"
     _ENERGY_SECTION_NAME = "Energy"
 
-    def __init__(self, ini_folder=None):
+    def __init__(self, ini_folder=None, auto_save=True):
         """
         Read waqd.ini file to load settings.
         Verify waqd.ini existence, if folder is passed.
@@ -62,6 +62,7 @@ class Settings():
             self._logger.warning('Settings: Creating settings ini-file')
         else:
             self._logger.info('Settings: Using %s', self._ini_file_path)
+        self._auto_save = auto_save
 
         ### default setting values ###
         self._values = {
@@ -89,7 +90,7 @@ class Settings():
             },
             self._GUI_SECTION_NAME: {
                 FONT_SCALING: 1.0,
-                FONT_NAME : "Franzo",
+                FONT_NAME: "Franzo",
                 INTERIOR_BG: "background_s8.jpg",
                 FORECAST_BG: "background_s9.jpg"
             },
@@ -113,13 +114,15 @@ class Settings():
 
         self._read_ini()
 
-    def get(self, name: str) -> Union[str, int, float, bool, Dict[str,str]]:
+    def get(self, name: str) -> Union[str, int, float, bool, Dict[str, str]]:
         """ Get a specific setting """
-        value = ""
-        for section in self._values:
-            if name in self._values[section]:
-                value = self._values[section].get(name, "")
+        value = None
+        for section in self._values.values():
+            if name in section:
+                value = section.get(name)
                 break
+        if value is None:
+            raise LookupError
         return value
 
     def get_string(self, name: str) -> str:
@@ -137,20 +140,47 @@ class Settings():
     def get_dict(self, name: str) -> Dict[str, str]:
         return self.get(name)
 
-    def set(self, name: str, value):
-        """ Get a specific setting """
+    def set(self, setting_name: str, value: Union[str, int, float, bool]):
+        """ Set the value of a specific setting. Does not write to file, if value is already set. """
+        for section in self._values.keys():
+            if setting_name in self._values[section]:
+                if self._values[section][setting_name] == value:
+                    return
+                self._values[section][setting_name] = value
+                break
+        if self._auto_save:
+            self.save()
+
+    def save(self):
+        """ Save all user modifiable options to file. """
         for section in self._values:
-            if name in self._values[section]:
-                self._values[section][name] = value
-                return
+            for option in self._values[section]:
+                self._write_setting(option, section)
+
+        with self._ini_file_path.open('w', encoding="utf8") as ini_file:
+            self._parser.write(ini_file)
 
     def _read_ini(self):
         """ Read settings ini with configparser. """
-        self._parser.read(self._ini_file_path, encoding="UTF-8")
-        for section in self._values:
-            for option in self._values[section]:
-                self._read_option(option, section)
+        update_needed = False
+        try:
+            self._parser.read(self._ini_file_path, encoding="UTF-8")
+            for section in self._values.keys():
+                for setting in self._values[section]:
+                    update_needed |= self._read_setting(setting, section)
+            self.read_city_ids()
+        except Exception as e:
+            self._logger.error(
+                f"Settings: Can't read ini file: {str(e)}, trying to delete and create a new one...")
+            os.remove(str(self._ini_file_path))  # let an exeception to the user, file can't be deleted
 
+        # write file - to record defaults, if missing
+        if not update_needed:
+            return
+        with self._ini_file_path.open('w', encoding="utf8") as ini_file:
+            self._parser.write(ini_file)
+
+    def read_city_ids(self):
         # automatically get city ids from array elements
         forecast_section = self._get_section(self._FORECAST_SECTION_NAME)
         for key in forecast_section:
@@ -162,9 +192,6 @@ class Settings():
                         self.get(OW_CITY_IDS).update({val[0]: val[1]})
                     elif key.find(AW_CITY_IDS) == 0:
                         self.get(AW_CITY_IDS).update({val[0]: val[1]})
-        # write file - to record defaults, if missing
-        with self._ini_file_path.open('w', encoding="utf8") as ini_file:
-            self._parser.write(ini_file)
 
     def _get_section(self, section_name):
         """ Helper function to get a section from ini, or create it, if it does not exist."""
@@ -172,41 +199,38 @@ class Settings():
             self._parser.add_section(section_name)
         return self._parser[section_name]
 
-    def _read_option(self, option_name, section_name):
-        """ Helper function to get an option, which uses the init value to determine the type. """
+    def _read_setting(self, setting_name: str, section_name: str) -> bool:
+        """ Helper function to get a setting, which uses the init value to determine the type. 
+        Returns, if file needs tobe updated
+        """
         section = self._get_section(section_name)
-        default_value = self.get(option_name)
-        if isinstance(default_value, dict): # no dicts upported directly
-            return
-
-        if not option_name in section: # write out
-            section[option_name] = str(default_value)
-            return
+        default_value = self.get(setting_name)
+        if isinstance(default_value, dict):  # no dicts supported directly
+            return False
+        if setting_name not in section:  # write out
+            section[setting_name] = str(default_value)
+            return True
 
         value = None
         if isinstance(default_value, bool):
-            value = section.getboolean(option_name)
+            value = section.getboolean(setting_name)
         elif isinstance(default_value, str):
-            value = section.get(option_name)
+            value = section.get(setting_name)
         elif isinstance(default_value, float):
-            value = float(section.get(option_name))
+            value = float(section.get(setting_name))
         elif isinstance(default_value, int):
-            value = int(section.get(option_name))
+            value = int(section.get(setting_name))
         if value is None:
-            raise Exception("Unsupported type " +
-                            str(type(default_value)) + " of setting " + option_name)
-        self.set(option_name, value)
+            self._logger.error(f"Settings: Setting {setting_name} is unknown", )
+            return False
+        # autosave must be disabled, otherwise we overwrite the other settings in the file
+        auto_save = self._auto_save
+        self._auto_save = False
+        self.set(setting_name, value)
+        self._auto_save = auto_save
+        return False
 
-    def save_all_options(self):
-        """ Save all user modifiable options to file. """
-        for section in self._values:
-            for option in self._values[section]:
-                self._write_option(option, section)
-
-        with self._ini_file_path.open('w', encoding="utf8") as ini_file:
-            self._parser.write(ini_file)
-
-    def _write_option(self, option_name, section_name):
+    def _write_setting(self, option_name, section_name):
         """ Helper function to write an option. """
         value = self.get(option_name)
         if isinstance(value, dict):
