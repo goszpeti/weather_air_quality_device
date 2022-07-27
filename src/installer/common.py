@@ -63,9 +63,9 @@ def get_waqd_version(package_root_dir: Path = installer_root_dir) -> str:
     about: Dict[str, str] = {}
     version = "latest"
     try:
-        with open(os.path.join(package_root_dir, "src", "waqd", '__init__.py')) as fd:
-            exec(fd.read(), about)  # pylint: disable=exec-used
-        version = about["__version__"]
+        sys.path.insert(0, os.path.join(package_root_dir, "src"))
+        import waqd
+        version = waqd.__version__
     except Exception as e:
         logging.error(str(e))
     return version

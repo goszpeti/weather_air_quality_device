@@ -3,6 +3,7 @@
 
 import logging
 import os
+import sys
 from distutils.file_util import copy_file
 from pathlib import Path
 from subprocess import check_output
@@ -26,6 +27,8 @@ def enable_hw_access():
     os.system("raspi-config nonint do_serial 2")  # console off, serial on
     os.system("raspi-config nonint do_i2c 0")
     os.system("raspi-config nonint do_spi 0")
+    # Allow port 80 to be accessed as non sudo
+    os.system(f"setcap 'cap_net_bind_service=+ep' / usr/bin/python3.{sys.version_info.minor}")
 
 
 def disable_screensaver():
@@ -72,7 +75,7 @@ def setup_supported_locales():
     except Exception as e:
         logging.error(str(e))
         return
-
+    # TODO check does not work!
     # set not installed locales in /etc/locale.gen
     locale_added = False
     for locale in sup_locales:

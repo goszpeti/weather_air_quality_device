@@ -9,7 +9,7 @@ import os
 import platform
 from glob import glob
 from os.path import basename, splitext
-
+import sys
 from setuptools import find_packages, setup
 
 # Package meta-data.
@@ -23,12 +23,12 @@ REQUIRES_PYTHON = '>=3.7.0'
 REQUIRED = [
     # Backend
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
-    "JsonSchema==4.0.1",  # MIT License - for events json schema validation
+    "JsonSchema==4.7.2",  # MIT License - for events json schema validation
     "bottle==0.12.21",  # MIT License - webserver for remote sensors
     "paste==3.5.0", # server backend for bottle
-    "pint==0.19.2"  # BSD 3-clause style license - physical units for sensors
+    "pint==0.19.2",  # BSD 3-clause style license - physical units for sensors
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
-    "APScheduler==3.8.0",  # MIT License - Scheduler for Events function
+    "APScheduler==3.9.1",  # MIT License - Scheduler for Events function
     "PyGithub==1.55",  # LGPL - Access to GitHub in AutoUpdater
     "File-Read-Backwards==2.0.0",  # MIT License - for performance in DetailView
     # Sound
@@ -41,7 +41,7 @@ REQUIRED = [
     "Adafruit-CircuitPython-DHT==3.7.1",  # MIT License - temp/hum sensor
     "Adafruit-CircuitPython-CCS811==1.3.7",  # MIT License - co2/tvoc sensor
     "Adafruit-CircuitPython-BME280==2.6.10",  # MIT License - temp/hum/baro sensor
-    "Adafruit-CircuitPython-BMP280==3.2.8",  # MIT License - temp/baro sensor
+    "Adafruit-CircuitPython-BMP280==3.2.15",  # MIT License - temp/baro sensor
     "Adafruit-Circuitpython-BH1750==1.0.7",  # MIT License - light sensor
     "Adafruit-Circuitpython-ADS1x15==2.2.8",  # MIT License - currently only this ADC is used for analog sensors
     # QT Widgets
@@ -54,11 +54,11 @@ REQUIRED_NON_RPI = [
     "PyQtChart>=5.12.0",  # GPLv3 - for DetailView
 ]
 REQUIRED_LINUX = [  # this package does not install on windows, because of RPi.GPIO dependency
-    "MH-Z19==3.0.2", # MIT License
+    "MH-Z19==3.1.3", # MIT License
     ]
 #epd-library=0.2.3 GPL v3GPLv3 - Waveshare 2.9 inch epaper 296×128
-
-if not platform.machine().startswith("armv"):
+machine = platform.machine()
+if not (machine.startswith("armv") or machine.startswith("aarch64")):
     REQUIRED += REQUIRED_NON_RPI
 if platform.system() == "Linux":
     REQUIRED += REQUIRED_LINUX
@@ -74,16 +74,16 @@ except FileNotFoundError:
     long_description = DESCRIPTION
 
 # Load the package's __version__.py module as a dictionary.
-about = {}
 project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
-with open(os.path.join(here, "src", project_slug, '__init__.py')) as f:
-    exec(f.read(), about)
+sys.path.insert(0, os.path.join(here, "src"))
+import waqd
+about = waqd
 
 
 # Where the magic happens:
 setup(
     name=NAME,
-    version=about['__version__'],
+    version=waqd.__version__,
     description=DESCRIPTION,
     long_description=long_description,
     author=AUTHOR,

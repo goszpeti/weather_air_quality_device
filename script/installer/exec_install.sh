@@ -49,7 +49,6 @@ function waqd_install() {
 
     echo "# Setting up the system (Step 4/5)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
-
     echo "# Installing application... (Step 5/5)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --install
     # needs installed app

@@ -41,8 +41,9 @@ def register_waqd_autostart(bin_path: Path = LOCAL_BIN_PATH, autostart_file: Pat
     os.chmod(waqd_start_bin_path, os.stat(waqd_start_bin_path).st_mode | stat.S_IEXEC)
     os.system(f"chown {USERNAME} {waqd_start_bin_path}")
     logging.info(f"Add respawning {str(waqd_start_bin_path)} to autostart file {str(autostart_file)}")
+    # first remove, to not aciddentally remove added lines
+    remove_from_autostart(["waqd", "PiWeather"], autostart_file)
     add_to_autostart([str(waqd_start_bin_path)], autostart_file)
-    remove_from_autostart(["waqd", "PiWeather"])
 
 def do_install():
     # install and add to autostart
