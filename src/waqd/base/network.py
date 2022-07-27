@@ -48,7 +48,6 @@ class Network():
     NW_READY_SIG_NAME = "network_ready_sig"
     _instance = None
     _internet_reconnect_try = 0  # internal counter for wlan restart
-    _runtime_system = RuntimeSystem()
     _disable_network = False
     _wait_for_network_counter = 0
     _wait_for_internet_counter = 0
@@ -61,6 +60,7 @@ class Network():
         return cls._instance
 
     def init(self):
+        self._runtime_system = RuntimeSystem()
         self.wait_for_network()
 
     @property

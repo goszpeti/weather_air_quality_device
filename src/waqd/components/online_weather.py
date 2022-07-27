@@ -207,6 +207,8 @@ class OpenWeatherMap(Component):
         # TODO this should be done with a mock
         self._cw_json_file: str = ""  # for testing access
         self._fc_json_file: str = ""  # for testing access
+        self.daytime_forecast_points = []
+        self.nighttime_forecast_points = []
 
     def get_current_weather(self) -> Optional[Weather]:
         """ Public API function to get the current weather. """
@@ -255,14 +257,14 @@ class OpenWeatherMap(Component):
                 if time_delta.seconds < 1800:  # 0.5 h
                     return self._five_day_forecast
 
-        [daytime_forecast_points, nighttime_forecast_points] = self.get_forecast_points()
-        if not daytime_forecast_points:  # error from url call, nothing to do
+        [self.daytime_forecast_points, self.nighttime_forecast_points] = self.get_forecast_points()
+        if not self.daytime_forecast_points:  # error from url call, nothing to do
             return []
         current_weather = self.get_current_weather()
         if not current_weather:
             return []
         self._aggregate_forecast_points_to_days(
-            daytime_forecast_points, nighttime_forecast_points, current_weather)
+            self.daytime_forecast_points, self.nighttime_forecast_points, current_weather)
 
         return self._five_day_forecast
 

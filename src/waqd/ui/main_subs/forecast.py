@@ -100,7 +100,9 @@ class Forecast(sub_ui.SubUi):
 
     def show_detail(self, day):
         """ Detail view day 1 """
-        [daytime_points, _] = self._comps.weather_info.get_forecast_points()
+        daytime_points = self._comps.weather_info.daytime_forecast_points
+        if not len(daytime_points)+1 > day:
+            return
         self.det = WeatherDetailView(daytime_points[day], self._settings, self._main_ui)
         self.det.show()
 

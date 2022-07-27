@@ -416,15 +416,14 @@ class BMP280(TempSensor, BarometricSensor, CyclicComponent):
             # errors happen fairly often, keep going
             self._logger.error("BMP280: Can't read sensor - %s", str(error))
             return
-
+        altitude = self._settings.get_float(LAST_ALTITUDE_M_VALUE)
+        temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE_VALUE)
         weather = self._comps.weather_info.get_current_weather()
         if weather:
             altitude = weather.altitude
             temp_outside = weather.temp
-            self._set_pressure(self._convert_abs_pres_to_asl(pressure, altitude, temp_outside))
-        else:
-            self._set_pressure(pressure)
-
+          
+        self._set_pressure(self._convert_abs_pres_to_asl(pressure, altitude, temp_outside))
         self._set_temperature(temperature)
 
         self._logger.debug("BMP280: Temp={0:0.1f}*C  Pressure={1}hPa".format(
@@ -474,15 +473,15 @@ class BME280(TempSensor, BarometricSensor, HumiditySensor, CyclicComponent):
             # errors happen fairly often, keep going
             self._logger.error("BME280: Can't read sensor - %s", str(error))
             return
+
         # change this to match the location's pressure (hPa) at sea level
+        altitude = self._settings.get_float(LAST_ALTITUDE_M_VALUE)
+        temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE_VALUE)
         if Network().internet_connected:
             weather = self._comps.weather_info.get_current_weather()
             if weather:
                 altitude = weather.altitude
                 temp_outside = weather.temp
-        else:
-            self._settings.get(LAST_ALTITUDE_M_VALUE)
-            self._settings.get(LAST_TEMP_C_OUTSIDE_VALUE)
 
         self._set_pressure(self._convert_abs_pres_to_asl(pressure, altitude, temp_outside))
         self._set_temperature(temperature)

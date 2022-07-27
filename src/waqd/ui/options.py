@@ -408,7 +408,7 @@ class OptionMainUi(QtWidgets.QDialog):
         self._settings.set(FONT_SCALING, font_scaling)
 
         # write them to file
-        settings.save_all_options()
+        settings.save()
 
         self.close_ui()
 

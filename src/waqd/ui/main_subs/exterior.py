@@ -76,7 +76,10 @@ class Exterior(sub_ui.SubUi):
 
     def show_detail(self):
         """ Daily detail view popup """
-        [daytime_points, nighttime_points] = self._comps.weather_info.get_forecast_points()
+        daytime_points = self._comps.weather_info.daytime_forecast_points
+        nighttime_points = self._comps.weather_info.nighttime_forecast_points
+        if not (nighttime_points or daytime_points):
+            return
         # after midnight nighttime_points[0] has points of both today and next day
         self.det = WeatherDetailView(daytime_points[0] + nighttime_points[0], self._settings, self._main_ui)
         self.det.show()

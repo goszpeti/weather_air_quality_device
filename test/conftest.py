@@ -1,5 +1,4 @@
 import os
-import platform
 import sys
 from pathlib import Path
 from tempfile import gettempdir
@@ -7,6 +6,7 @@ import shutil
 import pytest
 import waqd.base.logger
 import waqd.base.system
+import waqd.base.network
 from PyQt5 import QtCore, QtWidgets
 import waqd
 
@@ -45,6 +45,7 @@ def base_fixture(request):
         # reset singletons
         waqd.base.logger.Logger._instance = None
         waqd.base.system.RuntimeSystem._instance = None
+        waqd.base.network.Network._instance = None
         os.environ["PYTHONPATH"] = ""
 
     request.addfinalizer(teardown)
