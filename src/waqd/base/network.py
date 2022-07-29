@@ -86,8 +86,12 @@ class Network():
         ipv4 = ""
         ipv6 = ""
         if self._runtime_system.is_target_system:
-            ret = subprocess.check_output("hostname -I", shell=True)
-            ret_str = ret.decode("utf-8")
+            try:
+                ret = subprocess.check_output("hostname -I", shell=True)
+                ret_str = ret.decode("utf-8")
+            except Exception as e:
+                Logger().error("Network: Can't get IP address")
+                return (ipv4, ipv6)
             # if both 4 and 6 are available, there is a space between them
             ips = ret_str.split(" ")
             for ip_adr in ips:
@@ -125,7 +129,7 @@ class Network():
             # failed 3 times straight - restart linux
             if self._internet_reconnect_try == 3:
                 # TODO dialog!
-                Logger().error("Watchdog: Restarting system - Net failure...")
+                Logger().error("Network: Restarting system - Net failure...")
                 self._runtime_system.restart()
         if not self.internet_connected:
             self._internet_reconnect_try += 1

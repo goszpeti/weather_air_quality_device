@@ -162,7 +162,7 @@ class ComponentRegistry():
         """ Access for OnlineWeather singleton """
         from waqd.components.online_weather import OpenWeatherMap
         location = self._settings.get(LOCATION)
-        return self._create_component_instance(OpenWeatherMap, [self._settings.get_dict(OW_CITY_IDS).get(location),
+        return self._create_component_instance(OpenWeatherMap, [self._settings.get_dict(OW_CITY_IDS).get(location, ""),
                                                                 self._settings.get(OW_API_KEY)])
 
     @property

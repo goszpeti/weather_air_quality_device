@@ -38,6 +38,7 @@ class ESaver(CyclicComponent):
     Energy saver class  to manage the display day/night switch feature and
     wake-up/standby from motion sensor.
     """
+    # TODO event based wake up and increase updatetime to 60 s
     INIT_WAIT_TIME = 5
     UPDATE_TIME = 2
 

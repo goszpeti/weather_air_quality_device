@@ -21,7 +21,6 @@ def testOptions(base_fixture, qtbot, mocker):  # target_mockup_fixture
     comp_ctrl = ComponentController(settings)
     wmu = WeatherMainUi(comp_ctrl, settings)
     from pytestqt.plugin import _qapp_instance
-    waqd.qt_app = _qapp_instance
     # OptionMainUi start a new root obj execution
     widget = OptionMainUi(wmu, comp_ctrl, settings)
 

@@ -198,6 +198,7 @@ class EventHandler(Component):
 
     def __init__(self,  components: ComponentRegistry, lang: str, night_mode_end: int, enabled=True):
         super().__init__(components, enabled=enabled)
+        self._scheduler: Optional[BackgroundScheduler] = None
         if not enabled:
             return
         self._lang = lang
@@ -205,7 +206,6 @@ class EventHandler(Component):
         self.gui_background_update_sig: Optional[pyqtBoundSignal] = None
         self._config_events_file = waqd.user_config_dir / "events.json"
         self._events = parse_event_file(self._config_events_file)
-        self._scheduler: Optional[BackgroundScheduler] = None
 
         self._init_thread = threading.Thread(
             name="StartScheduler", target=self._init_scheduler, daemon=True)

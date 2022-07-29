@@ -305,15 +305,14 @@ class DHT22(TempSensor, HumiditySensor, CyclicComponent):
         log_values = bool(settings.get(LOG_SENSOR_DATA))
         TempSensor.__init__(self, log_values)
         HumiditySensor.__init__(self, log_values)
-        CyclicComponent.__init__(self, components, log_values)
+        CyclicComponent.__init__(self, components, log_values, enabled=not pin)
         self._comps: ComponentRegistry
         self._pin = pin
-        if not self._pin:
-            self._logger.error("DHT22: No pin, disabled")
-            self._disabled = True
-            return
         self._sensor_driver = None
         self._error_num = 0
+        if self._disabled:
+            self._logger.error("DHT22: No pin, disabled")
+            return
         self._start_update_loop(self._init_sensor, self._read_sensor)
 
     def _init_sensor(self):
