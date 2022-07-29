@@ -32,22 +32,7 @@
    <string>WAQD</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QPushButton {
-    border: 1px solid white;
-    border-radius: 4px;
-	 color white;
-}
-QPushButton:pressed {
-    border: 2px solid grey;color: grey;
-}
-QPushButton::hover {
-    border: 2px solid grey;color: grey;
-}
-QPushButton::on {
-    border: 2px solid grey;color: grey;
-}
-QLabel{background-color: transparent;color: white;}
-</string>
+   <string notr="true"/>
   </property>
   <property name="windowFilePath">
    <string notr="true"/>
@@ -170,7 +155,7 @@ QLabel{background-color: transparent;color: white;}
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_0">
       <property name="styleSheet">

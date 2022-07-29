@@ -23,7 +23,6 @@ from pathlib import Path
 
 import waqd
 from waqd.base.logger import Logger
-from waqd.ui import common, main_ui, options, qt, widgets
 
 # compile uic files at dev time, if needed
 if waqd.DEBUG_LEVEL > 0:
@@ -38,3 +37,5 @@ if waqd.DEBUG_LEVEL > 0:
             os.system(f"pyuic5 -o {str(py_ui_file)} {str(ui_file)}")
         except Exception as e:
             Logger().warning(f"Can't convert {str(py_ui_file)}: {str(e)}")
+# only import after uis where compiled
+from waqd.ui import common, main_ui, options, qt, widgets

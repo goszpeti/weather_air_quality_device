@@ -31,8 +31,35 @@ class Ui_Dialog(object):
         Dialog.setStyleSheet("* {\n"
 "    font-size: 18pt;\n"
 "}\n"
-"QTabWidget{background-color: transparent;color: white;}\n"
-"QPushButton{background-color: transparent;color: white;border: 1px solid white}\n"
+"QGroupBox{\n"
+"    color: white;    \n"
+"}\n"
+"QComboBox {\n"
+"    color: white;    \n"
+"    background-color: transparent;\n"
+"}\n"
+"QComboBox:disabled {\n"
+"    color: white;\n"
+"    background: grey;\n"
+"}\n"
+"QWidget  {\n"
+"    background: transparent;\n"
+"}\n"
+"QComboBox:!editable:on, QComboBox::drop-down:editable:on {\n"
+"    color: white;    \n"
+"    background: transparent;\n"
+"}\n"
+"QComboBox:editable {\n"
+"    background: transparent;\n"
+"    selection-background-color: transparent;\n"
+"}\n"
+"QComboBox QAbstractItemView {\n"
+"    color: white;    \n"
+"    background: #679ac7;\n"
+"    selection-color: white;\n"
+"    selection-background-color: grey;\n"
+"}\n"
+"QPushButton{background-color: transparent;color: white;border: 2px solid white;border-radius: 4px;}\n"
 "QPushButton:pressed {border: 2px solid grey;color:grey;}\n"
 "QPushButton::hover {\n"
 "    border: 2px solid grey;color: grey;\n"
@@ -44,7 +71,7 @@ class Ui_Dialog(object):
 "QLabel{background-color: transparent;color: white;}\n"
 "QMessageBox{background-color: grey;color: black}\n"
 "QDialog{\n"
-"background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 105, 203, 255), stop:1 rgba(216, 108, 255, 255));\n"
+"background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0.0259694, y2:1, stop:0.135593 rgba(103, 154, 199, 255), stop:1 rgba(232, 159, 166, 255))\n"
 "}\n"
 "QScrollArea{\n"
 "background-color: transparent;\n"
@@ -83,10 +110,35 @@ class Ui_Dialog(object):
 "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {\n"
 "     background: transparent;\n"
 " }\n"
+"QSlider::groove:vertical {\n"
+"    margin: 24px;\n"
+"}\n"
+"\n"
+"QSlider::groove:horizontal {\n"
+"    background-color: lightgrey;\n"
+"    height: 6px;\n"
+"    margin: 6px;\n"
+"    }\n"
+"QSlider::handle:horizontal {\n"
+"      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,\n"
+"                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);\n"
+"    border: 1px solid #444;\n"
+"    border-radius: 8px;\n"
+"    width: 32px;\n"
+"    margin: -6px;\n"
+"    }\n"
+"\n"
+"QSlider::handle:horizontal:hover {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #fff, stop:1 #ddd);\n"
+"border: 1px solid #444;\n"
+"border-radius: 8px;\n"
+"}\n"
 "\n"
 "")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(Dialog)
-        self.verticalLayout_5.setContentsMargins(2, 2, 2, 2)
+        self.verticalLayout_5.setContentsMargins(6, 10, 2, 2)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.main_layout = QtWidgets.QHBoxLayout()
         self.main_layout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
@@ -99,7 +151,7 @@ class Ui_Dialog(object):
         self.menu_layout.setSpacing(12)
         self.menu_layout.setObjectName("menu_layout")
         self.general_button = QtWidgets.QPushButton(Dialog)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.general_button.sizePolicy().hasHeightForWidth())
@@ -175,6 +227,18 @@ class Ui_Dialog(object):
         self.menu_layout.addWidget(self.about_button)
         spacerItem = QtWidgets.QSpacerItem(20, 100, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.menu_layout.addItem(spacerItem)
+        self.version_label = QtWidgets.QLabel(Dialog)
+        font = QtGui.QFont()
+        font.setFamily("Franzo")
+        font.setPointSize(18)
+        self.version_label.setFont(font)
+        self.version_label.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.version_label.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.version_label.setText("0.0.0")
+        self.version_label.setScaledContents(True)
+        self.version_label.setWordWrap(False)
+        self.version_label.setObjectName("version_label")
+        self.menu_layout.addWidget(self.version_label)
         self.menu_layout.setStretch(0, 1)
         self.menu_layout.setStretch(1, 1)
         self.menu_layout.setStretch(2, 1)
@@ -190,8 +254,6 @@ class Ui_Dialog(object):
         self.page_stacked_widget.setMaximumSize(QtCore.QSize(16777215, 450))
         self.page_stacked_widget.setObjectName("page_stacked_widget")
         self.general_page = QtWidgets.QWidget()
-        self.general_page.setStyleSheet("background-color: transparent;\n"
-"")
         self.general_page.setObjectName("general_page")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.general_page)
         self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
@@ -206,7 +268,7 @@ class Ui_Dialog(object):
         self.general_scroll_area.setWidgetResizable(True)
         self.general_scroll_area.setObjectName("general_scroll_area")
         self.general_scroll_widgets = QtWidgets.QWidget()
-        self.general_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 252, 392))
+        self.general_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 252, 398))
         self.general_scroll_widgets.setObjectName("general_scroll_widgets")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.general_scroll_widgets)
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -342,7 +404,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.connect_wlan_button.sizePolicy().hasHeightForWidth())
         self.connect_wlan_button.setSizePolicy(sizePolicy)
-        self.connect_wlan_button.setMinimumSize(QtCore.QSize(200, 25))
+        self.connect_wlan_button.setMinimumSize(QtCore.QSize(160, 25))
         self.connect_wlan_button.setMaximumSize(QtCore.QSize(360, 50))
         font = QtGui.QFont()
         font.setFamily("Franzo")
@@ -355,8 +417,6 @@ class Ui_Dialog(object):
         self.verticalLayout_4.addWidget(self.general_scroll_area)
         self.page_stacked_widget.addWidget(self.general_page)
         self.display_page = QtWidgets.QWidget()
-        self.display_page.setStyleSheet("background-color: transparent;\n"
-"")
         self.display_page.setObjectName("display_page")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.display_page)
         self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
@@ -366,46 +426,20 @@ class Ui_Dialog(object):
         self.dispaly_scroll_area.setWidgetResizable(True)
         self.dispaly_scroll_area.setObjectName("dispaly_scroll_area")
         self.display_scroll_widgets = QtWidgets.QWidget()
-        self.display_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 665, 429))
+        self.display_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 663, 419))
         self.display_scroll_widgets.setObjectName("display_scroll_widgets")
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.display_scroll_widgets)
         self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
         self.display_layout = QtWidgets.QGridLayout()
         self.display_layout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
-        self.display_layout.setContentsMargins(-1, 10, 4, -1)
+        self.display_layout.setContentsMargins(-1, 10, 10, -1)
         self.display_layout.setHorizontalSpacing(2)
         self.display_layout.setObjectName("display_layout")
         spacerItem1 = QtWidgets.QSpacerItem(10, 20, QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Minimum)
         self.display_layout.addItem(spacerItem1, 0, 3, 1, 1)
         self.night_mode_end_slider = JumpSlider(self.display_scroll_widgets)
-        self.night_mode_end_slider.setMinimumSize(QtCore.QSize(440, 20))
-        self.night_mode_end_slider.setStyleSheet(".QSlider::groove:vertical {\n"
-"    margin: 24px;\n"
-"}\n"
-"\n"
-"QSlider::groove:horizontal {\n"
-"    background-color: lightgrey;\n"
-"    height: 6px;\n"
-"    margin: 6px;\n"
-"    }\n"
-"QSlider::handle:horizontal {\n"
-"      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,\n"
-"                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);\n"
-"    border: 1px solid #444;\n"
-"    border-radius: 8px;\n"
-"    width: 32px;\n"
-"    margin: -6px;\n"
-"    }\n"
-"\n"
-"QSlider::handle:horizontal:hover {\n"
-"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
-"    stop:0 #fff, stop:1 #ddd);\n"
-"border: 1px solid #444;\n"
-"border-radius: 8px;\n"
-"}\n"
-"")
+        self.night_mode_end_slider.setMinimumSize(QtCore.QSize(400, 20))
         self.night_mode_end_slider.setMaximum(24)
         self.night_mode_end_slider.setOrientation(QtCore.Qt.Horizontal)
         self.night_mode_end_slider.setTickPosition(QtWidgets.QSlider.NoTicks)
@@ -443,33 +477,7 @@ class Ui_Dialog(object):
         self.night_mode_begin_label.setObjectName("night_mode_begin_label")
         self.display_layout.addWidget(self.night_mode_begin_label, 1, 0, 1, 1)
         self.night_mode_begin_slider = JumpSlider(self.display_scroll_widgets)
-        self.night_mode_begin_slider.setMinimumSize(QtCore.QSize(440, 20))
-        self.night_mode_begin_slider.setStyleSheet(".QSlider::groove:vertical {\n"
-"    margin: 24px;\n"
-"}\n"
-"\n"
-"QSlider::groove:horizontal {\n"
-"    background-color: lightgrey;\n"
-"    height: 6px;\n"
-"    margin: 6px;\n"
-"    }\n"
-"QSlider::handle:horizontal {\n"
-"      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,\n"
-"                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);\n"
-"    border: 1px solid #444;\n"
-"    border-radius: 8px;\n"
-"    width: 32px;\n"
-"    margin: -6px;\n"
-"    }\n"
-"\n"
-"QSlider::handle:horizontal:hover {\n"
-"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
-"    stop:0 #fff, stop:1 #ddd);\n"
-"border: 1px solid #444;\n"
-"border-radius: 8px;\n"
-"}\n"
-"")
+        self.night_mode_begin_slider.setMinimumSize(QtCore.QSize(400, 20))
         self.night_mode_begin_slider.setMaximum(10)
         self.night_mode_begin_slider.setPageStep(100)
         self.night_mode_begin_slider.setSliderPosition(5)
@@ -500,33 +508,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.brightness_slider.sizePolicy().hasHeightForWidth())
         self.brightness_slider.setSizePolicy(sizePolicy)
-        self.brightness_slider.setMinimumSize(QtCore.QSize(440, 20))
-        self.brightness_slider.setStyleSheet(".QSlider::groove:vertical {\n"
-"    margin: 24px;\n"
-"}\n"
-"\n"
-"QSlider::groove:horizontal {\n"
-"    background-color: lightgrey;\n"
-"    height: 6px;\n"
-"    margin: 6px;\n"
-"    }\n"
-"QSlider::handle:horizontal {\n"
-"      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,\n"
-"                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);\n"
-"    border: 1px solid #444;\n"
-"    border-radius: 8px;\n"
-"    width: 32px;\n"
-"    margin: -6px;\n"
-"    }\n"
-"\n"
-"QSlider::handle:horizontal:hover {\n"
-"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
-"    stop:0 #fff, stop:1 #ddd);\n"
-"border: 1px solid #444;\n"
-"border-radius: 8px;\n"
-"}\n"
-"")
+        self.brightness_slider.setMinimumSize(QtCore.QSize(400, 20))
         self.brightness_slider.setMaximum(24)
         self.brightness_slider.setOrientation(QtCore.Qt.Horizontal)
         self.brightness_slider.setTickPosition(QtWidgets.QSlider.NoTicks)
@@ -629,28 +611,6 @@ class Ui_Dialog(object):
         self.night_mode_begin_unit.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.night_mode_begin_unit.setObjectName("night_mode_begin_unit")
         self.display_layout.addWidget(self.night_mode_begin_unit, 1, 6, 1, 1)
-        self.day_standby_timeout_cbox = QtWidgets.QComboBox(self.display_scroll_widgets)
-        font = QtGui.QFont()
-        font.setPointSize(18)
-        self.day_standby_timeout_cbox.setFont(font)
-        self.day_standby_timeout_cbox.setObjectName("day_standby_timeout_cbox")
-        self.day_standby_timeout_cbox.addItem("")
-        self.day_standby_timeout_cbox.addItem("")
-        self.day_standby_timeout_cbox.addItem("")
-        self.day_standby_timeout_cbox.addItem("")
-        self.day_standby_timeout_cbox.addItem("")
-        self.display_layout.addWidget(self.day_standby_timeout_cbox, 3, 1, 1, 1)
-        self.night_standby_timeout_cbox = QtWidgets.QComboBox(self.display_scroll_widgets)
-        font = QtGui.QFont()
-        font.setPointSize(18)
-        self.night_standby_timeout_cbox.setFont(font)
-        self.night_standby_timeout_cbox.setObjectName("night_standby_timeout_cbox")
-        self.night_standby_timeout_cbox.addItem("")
-        self.night_standby_timeout_cbox.addItem("")
-        self.night_standby_timeout_cbox.addItem("")
-        self.night_standby_timeout_cbox.addItem("")
-        self.night_standby_timeout_cbox.addItem("")
-        self.display_layout.addWidget(self.night_standby_timeout_cbox, 4, 1, 1, 1)
         self.night_standby_timeout_value = QtWidgets.QLabel(self.display_scroll_widgets)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -664,13 +624,41 @@ class Ui_Dialog(object):
         self.night_standby_timeout_value.setWordWrap(True)
         self.night_standby_timeout_value.setObjectName("night_standby_timeout_value")
         self.display_layout.addWidget(self.night_standby_timeout_value, 4, 0, 1, 1)
+        self.day_standby_timeout_cbox = QtWidgets.QComboBox(self.display_scroll_widgets)
+        font = QtGui.QFont()
+        font.setPointSize(18)
+        self.day_standby_timeout_cbox.setFont(font)
+        self.day_standby_timeout_cbox.setObjectName("day_standby_timeout_cbox")
+        self.day_standby_timeout_cbox.addItem("")
+        self.day_standby_timeout_cbox.addItem("")
+        self.day_standby_timeout_cbox.addItem("")
+        self.day_standby_timeout_cbox.addItem("")
+        self.day_standby_timeout_cbox.addItem("")
+        self.display_layout.addWidget(self.day_standby_timeout_cbox, 3, 2, 1, 1)
+        self.night_standby_timeout_cbox = QtWidgets.QComboBox(self.display_scroll_widgets)
+        font = QtGui.QFont()
+        font.setPointSize(18)
+        self.night_standby_timeout_cbox.setFont(font)
+        self.night_standby_timeout_cbox.setObjectName("night_standby_timeout_cbox")
+        self.night_standby_timeout_cbox.addItem("")
+        self.night_standby_timeout_cbox.addItem("")
+        self.night_standby_timeout_cbox.addItem("")
+        self.night_standby_timeout_cbox.addItem("")
+        self.night_standby_timeout_cbox.addItem("")
+        self.display_layout.addWidget(self.night_standby_timeout_cbox, 4, 2, 1, 1)
+        self.day_standby_after_label = QtWidgets.QLabel(self.display_scroll_widgets)
+        self.day_standby_after_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.day_standby_after_label.setObjectName("day_standby_after_label")
+        self.display_layout.addWidget(self.day_standby_after_label, 3, 1, 1, 1)
+        self.night_standby_after_label = QtWidgets.QLabel(self.display_scroll_widgets)
+        self.night_standby_after_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.night_standby_after_label.setObjectName("night_standby_after_label")
+        self.display_layout.addWidget(self.night_standby_after_label, 4, 1, 1, 1)
         self.verticalLayout_7.addLayout(self.display_layout)
         self.dispaly_scroll_area.setWidget(self.display_scroll_widgets)
         self.verticalLayout_6.addWidget(self.dispaly_scroll_area)
         self.page_stacked_widget.addWidget(self.display_page)
         self.theme_page = QtWidgets.QWidget()
-        self.theme_page.setStyleSheet("background-color: transparent;\n"
-"")
         self.theme_page.setObjectName("theme_page")
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.theme_page)
         self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
@@ -678,43 +666,49 @@ class Ui_Dialog(object):
         self.verticalLayout_8.setObjectName("verticalLayout_8")
         self.theme_scroll_area = QtWidgets.QScrollArea(self.theme_page)
         self.theme_scroll_area.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.theme_scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.theme_scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.theme_scroll_area.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.theme_scroll_area.setWidgetResizable(True)
         self.theme_scroll_area.setObjectName("theme_scroll_area")
         self.theme_scroll_widgets = QtWidgets.QWidget()
-        self.theme_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 670, 382))
+        self.theme_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 659, 419))
         self.theme_scroll_widgets.setObjectName("theme_scroll_widgets")
         self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.theme_scroll_widgets)
         self.verticalLayout_9.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.theme_layout = QtWidgets.QHBoxLayout()
+        self.theme_layout.setSpacing(0)
         self.theme_layout.setObjectName("theme_layout")
         self.theme_options_layout = QtWidgets.QVBoxLayout()
+        self.theme_options_layout.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
         self.theme_options_layout.setObjectName("theme_options_layout")
-        self.theme_settings_box = QtWidgets.QGroupBox(self.theme_scroll_widgets)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.frame = QtWidgets.QFrame(self.theme_scroll_widgets)
+        self.frame.setMaximumSize(QtCore.QSize(400, 16777215))
+        self.frame.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.frame)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.wallpaper_box = QtWidgets.QGroupBox(self.frame)
+        self.wallpaper_box.setObjectName("wallpaper_box")
+        self.formLayout_5 = QtWidgets.QFormLayout(self.wallpaper_box)
+        self.formLayout_5.setObjectName("formLayout_5")
+        self.interior_background_label = QtWidgets.QLabel(self.wallpaper_box)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.theme_settings_box.sizePolicy().hasHeightForWidth())
-        self.theme_settings_box.setSizePolicy(sizePolicy)
-        self.theme_settings_box.setMaximumSize(QtCore.QSize(420, 16777215))
-        self.theme_settings_box.setStyleSheet("")
-        self.theme_settings_box.setTitle("")
-        self.theme_settings_box.setFlat(False)
-        self.theme_settings_box.setObjectName("theme_settings_box")
-        self.formLayout = QtWidgets.QFormLayout(self.theme_settings_box)
-        self.formLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
-        self.formLayout.setObjectName("formLayout")
-        self.interior_background_label = QtWidgets.QLabel(self.theme_settings_box)
+        sizePolicy.setHeightForWidth(self.interior_background_label.sizePolicy().hasHeightForWidth())
+        self.interior_background_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Franzo")
         font.setPointSize(18)
         self.interior_background_label.setFont(font)
         self.interior_background_label.setWordWrap(True)
         self.interior_background_label.setObjectName("interior_background_label")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.interior_background_label)
-        self.interior_background_cbox = QtWidgets.QComboBox(self.theme_settings_box)
+        self.formLayout_5.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.interior_background_label)
+        self.interior_background_cbox = QtWidgets.QComboBox(self.wallpaper_box)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -725,17 +719,23 @@ class Ui_Dialog(object):
         font.setFamily("Franzo")
         font.setPointSize(18)
         self.interior_background_cbox.setFont(font)
+        self.interior_background_cbox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
         self.interior_background_cbox.setObjectName("interior_background_cbox")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.interior_background_cbox)
-        self.forecast_background_label = QtWidgets.QLabel(self.theme_settings_box)
+        self.formLayout_5.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.interior_background_cbox)
+        self.forecast_background_label = QtWidgets.QLabel(self.wallpaper_box)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.forecast_background_label.sizePolicy().hasHeightForWidth())
+        self.forecast_background_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Franzo")
         font.setPointSize(18)
         self.forecast_background_label.setFont(font)
         self.forecast_background_label.setWordWrap(True)
         self.forecast_background_label.setObjectName("forecast_background_label")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.forecast_background_label)
-        self.forecast_background_cbox = QtWidgets.QComboBox(self.theme_settings_box)
+        self.formLayout_5.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.forecast_background_label)
+        self.forecast_background_cbox = QtWidgets.QComboBox(self.wallpaper_box)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -747,15 +747,21 @@ class Ui_Dialog(object):
         font.setPointSize(18)
         self.forecast_background_cbox.setFont(font)
         self.forecast_background_cbox.setObjectName("forecast_background_cbox")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.forecast_background_cbox)
-        self.font_scaling_label = QtWidgets.QLabel(self.theme_settings_box)
+        self.formLayout_5.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.forecast_background_cbox)
+        self.verticalLayout.addWidget(self.wallpaper_box)
+        self.font_box = QtWidgets.QGroupBox(self.frame)
+        self.font_box.setObjectName("font_box")
+        self.formLayout_4 = QtWidgets.QFormLayout(self.font_box)
+        self.formLayout_4.setObjectName("formLayout_4")
+        self.font_scaling_label = QtWidgets.QLabel(self.font_box)
+        self.font_scaling_label.setMinimumSize(QtCore.QSize(60, 0))
         font = QtGui.QFont()
         font.setFamily("Franzo")
         font.setPointSize(18)
         self.font_scaling_label.setFont(font)
         self.font_scaling_label.setObjectName("font_scaling_label")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.font_scaling_label)
-        self.font_scaling_cbox = QtWidgets.QComboBox(self.theme_settings_box)
+        self.formLayout_4.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.font_scaling_label)
+        self.font_scaling_cbox = QtWidgets.QComboBox(self.font_box)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -770,15 +776,15 @@ class Ui_Dialog(object):
         self.font_scaling_cbox.addItem("")
         self.font_scaling_cbox.addItem("")
         self.font_scaling_cbox.addItem("")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.font_scaling_cbox)
-        self.font_type_label = QtWidgets.QLabel(self.theme_settings_box)
+        self.formLayout_4.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.font_scaling_cbox)
+        self.font_type_label = QtWidgets.QLabel(self.font_box)
         font = QtGui.QFont()
         font.setFamily("Franzo")
         font.setPointSize(18)
         self.font_type_label.setFont(font)
         self.font_type_label.setObjectName("font_type_label")
-        self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.font_type_label)
-        self.font_cbox = QtWidgets.QFontComboBox(self.theme_settings_box)
+        self.formLayout_4.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.font_type_label)
+        self.font_cbox = QtWidgets.QFontComboBox(self.font_box)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -790,8 +796,9 @@ class Ui_Dialog(object):
         self.font_cbox.setFont(font)
         self.font_cbox.setEditable(False)
         self.font_cbox.setObjectName("font_cbox")
-        self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.font_cbox)
-        self.theme_options_layout.addWidget(self.theme_settings_box)
+        self.formLayout_4.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.font_cbox)
+        self.verticalLayout.addWidget(self.font_box)
+        self.theme_options_layout.addWidget(self.frame)
         spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.theme_options_layout.addItem(spacerItem3)
         self.theme_layout.addLayout(self.theme_options_layout)
@@ -810,13 +817,12 @@ class Ui_Dialog(object):
         self.preview_label.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
         self.preview_label.setObjectName("preview_label")
         self.theme_layout.addWidget(self.preview_label)
+        self.theme_layout.setStretch(1, 1)
         self.verticalLayout_9.addLayout(self.theme_layout)
         self.theme_scroll_area.setWidget(self.theme_scroll_widgets)
         self.verticalLayout_8.addWidget(self.theme_scroll_area)
         self.page_stacked_widget.addWidget(self.theme_page)
         self.events_page = QtWidgets.QWidget()
-        self.events_page.setStyleSheet("background-color: transparent;\n"
-"")
         self.events_page.setObjectName("events_page")
         self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.events_page)
         self.verticalLayout_10.setContentsMargins(0, 0, 0, 0)
@@ -826,7 +832,7 @@ class Ui_Dialog(object):
         self.events_scroll_area.setWidgetResizable(True)
         self.events_scroll_area.setObjectName("events_scroll_area")
         self.events_scroll_widgets = QtWidgets.QWidget()
-        self.events_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 239, 399))
+        self.events_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 241, 400))
         self.events_scroll_widgets.setObjectName("events_scroll_widgets")
         self.verticalLayout_11 = QtWidgets.QVBoxLayout(self.events_scroll_widgets)
         self.verticalLayout_11.setContentsMargins(0, 0, 0, 0)
@@ -874,8 +880,6 @@ class Ui_Dialog(object):
         self.verticalLayout_10.addWidget(self.events_scroll_area)
         self.page_stacked_widget.addWidget(self.events_page)
         self.hw_page = QtWidgets.QWidget()
-        self.hw_page.setStyleSheet("background-color: transparent;\n"
-"")
         self.hw_page.setObjectName("hw_page")
         self.verticalLayout_12 = QtWidgets.QVBoxLayout(self.hw_page)
         self.verticalLayout_12.setContentsMargins(0, 0, 0, 0)
@@ -885,7 +889,7 @@ class Ui_Dialog(object):
         self.hw_scroll_area.setWidgetResizable(True)
         self.hw_scroll_area.setObjectName("hw_scroll_area")
         self.hw_scroll_widgets = QtWidgets.QWidget()
-        self.hw_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 665, 429))
+        self.hw_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 435, 510))
         self.hw_scroll_widgets.setObjectName("hw_scroll_widgets")
         self.verticalLayout_13 = QtWidgets.QVBoxLayout(self.hw_scroll_widgets)
         self.verticalLayout_13.setContentsMargins(0, 0, 0, 0)
@@ -895,6 +899,25 @@ class Ui_Dialog(object):
         self.gridLayout.setHorizontalSpacing(15)
         self.gridLayout.setVerticalSpacing(2)
         self.gridLayout.setObjectName("gridLayout")
+        self.mh_z19_enable_label = QtWidgets.QLabel(self.hw_scroll_widgets)
+        font = QtGui.QFont()
+        font.setFamily("Franzo")
+        font.setPointSize(18)
+        self.mh_z19_enable_label.setFont(font)
+        self.mh_z19_enable_label.setWordWrap(True)
+        self.mh_z19_enable_label.setObjectName("mh_z19_enable_label")
+        self.gridLayout.addWidget(self.mh_z19_enable_label, 5, 0, 1, 1)
+        self.ccs811_enable_toggle = AnimatedToggle(self.hw_scroll_widgets)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.ccs811_enable_toggle.sizePolicy().hasHeightForWidth())
+        self.ccs811_enable_toggle.setSizePolicy(sizePolicy)
+        self.ccs811_enable_toggle.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.ccs811_enable_toggle.setText("")
+        self.ccs811_enable_toggle.setChecked(False)
+        self.ccs811_enable_toggle.setObjectName("ccs811_enable_toggle")
+        self.gridLayout.addWidget(self.ccs811_enable_toggle, 2, 1, 1, 1)
         self.display_type_cbox = QtWidgets.QComboBox(self.hw_scroll_widgets)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -924,25 +947,6 @@ class Ui_Dialog(object):
         self.ccs811_enable_label.setWordWrap(True)
         self.ccs811_enable_label.setObjectName("ccs811_enable_label")
         self.gridLayout.addWidget(self.ccs811_enable_label, 2, 0, 1, 1)
-        self.mh_z19_enable_label = QtWidgets.QLabel(self.hw_scroll_widgets)
-        font = QtGui.QFont()
-        font.setFamily("Franzo")
-        font.setPointSize(18)
-        self.mh_z19_enable_label.setFont(font)
-        self.mh_z19_enable_label.setWordWrap(True)
-        self.mh_z19_enable_label.setObjectName("mh_z19_enable_label")
-        self.gridLayout.addWidget(self.mh_z19_enable_label, 5, 0, 1, 1)
-        self.ccs811_enable_toggle = AnimatedToggle(self.hw_scroll_widgets)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.ccs811_enable_toggle.sizePolicy().hasHeightForWidth())
-        self.ccs811_enable_toggle.setSizePolicy(sizePolicy)
-        self.ccs811_enable_toggle.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.ccs811_enable_toggle.setText("")
-        self.ccs811_enable_toggle.setChecked(False)
-        self.ccs811_enable_toggle.setObjectName("ccs811_enable_toggle")
-        self.gridLayout.addWidget(self.ccs811_enable_toggle, 2, 1, 1, 1)
         self.display_type_label = QtWidgets.QLabel(self.hw_scroll_widgets)
         font = QtGui.QFont()
         font.setFamily("Franzo")
@@ -950,14 +954,6 @@ class Ui_Dialog(object):
         self.display_type_label.setFont(font)
         self.display_type_label.setObjectName("display_type_label")
         self.gridLayout.addWidget(self.display_type_label, 0, 0, 1, 1)
-        self.bme280_enable_label = QtWidgets.QLabel(self.hw_scroll_widgets)
-        font = QtGui.QFont()
-        font.setFamily("Franzo")
-        font.setPointSize(18)
-        self.bme280_enable_label.setFont(font)
-        self.bme280_enable_label.setWordWrap(True)
-        self.bme280_enable_label.setObjectName("bme280_enable_label")
-        self.gridLayout.addWidget(self.bme280_enable_label, 4, 0, 1, 1)
         self.dht22_enable_label = QtWidgets.QLabel(self.hw_scroll_widgets)
         font = QtGui.QFont()
         font.setFamily("Franzo")
@@ -967,6 +963,25 @@ class Ui_Dialog(object):
         self.dht22_enable_label.setWordWrap(True)
         self.dht22_enable_label.setObjectName("dht22_enable_label")
         self.gridLayout.addWidget(self.dht22_enable_label, 1, 0, 1, 1)
+        self.bme280_enable_label = QtWidgets.QLabel(self.hw_scroll_widgets)
+        font = QtGui.QFont()
+        font.setFamily("Franzo")
+        font.setPointSize(18)
+        self.bme280_enable_label.setFont(font)
+        self.bme280_enable_label.setWordWrap(True)
+        self.bme280_enable_label.setObjectName("bme280_enable_label")
+        self.gridLayout.addWidget(self.bme280_enable_label, 4, 0, 1, 1)
+        self.mh_z19_enable_toggle = AnimatedToggle(self.hw_scroll_widgets)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.mh_z19_enable_toggle.sizePolicy().hasHeightForWidth())
+        self.mh_z19_enable_toggle.setSizePolicy(sizePolicy)
+        self.mh_z19_enable_toggle.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.mh_z19_enable_toggle.setText("")
+        self.mh_z19_enable_toggle.setChecked(False)
+        self.mh_z19_enable_toggle.setObjectName("mh_z19_enable_toggle")
+        self.gridLayout.addWidget(self.mh_z19_enable_toggle, 5, 1, 1, 1)
         self.bme280_enable_toggle = AnimatedToggle(self.hw_scroll_widgets)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -979,17 +994,6 @@ class Ui_Dialog(object):
         self.bme280_enable_toggle.setChecked(False)
         self.bme280_enable_toggle.setObjectName("bme280_enable_toggle")
         self.gridLayout.addWidget(self.bme280_enable_toggle, 4, 1, 1, 1)
-        self.mh_z19_enable_toggle = AnimatedToggle(self.hw_scroll_widgets)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.mh_z19_enable_toggle.sizePolicy().hasHeightForWidth())
-        self.mh_z19_enable_toggle.setSizePolicy(sizePolicy)
-        self.mh_z19_enable_toggle.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.mh_z19_enable_toggle.setText("")
-        self.mh_z19_enable_toggle.setChecked(False)
-        self.mh_z19_enable_toggle.setObjectName("mh_z19_enable_toggle")
-        self.gridLayout.addWidget(self.mh_z19_enable_toggle, 5, 1, 1, 1)
         self.motion_sensor_enable_label = QtWidgets.QLabel(self.hw_scroll_widgets)
         font = QtGui.QFont()
         font.setFamily("Franzo")
@@ -1031,6 +1035,13 @@ class Ui_Dialog(object):
         self.bmp280_enable_toggle.setChecked(False)
         self.bmp280_enable_toggle.setObjectName("bmp280_enable_toggle")
         self.gridLayout.addWidget(self.bmp280_enable_toggle, 3, 1, 1, 1)
+        self.mh_z19_calibrate_button = QtWidgets.QPushButton(self.hw_scroll_widgets)
+        font = QtGui.QFont()
+        font.setFamily("Franzo")
+        font.setPointSize(18)
+        self.mh_z19_calibrate_button.setFont(font)
+        self.mh_z19_calibrate_button.setObjectName("mh_z19_calibrate_button")
+        self.gridLayout.addWidget(self.mh_z19_calibrate_button, 5, 2, 1, 1)
         self.dht22_pin_cbox = QtWidgets.QComboBox(self.hw_scroll_widgets)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -1046,13 +1057,6 @@ class Ui_Dialog(object):
         self.dht22_pin_cbox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
         self.dht22_pin_cbox.setObjectName("dht22_pin_cbox")
         self.gridLayout.addWidget(self.dht22_pin_cbox, 1, 1, 1, 1)
-        self.mh_z19_calibrate_button = QtWidgets.QPushButton(self.hw_scroll_widgets)
-        font = QtGui.QFont()
-        font.setFamily("Franzo")
-        font.setPointSize(18)
-        self.mh_z19_calibrate_button.setFont(font)
-        self.mh_z19_calibrate_button.setObjectName("mh_z19_calibrate_button")
-        self.gridLayout.addWidget(self.mh_z19_calibrate_button, 5, 2, 1, 1)
         self.motion_sensor_test_button = QtWidgets.QPushButton(self.hw_scroll_widgets)
         font = QtGui.QFont()
         font.setFamily("Franzo")
@@ -1060,13 +1064,13 @@ class Ui_Dialog(object):
         self.motion_sensor_test_button.setFont(font)
         self.motion_sensor_test_button.setObjectName("motion_sensor_test_button")
         self.gridLayout.addWidget(self.motion_sensor_test_button, 6, 2, 1, 1)
+        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem4, 7, 0, 1, 1)
         self.verticalLayout_13.addLayout(self.gridLayout)
         self.hw_scroll_area.setWidget(self.hw_scroll_widgets)
         self.verticalLayout_12.addWidget(self.hw_scroll_area)
         self.page_stacked_widget.addWidget(self.hw_page)
         self.about_page = QtWidgets.QWidget()
-        self.about_page.setStyleSheet("background-color: transparent;\n"
-"")
         self.about_page.setObjectName("about_page")
         self.verticalLayout_14 = QtWidgets.QVBoxLayout(self.about_page)
         self.verticalLayout_14.setContentsMargins(0, 0, 0, 0)
@@ -1148,20 +1152,8 @@ class Ui_Dialog(object):
         self.buttons_layout.setContentsMargins(-1, 4, -1, 4)
         self.buttons_layout.setSpacing(6)
         self.buttons_layout.setObjectName("buttons_layout")
-        self.version_label = QtWidgets.QLabel(Dialog)
-        font = QtGui.QFont()
-        font.setFamily("Franzo")
-        font.setPointSize(18)
-        self.version_label.setFont(font)
-        self.version_label.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.version_label.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.version_label.setText("0.0.0")
-        self.version_label.setScaledContents(True)
-        self.version_label.setWordWrap(False)
-        self.version_label.setObjectName("version_label")
-        self.buttons_layout.addWidget(self.version_label)
-        spacerItem4 = QtWidgets.QSpacerItem(52, 18, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.buttons_layout.addItem(spacerItem4)
+        spacerItem5 = QtWidgets.QSpacerItem(15, 18, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.buttons_layout.addItem(spacerItem5)
         self.ok_button = QtWidgets.QPushButton(Dialog)
         font = QtGui.QFont()
         font.setFamily("Franzo")
@@ -1203,17 +1195,18 @@ class Ui_Dialog(object):
         self.restart_button.setFlat(False)
         self.restart_button.setObjectName("restart_button")
         self.buttons_layout.addWidget(self.restart_button)
-        self.buttons_layout.setStretch(1, 2)
+        self.buttons_layout.setStretch(0, 2)
+        self.buttons_layout.setStretch(1, 1)
         self.buttons_layout.setStretch(2, 1)
         self.buttons_layout.setStretch(3, 1)
         self.buttons_layout.setStretch(4, 1)
-        self.buttons_layout.setStretch(5, 1)
         self.page_view_layout.addLayout(self.buttons_layout)
         self.main_layout.addLayout(self.page_view_layout)
+        self.main_layout.setStretch(1, 1)
         self.verticalLayout_5.addLayout(self.main_layout)
 
         self.retranslateUi(Dialog)
-        self.page_stacked_widget.setCurrentIndex(1)
+        self.page_stacked_widget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -1242,10 +1235,11 @@ class Ui_Dialog(object):
         self.brightness_unit.setText(_translate("Dialog", "%"))
         self.night_mode_begin_value.setText(_translate("Dialog", "22"))
         self.brightness_value.setText(_translate("Dialog", "8"))
-        self.day_standby_timeout_label.setText(_translate("Dialog", "Standby at day after"))
+        self.day_standby_timeout_label.setText(_translate("Dialog", "Standby at day"))
         self.night_mode_end_label.setText(_translate("Dialog", "Turn on display at"))
         self.brightness_label.setText(_translate("Dialog", "Brightness"))
         self.night_mode_begin_unit.setText(_translate("Dialog", "h"))
+        self.night_standby_timeout_value.setText(_translate("Dialog", "Standby at night"))
         self.day_standby_timeout_cbox.setItemText(0, _translate("Dialog", "5 Seconds"))
         self.day_standby_timeout_cbox.setItemText(1, _translate("Dialog", "30 Seconds"))
         self.day_standby_timeout_cbox.setItemText(2, _translate("Dialog", "2 Minutes"))
@@ -1256,27 +1250,30 @@ class Ui_Dialog(object):
         self.night_standby_timeout_cbox.setItemText(2, _translate("Dialog", "2 Minutes"))
         self.night_standby_timeout_cbox.setItemText(3, _translate("Dialog", "10 Minutes"))
         self.night_standby_timeout_cbox.setItemText(4, _translate("Dialog", "30 Minutes"))
-        self.night_standby_timeout_value.setText(_translate("Dialog", "Standby at night after"))
-        self.interior_background_label.setText(_translate("Dialog", "Interior Wallpaper"))
-        self.forecast_background_label.setText(_translate("Dialog", "Forecast Wallpaper"))
-        self.font_scaling_label.setText(_translate("Dialog", "Font Scalings"))
+        self.day_standby_after_label.setText(_translate("Dialog", "after"))
+        self.night_standby_after_label.setText(_translate("Dialog", "after"))
+        self.wallpaper_box.setTitle(_translate("Dialog", "Wallpaper"))
+        self.interior_background_label.setText(_translate("Dialog", "Interior"))
+        self.forecast_background_label.setText(_translate("Dialog", "Forecast"))
+        self.font_box.setTitle(_translate("Dialog", "Font"))
+        self.font_scaling_label.setText(_translate("Dialog", "Size"))
         self.font_scaling_cbox.setItemText(0, _translate("Dialog", "Small"))
         self.font_scaling_cbox.setItemText(1, _translate("Dialog", "Medium"))
         self.font_scaling_cbox.setItemText(2, _translate("Dialog", "Large"))
-        self.font_type_label.setText(_translate("Dialog", "Font type"))
+        self.font_type_label.setText(_translate("Dialog", "Type"))
         self.preview_label.setText(_translate("Dialog", "\n"
 "Select \n"
 "a wallpaper \n"
 "to preview! "))
         self.events_enable_label.setText(_translate("Dialog", "Enable events"))
-        self.ccs811_enable_label.setText(_translate("Dialog", "Enable CCS-811"))
         self.mh_z19_enable_label.setText(_translate("Dialog", "Enable MH-Z19"))
+        self.ccs811_enable_label.setText(_translate("Dialog", "Enable CCS-811"))
         self.display_type_label.setText(_translate("Dialog", "Display Type"))
-        self.bme280_enable_label.setText(_translate("Dialog", "Enable BME-280"))
         self.dht22_enable_label.setText(_translate("Dialog", "DHT-22 PIN (BCM/GPIO)"))
+        self.bme280_enable_label.setText(_translate("Dialog", "Enable BME-280"))
         self.motion_sensor_enable_label.setText(_translate("Dialog", "Enable Motion Sensor"))
         self.bmp280_enable_label.setText(_translate("Dialog", "Enable BMP-280"))
-        self.mh_z19_calibrate_button.setText(_translate("Dialog", "Calibrate and Test"))
+        self.mh_z19_calibrate_button.setText(_translate("Dialog", "Test"))
         self.motion_sensor_test_button.setText(_translate("Dialog", "Test"))
         self.ip_address_value.setText(_translate("Dialog", "192.168.1.1"))
         self.system_value.setText(_translate("Dialog", "Raspberry Pi 3"))
@@ -1284,7 +1281,7 @@ class Ui_Dialog(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Franzo\'; font-size:18pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt;\">WAQD Copyright (c) 2021 Péter Gosztolya</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt;\">WAQD Copyright (c) 2022 Péter Gosztolya</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'MS Shell Dlg 2\'; font-size:14pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt;\">Used Software:</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt;\">- Weather Icons licensed under  SIL OFL 1.1 (http://scripts.sil.org/OFL) from http://weathericons.io</span></p>\n"

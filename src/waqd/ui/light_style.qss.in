@@ -1,0 +1,82 @@
+/*
+QSS template
+Usable Macros with Jinja2 syntax:
+ - MAIN_FONT_SIZE (in pt)
+ - USER_COLOR
+ - WINDOW_BORDER_RADIUS
+
+Palette:
+ - Conan Accent Color:  #6699CC
+ - light: F0F0F0
+ - dark : #D3D3D3
+ - bit darker #BCBCBC
+ - darker: #B7B7B7
+ - darkest: #A8A8A8
+
+*/
+/* 
+* {
+    font-size: {{MAIN_FONT_SIZE}}pt;
+} */
+
+
+QPushButton {
+    border: 2px solid white;
+    border-radius: 4px;
+    color: white;
+}
+QPushButton:pressed {
+    border: 2px solid grey;color: grey;
+}
+QPushButton::hover {
+    border: 2px solid grey;color: grey;
+}
+QPushButton::on {
+    border: 2px solid grey;color: grey;
+}
+QLabel{background-color: transparent;color: white;}
+
+/* Setup for specific widgets */
+
+
+/* Titles  */
+QLabel#forecast_title, QLabel#interior_title,  QLabel#exterior_title{
+    font-size: {{MAIN_FONT_SIZE *3.1}}pt;
+}
+
+/* Forecast */
+QLabel#forecast_d1_title, QLabel#forecast_d2_title, QLabel#forecast_d3_title {
+    font-size: {{MAIN_FONT_SIZE * 1.25}}pt;
+}
+QLabel#forecast_d1_day_temps_value, QLabel#forecast_d2_day_temps_value, QLabel#forecast_d2_day_temps_value,
+QLabel#forecast_d1_night_temps_value, QLabel#forecast_d2_night_temps_value, QLabel#forecast_d3_night_temps_value {
+    font-size: {{MAIN_FONT_SIZE * 1.41}}pt;
+}
+
+/* Exterior */
+QLabel#exterior_forecast_temps_value, QLabel#exterior_forecast_hum_value{
+    font-size: {{MAIN_FONT_SIZE * 1.75}}pt;
+
+}
+/* Interior - DisplayBar sizes itself!*/
+/* DisplayBar .QLabel{
+    font-size: {{MAIN_FONT_SIZE * 1.6}}pt;
+} */
+
+/* Info bar */
+QLabel#time_disp, QLabel#date_disp{
+    font-size: {{MAIN_FONT_SIZE * 3.1}}pt;
+}
+
+QPushButton#options_button, QPushButton#info_button{
+    font-size: {{MAIN_FONT_SIZE * 1.4}}pt;
+}
+
+QLabel#exterior_temp_value, QLabel#interior_temp_value{
+    font-size: {{MAIN_FONT_SIZE * 6.9}}pt;
+}
+
+WeatherDetailView {
+background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
+        stop:0 rgba(13, 119, 167), stop:1 rgba(115, 158, 201));
+}

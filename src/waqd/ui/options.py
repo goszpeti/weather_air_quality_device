@@ -151,8 +151,8 @@ class OptionMainUi(QtWidgets.QDialog):
         # set to normal brightness
         self._comps.display.set_brightness(self._settings.get_int(BRIGHTNESS))
 
-        common.scale_gui_elements(
-            self, self._settings.get_float(FONT_SCALING) * self.EXTRA_SCALING)
+        # common.scale_gui_elements(
+        #     self, self._settings.get_float(FONT_SCALING) * self.EXTRA_SCALING)
 
         # initialize splash screen for the closing of the UI and make a screenshot
         self._splash_screen = SplashScreen(background=False)
@@ -318,7 +318,8 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.night_standby_timeout_cbox.setEnabled(settings.get_bool(MOTION_SENSOR_ENABLED))
 
         # populate location dropdown- only ow for now
-        for city in settings.get(OW_CITY_IDS):
+        self._ui.location_combo_box.clear()
+        for city in settings.get_dict(OW_CITY_IDS).keys():
             self._ui.location_combo_box.addItem(city)
 
         # set info labels

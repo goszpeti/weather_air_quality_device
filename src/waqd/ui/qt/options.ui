@@ -47,8 +47,35 @@
    <string notr="true">* {
     font-size: 18pt;
 }
-QTabWidget{background-color: transparent;color: white;}
-QPushButton{background-color: transparent;color: white;border: 1px solid white}
+QGroupBox{
+    color: white;	
+}
+QComboBox {
+    color: white;	
+    background-color: transparent;
+}
+QComboBox:disabled {
+    color: white;
+    background: grey;
+}
+QWidget  {
+    background: transparent;
+}
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+    color: white;	
+    background: transparent;
+}
+QComboBox:editable {
+    background: transparent;
+    selection-background-color: transparent;
+}
+QComboBox QAbstractItemView {
+    color: white;	
+    background: #679ac7;
+    selection-color: white;
+    selection-background-color: grey;
+}
+QPushButton{background-color: transparent;color: white;border: 2px solid white;border-radius: 4px;}
 QPushButton:pressed {border: 2px solid grey;color:grey;}
 QPushButton::hover {
     border: 2px solid grey;color: grey;
@@ -60,7 +87,7 @@ QTextBrowser{background-color: transparent;color: white;border: 1px solid white}
 QLabel{background-color: transparent;color: white;}
 QMessageBox{background-color: grey;color: black}
 QDialog{
-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0, 105, 203, 255), stop:1 rgba(216, 108, 255, 255));
+background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0.0259694, y2:1, stop:0.135593 rgba(103, 154, 199, 255), stop:1 rgba(232, 159, 166, 255))
 }
 QScrollArea{
 background-color: transparent;
@@ -99,15 +126,40 @@ QScrollBar::sub-line:vertical {
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
      background: transparent;
  }
+QSlider::groove:vertical {
+    margin: 24px;
+}
+
+QSlider::groove:horizontal {
+	background-color: lightgrey;
+    height: 6px;
+    margin: 6px;
+    }
+QSlider::handle:horizontal {
+      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+    border: 1px solid #444;
+	border-radius: 8px;
+    width: 32px;
+    margin: -6px;
+    }
+
+QSlider::handle:horizontal:hover {
+background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+    stop:0 #fff, stop:1 #ddd);
+border: 1px solid #444;
+border-radius: 8px;
+}
 
 </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <property name="leftMargin">
-    <number>2</number>
+    <number>6</number>
    </property>
    <property name="topMargin">
-    <number>2</number>
+    <number>10</number>
    </property>
    <property name="rightMargin">
     <number>2</number>
@@ -116,7 +168,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     <number>2</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="main_layout">
+    <layout class="QHBoxLayout" name="main_layout" stretch="0,1">
      <property name="spacing">
       <number>0</number>
      </property>
@@ -130,7 +182,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       <number>2</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="menu_layout" stretch="1,1,1,1,1,1,0">
+      <layout class="QVBoxLayout" name="menu_layout" stretch="1,1,1,1,1,1,0,0">
        <property name="spacing">
         <number>12</number>
        </property>
@@ -143,7 +195,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
        <item>
         <widget class="QPushButton" name="general_button">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -303,6 +355,31 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QLabel" name="version_label">
+         <property name="font">
+          <font>
+           <family>Franzo</family>
+           <pointsize>18</pointsize>
+          </font>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <property name="text">
+          <string notr="true">0.0.0</string>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+         <property name="wordWrap">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
@@ -322,13 +399,9 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
           </size>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="general_page">
-          <property name="styleSheet">
-           <string notr="true">background-color: transparent;
-</string>
-          </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <property name="spacing">
             <number>0</number>
@@ -371,7 +444,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
                 <x>0</x>
                 <y>0</y>
                 <width>252</width>
-                <height>392</height>
+                <height>398</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -659,7 +732,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>200</width>
+                     <width>160</width>
                      <height>25</height>
                     </size>
                    </property>
@@ -689,10 +762,6 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
           </layout>
          </widget>
          <widget class="QWidget" name="display_page">
-          <property name="styleSheet">
-           <string notr="true">background-color: transparent;
-</string>
-          </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <property name="leftMargin">
             <number>0</number>
@@ -719,8 +788,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>665</width>
-                <height>429</height>
+                <width>663</width>
+                <height>419</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -745,7 +814,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
                   <number>10</number>
                  </property>
                  <property name="rightMargin">
-                  <number>4</number>
+                  <number>10</number>
                  </property>
                  <property name="horizontalSpacing">
                   <number>2</number>
@@ -770,37 +839,9 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
                   <widget class="JumpSlider" name="night_mode_end_slider">
                    <property name="minimumSize">
                     <size>
-                     <width>440</width>
+                     <width>400</width>
                      <height>20</height>
                     </size>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">.QSlider::groove:vertical {
-    margin: 24px;
-}
-
-QSlider::groove:horizontal {
-	background-color: lightgrey;
-    height: 6px;
-    margin: 6px;
-    }
-QSlider::handle:horizontal {
-      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-    border: 1px solid #444;
-	border-radius: 8px;
-    width: 32px;
-    margin: -6px;
-    }
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 8px;
-}
-</string>
                    </property>
                    <property name="maximum">
                     <number>24</number>
@@ -886,37 +927,9 @@ border-radius: 8px;
                   <widget class="JumpSlider" name="night_mode_begin_slider">
                    <property name="minimumSize">
                     <size>
-                     <width>440</width>
+                     <width>400</width>
                      <height>20</height>
                     </size>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">.QSlider::groove:vertical {
-    margin: 24px;
-}
-
-QSlider::groove:horizontal {
-	background-color: lightgrey;
-    height: 6px;
-    margin: 6px;
-    }
-QSlider::handle:horizontal {
-      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-    border: 1px solid #444;
-	border-radius: 8px;
-    width: 32px;
-    margin: -6px;
-    }
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 8px;
-}
-</string>
                    </property>
                    <property name="maximum">
                     <number>10</number>
@@ -988,37 +1001,9 @@ border-radius: 8px;
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>440</width>
+                     <width>400</width>
                      <height>20</height>
                     </size>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">.QSlider::groove:vertical {
-    margin: 24px;
-}
-
-QSlider::groove:horizontal {
-	background-color: lightgrey;
-    height: 6px;
-    margin: 6px;
-    }
-QSlider::handle:horizontal {
-      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-    border: 1px solid #444;
-	border-radius: 8px;
-    width: 32px;
-    margin: -6px;
-    }
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 8px;
-}
-</string>
                    </property>
                    <property name="maximum">
                     <number>24</number>
@@ -1160,7 +1145,7 @@ border-radius: 8px;
                     </font>
                    </property>
                    <property name="text">
-                    <string>Standby at day after</string>
+                    <string>Standby at day</string>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
@@ -1242,7 +1227,29 @@ border-radius: 8px;
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="1">
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="night_standby_timeout_value">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Franzo</family>
+                     <pointsize>18</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Standby at night</string>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="2">
                   <widget class="QComboBox" name="day_standby_timeout_cbox">
                    <property name="font">
                     <font>
@@ -1276,7 +1283,7 @@ border-radius: 8px;
                    </item>
                   </widget>
                  </item>
-                 <item row="4" column="1">
+                 <item row="4" column="2">
                   <widget class="QComboBox" name="night_standby_timeout_cbox">
                    <property name="font">
                     <font>
@@ -1310,25 +1317,23 @@ border-radius: 8px;
                    </item>
                   </widget>
                  </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="night_standby_timeout_value">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <family>Franzo</family>
-                     <pointsize>18</pointsize>
-                    </font>
-                   </property>
+                 <item row="3" column="1">
+                  <widget class="QLabel" name="day_standby_after_label">
                    <property name="text">
-                    <string>Standby at night after</string>
+                    <string>after</string>
                    </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QLabel" name="night_standby_after_label">
+                   <property name="text">
+                    <string>after</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -1341,10 +1346,6 @@ border-radius: 8px;
           </layout>
          </widget>
          <widget class="QWidget" name="theme_page">
-          <property name="styleSheet">
-           <string notr="true">background-color: transparent;
-</string>
-          </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
            <property name="spacing">
             <number>0</number>
@@ -1366,6 +1367,9 @@ border-radius: 8px;
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
              </property>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
              <property name="horizontalScrollBarPolicy">
               <enum>Qt::ScrollBarAlwaysOff</enum>
              </property>
@@ -1380,8 +1384,8 @@ border-radius: 8px;
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>670</width>
-                <height>382</height>
+                <width>659</width>
+                <height>419</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1398,189 +1402,234 @@ border-radius: 8px;
                 <number>0</number>
                </property>
                <item>
-                <layout class="QHBoxLayout" name="theme_layout">
+                <layout class="QHBoxLayout" name="theme_layout" stretch="0,1">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
                  <item>
                   <layout class="QVBoxLayout" name="theme_options_layout">
+                   <property name="sizeConstraint">
+                    <enum>QLayout::SetMinimumSize</enum>
+                   </property>
                    <item>
-                    <widget class="QGroupBox" name="theme_settings_box">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
+                    <widget class="QFrame" name="frame">
                      <property name="maximumSize">
                       <size>
-                       <width>420</width>
+                       <width>400</width>
                        <height>16777215</height>
                       </size>
                      </property>
-                     <property name="styleSheet">
-                      <string notr="true"/>
+                     <property name="frameShape">
+                      <enum>QFrame::NoFrame</enum>
                      </property>
-                     <property name="title">
-                      <string/>
+                     <property name="frameShadow">
+                      <enum>QFrame::Raised</enum>
                      </property>
-                     <property name="flat">
-                      <bool>false</bool>
-                     </property>
-                     <layout class="QFormLayout" name="formLayout">
-                      <property name="sizeConstraint">
-                       <enum>QLayout::SetDefaultConstraint</enum>
+                     <layout class="QVBoxLayout" name="verticalLayout">
+                      <property name="leftMargin">
+                       <number>0</number>
                       </property>
-                      <item row="0" column="0">
-                       <widget class="QLabel" name="interior_background_label">
-                        <property name="font">
-                         <font>
-                          <family>Franzo</family>
-                          <pointsize>18</pointsize>
-                         </font>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <item>
+                       <widget class="QGroupBox" name="wallpaper_box">
+                        <property name="title">
+                         <string>Wallpaper</string>
                         </property>
-                        <property name="text">
-                         <string>Interior Wallpaper</string>
-                        </property>
-                        <property name="wordWrap">
-                         <bool>true</bool>
-                        </property>
+                        <layout class="QFormLayout" name="formLayout_5">
+                         <item row="0" column="0">
+                          <widget class="QLabel" name="interior_background_label">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <family>Franzo</family>
+                             <pointsize>18</pointsize>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>Interior</string>
+                           </property>
+                           <property name="wordWrap">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="0" column="1">
+                          <widget class="QComboBox" name="interior_background_cbox">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>252</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <family>Franzo</family>
+                             <pointsize>18</pointsize>
+                            </font>
+                           </property>
+                           <property name="sizeAdjustPolicy">
+                            <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="0">
+                          <widget class="QLabel" name="forecast_background_label">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <family>Franzo</family>
+                             <pointsize>18</pointsize>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>Forecast</string>
+                           </property>
+                           <property name="wordWrap">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="1">
+                          <widget class="QComboBox" name="forecast_background_cbox">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>252</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <family>Franzo</family>
+                             <pointsize>18</pointsize>
+                            </font>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
                        </widget>
                       </item>
-                      <item row="0" column="1">
-                       <widget class="QComboBox" name="interior_background_cbox">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
+                      <item>
+                       <widget class="QGroupBox" name="font_box">
+                        <property name="title">
+                         <string>Font</string>
                         </property>
-                        <property name="maximumSize">
-                         <size>
-                          <width>252</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <family>Franzo</family>
-                          <pointsize>18</pointsize>
-                         </font>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="0">
-                       <widget class="QLabel" name="forecast_background_label">
-                        <property name="font">
-                         <font>
-                          <family>Franzo</family>
-                          <pointsize>18</pointsize>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>Forecast Wallpaper</string>
-                        </property>
-                        <property name="wordWrap">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="1">
-                       <widget class="QComboBox" name="forecast_background_cbox">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="maximumSize">
-                         <size>
-                          <width>252</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <family>Franzo</family>
-                          <pointsize>18</pointsize>
-                         </font>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="2" column="0">
-                       <widget class="QLabel" name="font_scaling_label">
-                        <property name="font">
-                         <font>
-                          <family>Franzo</family>
-                          <pointsize>18</pointsize>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>Font Scalings</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="2" column="1">
-                       <widget class="QComboBox" name="font_scaling_cbox">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <family>Franzo</family>
-                          <pointsize>18</pointsize>
-                         </font>
-                        </property>
-                        <property name="frame">
-                         <bool>true</bool>
-                        </property>
-                        <item>
-                         <property name="text">
-                          <string>Small</string>
-                         </property>
-                        </item>
-                        <item>
-                         <property name="text">
-                          <string>Medium</string>
-                         </property>
-                        </item>
-                        <item>
-                         <property name="text">
-                          <string>Large</string>
-                         </property>
-                        </item>
-                       </widget>
-                      </item>
-                      <item row="4" column="0">
-                       <widget class="QLabel" name="font_type_label">
-                        <property name="font">
-                         <font>
-                          <family>Franzo</family>
-                          <pointsize>18</pointsize>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>Font type</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="4" column="1">
-                       <widget class="QFontComboBox" name="font_cbox">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <family>Franzo</family>
-                          <pointsize>18</pointsize>
-                         </font>
-                        </property>
-                        <property name="editable">
-                         <bool>false</bool>
-                        </property>
+                        <layout class="QFormLayout" name="formLayout_4">
+                         <item row="0" column="0">
+                          <widget class="QLabel" name="font_scaling_label">
+                           <property name="minimumSize">
+                            <size>
+                             <width>60</width>
+                             <height>0</height>
+                            </size>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <family>Franzo</family>
+                             <pointsize>18</pointsize>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>Size</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="0" column="1">
+                          <widget class="QComboBox" name="font_scaling_cbox">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <family>Franzo</family>
+                             <pointsize>18</pointsize>
+                            </font>
+                           </property>
+                           <property name="frame">
+                            <bool>true</bool>
+                           </property>
+                           <item>
+                            <property name="text">
+                             <string>Small</string>
+                            </property>
+                           </item>
+                           <item>
+                            <property name="text">
+                             <string>Medium</string>
+                            </property>
+                           </item>
+                           <item>
+                            <property name="text">
+                             <string>Large</string>
+                            </property>
+                           </item>
+                          </widget>
+                         </item>
+                         <item row="1" column="0">
+                          <widget class="QLabel" name="font_type_label">
+                           <property name="font">
+                            <font>
+                             <family>Franzo</family>
+                             <pointsize>18</pointsize>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>Type</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="1">
+                          <widget class="QFontComboBox" name="font_cbox">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <family>Franzo</family>
+                             <pointsize>18</pointsize>
+                            </font>
+                           </property>
+                           <property name="editable">
+                            <bool>false</bool>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
                        </widget>
                       </item>
                      </layout>
@@ -1644,10 +1693,6 @@ to preview! </string>
           </layout>
          </widget>
          <widget class="QWidget" name="events_page">
-          <property name="styleSheet">
-           <string notr="true">background-color: transparent;
-</string>
-          </property>
           <layout class="QVBoxLayout" name="verticalLayout_10">
            <property name="leftMargin">
             <number>0</number>
@@ -1674,8 +1719,8 @@ to preview! </string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>239</width>
-                <height>399</height>
+                <width>241</width>
+                <height>400</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1777,10 +1822,6 @@ to preview! </string>
           </layout>
          </widget>
          <widget class="QWidget" name="hw_page">
-          <property name="styleSheet">
-           <string notr="true">background-color: transparent;
-</string>
-          </property>
           <layout class="QVBoxLayout" name="verticalLayout_12">
            <property name="leftMargin">
             <number>0</number>
@@ -1807,8 +1848,8 @@ to preview! </string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>665</width>
-                <height>429</height>
+                <width>435</width>
+                <height>510</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1838,6 +1879,41 @@ to preview! </string>
                  <property name="verticalSpacing">
                   <number>2</number>
                  </property>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="mh_z19_enable_label">
+                   <property name="font">
+                    <font>
+                     <family>Franzo</family>
+                     <pointsize>18</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Enable MH-Z19</string>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="AnimatedToggle" name="ccs811_enable_toggle">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="0" column="1">
                   <widget class="QComboBox" name="display_type_cbox">
                    <property name="sizePolicy">
@@ -1894,41 +1970,6 @@ to preview! </string>
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="0">
-                  <widget class="QLabel" name="mh_z19_enable_label">
-                   <property name="font">
-                    <font>
-                     <family>Franzo</family>
-                     <pointsize>18</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Enable MH-Z19</string>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="AnimatedToggle" name="ccs811_enable_toggle">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="layoutDirection">
-                    <enum>Qt::LeftToRight</enum>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="0" column="0">
                   <widget class="QLabel" name="display_type_label">
                    <property name="font">
@@ -1939,22 +1980,6 @@ to preview! </string>
                    </property>
                    <property name="text">
                     <string>Display Type</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="bme280_enable_label">
-                   <property name="font">
-                    <font>
-                     <family>Franzo</family>
-                     <pointsize>18</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Enable BME-280</string>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -1977,25 +2002,19 @@ to preview! </string>
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="1">
-                  <widget class="AnimatedToggle" name="bme280_enable_toggle">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="layoutDirection">
-                    <enum>Qt::LeftToRight</enum>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="bme280_enable_label">
+                   <property name="font">
+                    <font>
+                     <family>Franzo</family>
+                     <pointsize>18</pointsize>
+                    </font>
                    </property>
                    <property name="text">
-                    <string/>
+                    <string>Enable BME-280</string>
                    </property>
-                   <property name="checkable">
+                   <property name="wordWrap">
                     <bool>true</bool>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
@@ -2012,6 +2031,28 @@ to preview! </string>
                    </property>
                    <property name="text">
                     <string/>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="AnimatedToggle" name="bme280_enable_toggle">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
                    </property>
                    <property name="checked">
                     <bool>false</bool>
@@ -2097,6 +2138,19 @@ to preview! </string>
                    </property>
                   </widget>
                  </item>
+                 <item row="5" column="2">
+                  <widget class="QPushButton" name="mh_z19_calibrate_button">
+                   <property name="font">
+                    <font>
+                     <family>Franzo</family>
+                     <pointsize>18</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Test</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="1" column="1">
                   <widget class="QComboBox" name="dht22_pin_cbox">
                    <property name="sizePolicy">
@@ -2128,19 +2182,6 @@ to preview! </string>
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="2">
-                  <widget class="QPushButton" name="mh_z19_calibrate_button">
-                   <property name="font">
-                    <font>
-                     <family>Franzo</family>
-                     <pointsize>18</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Calibrate and Test</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="6" column="2">
                   <widget class="QPushButton" name="motion_sensor_test_button">
                    <property name="font">
@@ -2154,6 +2195,19 @@ to preview! </string>
                    </property>
                   </widget>
                  </item>
+                 <item row="7" column="0">
+                  <spacer name="verticalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                 </layout>
                </item>
               </layout>
@@ -2163,10 +2217,6 @@ to preview! </string>
           </layout>
          </widget>
          <widget class="QWidget" name="about_page">
-          <property name="styleSheet">
-           <string notr="true">background-color: transparent;
-</string>
-          </property>
           <layout class="QVBoxLayout" name="verticalLayout_14">
            <property name="leftMargin">
             <number>0</number>
@@ -2287,7 +2337,7 @@ to preview! </string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Franzo'; font-size:18pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;WAQD Copyright (c) 2021 Péter Gosztolya&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;WAQD Copyright (c) 2022 Péter Gosztolya&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;Used Software:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:12pt;&quot;&gt;- Weather Icons licensed under  SIL OFL 1.1 (http://scripts.sil.org/OFL) from http://weathericons.io&lt;/span&gt;&lt;/p&gt;
@@ -2346,7 +2396,7 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="buttons_layout" stretch="0,2,1,1,1,1">
+        <layout class="QHBoxLayout" name="buttons_layout" stretch="2,1,1,1,1">
          <property name="spacing">
           <number>6</number>
          </property>
@@ -2360,31 +2410,6 @@ p, li { white-space: pre-wrap; }
           <number>4</number>
          </property>
          <item>
-          <widget class="QLabel" name="version_label">
-           <property name="font">
-            <font>
-             <family>Franzo</family>
-             <pointsize>18</pointsize>
-            </font>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Sunken</enum>
-           </property>
-           <property name="text">
-            <string notr="true">0.0.0</string>
-           </property>
-           <property name="scaledContents">
-            <bool>true</bool>
-           </property>
-           <property name="wordWrap">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
           <spacer name="buttons_spacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -2394,7 +2419,7 @@ p, li { white-space: pre-wrap; }
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>52</width>
+             <width>15</width>
              <height>18</height>
             </size>
            </property>

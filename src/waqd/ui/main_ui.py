@@ -24,13 +24,13 @@ from typing import Optional
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-import waqd
 from waqd.base.component_ctrl import ComponentController
 from waqd.assets import get_asset_file
 from waqd.settings import FONT_SCALING, FONT_NAME, Settings
 from waqd.ui.main_subs import exterior, forecast, infopane, interior
 from waqd.ui import common, options
 from .qt.weather_ui import Ui_MainWindow
+from waqd.ui.theming import activate_theme
 
 # define Qt so we can use it like the namespace in C++
 Qt = QtCore.Qt
@@ -85,8 +85,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        # scale before additional elments are initialized
-        common.scale_gui_elements(self, self._settings.get_float(FONT_SCALING))
+        activate_theme(self._settings.get_float(FONT_SCALING))
 
         # initialize all modules
         if not self._interior_ui:
@@ -183,6 +182,8 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._ui.ol_wh_forecast_label.show()
         self._ui.ol_title_label.raise_()
         self._ui.ol_title_label.show()
+        from waqd.ui.theming import activate_theme
+        activate_theme(self._settings.get_float(FONT_SCALING))
 
     def hide_info_screen(self):
         """ Hides the user infro screen."""

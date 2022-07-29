@@ -22,22 +22,7 @@ class Ui_MainWindow(object):
         MainWindow.setSizePolicy(sizePolicy)
         MainWindow.setMinimumSize(QtCore.QSize(800, 480))
         MainWindow.setMaximumSize(QtCore.QSize(800, 480))
-        MainWindow.setStyleSheet("QPushButton {\n"
-"    border: 1px solid white;\n"
-"    border-radius: 4px;\n"
-"     color white;\n"
-"}\n"
-"QPushButton:pressed {\n"
-"    border: 2px solid grey;color: grey;\n"
-"}\n"
-"QPushButton::hover {\n"
-"    border: 2px solid grey;color: grey;\n"
-"}\n"
-"QPushButton::on {\n"
-"    border: 2px solid grey;color: grey;\n"
-"}\n"
-"QLabel{background-color: transparent;color: white;}\n"
-"")
+        MainWindow.setStyleSheet("")
         MainWindow.setWindowFilePath("")
         MainWindow.setIconSize(QtCore.QSize(42, 42))
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
@@ -1082,7 +1067,7 @@ class Ui_MainWindow(object):
         self.interior_temp_icon.setBuddy(self.interior_temp_icon)
 
         self.retranslateUi(MainWindow)
-        self.exterior_background.setCurrentIndex(0)
+        self.exterior_background.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

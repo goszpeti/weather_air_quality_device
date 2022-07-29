@@ -44,7 +44,7 @@ class WeatherDetailView(QtWidgets.QWidget):
         # set up  window style and size
         # frameless modal window fullscreen (same as main ui)
         self.setWindowFlags(Qt.WindowType(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint))
-        self.setWindowModality(Qt.WindowModal)
+        # self.setWindowModality(Qt.WindowModal)
         self.setGeometry(main_ui.geometry())
 
         # create series from weather points
@@ -129,11 +129,15 @@ class WeatherDetailView(QtWidgets.QWidget):
         gradient = QtGui.QLinearGradient(0, 0, 0, self.height())
         gradient.setColorAt(0, QtGui.QColor(13, 119, 167))  # light blue
         gradient.setColorAt(1, QtGui.QColor(115, 158, 201))  # lighetr blue
-        pen = QtGui.QPen()
-        pen.setColor(QtGui.QColor(Qt.transparent))
+        # pen = QtGui.QPen()
+        # pen.setColor(QtGui.QColor(Qt.transparent))
         brush = QtGui.QBrush(gradient)
         brush.setStyle(Qt.LinearGradientPattern)
         chart.setBackgroundBrush(brush)
+        #chart.setBackgroundVisible(False)
+        # removes margins
+        chart.layout().setContentsMargins(0, 0, 0, 0)
+        chart.setBackgroundRoundness(0)
         geo = main_ui.geometry()
         chart.setGeometry(geo.x(), geo.y(), SCREEN_WIDTH, SCREEN_HEIGHT)
 
@@ -142,7 +146,7 @@ class WeatherDetailView(QtWidgets.QWidget):
         self._chart_view = chart_view
         chart_view.setRenderHint(QtGui.QPainter.Antialiasing)
         chart_view.setSizeAdjustPolicy(QtChart.QChartView.AdjustToContents)
-
+        chart_view.setAttribute(Qt.WA_TranslucentBackground, True)
         # Button to close
         ok_button = QtWidgets.QPushButton("OK", self)
         ok_button.clicked.connect(self.close)

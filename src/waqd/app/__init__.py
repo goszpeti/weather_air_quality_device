@@ -46,6 +46,7 @@ from waqd.base.system import RuntimeSystem
 from waqd.settings import (DISP_TYPE_HEADLESS, DISP_TYPE_RPI,
                            DISP_TYPE_WAVESHARE_5_LCD,
                            DISP_TYPE_WAVESHARE_EPAPER_2_9, DISPLAY_TYPE,
+                           FONT_SCALING,
                            Settings)
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
@@ -171,7 +172,7 @@ def setup_on_non_target_system():
     logging.getLogger("root").info("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
 
 
-def qt_app_setup(settings) -> "QtWidgets.QApplication":
+def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
     """
     Set up all Qt application specific attributes, which can't be changed later on
     Returns qt_app object.
@@ -193,6 +194,9 @@ def qt_app_setup(settings) -> "QtWidgets.QApplication":
 
     # install translator
     common.set_ui_language(qt_app, settings)
+    from waqd.ui.theming import activate_theme
+
+    activate_theme(settings.get_float(FONT_SCALING))
 
     return qt_app
 
