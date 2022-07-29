@@ -1,15 +1,18 @@
 import html
+import imp
+from random import random
 from threading import Thread
-from typing import TYPE_CHECKING, TypedDict
-
+from time import sleep
+from typing import TYPE_CHECKING, Optional, TypedDict
+import json
 import waqd
 import waqd.app as app
-from bottle import (Jinja2Template, default_app, request, route, run,
+from bottle import (Jinja2Template, default_app, request, route, response,
                     static_file)
 from pint import Quantity
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
-
+import threading 
 if TYPE_CHECKING:
     from waqd.base.component_reg import ComponentRegistry
 
@@ -22,6 +25,13 @@ class SensorApi_0_1(TypedDict):
     co2: str  # ppm
 
 
+# class SensorDispApi_0_1(TypedDict):
+#     api_ver: str
+#     temp: str  # deg C
+#     hum: str  # %
+#     baro: str  # hPa
+#     co2: str  # ppm
+
 class Server(Component):
     menu = {
         "/waqd": "Weather Air Quality Device",
@@ -30,72 +40,61 @@ class Server(Component):
 
     def __init__(self, components: "ComponentRegistry", enabled=True):
         super().__init__(components, enabled=enabled)
-        if not enabled:
+        self._server = None
+        if self._disabled:
             return
         self._comps: "ComponentRegistry"
         self._app = default_app()
-        self._run_thread = Thread(
-            name="RunServer", target=self._run_server, daemon=True)
+        self._run_thread = Thread(name="RunServer", target=self._run_server, daemon=True)
         self._run_thread.start()
+        # self._event_thread: Optional[threading.Thread] = None
+        # self._event_thread = threading.Thread(name="ServerEvent",
+        #                                       target=self.trigger_event_remote_value,
+        #                                       daemon=True)
+        # self._event_thread.start()
+        
+    def _run_server(self):
+        route('/static/<path:path>', 'GET', self.get_static_file)
+        route('/', 'GET', self.get_entrypoint)
+        route('/about', 'GET', self.get_entrypoint)
+        route('/waqd', 'GET', self.get_entrypoint)
 
-    def _fetch_remote_exterior_values(self):
-        request.query
-        temp = self._comps.remote_exterior_sensor.get_temperature()
-        if temp is not None:
-            temp = temp.m_as(app.unit_reg.degC)
-        hum = self._comps.remote_exterior_sensor.get_humidity()
+        route('/api/remoteExtSensor', 'POST', self.post_sensor_values)
+        route('/api/remoteIntSensor', 'POST', self.post_sensor_values)
+        route('/api/remoteExtSensor', 'GET', self.get_remote_exterior_values)
+        route('/api/remoteIntSensor', 'GET', self.get_remote_interior_values)
+        route('/api/events/remoteIntSensor', 'GET', self.trigger_event_remote_value)
 
-        if temp is None:
-            pass
-        data: SensorApi_0_1 = {"api_ver": "0.1",
-                               "temp": str(temp), "hum": str(hum),
-                               "baro": str(None), "co2": str(None)}
-        return data
+        # Can't start server rom bottle, because it does not support stopping it without a hack
+        from paste import httpserver
+        self._server = httpserver.serve(self._app, host='0.0.0.0', port='80',
+                                        daemon_threads=True, start_loop=False)
+        self._server.serve_forever()
 
-    def _fetch_remote_interior_values(self):
-        request.query
-        temp = self._comps.temp_sensor.get_temperature()
-        if temp is not None:
-            temp = temp.m_as(app.unit_reg.degC)
-        hum = self._comps.humidity_sensor.get_humidity()
-        pres = self._comps.pressure_sensor.get_pressure()
-        co2 = self._comps.co2_sensor.get_co2()
+    def stop(self):
+        # must stop, because wlan captive portal would block port 80?
+        if self._server:
+            self._server.server_close()
 
-        if temp is None:
-            pass
-        data: SensorApi_0_1 = {"api_ver": "0.1",
-                               "temp": str(temp), "hum": str(hum),
-                               "baro": str(pres), "co2": str(co2)
-                               }
-        return data
+### HTML display endpoints
 
-    @route('/static/<path:path>')
-    def callback(path):
+    def get_static_file(self, path: str):
         return static_file(path, root=waqd.assets_path)
 
-    def _get_sensor_disp(self, quantity, unit=None):
-        disp_value = "N/A"
-        if quantity is not None:
-            if unit:
-                disp_value = f"{int(quantity)} {unit}"
-            if isinstance(quantity, Quantity):
-                try:
-                    disp_value = f"{quantity:~H.3}"  # ~H means human readable with unit
-                except ValueError:
-                    disp_value = f"{quantity:~H}"  # for ints
-        return html.escape(disp_value)
-
-    def _entrypoint(self):
+    def get_entrypoint(self):
         """ Single page entrypoint """
         page = get_asset_file("html", "index.html").read_text()
         tpl = Jinja2Template(page)
         page_content = ""
         path = request.path
         path = "/waqd" if path == "/" else path
+        # if self._event_thread:
+        #     self._event_thread.join(0)
         if request.path == "/about":
-            page_content = self._about_subpage()
+            page_content = self._get_about_subpage()
         elif request.path in "/waqd":
-            page_content = self._waqd_subpage()
+            page_content = self._get_waqd_subpage()
+            
         menu = self._generate_menu(active_page=path)
         return tpl.render(menu=menu, content=page_content)
 
@@ -116,18 +115,18 @@ class Server(Component):
         """
         return menu
 
-    def _about_subpage(self):
+    def _get_about_subpage(self):
         page_content = get_asset_file("html", "about.html").read_text()
         tpl = Jinja2Template(page_content)
         return tpl.render()
 
-    def _waqd_subpage(self):
+    def _get_waqd_subpage(self):
         page_content = get_asset_file("html", "waqd.html").read_text()
         temp = self._comps.temp_sensor.get_temperature()
-        temp_disp = self._get_sensor_disp(temp)
-        hum_disp = self._get_sensor_disp(self._comps.humidity_sensor.get_humidity(), "%")
-        co2_disp = self._get_sensor_disp(self._comps.co2_sensor.get_co2(), "ppm")
-        baro_disp = self._get_sensor_disp(self._comps.pressure_sensor.get_pressure(), "hPa")
+        temp_disp = self._format_sensor_disp_value(temp)
+        hum_disp = self._format_sensor_disp_value(self._comps.humidity_sensor.get_humidity(), "%")
+        co2_disp = self._format_sensor_disp_value(self._comps.co2_sensor.get_co2(), "ppm")
+        baro_disp = self._format_sensor_disp_value(self._comps.pressure_sensor.get_pressure(), "hPa")
         current_weather = self._comps.weather_info.get_current_weather()
         icon_rel_path = "weather_icons/wi-na.svg"  # default N/A
         if current_weather:
@@ -140,7 +139,62 @@ class Server(Component):
                           pressure=baro_disp,
                           co2=co2_disp)
 
-    def _receive_sensor_values(self):
+    def _format_sensor_disp_value(self, quantity, unit=None):
+        disp_value = "N/A"
+        if quantity is not None:
+            if unit:
+                disp_value = f"{int(quantity)} {unit}"
+            if isinstance(quantity, Quantity):
+                disp_value = f"{float(quantity.m_as(app.unit_reg.degC)):.3} °C"
+        return html.escape(disp_value)
+
+
+#### API endpoints
+
+    def trigger_event_remote_value(self):
+        response.content_type = 'text/event-stream'
+        response.cache_control = 'no-cache'
+        
+        yield 'retry: 1000\n\n'
+        while True:
+            sleep(10)
+            # TODO don't push updates if we don't read anything?
+            yield "data: " + json.dumps(self.get_remote_interior_values(disp=True)) + "\n\n"
+
+    def get_remote_exterior_values(self):
+        temp = self._comps.remote_exterior_sensor.get_temperature()
+        if temp is not None:
+            temp = temp.m_as(app.unit_reg.degC)
+        hum = self._comps.remote_exterior_sensor.get_humidity()
+
+        if temp is None:
+            pass
+        data: SensorApi_0_1 = {"api_ver": "0.1",
+                            "temp": str(temp), "hum": str(hum),
+                            "baro": str(None), "co2": str(None)}
+        return data
+
+    def get_remote_interior_values(self, disp=False):
+        temp = self._comps.temp_sensor.get_temperature()
+        if disp:
+            temp = self._format_sensor_disp_value(temp)
+        elif temp is not None:
+            temp = temp.m_as(app.unit_reg.degC)
+        hum = self._comps.humidity_sensor.get_humidity()
+        pres = self._comps.pressure_sensor.get_pressure()
+        co2 = self._comps.co2_sensor.get_co2()
+        if disp: # format non unit values
+            hum = self._format_sensor_disp_value(hum, "%")
+            pres = self._format_sensor_disp_value(pres, "hPa")
+            co2 = self._format_sensor_disp_value(co2, "ppm")
+
+        data: SensorApi_0_1 = {"api_ver": "0.1",
+                            "temp": str(temp), "hum": str(hum),
+                            "baro": str(pres), "co2": str(co2)
+                            }
+        return data
+
+    def post_sensor_values(self):
         from waqd.app import comp_ctrl
         if not comp_ctrl:
             return
@@ -160,20 +214,9 @@ class Server(Component):
         elif "remoteIntSensor" in request.fullpath:
             comp_ctrl.components.remote_interior_sensor.read_callback(temp, hum)
 
-    def _run_server(self):
-        route('/remoteExtSensor', 'POST', self._receive_sensor_values)
-        route('/remoteIntSensor', 'POST', self._receive_sensor_values)
-        route('/remoteExtSensor', 'GET', self._fetch_remote_exterior_values)
-        route('/remoteIntSensor', 'GET', self._fetch_remote_interior_values)
-        route('/', 'GET', self._entrypoint)
-        route('/about', 'GET', self._entrypoint)
-        route('/waqd', 'GET', self._entrypoint)
-
-        # Can't start server rom bottle, because it does not support stopping it without a hack
-        from paste import httpserver
-        self._server = httpserver.serve(self._app, host='0.0.0.0', port='80',
-                                        daemon_threads=True, start_loop=False)
-        self._server.serve_forever()
-
-    def stop(self):
-        self._server.server_close()
+    def get_event_response(self, id:int):
+        event = id # query for event by event id here
+        if event is None:
+            return {}
+        else:
+            return event.to_dict()  # returning the event's JSON data

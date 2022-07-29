@@ -2,8 +2,24 @@
 <html lang="en">
 <head>
     <title>WAQD</title>
+    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
+    <script>
+        // $(document).ready(function () {
+            var source = new EventSource("api/events/remoteIntSensor");
+            source.onmessage = function (message) {
+                // console.log(message.data)
+                var jdata = JSON.parse(message.data);
+                document.getElementById("temp_value").innerHTML = jdata.temp;
+                document.getElementById("humidity_value").innerHTML = jdata.hum;
+                document.getElementById("pressure_value").innerHTML = jdata.baro;
+                document.getElementById("co2_value").innerHTML = jdata.co2;
+            }
+        // })
+    </script>
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- <meta http-equiv="refresh" content="30"> -->
+
 <style>
     @font-face {
         font-family: MyFranzo;
@@ -11,16 +27,11 @@
     }
 
     html {
-        background-image: url("/static/gui_bgrs/background_s0.jpg");
-        background-color: #D7B2D1;
+        background: rgb(103,154,199);
+        background: linear-gradient(175deg, rgba(103,154,199,1) 0%, rgba(232,159,166,1) 100%);
         background-position: center;
         background-size: cover;
         background-attachment: fixed;
-        /* position: absolute;
-        top: 60%;
-        left: 50%;
-        margin-right: -50%;
-        transform: translate(-50%, -50%); */
         text-align: center;
     }
     body {
@@ -134,6 +145,7 @@
 </body>
 <footer>Copyright (c) 2022 P&eacute;ter Gosztolya and contributors.</footer>
 <script>
+    // const events_in_progress =  ["api/events/sensor_data"]
     /* Toggle between showing and hiding the navigation menu links when the user clicks on the hamburger menu / bar icon */
     function myFunction() {
         var x = document.getElementById("myLinks");

@@ -2,10 +2,12 @@
 import requests
 from waqd.components import Server
 from waqd.base.component_reg import ComponentRegistry
+from waqd.settings import SERVER_ENABLED
 from waqd.settings.settings import Settings
 
 def testServer(base_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
+    settings.set(SERVER_ENABLED, True)
     comps = ComponentRegistry(settings)
     server = Server(comps)
     while True:
