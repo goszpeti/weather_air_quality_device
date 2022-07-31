@@ -426,7 +426,7 @@ class Ui_Dialog(object):
         self.dispaly_scroll_area.setWidgetResizable(True)
         self.dispaly_scroll_area.setObjectName("dispaly_scroll_area")
         self.display_scroll_widgets = QtWidgets.QWidget()
-        self.display_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 663, 419))
+        self.display_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 600, 347))
         self.display_scroll_widgets.setObjectName("display_scroll_widgets")
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.display_scroll_widgets)
         self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
@@ -832,7 +832,7 @@ class Ui_Dialog(object):
         self.events_scroll_area.setWidgetResizable(True)
         self.events_scroll_area.setObjectName("events_scroll_area")
         self.events_scroll_widgets = QtWidgets.QWidget()
-        self.events_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 241, 400))
+        self.events_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 659, 419))
         self.events_scroll_widgets.setObjectName("events_scroll_widgets")
         self.verticalLayout_11 = QtWidgets.QVBoxLayout(self.events_scroll_widgets)
         self.verticalLayout_11.setContentsMargins(0, 0, 0, 0)
@@ -889,7 +889,7 @@ class Ui_Dialog(object):
         self.hw_scroll_area.setWidgetResizable(True)
         self.hw_scroll_area.setObjectName("hw_scroll_area")
         self.hw_scroll_widgets = QtWidgets.QWidget()
-        self.hw_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 435, 510))
+        self.hw_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 659, 419))
         self.hw_scroll_widgets.setObjectName("hw_scroll_widgets")
         self.verticalLayout_13 = QtWidgets.QVBoxLayout(self.hw_scroll_widgets)
         self.verticalLayout_13.setContentsMargins(0, 0, 0, 0)
@@ -1081,7 +1081,7 @@ class Ui_Dialog(object):
         self.about_scroll_area.setWidgetResizable(True)
         self.about_scroll_area.setObjectName("about_scroll_area")
         self.about_scroll_widgets = QtWidgets.QWidget()
-        self.about_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 373, 337))
+        self.about_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 659, 419))
         self.about_scroll_widgets.setObjectName("about_scroll_widgets")
         self.verticalLayout_15 = QtWidgets.QVBoxLayout(self.about_scroll_widgets)
         self.verticalLayout_15.setContentsMargins(0, 0, 0, 0)
@@ -1206,7 +1206,7 @@ class Ui_Dialog(object):
         self.verticalLayout_5.addLayout(self.main_layout)
 
         self.retranslateUi(Dialog)
-        self.page_stacked_widget.setCurrentIndex(2)
+        self.page_stacked_widget.setCurrentIndex(5)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -1281,10 +1281,10 @@ class Ui_Dialog(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Franzo\'; font-size:18pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt;\">WAQD Copyright (c) 2022 Péter Gosztolya</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt;\">WAQD Copyright (c) 2022 Peter Gosztolya</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'MS Shell Dlg 2\'; font-size:14pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:14pt;\">Used Software:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt;\">- Weather Icons licensed under  SIL OFL 1.1 (http://scripts.sil.org/OFL) from http://weathericons.io</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt;\">- Weather Icons licensed under  SIL OFL 1.1 (http://scripts.sil.org/OFL) from https://github.com/erikflowers/weather-icons</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt;\">- Franzo Font under  Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0) from https://fontlibrary.org/en/font/franzo</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt;\">- wifi-connect under Apache 2.0 https://www.apache.org/licenses/LICENSE-2.0) from https://github.com/balena-os/wifi-connect</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt;\">- Images from Unsplash under Unsplash license (https://unsplash.com/license) from https://unsplash.com</span></p>\n"

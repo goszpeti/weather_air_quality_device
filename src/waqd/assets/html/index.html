@@ -2,28 +2,12 @@
 <html lang="en">
 <head>
     <title>WAQD</title>
-    <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> -->
-    <script>
-        // $(document).ready(function () {
-            var source = new EventSource("api/events/remoteIntSensor");
-            source.onmessage = function (message) {
-                // console.log(message.data)
-                var jdata = JSON.parse(message.data);
-                document.getElementById("temp_value").innerHTML = jdata.temp;
-                document.getElementById("humidity_value").innerHTML = jdata.hum;
-                document.getElementById("pressure_value").innerHTML = jdata.baro;
-                document.getElementById("co2_value").innerHTML = jdata.co2;
-            }
-        // })
-    </script>
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- <meta http-equiv="refresh" content="30"> -->
-
 <style>
     @font-face {
         font-family: MyFranzo;
-        src: url('static/font/Franzo-E4GA.ttf');
+        src: url('static/font/Franzo-E4GA.woff');
     }
 
     html {
@@ -97,11 +81,13 @@
     /* Style navigation menu links */
     .topnav a {
     color: white;
-    padding: 14px 16px;
+    padding: 16px 10px;
     text-decoration: none;
     font-size: 1.8em;
     text-align: start;
     display: block;
+    position: relative;
+    /* height: fit-content; */
     }
 
     /* Style the hamburger menu */
@@ -111,6 +97,7 @@
     position: absolute;
     right: 0;
     top: 0;
+    /* height:40px; */
     }
 
     /* Add a grey background color on mouse-over */
@@ -132,16 +119,17 @@
 <link rel="icon" href="static/gui_base/icon.png" type="image/png">
 <body>
     <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Top Navigation Menu -->
     <div class="topnav">
         {{menu}}
         <!-- "Hamburger menu" / "Bar icon" to toggle the navigation links -->
         <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-            <i class="fa fa-bars"></i>
+            <img src='static/general_icons/menu_stripes.png' class="svg-white" width="40px" height="32px"/>
         </a>
     </div>
+    <div class="app">
     {{content}}
+    </div>
 </body>
 <footer>Copyright (c) 2022 P&eacute;ter Gosztolya and contributors.</footer>
 <script>

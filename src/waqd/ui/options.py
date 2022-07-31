@@ -31,6 +31,7 @@ from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.network import Network
 from waqd.base.system import RuntimeSystem
+from waqd.base.translation import Translation
 from waqd.components.sensors import MH_Z19
 from waqd.settings import (BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS, CCS811_ENABLED,
                            DAY_STANDBY_TIMEOUT, DHT_22_DISABLED, DHT_22_PIN, DISP_TYPE_RPI,
@@ -181,11 +182,15 @@ class OptionMainUi(QtWidgets.QDialog):
     def _calibrate_mh_z19(self):
         #self._mh_z19_calib_dialog = 
         self._calib_dialog_ui = uic.loadUi(waqd.base_path / "ui" /
-                                           "widgets" / "calibration.ui", baseinstance=QtWidgets.QDialog())
+                                           "widgets" / "calibration.ui",
+                                           baseinstance=QtWidgets.QDialog(self))
         # TODO check if it is he correct one
         if not isinstance(self._comps.co2_sensor, MH_Z19):
             return
         offset = self._settings.get_int(MH_Z19_VALUE_OFFSET)
+        self._calib_dialog_ui.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
+        self._calib_dialog_ui.move(int((self.geometry().width() - self._calib_dialog_ui.width()) / 2),
+                                   int((self.geometry().height() - self._calib_dialog_ui.height()) / 2))
         self._calib_dialog_ui.calib_spin_box.setValue(offset)
         self._calib_dialog_ui.calib_spin_box.valueChanged.connect(self._update_calib_value)
         self._calib_dialog_ui.zero_button.clicked.connect(self._comps.co2_sensor.zero_calibraton)
@@ -211,23 +216,30 @@ class OptionMainUi(QtWidgets.QDialog):
 
     def _test_motion_sensor(self):
         class MotionSensorTestDialog(sub_ui.SubUi):
-            def __init__(self, comps, settings) -> None:
+            def __init__(self, parent: QtWidgets.QWidget, comps, settings) -> None:
                 self._comps = comps
-                self._dialog = QtWidgets.QDialog()
+                self._dialog = QtWidgets.QDialog(parent)
+                self._dialog.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
                 ui = uic.loadUi(waqd.base_path / "ui" /
                                                    "widgets" / "value_test.ui", baseinstance=self._dialog)
                 sub_ui.SubUi.__init__(self, self._dialog, ui, settings)
-                
+                self._dialog.move(int((parent.geometry().width() - self._dialog.width()) / 2),
+                                  int((parent.geometry().height() - self._dialog.height()) / 2))
+                                   
             def _cyclic_update(self):
                 if self._comps.motion_detection_sensor.motion_detected:
-                    self._ui.text_browser.append("Motion registered")
+                    disp_str = Translation().get_localized_string(
+                        "base", "ui_dict", "motion_reg", self._settings.get_string(LANG))
+                    self._ui.text_browser.append(disp_str)
                 else:
-                    self._ui.text_browser.append("No Motion registered")
+                    disp_str = Translation().get_localized_string(
+                        "base", "ui_dict", "no_motion_reg", self._settings.get_string(LANG))
+                    self._ui.text_browser.append(disp_str)
 
             def exec_(self):
                 self._dialog.exec_()
 
-        dialog = MotionSensorTestDialog(self._comps, self._settings)
+        dialog = MotionSensorTestDialog(self, self._comps, self._settings)
         dialog.exec_()
 
 
@@ -478,8 +490,8 @@ class OptionMainUi(QtWidgets.QDialog):
         try:
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.setWindowTitle("Connect to WLAN")
-            msg.setText(f"Connect to WLAN '{ssid_name}'' on your phone or pc, where you can select your network and enter your password!")
-            check_call(f'sudo wifi-connect -s "{ssid_name}"')
+            msg.setText(f"Connect to WLAN '{ssid_name}' on your phone or pc, where you can select your network and enter your password!")
+            os.system(f'sudo wifi-connect -s "{ssid_name}" &')
         except Exception as e:
             msg.setIcon(QtWidgets.QMessageBox.Warning)
             msg.setWindowTitle("Error while opening connection to WLAN")

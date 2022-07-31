@@ -1,9 +1,7 @@
 import html
-import imp
-from random import random
 from threading import Thread
 from time import sleep
-from typing import TYPE_CHECKING, Optional, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 import json
 import waqd
 import waqd.app as app
@@ -12,7 +10,6 @@ from bottle import (Jinja2Template, default_app, request, route, response,
 from pint import Quantity
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
-import threading 
 if TYPE_CHECKING:
     from waqd.base.component_reg import ComponentRegistry
 
@@ -24,15 +21,7 @@ class SensorApi_0_1(TypedDict):
     baro: str  # hPa
     co2: str  # ppm
 
-
-# class SensorDispApi_0_1(TypedDict):
-#     api_ver: str
-#     temp: str  # deg C
-#     hum: str  # %
-#     baro: str  # hPa
-#     co2: str  # ppm
-
-class Server(Component):
+class BottleServer(Component):
     menu = {
         "/waqd": "Weather Air Quality Device",
         "/about": "About"
@@ -47,18 +36,14 @@ class Server(Component):
         self._app = default_app()
         self._run_thread = Thread(name="RunServer", target=self._run_server, daemon=True)
         self._run_thread.start()
-        # self._event_thread: Optional[threading.Thread] = None
-        # self._event_thread = threading.Thread(name="ServerEvent",
-        #                                       target=self.trigger_event_remote_value,
-        #                                       daemon=True)
-        # self._event_thread.start()
-        
+
     def _run_server(self):
+        # use programatic routing to connect class instance methods to routes
         route('/static/<path:path>', 'GET', self.get_static_file)
         route('/', 'GET', self.get_entrypoint)
         route('/about', 'GET', self.get_entrypoint)
         route('/waqd', 'GET', self.get_entrypoint)
-
+        # api endpoints
         route('/api/remoteExtSensor', 'POST', self.post_sensor_values)
         route('/api/remoteIntSensor', 'POST', self.post_sensor_values)
         route('/api/remoteExtSensor', 'GET', self.get_remote_exterior_values)
@@ -79,7 +64,9 @@ class Server(Component):
 ### HTML display endpoints
 
     def get_static_file(self, path: str):
-        return static_file(path, root=waqd.assets_path)
+        response = static_file(path, root=waqd.assets_path)
+        response.set_header("Cache-Control", "public, max-age=604800")
+        return response
 
     def get_entrypoint(self):
         """ Single page entrypoint """
@@ -88,8 +75,6 @@ class Server(Component):
         page_content = ""
         path = request.path
         path = "/waqd" if path == "/" else path
-        # if self._event_thread:
-        #     self._event_thread.join(0)
         if request.path == "/about":
             page_content = self._get_about_subpage()
         elif request.path in "/waqd":
@@ -154,7 +139,8 @@ class Server(Component):
     def trigger_event_remote_value(self):
         response.content_type = 'text/event-stream'
         response.cache_control = 'no-cache'
-        
+        response.set_header("Cache-Control", "no-cache")
+
         yield 'retry: 1000\n\n'
         while True:
             sleep(10)
@@ -213,10 +199,3 @@ class Server(Component):
             comp_ctrl.components.remote_exterior_sensor.read_callback(temp, hum)
         elif "remoteIntSensor" in request.fullpath:
             comp_ctrl.components.remote_interior_sensor.read_callback(temp, hum)
-
-    def get_event_response(self, id:int):
-        event = id # query for event by event id here
-        if event is None:
-            return {}
-        else:
-            return event.to_dict()  # returning the event's JSON data

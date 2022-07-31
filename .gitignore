@@ -15,7 +15,7 @@ script/installer/waqd.log
 v1.4.4
 
 src/config.ini
-src/waqd.log
+waqd.log
 src/events.json
 src/sensor_logs/*
 src/waqd/assets/weather_icons/*_white.svg

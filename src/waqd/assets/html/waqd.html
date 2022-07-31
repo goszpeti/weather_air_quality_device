@@ -1,3 +1,20 @@
+    
+    <!-- Server side event to update values -->
+    <script>
+        var source = new EventSource("api/events/remoteIntSensor");
+        source.onmessage = function (message) {
+            // console.log(message.data)
+            var jdata = JSON.parse(message.data);
+            document.getElementById("temp_value").innerHTML = jdata.temp;
+            document.getElementById("humidity_value").innerHTML = jdata.hum;
+            document.getElementById("pressure_value").innerHTML = jdata.baro;
+            document.getElementById("co2_value").innerHTML = jdata.co2;
+        }
+        // Close on error, not very nice (no reconnect)
+        source.onerror = function () {
+            source.close();
+        };
+    </script>
     <div id="waqd_view" class="block">
         <div id="weather_overall" class="row" style="text-align: center;padding-bottom: 0px">
             <img class="svg-white" src="static/{{weather_icon}}" alt="weather_icon" style="width: 50%;">

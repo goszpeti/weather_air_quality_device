@@ -182,8 +182,6 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._ui.ol_wh_forecast_label.show()
         self._ui.ol_title_label.raise_()
         self._ui.ol_title_label.show()
-        from waqd.ui.theming import activate_theme
-        activate_theme(self._settings.get_float(FONT_SCALING))
 
     def hide_info_screen(self):
         """ Hides the user infro screen."""

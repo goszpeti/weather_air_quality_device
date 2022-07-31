@@ -64,19 +64,9 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="options.ui" line="979"/>
-        <source>Font Scalings</source>
-        <translation type="obsolete">Buchstabengröße</translation>
-    </message>
-    <message>
         <location filename="options.ui" line="1170"/>
         <source>Turn on display at</source>
         <translation>Nachtruhe Ende</translation>
-    </message>
-    <message>
-        <location filename="options.ui" line="789"/>
-        <source>Standby at day after</source>
-        <translation type="obsolete">Standby am Tag nach</translation>
     </message>
     <message>
         <location filename="options.ui" line="1295"/>
@@ -119,16 +109,6 @@
         <translation>Nachtruhe Anfang</translation>
     </message>
     <message>
-        <location filename="options.ui" line="930"/>
-        <source>Standby at night after</source>
-        <translation type="obsolete">Standby in der Nacht nach</translation>
-    </message>
-    <message>
-        <location filename="options.ui" line="1141"/>
-        <source>Event</source>
-        <translation type="obsolete">Ereignisse</translation>
-    </message>
-    <message>
         <location filename="options.ui" line="1762"/>
         <source>Enable events</source>
         <translation>Ereignisse aktivieren</translation>
@@ -167,11 +147,6 @@
         <location filename="options.ui" line="2071"/>
         <source>Enable Motion Sensor</source>
         <translation>Bewegungssensor aktivieren</translation>
-    </message>
-    <message>
-        <location filename="options.ui" line="1521"/>
-        <source>Info</source>
-        <translation type="obsolete">Information</translation>
     </message>
     <message>
         <location filename="options.ui" line="2384"/>
@@ -229,11 +204,6 @@
         <translation>Aussehen</translation>
     </message>
     <message>
-        <location filename="options.ui" line="986"/>
-        <source>Interior Wallpaper</source>
-        <translation type="obsolete">Hintergrund: Innen</translation>
-    </message>
-    <message>
         <location filename="options.ui" line="1585"/>
         <source>Small</source>
         <translation>Klein</translation>
@@ -247,16 +217,6 @@
         <location filename="options.ui" line="1595"/>
         <source>Large</source>
         <translation>Groß</translation>
-    </message>
-    <message>
-        <location filename="options.ui" line="1050"/>
-        <source>Forecast Wallpaper</source>
-        <translation type="obsolete">Hintergrund: Ausblick</translation>
-    </message>
-    <message>
-        <location filename="options.ui" line="1081"/>
-        <source>Font type</source>
-        <translation type="obsolete">Buchstabentyp</translation>
     </message>
     <message>
         <location filename="options.ui" line="1674"/>
@@ -355,30 +315,61 @@ auswählen! </translation>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Franzo&apos;; font-size:18pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;WAQD Copyright (c) 2022 Péter Gosztolya&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;WAQD Copyright (c) 2022 Peter Gosztolya&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;Used Software:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- Weather Icons licensed under  SIL OFL 1.1 (http://scripts.sil.org/OFL) from http://weathericons.io&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- Weather Icons licensed under  SIL OFL 1.1 (http://scripts.sil.org/OFL) from https://github.com/erikflowers/weather-icons&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- Franzo Font under  Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0) from https://fontlibrary.org/en/font/franzo&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- wifi-connect under Apache 2.0 https://www.apache.org/licenses/LICENSE-2.0) from https://github.com/balena-os/wifi-connect&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- Images from Unsplash under Unsplash license (https://unsplash.com/license) from https://unsplash.com&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- Qt5 (LGPL 3.0) via PyQt5 (GPL3) Python Bindings&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;For further used software see https://github.com/goszpeti/WeatherAirQualityDevice.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+        <translation>&amp;lt;!DOCTYPE HTML PUBLIC &amp;quot;-//W3C//DTD HTML 4.0//EN&amp;quot; &amp;quot;http://www.w3.org/TR/REC-html40/strict.dtd&amp;quot;&amp;gt;
+&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;meta name=&amp;quot;qrichtext&amp;quot; content=&amp;quot;1&amp;quot; /&amp;gt;&amp;lt;style type=&amp;quot;text/css&amp;quot;&amp;gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Franzo&apos;; font-size:18pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;WAQD Copyright (c) 2022 Péter Gosztolya&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;Verwendete Software:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- Weather Icons mit  SIL OFL 1.1 (http://scripts.sil.org/OFL) von http://weathericons.io&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- Franzo Font mit  Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0) von https://fontlibrary.org/en/font/franzo&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- wifi-connect mit Apache 2.0 https://www.apache.org/licenses/LICENSE-2.0) vom https://github.com/balena-os/wifi-connect&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- Bilder von Unsplash mit Unsplash license (https://unsplash.com/license) von https://unsplash.com&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;- Qt5 (LGPL 3.0) via PyQt5 (GPL3) Python Bindings&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&quot;&gt;Für Weitere siehe https://github.com/goszpeti/WeatherAirQualityDevice.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&amp;lt;/style&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body style=&amp;quot; font-family:&apos;Franzo&apos;; font-size:18pt; font-weight:400; font-style:normal;&amp;quot;&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&amp;quot;&amp;gt;WAQD Copyright (c) 2022 Peter Gosztolya&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&amp;quot;&amp;gt;&amp;lt;br /&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&amp;quot;&amp;gt;Used Software:&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&amp;quot;&amp;gt;- Weather Icons licensed under  SIL OFL 1.1 (http://scripts.sil.org/OFL) from https://github.com/erikflowers/weather-icons&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&amp;quot;&amp;gt;- Franzo Font under  Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0) from https://fontlibrary.org/en/font/franzo&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&amp;quot;&amp;gt;- wifi-connect under Apache 2.0 https://www.apache.org/licenses/LICENSE-2.0) from https://github.com/balena-os/wifi-connect&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&amp;quot;&amp;gt;- Images from Unsplash under Unsplash license (https://unsplash.com/license) from https://unsplash.com&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&amp;quot;&amp;gt;- Qt5 (LGPL 3.0) via PyQt5 (GPL3) Python Bindings&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&amp;quot;&amp;gt;&amp;lt;br /&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p style=&amp;quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&amp;quot;&amp;gt;&amp;lt;span style=&amp;quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:14pt;&amp;quot;&amp;gt;For further used software see https://github.com/goszpeti/WeatherAirQualityDevice.&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;</translation>
+    </message>
+    <message>
+        <location filename="../widgets/value_test.ui" line="14"/>
+        <source>Dialog</source>
+        <translation type="unfinished"> </translation>
+    </message>
+    <message>
+        <location filename="../widgets/calibration.ui" line="22"/>
+        <source>Measure Value:</source>
+        <translation type="unfinished">Messwert:</translation>
+    </message>
+    <message>
+        <location filename="../widgets/calibration.ui" line="36"/>
+        <source>Display Value</source>
+        <translation type="unfinished">Anzeigewert:</translation>
+    </message>
+    <message>
+        <location filename="../widgets/calibration.ui" line="52"/>
+        <source>Manual offset:</source>
+        <translation type="unfinished">Manueller Offset</translation>
+    </message>
+    <message>
+        <location filename="../widgets/calibration.ui" line="90"/>
+        <source>Zero Calibration of Sensor - Please leave the sensor with outside quality air for at least 20 minutes before zeroing!</source>
+        <translation type="unfinished">Nullpunkt kalibrieren - Den Sensor bitte vorher bei guter Luftqualität minimum 20 Minuten lang betreiben!</translation>
+    </message>
+    <message>
+        <location filename="../widgets/calibration.ui" line="100"/>
+        <source>Zero Calibration</source>
+        <translatorcomment>Nullpunkt kalibrieren</translatorcomment>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -24,18 +24,11 @@ from threading import Thread
 
 from gtts import gTTS
 import waqd
-from waqd.assets import get_asset_file
 from waqd.base.component_reg import Component, ComponentRegistry
 from waqd.base.logger import Logger
 from waqd.base.network import Network
-from waqd.settings import LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN
-
-# map settings to internal shortened lang names
-LANGS_MAP = {
-    LANG_ENGLISH: "en",
-    LANG_GERMAN: "de",
-    LANG_HUNGARIAN: "hu"
-}
+from waqd.base.translation import Translation, LANGS_MAP
+from waqd.settings import LANG_ENGLISH
 
 
 class TextToSpeach(Component):
@@ -54,23 +47,7 @@ class TextToSpeach(Component):
         os.makedirs(self._save_dir, exist_ok=True)
 
     def get_tts_string(self, key: str, lang="en") -> str:
-        if lang in LANGS_MAP:
-            lang = LANGS_MAP.get(lang)
-        dict_file = get_asset_file("base", "tts_dict")
-        # read filetoc.json
-        with open(str(dict_file), encoding='utf-8') as f:
-            tts_dict = json.load(f)
-
-        # get filetype and filelist
-        lang_dict = tts_dict.get(lang)
-        if not lang_dict:
-            self._logger.error(f"TTS: Cannot find language string for {lang}")
-            return ""
-
-        value = lang_dict.get(key)
-        if not value:
-            Logger().error("Cannot find resource id %s in catalog", key)
-        return value
+        return Translation().get_localized_string("base", "tts_dict", key, lang)
 
     def say_internal(self, key="", format_args=[]):
         """
@@ -78,11 +55,10 @@ class TextToSpeach(Component):
         Key corresponds to an entry in the tts_dict.json.
         Language is determined from settings.
         """
-        lang = LANGS_MAP.get(self._lang, "en")
-        text = self.get_tts_string(key, lang)
-        self.say(text.format(*format_args), lang)
+        text = self.get_tts_string(key, self._lang)
+        self.say(text.format(*format_args), self._lang)
 
-    def say(self, text="", lang="en"):
+    def say(self, text="", lang=LANG_ENGLISH):
         """
         User function for TTS.
         :param lang: switches between official GTTS languages.

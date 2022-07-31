@@ -130,7 +130,7 @@ class SensorLogger(logging.Logger):
 
     @staticmethod
     # zero reads the last value
-    def read_sensor_file(sensor_name: str, minutes_to_read: int = 0) -> List[Tuple[datetime, float]]:
+    def get_sensor_values(sensor_name: str, minutes_to_read: int = 0) -> List[Tuple[datetime, float]]:
 
         log_file_path = SensorLogger.get_sensor_logfile_path(sensor_name)
         if not log_file_path.exists():
