@@ -103,24 +103,24 @@ def main(settings_path: Optional[Path] = None):
 
     comp_ctrl = ComponentController(settings)
     comp_ctrl = comp_ctrl
-    # if DEBUG_LEVEL > 0: # disable startup sound
-    #    comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
+    if waqd.DEBUG_LEVEL > 0: # disable startup sound
+       comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
+    # Load the selected GUI mode
     display_type = settings.get(DISPLAY_TYPE)
-
-    if display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
-        qt_app = qt_app_setup(settings)
-        # main_ui must be held in this context, otherwise the gc will destroy the gui
-        loading_sequence(comp_ctrl, settings)
-        try:
+    try:
+        if display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
+            qt_app = qt_app_setup(settings)
+            # main_ui must be held in this context, otherwise the gc will destroy the gui
+            loading_sequence(comp_ctrl, settings)
             qt_app.exec_()
-        except:  # pylint:disable=bare-except
+        elif display_type == DISP_TYPE_WAVESHARE_EPAPER_2_9:
+            pass
+        elif display_type == DISP_TYPE_HEADLESS:
+            comp_ctrl.init_all()
+            comp_ctrl._stop_event.wait()
+    except:  # pylint:disable=bare-except
             trace_back = traceback.format_exc()
             Logger().error("Application crashed: \n%s", trace_back)
-    elif display_type == DISP_TYPE_WAVESHARE_EPAPER_2_9:
-        pass
-    elif display_type == DISP_TYPE_HEADLESS:
-        comp_ctrl.init_all()
-        comp_ctrl._stop_event.wait()
 
     # unload modules - wait for every thread to quit
     if runtime_system.is_target_system:
