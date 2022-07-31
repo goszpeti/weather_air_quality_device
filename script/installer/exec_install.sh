@@ -24,7 +24,7 @@ function waqd_install() {
 
     echo "# Install needed system libraries... (Step 1/5)"
     # python dependencies
-    sudo apt -y install python3-apt
+    # sudo apt -y install python3-apt # TODO: if apt via python is used
     sudo apt -y install python3-libgpiod python3-venv 
     sudo apt -y install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart
     # install pipx for venv based app creation
@@ -44,8 +44,8 @@ function waqd_install() {
     # TODO use //Unattended-Upgrade::MinimalSteps "true";
 
     echo "# Install Wifi Connector... (Step 3/5)"
-#    chmod +x ./install_comitup
-#    ./install_comitup
+    chmod +x ./install_wifi-connect
+    ./install_wifi-connect
 
     echo "# Setting up the system (Step 4/5)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system

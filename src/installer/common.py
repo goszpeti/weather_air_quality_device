@@ -145,13 +145,3 @@ def add_to_autostart(cmds_to_add: List[str], autostart_file: Path = AUTOSTART_FI
 def remove_from_autostart(remove_items: List[str] = [], autostart_file: Path = AUTOSTART_FILE):
     """ Uses LXDE autostart file and format """
     remove_line_in_file(remove_items, autostart_file)
-
-
-#import apt
-# cache = apt.Cache()
-# apt.update()
-# cache.open(None)
-# cache.upgrade()
-# pkg = cache['python-apt']
-# pkg.mark_install()
-#cache.commit(apt.progress.text.AcquireProgress(), apt.progress.base.InstallProgress())
