@@ -80,3 +80,8 @@ WeatherDetailView {
 background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
         stop:0 rgba(13, 119, 167), stop:1 rgba(115, 158, 201));
 }
+
+SensorDetailView {
+background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
+        stop:0 rgba(13, 119, 167), stop:1 rgba(115, 158, 201));
+}

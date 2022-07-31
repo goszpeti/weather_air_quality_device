@@ -129,12 +129,9 @@ class WeatherDetailView(QtWidgets.QWidget):
         gradient = QtGui.QLinearGradient(0, 0, 0, self.height())
         gradient.setColorAt(0, QtGui.QColor(13, 119, 167))  # light blue
         gradient.setColorAt(1, QtGui.QColor(115, 158, 201))  # lighetr blue
-        # pen = QtGui.QPen()
-        # pen.setColor(QtGui.QColor(Qt.transparent))
         brush = QtGui.QBrush(gradient)
         brush.setStyle(Qt.LinearGradientPattern)
         chart.setBackgroundBrush(brush)
-        #chart.setBackgroundVisible(False)
         # removes margins
         chart.layout().setContentsMargins(0, 0, 0, 0)
         chart.setBackgroundRoundness(0)
