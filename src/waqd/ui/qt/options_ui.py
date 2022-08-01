@@ -30,113 +30,7 @@ class Ui_Dialog(object):
         Dialog.setWindowOpacity(1.0)
         Dialog.setStyleSheet("* {\n"
 "    font-size: 18pt;\n"
-"}\n"
-"QGroupBox{\n"
-"    color: white;    \n"
-"}\n"
-"QComboBox {\n"
-"    color: white;    \n"
-"    background-color: transparent;\n"
-"}\n"
-"QComboBox:disabled {\n"
-"    color: white;\n"
-"    background: grey;\n"
-"}\n"
-"QWidget  {\n"
-"    background: transparent;\n"
-"}\n"
-"QComboBox:!editable:on, QComboBox::drop-down:editable:on {\n"
-"    color: white;    \n"
-"    background: transparent;\n"
-"}\n"
-"QComboBox:editable {\n"
-"    background: transparent;\n"
-"    selection-background-color: transparent;\n"
-"}\n"
-"QComboBox QAbstractItemView {\n"
-"    color: white;    \n"
-"    background: #679ac7;\n"
-"    selection-color: white;\n"
-"    selection-background-color: grey;\n"
-"}\n"
-"QPushButton{background-color: transparent;color: white;border: 2px solid white;border-radius: 4px;}\n"
-"QPushButton:pressed {border: 2px solid grey;color:grey;}\n"
-"QPushButton::hover {\n"
-"    border: 2px solid grey;color: grey;\n"
-"}\n"
-"QPushButton::on {\n"
-"    border: 2px solid grey;color: grey;\n"
-"}\n"
-"QTextBrowser{background-color: transparent;color: white;border: 1px solid white}\n"
-"QLabel{background-color: transparent;color: white;}\n"
-"QMessageBox{background-color: grey;color: black}\n"
-"QDialog{\n"
-"background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0.0259694, y2:1, stop:0.135593 rgba(103, 154, 199, 255), stop:1 rgba(232, 159, 166, 255))\n"
-"}\n"
-"QScrollArea{\n"
-"background-color: transparent;\n"
-"}\n"
-"QFrame{\n"
-"background-color: transparent;\n"
-"}\n"
-"QScrollBar:vertical {\n"
-"    border: 0px solid transparent;\n"
-"    background: transparent;\n"
-"    width: 10px;\n"
-"    margin: 0px 0px 0px 0px;\n"
-"}\n"
-"QScrollBar::handle:vertical {\n"
-"    min-height: 0px;\n"
-"    border-radius: 0px;\n"
-"    background: #D3D3D3;\n"
-"}\n"
-"QScrollBar::handle:vertical:hover {\n"
-"    min-height: 0px;\n"
-"    width: 12px;\n"
-"    background: white;\n"
-"}\n"
-"QScrollBar::add-line:vertical {\n"
-"    height: 0px;\n"
-"    background: transparent;\n"
-"    subcontrol-position: bottom;\n"
-"    subcontrol-origin: margin;\n"
-"}\n"
-"QScrollBar::sub-line:vertical {\n"
-"     background: transparent;\n"
-"     height: 0px;\n"
-"     subcontrol-position: top;\n"
-"     subcontrol-origin: margin;\n"
-" }\n"
-"QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {\n"
-"     background: transparent;\n"
-" }\n"
-"QSlider::groove:vertical {\n"
-"    margin: 24px;\n"
-"}\n"
-"\n"
-"QSlider::groove:horizontal {\n"
-"    background-color: lightgrey;\n"
-"    height: 6px;\n"
-"    margin: 6px;\n"
-"    }\n"
-"QSlider::handle:horizontal {\n"
-"      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
-"                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,\n"
-"                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);\n"
-"    border: 1px solid #444;\n"
-"    border-radius: 8px;\n"
-"    width: 32px;\n"
-"    margin: -6px;\n"
-"    }\n"
-"\n"
-"QSlider::handle:horizontal:hover {\n"
-"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
-"    stop:0 #fff, stop:1 #ddd);\n"
-"border: 1px solid #444;\n"
-"border-radius: 8px;\n"
-"}\n"
-"\n"
-"")
+"}")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout_5.setContentsMargins(6, 10, 2, 2)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
@@ -170,6 +64,10 @@ class Ui_Dialog(object):
         sizePolicy.setHeightForWidth(self.display_button.sizePolicy().hasHeightForWidth())
         self.display_button.setSizePolicy(sizePolicy)
         self.display_button.setMaximumSize(QtCore.QSize(16777215, 32))
+        font = QtGui.QFont()
+        font.setFamily("Franzo")
+        font.setPointSize(18)
+        self.display_button.setFont(font)
         self.display_button.setObjectName("display_button")
         self.menu_layout.addWidget(self.display_button)
         self.theme_button = QtWidgets.QPushButton(Dialog)
@@ -268,7 +166,7 @@ class Ui_Dialog(object):
         self.general_scroll_area.setWidgetResizable(True)
         self.general_scroll_area.setObjectName("general_scroll_area")
         self.general_scroll_widgets = QtWidgets.QWidget()
-        self.general_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 252, 398))
+        self.general_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 252, 420))
         self.general_scroll_widgets.setObjectName("general_scroll_widgets")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.general_scroll_widgets)
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -672,7 +570,7 @@ class Ui_Dialog(object):
         self.theme_scroll_area.setWidgetResizable(True)
         self.theme_scroll_area.setObjectName("theme_scroll_area")
         self.theme_scroll_widgets = QtWidgets.QWidget()
-        self.theme_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 659, 419))
+        self.theme_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 644, 382))
         self.theme_scroll_widgets.setObjectName("theme_scroll_widgets")
         self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.theme_scroll_widgets)
         self.verticalLayout_9.setContentsMargins(0, 0, 0, 0)
@@ -832,7 +730,7 @@ class Ui_Dialog(object):
         self.events_scroll_area.setWidgetResizable(True)
         self.events_scroll_area.setObjectName("events_scroll_area")
         self.events_scroll_widgets = QtWidgets.QWidget()
-        self.events_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 659, 419))
+        self.events_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 245, 404))
         self.events_scroll_widgets.setObjectName("events_scroll_widgets")
         self.verticalLayout_11 = QtWidgets.QVBoxLayout(self.events_scroll_widgets)
         self.verticalLayout_11.setContentsMargins(0, 0, 0, 0)
@@ -889,7 +787,7 @@ class Ui_Dialog(object):
         self.hw_scroll_area.setWidgetResizable(True)
         self.hw_scroll_area.setObjectName("hw_scroll_area")
         self.hw_scroll_widgets = QtWidgets.QWidget()
-        self.hw_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 659, 419))
+        self.hw_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 458, 511))
         self.hw_scroll_widgets.setObjectName("hw_scroll_widgets")
         self.verticalLayout_13 = QtWidgets.QVBoxLayout(self.hw_scroll_widgets)
         self.verticalLayout_13.setContentsMargins(0, 0, 0, 0)
@@ -1081,7 +979,7 @@ class Ui_Dialog(object):
         self.about_scroll_area.setWidgetResizable(True)
         self.about_scroll_area.setObjectName("about_scroll_area")
         self.about_scroll_widgets = QtWidgets.QWidget()
-        self.about_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 659, 419))
+        self.about_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 655, 415))
         self.about_scroll_widgets.setObjectName("about_scroll_widgets")
         self.verticalLayout_15 = QtWidgets.QVBoxLayout(self.about_scroll_widgets)
         self.verticalLayout_15.setContentsMargins(0, 0, 0, 0)

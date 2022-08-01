@@ -1,7 +1,6 @@
 #!/bin/bash
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 SRC_DIR=${CURRENT_DIR}/../../src
-export 
 echo "##### Start updater process #####" 
 
 # additional args to not fail on wrong clock time and enable update to newer distro releases
@@ -25,8 +24,7 @@ function waqd_install() {
     echo "# Install needed system libraries... (Step 1/5)"
     # python dependencies
     # sudo apt -y install python3-apt # TODO: if apt via python is used
-    sudo apt -y install python3-libgpiod python3-venv 
-    sudo apt -y install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtchart
+    sudo apt -y install python3-libgpiod python3-venv python3-pyrsistent python3-pyqt5 python3-pyqt5.qtmultimedia python3-pyqt5.qtsvg python3-pyqt5.qtchart
     # install pipx for venv based app creation
     python3 -m pip install --user pipx==1.1.0
     python3 -m pipx ensurepath
@@ -39,13 +37,14 @@ function waqd_install() {
     # Install security updates daily - see https://wiki.debian.org/UnattendedUpgrades
     sudo apt-get install unattended-upgrades -y
     # sed '/Unattended-Upgrade::MinimalSteps "true";/s/^////' -i /etc/apt/apt.conf.d/50unattended-upgrades
-
+    # enables shutdown while updating
     #/etc/apt/apt.conf.d/50unattended-upgrades
     # TODO use //Unattended-Upgrade::MinimalSteps "true";
 
     echo "# Install Wifi Connector... (Step 3/5)"
-    chmod +x ./install_wifi-connect
-    ./install_wifi-connect
+    # TODO can'T do this in the middle of an update, only after it?
+    chmod +x ./install_wifi-connect.sh
+    ./install_wifi-connect.sh -y
 
     echo "# Setting up the system (Step 4/5)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
@@ -54,6 +53,6 @@ function waqd_install() {
     # needs installed app
     export PYTHONPATH=${SRC_DIR}
     python3 -m installer --set_wallpaper
-
+    sudo reboot
     echo "# Waiting for restart..."
 }

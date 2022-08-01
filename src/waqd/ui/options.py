@@ -42,6 +42,7 @@ from waqd.settings import (BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS, CCS811_
                            NIGHT_STANDBY_TIMEOUT, OW_CITY_IDS, LOG_SENSOR_DATA,
                            SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, MH_Z19_VALUE_OFFSET, Settings)
 from waqd.ui import common
+from waqd.ui.theming import activate_theme
 from waqd.ui.main_subs import sub_ui
 from waqd.ui.widgets.fader_widget import FaderWidget
 from waqd.ui.widgets.splashscreen import SplashScreen
@@ -78,7 +79,7 @@ class OptionMainUi(QtWidgets.QDialog):
 
         self._ui = Ui_Dialog()
         self._ui.setupUi(self)
-
+        activate_theme(self._settings.get_float(FONT_SCALING),self._settings.get_string(FONT_NAME) )
         self.setGeometry(main_ui.geometry())
 
         # start fader - variable must be held otherwise gc will claim it
@@ -86,9 +87,6 @@ class OptionMainUi(QtWidgets.QDialog):
 
         # set version label
         self._ui.version_label.setText(WAQD_VERSION)
-
-        # set up fix background image
-        #self._ui.background_label.setPixmap(QtGui.QPixmap(str(get_asset_file("gui_base", "background-full"))))
 
         # TODO: connect tab toggling
         self._ui.general_button.clicked.connect(self._switch_pages)
@@ -180,25 +178,26 @@ class OptionMainUi(QtWidgets.QDialog):
 
 
     def _calibrate_mh_z19(self):
-        #self._mh_z19_calib_dialog = 
-        self._calib_dialog_ui = uic.loadUi(waqd.base_path / "ui" /
-                                           "widgets" / "calibration.ui",
-                                           baseinstance=QtWidgets.QDialog(self))
+        from .widgets.calibration_ui import Ui_Dialog
+        self._calib_dialog = QtWidgets.QDialog(self)
+        self._calib_dialog_ui = Ui_Dialog()
+        self._calib_dialog_ui.setupUi(self._calib_dialog)
+        self._calib_dialog.adjustSize()
         # TODO check if it is he correct one
         if not isinstance(self._comps.co2_sensor, MH_Z19):
             return
         offset = self._settings.get_int(MH_Z19_VALUE_OFFSET)
-        self._calib_dialog_ui.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
-        self._calib_dialog_ui.move(int((self.geometry().width() - self._calib_dialog_ui.width()) / 2),
-                                   int((self.geometry().height() - self._calib_dialog_ui.height()) / 2))
+        self._calib_dialog.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
+        self._calib_dialog.move(int((self.geometry().width() - self._calib_dialog.width()) / 2),
+                                   int((self.geometry().height() - self._calib_dialog.height()) / 2))
         self._calib_dialog_ui.calib_spin_box.setValue(offset)
         self._calib_dialog_ui.calib_spin_box.valueChanged.connect(self._update_calib_value)
         self._calib_dialog_ui.zero_button.clicked.connect(self._comps.co2_sensor.zero_calibraton)
-        self._calib_dialog_ui.setModal(True)
+        self._calib_dialog.setModal(True)
         self._calib_dialog_ui.button_box.button(
             QtWidgets.QDialogButtonBox.Save).clicked.connect(self._save_mh_z19_calib)
         self._update_calib_value()
-        self._calib_dialog_ui.exec_()
+        self._calib_dialog.exec_()
 
     def _update_calib_value(self):
         offset = self._calib_dialog_ui.calib_spin_box.value()
@@ -217,12 +216,13 @@ class OptionMainUi(QtWidgets.QDialog):
     def _test_motion_sensor(self):
         class MotionSensorTestDialog(sub_ui.SubUi):
             def __init__(self, parent: QtWidgets.QWidget, comps, settings) -> None:
+                from .widgets.value_test_ui import Ui_Dialog
                 self._comps = comps
                 self._dialog = QtWidgets.QDialog(parent)
                 self._dialog.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
-                ui = uic.loadUi(waqd.base_path / "ui" /
-                                                   "widgets" / "value_test.ui", baseinstance=self._dialog)
-                sub_ui.SubUi.__init__(self, self._dialog, ui, settings)
+                self._ui = Ui_Dialog()
+                self._ui.setupUi(self._dialog)
+                sub_ui.SubUi.__init__(self, self._dialog, self._ui, settings)
                 self._dialog.move(int((parent.geometry().width() - self._dialog.width()) / 2),
                                   int((parent.geometry().height() - self._dialog.height()) / 2))
                                    

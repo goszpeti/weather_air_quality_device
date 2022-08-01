@@ -60,15 +60,15 @@ def get_font(font_name) -> QFont:
             logger.warning("Can't apply selected font file.")
     return font
 
-def apply_font(qt_root_obj: QtCore.QObject, font_name: str):
+def apply_font(font_name: str):
     font = get_font(font_name)
     qapp = QApplication.instance()
     if qapp is None:
         return
     qapp.setFont(font)
-    for qt_obj in qt_root_obj.findChildren(QWidget):
-        obj_font = qt_obj.font()
-        obj_font.setFamily(font.family())
+    # for qt_obj in qt_root_obj.findChildren(QWidget):
+    #     obj_font = qt_obj.font()
+    #     obj_font.setFamily(font.family())
 
 
 def set_ui_language(qt_app: QApplication, settings: Settings):

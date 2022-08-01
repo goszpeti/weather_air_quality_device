@@ -25,6 +25,9 @@ from typing import List, Tuple
 from file_read_backwards import FileReadBackwards
 from PyQt5 import QtChart, QtCore, QtGui, QtWidgets
 
+from waqd.base.translation import Translation
+from waqd.settings import LANG
+
 Qt = QtCore.Qt
 
 
@@ -43,7 +46,7 @@ class SensorDetailView(QtWidgets.QWidget):
         self.setGeometry(main_ui.geometry())
 
         if not log_file.exists():
-            self.not_enough_values_dialog()
+            self.not_enough_values_dialog(main_ui)
             return
 
         # read log backwards, until we hit the time barrier from TIME_WINDOW_SECONDS - performance!
@@ -63,7 +66,7 @@ class SensorDetailView(QtWidgets.QWidget):
             os.remove(log_file)
 
         if len(self._time_value_pairs) < 2:  # insufficient data
-            self.not_enough_values_dialog()
+            self.not_enough_values_dialog(main_ui)
             return
 
         # add values to qt graph
@@ -139,10 +142,15 @@ class SensorDetailView(QtWidgets.QWidget):
             self.close()
         return super().eventFilter(source, event)
 
-    def not_enough_values_dialog(self):
-        msg = QtWidgets.QMessageBox(parent=self)
+    def not_enough_values_dialog(self, main_ui):
+        msg = QtWidgets.QMessageBox(parent=main_ui)
+        msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
         msg.setWindowTitle("Nothing to display!")
-        msg.setText("There are not enough logged values yet!")
+        msg.setText(Translation().get_localized_string(
+            "base", "ui_dict", "cant_disp_sensor_logs", main_ui._settings.get_string(LANG))) # TODO
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.adjustSize()
+        msg.move(int((main_ui.geometry().width() - msg.width()) / 2),
+                 int((main_ui.geometry().height() - msg.height()) / 2))
         msg.exec_()

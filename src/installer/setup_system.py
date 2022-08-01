@@ -19,7 +19,7 @@ def enable_hw_access():
     rules_path = Path(rules_dir) / rules_file
     assure_file_exists(rules_path, chown=False)
     enable_text = 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness' \
-                '/sys/class/backlight/%k/bl_power"'
+                ' /sys/class/backlight/%k/bl_power"'
     add_line_to_file([enable_text], rules_path, unique=True)
 
     # enable all needed hw accesses
@@ -28,7 +28,7 @@ def enable_hw_access():
     os.system("raspi-config nonint do_i2c 0")
     os.system("raspi-config nonint do_spi 0")
     # Allow port 80 to be accessed as non sudo
-    os.system(f"setcap 'cap_net_bind_service=+ep' / usr/bin/python3.{sys.version_info.minor}")
+    os.system(f"setcap 'cap_net_bind_service=+ep' /usr/bin/python3.{str(sys.version_info.minor)}")
 
 
 def disable_screensaver():
@@ -107,6 +107,7 @@ def set_wallpaper(install_path: Path):
 
 
 def clean_lxde_desktop(desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/desktop-items-0.conf")):
+    # Can't be run as sudo, or as sudo -runuser. Needs desktop manager running.
     logging.info("Cleanup desktop icons...")
     assure_file_exists(desktop_conf_path)
     remove_line_in_file(["show_trash", "show_mounts"], desktop_conf_path)
@@ -121,7 +122,6 @@ def do_setup():
     # TODO need to add dtoverlay=rpi-backlight to /boot/config.ini
 
     # Cosmetic setup
-    clean_lxde_desktop()
     customize_splash_screen()
     hide_mouse_cursor()
     disable_screensaver()

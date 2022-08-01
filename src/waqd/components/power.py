@@ -56,8 +56,7 @@ class ESaver(CyclicComponent):
     def is_awake(self):
         """ Display is in awake mode (higher brightness) """
         motion_detected = self._comps.motion_detection_sensor.motion_detected
-        self._is_awake = self._is_awake or motion_detected
-        return self._is_awake
+        return self._is_awake or motion_detected
     
     @property
     def night_mode_active(self):

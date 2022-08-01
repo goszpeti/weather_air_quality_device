@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, Tuple
 
 import waqd
 from PyQt5 import QtGui
+from waqd.components.sensors import SENSOR_INTERIOR_TYPE
 from waqd.settings import FONT_NAME, INTERIOR_BG
 from waqd.ui import common
 from waqd.ui.main_subs import sub_ui
@@ -74,16 +75,21 @@ class Interior(sub_ui.SubUi):
             self._tvoc_ui_bar = self.set_available_bar(self.TVOC_BAR_OPTS, font_name)
 
         # connect sensor detail views
-        self._ui.interior_temp_value.clicked.connect(lambda: self.show_detail("temperature", "°Celsius"))
+        self._ui.interior_temp_value.clicked.connect(
+            lambda: self.show_detail("temp_degC" + "_" + SENSOR_INTERIOR_TYPE, "°Celsius"))
 
         if self._co2_bar:
-            self._co2_bar.clicked.connect(lambda: self.show_detail("CO2", "PPM"))
+            self._co2_bar.clicked.connect(lambda: self.show_detail(
+                "CO2_ppm" + "_" + SENSOR_INTERIOR_TYPE, "PPM"))
         if self._pressure_ui_bar:
-            self._pressure_ui_bar.clicked.connect(lambda: self.show_detail("pressure", "hPa"))
+            self._pressure_ui_bar.clicked.connect(lambda: self.show_detail(
+                "pressure_hPa" + "_" + SENSOR_INTERIOR_TYPE, "hPa"))
         if self._tvoc_ui_bar:
-            self._tvoc_ui_bar.clicked.connect(lambda: self.show_detail("TVOC", "PPB"))
+            self._tvoc_ui_bar.clicked.connect(lambda: self.show_detail(
+                "TVOC" + "_" + SENSOR_INTERIOR_TYPE, "PPB"))
         if self._humidity_ui_bar:
-            self._humidity_ui_bar.clicked.connect(lambda: self.show_detail("humidity", "%"))
+            self._humidity_ui_bar.clicked.connect(lambda: self.show_detail(
+                "humidity_%" + "_" + SENSOR_INTERIOR_TYPE, "%"))
 
         # call once at begin
         self.init_with_cyclic_update()

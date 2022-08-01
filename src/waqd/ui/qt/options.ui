@@ -46,113 +46,7 @@
   <property name="styleSheet">
    <string notr="true">* {
     font-size: 18pt;
-}
-QGroupBox{
-    color: white;	
-}
-QComboBox {
-    color: white;	
-    background-color: transparent;
-}
-QComboBox:disabled {
-    color: white;
-    background: grey;
-}
-QWidget  {
-    background: transparent;
-}
-QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-    color: white;	
-    background: transparent;
-}
-QComboBox:editable {
-    background: transparent;
-    selection-background-color: transparent;
-}
-QComboBox QAbstractItemView {
-    color: white;	
-    background: #679ac7;
-    selection-color: white;
-    selection-background-color: grey;
-}
-QPushButton{background-color: transparent;color: white;border: 2px solid white;border-radius: 4px;}
-QPushButton:pressed {border: 2px solid grey;color:grey;}
-QPushButton::hover {
-    border: 2px solid grey;color: grey;
-}
-QPushButton::on {
-    border: 2px solid grey;color: grey;
-}
-QTextBrowser{background-color: transparent;color: white;border: 1px solid white}
-QLabel{background-color: transparent;color: white;}
-QMessageBox{background-color: grey;color: black}
-QDialog{
-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0.0259694, y2:1, stop:0.135593 rgba(103, 154, 199, 255), stop:1 rgba(232, 159, 166, 255))
-}
-QScrollArea{
-background-color: transparent;
-}
-QFrame{
-background-color: transparent;
-}
-QScrollBar:vertical {
-    border: 0px solid transparent;
-    background: transparent;
-    width: 10px;
-    margin: 0px 0px 0px 0px;
-}
-QScrollBar::handle:vertical {
-    min-height: 0px;
-    border-radius: 0px;
-    background: #D3D3D3;
-}
-QScrollBar::handle:vertical:hover {
-    min-height: 0px;
-    width: 12px;
-    background: white;
-}
-QScrollBar::add-line:vertical {
-    height: 0px;
-    background: transparent;
-    subcontrol-position: bottom;
-    subcontrol-origin: margin;
-}
-QScrollBar::sub-line:vertical {
-     background: transparent;
-     height: 0px;
-     subcontrol-position: top;
-     subcontrol-origin: margin;
- }
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-     background: transparent;
- }
-QSlider::groove:vertical {
-    margin: 24px;
-}
-
-QSlider::groove:horizontal {
-	background-color: lightgrey;
-    height: 6px;
-    margin: 6px;
-    }
-QSlider::handle:horizontal {
-      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-    border: 1px solid #444;
-	border-radius: 8px;
-    width: 32px;
-    margin: -6px;
-    }
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 8px;
-}
-
-</string>
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <property name="leftMargin">
@@ -230,6 +124,12 @@ border-radius: 8px;
            <width>16777215</width>
            <height>32</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Franzo</family>
+           <pointsize>18</pointsize>
+          </font>
          </property>
          <property name="text">
           <string>Display</string>
@@ -444,7 +344,7 @@ border-radius: 8px;
                 <x>0</x>
                 <y>0</y>
                 <width>252</width>
-                <height>398</height>
+                <height>420</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -1384,8 +1284,8 @@ border-radius: 8px;
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>659</width>
-                <height>419</height>
+                <width>644</width>
+                <height>382</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1719,8 +1619,8 @@ to preview! </string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>659</width>
-                <height>419</height>
+                <width>245</width>
+                <height>404</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1848,8 +1748,8 @@ to preview! </string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>659</width>
-                <height>419</height>
+                <width>458</width>
+                <height>511</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -2246,8 +2146,8 @@ to preview! </string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>659</width>
-                <height>419</height>
+                <width>655</width>
+                <height>415</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_15">

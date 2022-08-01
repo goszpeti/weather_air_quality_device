@@ -45,7 +45,7 @@ from waqd.base.logger import Logger
 from waqd.base.system import RuntimeSystem
 from waqd.settings import (DISP_TYPE_HEADLESS, DISP_TYPE_RPI,
                            DISP_TYPE_WAVESHARE_5_LCD,
-                           DISP_TYPE_WAVESHARE_EPAPER_2_9, DISPLAY_TYPE,
+                           DISP_TYPE_WAVESHARE_EPAPER_2_9, DISPLAY_TYPE, FONT_NAME,
                            FONT_SCALING,
                            Settings)
 
@@ -195,8 +195,7 @@ def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
     # install translator
     common.set_ui_language(qt_app, settings)
     from waqd.ui.theming import activate_theme
-
-    activate_theme(settings.get_float(FONT_SCALING))
+    activate_theme(settings.get_float(FONT_SCALING), settings.get_string(FONT_NAME))
 
     return qt_app
 

@@ -78,14 +78,10 @@ class WeatherMainUi(QtWidgets.QMainWindow):
 
     def init_gui(self):
         """ Retranslates, then loads all SubUi elements. """
-
-        #ui_type = uic.loadUiType(config.base_path / "ui" / "qt" / "weather.ui")
-        #self._ui = ui_type[0]()  # 0th element is always the UI class
-        #self._ui.setupUi(self)
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
-
-        activate_theme(self._settings.get_float(FONT_SCALING))
+        activate_theme(self._settings.get_float(FONT_SCALING), self._settings.get_string(FONT_NAME))
+        common.apply_shadow_to_labels(self)
 
         # initialize all modules
         if not self._interior_ui:
@@ -97,9 +93,6 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         if not self._exterior_ui:
             self._exterior_ui = exterior.Exterior(self, self._settings)
 
-        common.apply_font(self, self._settings.get_string(FONT_NAME))
-
-        common.apply_shadow_to_labels(self)
 
         # translate ui
         self._ui.retranslateUi(self)

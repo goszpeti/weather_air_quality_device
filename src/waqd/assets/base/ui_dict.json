@@ -1,14 +1,17 @@
 {
     "en": {
         "motion_reg": "Motion registered",
-        "no_motion_reg": "No Motion registered"
+        "no_motion_reg": "No Motion registered",
+        "cant_disp_sensor_logs": "There are not enough logged values yet!"
     },
     "de": {
-        "motion_reg": "Motion registered",
-        "no_motion_reg": "No Motion registered"
+        "motion_reg": "Bewegung registriert",
+        "no_motion_reg": "Keine Bewegung registriert",
+        "cant_disp_sensor_logs": "Nicht genug Daten aufgezeichnet!"
     },
     "hu": {
-        "motion_reg": "Motion registered",
-        "no_motion_reg": "No Motion registered"
+        "motion_reg": "Mozgás felismerve",
+        "no_motion_reg": "Nincs mozgás",
+        "cant_disp_sensor_logs": "Nincs elég adat!"
     }
 }

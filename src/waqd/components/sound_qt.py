@@ -63,3 +63,4 @@ class Sound(Component):
             self._player.play()
         except Exception as error:
             self._logger.warning("Sound: Cannot play sound: %s", str(error))
+        self.lock.release()

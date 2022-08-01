@@ -15,6 +15,11 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(339, 293)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
+        Dialog.setSizePolicy(sizePolicy)
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.formLayout = QtWidgets.QFormLayout()
@@ -73,8 +78,8 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.measure_value_text_label.setText(_translate("Dialog", "Measure Value:"))
+        self.measure_value_text_label.setText(_translate("Dialog", "Measure Value"))
         self.display_value_text_label.setText(_translate("Dialog", "Display Value"))
-        self.label.setText(_translate("Dialog", "Manual offset:"))
+        self.label.setText(_translate("Dialog", "Manual offset"))
         self.zero_label.setText(_translate("Dialog", "Zero Calibration of Sensor - Please leave the sensor with outside quality air for at least 20 minutes before zeroing!"))
         self.zero_button.setText(_translate("Dialog", "Zero Calibration"))

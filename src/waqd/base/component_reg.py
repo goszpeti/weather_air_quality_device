@@ -148,7 +148,7 @@ class ComponentRegistry():
     @property
     def sound(self) -> "Sound":
         """ Access for Sound singleton """
-        from waqd.components.sound_qt import Sound
+        from waqd.components import Sound
         return self._create_component_instance(Sound, [self, self._settings.get(SOUND_ENABLED)])
 
     @property

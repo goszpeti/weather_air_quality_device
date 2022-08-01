@@ -55,8 +55,6 @@ class Display(Component):
 
     def set_brightness(self, brightness: int):
         """ Sets the current display brightness in percent, e.g. 75"""
-        # TODO do this in a thread`? Can take too long for a bar
-
         if self._brightness == brightness:
             return  # nothing to do
         self._logger.debug("Setting brightness to %i", brightness)

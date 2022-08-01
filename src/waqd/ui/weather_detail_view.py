@@ -108,6 +108,7 @@ class WeatherDetailView(QtWidgets.QWidget):
         chart.setTitle(f"{settings.get(LOCATION)} " +
                        common.get_localized_date(weather_points[0].date_time, settings))
         font.setPixelSize(24)
+        chart.setTitleBrush(QtGui.QBrush(QtGui.QColor("white")))
         chart.setTitleFont(font)
 
         # chart axis

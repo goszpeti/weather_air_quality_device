@@ -27,5 +27,6 @@ if __name__ == '__main__':
         setup_system.do_setup()
     elif args.set_wallpaper: # need to handle this separately
         setup_system.set_wallpaper(common.get_waqd_install_path())
+        setup_system.clean_lxde_desktop()
     else:
         logging.info("Nothing to do!")
