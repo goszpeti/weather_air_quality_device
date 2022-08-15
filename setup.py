@@ -38,7 +38,7 @@ REQUIRED = [
     "Adafruit-Blinka==7.1.1",
     #"Adafruit-PlatformDetect==2.4.0",  # MIT License - target and model detection - up to 3.10 not working with BMP280
     "Adafruit-CircuitPython-DHT==3.7.1",  # MIT License - temp/hum sensor
-    "Adafruit-CircuitPython-CCS811==1.3.4",  # MIT License - co2/tvoc sensor
+    "Adafruit-CircuitPython-CCS811==1.3.10",  # MIT License - co2/tvoc sensor
     "Adafruit-CircuitPython-BME280==2.6.10",  # MIT License - temp/hum/baro sensor
     "Adafruit-CircuitPython-BMP280==3.2.8",  # MIT License - temp/baro sensor
     "Adafruit-Circuitpython-BH1750==1.0.7",  # MIT License - light sensor
