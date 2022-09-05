@@ -23,7 +23,7 @@ REQUIRES_PYTHON = '>=3.7.0'
 REQUIRED = [
     # Backend
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
-    "JsonSchema==4.0.1",  # MIT License - for events json schema validation
+    "JsonSchema==4.15.0",  # MIT License - for events json schema validation
     "bottle==0.12.21", # webserver for remote sensors
     "paste==3.5.0", # server backend for bottle
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
