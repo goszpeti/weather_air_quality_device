@@ -27,6 +27,7 @@ from datetime import datetime, time
 import json
 import os
 import urllib.request
+import requests
 
 from dataclasses import dataclass, field
 from enum import Enum
@@ -494,24 +495,21 @@ class OpenWeatherMap(Component):
         if not is_connected:
             # TODO error message
             return {}
-        response = []
         if self._cw_json_file and command == self.CURRENT_WEATHER_BY_CITY_ID_API_CMD:
-            response.append(self._cw_json_file)
+            with open(self._cw_json_file) as fp:
+                return json.load(fp)
         elif self._fc_json_file and command == self.FORECAST_BY_CITY_ID_API_CMD:
-            response.append(self._fc_json_file)
+            with open(self._fc_json_file) as fp:
+                return json.load(fp)
         else:
             try:
-                response = urllib.request.urlretrieve(
-                    command.format(cid=self._city_id) +
-                    self.API_POSTFIX.format(apikey=self._api_key))
+                response = requests.get(command.format(cid=self._city_id) +
+                             self.API_POSTFIX.format(apikey=self._api_key), timeout=5)
+                if response.ok:
+                    return response.json()
             except Exception as error:
                 self._logger.error(f"Can't get current weather for {self._city_id} : {str(error)}")
-
-        if not response or not response or not os.path.exists(response[0]):
-            return {}
-
-        with open(response[0], encoding="utf-8") as response_json:
-            return json.load(response_json)
+        return {}
 
     @staticmethod
     def get_condition_icon(ident, is_day) -> Path:
