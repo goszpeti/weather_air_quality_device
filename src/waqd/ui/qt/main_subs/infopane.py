@@ -20,9 +20,9 @@
 import datetime
 from typing import TYPE_CHECKING
 
-from waqd.ui.main_subs import sub_ui
+from  . import sub_ui
 if TYPE_CHECKING:
-    from waqd.ui.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_ui import WeatherMainUi
     from waqd.settings import Settings
 
 class InfoPane(sub_ui.SubUi):

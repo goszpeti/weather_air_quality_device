@@ -1,15 +1,27 @@
+from datetime import datetime, timedelta
+import os
+from turtle import width
+import plotly.graph_objects as go
+from plotly.graph_objs import Scattergl
+from plotly import offline
+from plotly.io import to_html
 import html
+import json
 from threading import Thread
 from time import sleep
-from typing import TYPE_CHECKING, TypedDict
-import json
+from typing import TYPE_CHECKING, List, Tuple, TypedDict
+from waqd.components.sensor_logger import InfluxSensorLogger
+
 import waqd
 import waqd.app as app
-from bottle import (Jinja2Template, default_app, request, route, response,
+from bottle import (Jinja2Template, default_app, request, response, route, redirect,
                     static_file)
 from pint import Quantity
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
+from waqd.settings import USER_SESSION_SECRET
+from .web_session import LoginPlugin, UserFileDB
+
 if TYPE_CHECKING:
     from waqd.base.component_reg import ComponentRegistry
 
@@ -21,40 +33,73 @@ class SensorApi_0_1(TypedDict):
     baro: str  # hPa
     co2: str  # ppm
 
+# Endpoint constants
+ROUTE_WAQD = "/waqd"
+ROUTE_WAQD_TEMP_HISTORY = "/waqd/temp_history"
+ROUTE_CSS = "/style.css"
+ROUTE_ABOUT = "/about"
+ROUTE_SETTINGS = "/settings"
+ROUTE_SIGNIN = "/login"
+ROUTE_SIGNOUT = "/logout"
+# ROUTE_PROFILE = "/profile"
+
+# API endpoint constants
+ROUTE_API_REMOTE_EXT_SENSOR = "/api/remoteExtSensor"
+ROUTE_API_REMOTE_INT_SENSOR = "/api/remoteIntSensor"
+ROUTE_API_EVENTS_REMOTE_INT_SENSOR = "/api/events/remoteIntSensor"
+
 class BottleServer(Component):
     menu = {
-        "/waqd": "Weather Air Quality Device",
-        "/about": "About"
+        ROUTE_WAQD: "Measurements",
+        ROUTE_ABOUT: "About",
+        ROUTE_SETTINGS: "Settings",
+        ROUTE_SIGNOUT: "Sign Out"
     }
 
-    def __init__(self, components: "ComponentRegistry", enabled=True):
+    def __init__(self, components: "ComponentRegistry", enabled=True, user_session_secret="SECRET"):
         super().__init__(components, enabled=enabled)
         self._server = None
         if self._disabled:
             return
         self._comps: "ComponentRegistry"
         self._app = default_app()
+        self._app.config['SECRET_KEY'] = user_session_secret
         self._run_thread = Thread(name="RunServer", target=self._run_server, daemon=True)
         self._run_thread.start()
+        self._user_settings = {}
 
+        self._login = self._app.install(LoginPlugin())
+        self._user_db = UserFileDB()
+        # TODO Remove - add reg form 
+        self._user_db.write_entry("goszpeti", "MyTestPw123$")
+
+
+    # Load user by id here
     def _run_server(self):
         # use programatic routing to connect class instance methods to routes
         route('/static/<path:path>', 'GET', self.get_static_file)
-        route('/', 'GET', self.get_entrypoint)
-        route('/about', 'GET', self.get_entrypoint)
-        route('/waqd', 'GET', self.get_entrypoint)
-        # api endpoints
-        route('/api/remoteExtSensor', 'POST', self.post_sensor_values)
-        route('/api/remoteIntSensor', 'POST', self.post_sensor_values)
-        route('/api/remoteExtSensor', 'GET', self.get_remote_exterior_values)
-        route('/api/remoteIntSensor', 'GET', self.get_remote_interior_values)
-        route('/api/events/remoteIntSensor', 'GET', self.trigger_event_remote_value)
+        route('/', 'GET', self.index)
+        route(ROUTE_ABOUT, 'GET', self.index)
+        route(ROUTE_WAQD, 'GET', self.index)
+        route(ROUTE_SIGNIN, 'GET', self.index)
+        route(ROUTE_SIGNOUT, 'GET', self.index)
+        route(ROUTE_SETTINGS, "GET", self.index)
+        route(ROUTE_SIGNIN, 'POST', self.login)
+        route(ROUTE_SIGNOUT, 'GET', self.logout)
+        route(ROUTE_CSS, 'GET', self.css)
+        route(ROUTE_WAQD_TEMP_HISTORY, 'GET', self.plot_graph)
 
-        # Can't start server rom bottle, because it does not support stopping it without a hack
+        # api endpoints
+        route(ROUTE_API_REMOTE_EXT_SENSOR, 'POST', self.post_sensor_values)
+        route(ROUTE_API_REMOTE_INT_SENSOR, 'POST', self.post_sensor_values)
+        route(ROUTE_API_REMOTE_EXT_SENSOR, 'GET', self.get_remote_exterior_values)
+        route(ROUTE_API_REMOTE_INT_SENSOR, 'GET', self.get_remote_interior_values)
+        route(ROUTE_API_EVENTS_REMOTE_INT_SENSOR, 'GET', self.trigger_event_remote_value)
+
+        # Can't start server from bottle, because it does not support stopping it without a hack
         from paste import httpserver
         self._server = httpserver.serve(self._app, host='0.0.0.0', port='80',
-                                        daemon_threads=True, start_loop=False)
-        self._server.serve_forever()
+                                        daemon_threads=True, start_loop=True)
 
     def stop(self):
         # must stop, because wlan captive portal would block port 80?
@@ -63,42 +108,102 @@ class BottleServer(Component):
 
 ### HTML display endpoints
 
-    def get_static_file(self, path: str):
-        response = static_file(path, root=waqd.assets_path)
-        response.set_header("Cache-Control", "public, max-age=604800")
+    def css(self):
+        response = static_file("style.css", root=waqd.assets_path / "html")
+        response.set_header("Cache-Control", "public, max-age=0")
         return response
 
-    def get_entrypoint(self):
+    def logout(self):
+        # Implement logout
+        self._login.logout_user()
+        return redirect('/')
+
+    def login(self):
+        # TODO None checking
+        username = request.forms.get('username')
+        password = request.forms.get('password')
+        if self._user_db.check_login(username, password):
+            self._login.login_user(username)
+            return redirect('/waqd')
+        else:
+            return "<p>Login failed.</p>" # TODO write to the same page
+
+    def _get_login_subpage(self):
+        # Implement login (you can check passwords here or etc)
+        page_content = get_asset_file("html", "login.html").read_text()
+        tpl = Jinja2Template(page_content)
+        return tpl.render()
+
+    def get_static_file(self, path: str):
+        response = static_file(path, root=waqd.assets_path)
+        # 1 week
+        response.set_header("Cache-Control", "public, max-age=0")  # 604800
+        return response
+
+    def index(self):
         """ Single page entrypoint """
+        route = request.path
+        # default entrypoint to waqd view
+        if route == "/":
+            redirect(ROUTE_WAQD)
+
+        current_user = self._login.get_user()
+        user_data = self._user_db.get_entry(current_user)
+        if not current_user and route != ROUTE_SIGNIN:
+            return redirect(ROUTE_SIGNIN)
+
         page = get_asset_file("html", "index.html").read_text()
         tpl = Jinja2Template(page)
         page_content = ""
-        path = request.path
-        path = "/waqd" if path == "/" else path
-        if request.path == "/about":
+        login_msg = ""
+        if route == ROUTE_ABOUT:
             page_content = self._get_about_subpage()
-        elif request.path in "/waqd":
+        elif route == ROUTE_WAQD:
             page_content = self._get_waqd_subpage()
-            
-        menu = self._generate_menu(active_page=path)
-        return tpl.render(menu=menu, content=page_content)
+        elif route == ROUTE_SIGNIN:
+            page_content = self._get_login_subpage()
+        elif route == ROUTE_SIGNOUT:
+            login_msg = "Logged out successfully."
+        elif route == ROUTE_SETTINGS:
+            page_content = ""
 
-    def _generate_menu(self, active_page: str):
-        active_name = self.menu.get(active_page, "")
-        inactive_anchors = ""
-        active_anchor = f'<a class = "active" href = "{active_page}" >{active_name}</a>'
+        menu = self._generate_menu()
 
+        if current_user:
+            login_msg = f'<p class="login_msg">Logged in as {current_user}</p>'
+        return tpl.render(menu=menu, content=page_content, login_msg=login_msg)
+
+    def plot_graph(self):
+        my_plot_div = ""
+        times_value_pairs = InfluxSensorLogger.get_sensor_values(
+        "interior", "temp_degC", 180)
+        if times_value_pairs:  # .isoformat(sep=" ")
+            times = [times_value_pair[0].astimezone(waqd.LOCAL_TIMEZONE)
+                    for times_value_pair in times_value_pairs]
+            values = [times_value_pair[1] for times_value_pair in times_value_pairs]
+            graph = Scattergl(x=times, y=values)
+            fig = go.Figure(graph)
+            my_plot_div = to_html(fig, default_width="auto", full_html=False)
+            # my_plot_div = offline.plot(fig, include_plotlyjs=True, output_type='div')
+
+        page_content = get_asset_file("html", "popup.html").read_text()
+        tpl = Jinja2Template(page_content)
+        # (waqd.base_path / "plotly.html").write_text(tpl.render(title="Temperature History", content=my_plot_div))
+        return tpl.render(title="Temperature History", content=my_plot_div)
+        
+
+    def _generate_menu(self):
+        menu_items = ""
         for ref, name in self.menu.items():
-            if ref == active_page:
-                continue
-            inactive_anchors += f'<a class="passive" href="{ref}">{name}</a>'
+            menu_items += f'<li><a href="{ref}">{name}</a></li>'
         menu = f"""
-        {active_anchor}
-        <div id="myLinks">
-            {inactive_anchors}
-        </div>
+        <ul class="menu-items">
+            {menu_items}
+        </ul>
         """
         return menu
+        # tpl = Jinja2Template(menu)
+        # return tpl.render(user_name=user_name)
 
     def _get_about_subpage(self):
         page_content = get_asset_file("html", "about.html").read_text()
@@ -138,7 +243,6 @@ class BottleServer(Component):
 
     def trigger_event_remote_value(self):
         response.content_type = 'text/event-stream'
-        response.cache_control = 'no-cache'
         response.set_header("Cache-Control", "no-cache")
 
         yield 'retry: 1000\n\n'

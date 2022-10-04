@@ -20,6 +20,6 @@
         "bg_night_clear": "clear_night_bg.jpg",
         "bg_night_clouds": "cloudy_night_bg.jpg",
         "bg_night_heavy_clouds": "cloudy_night_bg.jpg",
-        "bg_night_thunderstorm": "thunderstorm_bg"
+        "bg_night_thunderstorm": "thunderstorm_bg.jpg"
     }
 }

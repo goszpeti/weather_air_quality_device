@@ -19,18 +19,17 @@
 #
 import threading
 import time
-
 from typing import Optional
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
-from waqd.base.component_ctrl import ComponentController
 from waqd.assets import get_asset_file
-from waqd.settings import FONT_SCALING, FONT_NAME, Settings
-from waqd.ui.main_subs import exterior, forecast, infopane, interior
-from waqd.ui import common, options
+from waqd.base.component_ctrl import ComponentController
+from waqd.settings import FONT_NAME, FONT_SCALING, Settings
+from waqd.ui.qt.theming import activate_theme
+
+from . import common, options
+from .main_subs import exterior, forecast, infopane, interior
 from .qt.weather_ui import Ui_MainWindow
-from waqd.ui.theming import activate_theme
 
 # define Qt so we can use it like the namespace in C++
 Qt = QtCore.Qt

@@ -2434,7 +2434,7 @@ p, li { white-space: pre-wrap; }
   <customwidget>
    <class>JumpSlider</class>
    <extends>QSlider</extends>
-   <header>waqd.ui.widgets.jumpslider.h</header>
+   <header>waqd.ui.qt.widgets.jumpslider.h</header>
   </customwidget>
   <customwidget>
    <class>AnimatedToggle</class>

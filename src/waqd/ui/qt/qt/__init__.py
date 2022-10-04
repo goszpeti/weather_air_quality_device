@@ -18,12 +18,5 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 """
-This package contains the addditional custom widgets widgets.
+This package contains the source and generated files of the Qt Ui files.
 """
-
-from waqd.ui.widgets.clickable_label import ClickableLabel
-from waqd.ui.widgets.display_bar import DisplayBar
-from waqd.ui.widgets.fader_widget import FaderWidget
-from waqd.ui.widgets.fading_image import FadingImage
-from waqd.ui.widgets.jumpslider import JumpSlider
-from waqd.ui.widgets.splashscreen import SplashScreen

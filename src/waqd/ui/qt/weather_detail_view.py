@@ -19,34 +19,32 @@
 #
 
 import logging
-
 from typing import List
 
 from PyQt5 import QtChart, QtCore, QtGui, QtWidgets
-
 from waqd import PROG_NAME, SCREEN_HEIGHT, SCREEN_WIDTH
-from waqd.settings import LOCATION
-from waqd.ui import common
 from waqd.components.online_weather import Weather
+from waqd.settings import LOCATION
+
+from . import common
 
 logger = logging.getLogger(PROG_NAME)
 
 Qt = QtCore.Qt
 
 
-class WeatherDetailView(QtWidgets.QWidget):
+class WeatherDetailView(QtWidgets.QDialog):
     AREA_COLOR = "#2B438C"
     MAX_POINTS = 5
 
     def __init__(self, weather_points: List[Weather], settings, main_ui):
-        QtWidgets.QWidget.__init__(self)
-
+        super().__init__(main_ui)
         # set up  window style and size
         # frameless modal window fullscreen (same as main ui)
-        self.setWindowFlags(Qt.WindowType(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint))
-        # self.setWindowModality(Qt.WindowModal)
+        self.setWindowFlags(Qt.WindowType(Qt.FramelessWindowHint))
+        self.setWindowModality(Qt.WindowModal)
         self.setGeometry(main_ui.geometry())
-
+        self.move(0,0)
         # create series from weather points
         series = QtChart.QLineSeries(self)
         self._weather_points = weather_points
@@ -162,8 +160,6 @@ class WeatherDetailView(QtWidgets.QWidget):
         """ Draw the Weather icons.
         Only possible after object is drawn, to calculate absolute pos on the screen.
         """
-        # if event.type() == QtCore.QEvent.MouseButtonPress:
-        #     self.close()
         if event.type() == QtCore.QEvent.Show:
             icon_width = int(77)
             icon_height = int(70)

@@ -22,7 +22,7 @@ import os
 from subprocess import check_call
 from typing import TYPE_CHECKING
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 from waqd import __version__ as WAQD_VERSION
@@ -41,11 +41,11 @@ from waqd.settings import (BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS, CCS811_
                            NIGHT_MODE_BEGIN, NIGHT_MODE_END, INTERIOR_BG, FORECAST_BG,
                            NIGHT_STANDBY_TIMEOUT, OW_CITY_IDS, LOG_SENSOR_DATA,
                            SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, MH_Z19_VALUE_OFFSET, Settings)
-from waqd.ui import common
-from waqd.ui.theming import activate_theme
-from waqd.ui.main_subs import sub_ui
-from waqd.ui.widgets.fader_widget import FaderWidget
-from waqd.ui.widgets.splashscreen import SplashScreen
+from . import common
+from waqd.ui.qt.theming import activate_theme
+from waqd.ui.qt.main_subs import sub_ui
+from waqd.ui.qt.widgets.fader_widget import FaderWidget
+from waqd.ui.qt.widgets.splashscreen import SplashScreen
 from PyQt5.QtWidgets import QScroller, QApplication, QPushButton
 from .qt.options_ui import Ui_Dialog
 
@@ -53,7 +53,7 @@ from .qt.options_ui import Ui_Dialog
 Qt = QtCore.Qt
 
 if TYPE_CHECKING:
-    from waqd.ui.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_ui import WeatherMainUi
 
 
 class OptionMainUi(QtWidgets.QDialog):
@@ -66,7 +66,6 @@ class OptionMainUi(QtWidgets.QDialog):
 
     def __init__(self, main_ui: "WeatherMainUi", comp_ctrl: ComponentController, settings: Settings):
         super().__init__()
-
         self._main_ui = main_ui  # reference to main ui instance
         self._comp_ctrl = comp_ctrl
         self._comps = comp_ctrl.components
@@ -136,22 +135,8 @@ class OptionMainUi(QtWidgets.QDialog):
         # set starting tab to first tab
         #self._ui.options_tabs.setCurrentIndex(0)
         QScroller.grabGesture(self._ui.hw_scroll_area, QScroller.LeftMouseButtonGesture)
-
-        #self._tst = common.CustomTabStyle()
-        #self._ui.options_tabs.tabBar().setStyle(self._tst)
-        
-        # # self.tab_widget = QTabWidget(self)
-        # # self.tab_widget.count
-        # for i in range(self._ui.options_tabs.count()):
-        #    # self.tab_widget.tabBar().tabButton
-        #     self._ui.options_tabs.tabBar().setTabButton(i, QTabBar.LeftSide, QLabel(self._ui.options_tabs.tabText(i)))
-
-
         # set to normal brightness
         self._comps.display.set_brightness(self._settings.get_int(BRIGHTNESS))
-
-        # common.scale_gui_elements(
-        #     self, self._settings.get_float(FONT_SCALING) * self.EXTRA_SCALING)
 
         # initialize splash screen for the closing of the UI and make a screenshot
         self._splash_screen = SplashScreen(background=False)

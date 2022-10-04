@@ -2736,18 +2736,18 @@
   <customwidget>
    <class>FadingImage</class>
    <extends>QStackedWidget</extends>
-   <header>waqd.ui.widgets.fading_image.h</header>
+   <header>waqd.ui.qt.widgets.fading_image.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ClickableLabel</class>
    <extends>QLabel</extends>
-   <header>waqd.ui.widgets.clickable_label.h</header>
+   <header>waqd.ui.qt.widgets.clickable_label.h</header>
   </customwidget>
   <customwidget>
    <class>DisplayBar</class>
    <extends>QLabel</extends>
-   <header>waqd.ui.widgets.display_bar.h</header>
+   <header>waqd.ui.qt.widgets.display_bar.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

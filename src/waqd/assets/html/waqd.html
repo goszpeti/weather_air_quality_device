@@ -1,38 +1,100 @@
-    
-    <!-- Server side event to update values -->
-    <script>
-        var source = new EventSource("api/events/remoteIntSensor");
-        source.onmessage = function (message) {
-            // console.log(message.data)
-            var jdata = JSON.parse(message.data);
-            document.getElementById("temp_value").innerHTML = jdata.temp;
-            document.getElementById("humidity_value").innerHTML = jdata.hum;
-            document.getElementById("pressure_value").innerHTML = jdata.baro;
-            document.getElementById("co2_value").innerHTML = jdata.co2;
+<style>
+</style>
+<script>
+  // Server side event to update values
+  var source = new EventSource("api/events/remoteIntSensor");
+  source.onmessage = function (message) {
+    // console.log(message.data)
+    var jdata = JSON.parse(message.data);
+    document.getElementById("temp_value").innerHTML = jdata.temp;
+    document.getElementById("humidity_value").innerHTML = jdata.hum;
+    document.getElementById("pressure_value").innerHTML = jdata.baro;
+    document.getElementById("co2_value").innerHTML = jdata.co2;
+  }
+  // When the user clicks on <div>, open the popup
+  function toggle_temp() {
+    var overlay = document.getElementById("loading_overlay");
+    overlay.style.display = "block";
+
+    fetch("/waqd/temp_history")
+      .then((response) => {
+        // Our handler throws an error if the request did not succeed.
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
         }
-        // Close on error, not very nice (no reconnect)
-        source.onerror = function () {
-            source.close();
-        };
-    </script>
-    <div id="waqd_view" class="block">
-        <div id="weather_overall" class="row" style="text-align: center;padding-bottom: 0px">
-            <img class="svg-white" src="static/{{weather_icon}}" alt="weather_icon" style="width: 50%;">
-        </div>
-        <div id="temp" class="row">
-            <img class="svg-white" src="static/weather_icons/wi-thermometer_full.svg" alt="temp_icon" width="15%">
-            <span id="temp_value">{{temp}}</span>
-        </div>
-        <div id="hum" class="row">
-            <img class="svg-white" src="static/weather_icons/wi-humidity.svg" alt="baro_icon" width="15%">
-            <span id="humidity_value">{{humidity}}</span>
-        </div>
-        <div id="baro" class="row">
-            <img class="svg-white" src="static/weather_icons/wi-barometer.svg" alt="baro_icon" width="15%">
-            <span id="pressure_value">{{pressure}}</span>
-        </div>
-        <div id="co2" class="row">
-            <p style="font-size: 1em;margin-top: 0cm;">
-            CO<sub>2</sub> <span id="co2_value">{{co2}}</span></p>
-        </div>
-    </div>
+        // Otherwise (if the response succeeded), our handler fetches the response
+        // as text by calling response.text(), and immediately returns the promise
+        // returned by `response.text()`.
+        return response.text();
+      })
+      // When response.text() has succeeded, the `then()` handler is called with
+      // the text, and we copy it into the `poemDisplay` box.
+
+      .then((text) => {
+        // var node = new DOMParser().parseFromString(text, 'text/html').body.childNodes[0]
+        // var scriptTag = document.createElement("script");
+        // scriptTag.type = 'text/javascript';
+        // scriptTag.appendChild(document.createTextNode(node.getElementsByTagName('script')));
+        var overlay = document.getElementById("loading_overlay");
+        overlay.style.display = "none";
+        var newDiv = document.createElement("div");
+        newDiv.innerHTML = text
+        document.getElementById("app").appendChild(newDiv)
+       var scripts = newDiv.getElementsByTagName("script");
+        for (var i = 0; i < scripts.length; i++) {
+          eval(scripts[i].innerText);
+        }
+        //document.createTextNode(node.getElementsByClassName("plotly-graph-div")));
+        //document.body.appendChild(scriptTag);
+        //  .childNodes[0]
+        // node.onload = () => {
+          var modal = document.getElementById("myModal");
+          modal.style.display = "block";
+                  // Get the <span> element that closes the modal
+          var span = document.getElementsByClassName("close")[0];
+          // When the user clicks on <span> (x), close the modal
+          span.onclick = function () {
+            var modal = document.getElementById("myModal");
+            modal.style.display = "none";
+            // Get the modal
+          }
+
+          // When the user clicks anywhere outside of the modal, close it
+          window.onclick = function (event) {
+            if (event.target == modal) {
+              var modal = document.getElementById("myModal");
+              modal.style.display = "none";
+            }
+          }
+        window.dispatchEvent(new Event('resize'));
+        // };
+      })
+    // Catch any errors that might happen, and display a message
+    // in the `poemDisplay` box.
+    // .catch((error) => poemDisplay.textContent = `Could not fetch verse: ${error}`);
+  }
+</script><!-- Server side event to update values -->
+
+
+<div id="waqd_view" class="block">
+  <div id="weather_overall" class="row" onclick="toggle_weather()" style="text-align: center;padding-bottom: 0px">
+      <img class="svg-white" src="static/{{weather_icon}}" alt="weather_icon" style="width: 50%;">
+  </div>
+  <div id="temp" class="row">
+      <img class="svg-white" src="static/weather_icons/wi-thermometer_full.svg" onclick="toggle_temp()"; alt="temp_icon" width="15%">
+      <span id="temp_value" onclick="toggle_temp()">{{temp}}</span>
+      <!-- <span class="popuptext" id="myPopup">Popup text...</span> -->
+  </div>
+  <div id="hum" class="row">
+      <img class="svg-white" src="static/weather_icons/wi-humidity.svg" alt="baro_icon" width="15%">
+      <span id="humidity_value">{{humidity}}</span>
+  </div>
+  <div id="baro" class="row">
+      <img class="svg-white" src="static/weather_icons/wi-barometer.svg" alt="baro_icon" width="15%">
+      <span id="pressure_value">{{pressure}}</span>
+  </div>
+  <div id="co2" class="row">
+      <p style="font-size: 1em;margin-top: 0cm;">
+      CO<sub>2</sub> <span id="co2_value">{{co2}}</span></p>
+  </div>
+</div>

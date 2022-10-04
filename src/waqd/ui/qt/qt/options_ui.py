@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'c:\repos\weatherairqualitydevice\src\waqd\ui\qt\options.ui'
+# Form implementation generated from reading ui file 'c:\repos\weatherairqualitydevice\src\waqd\ui\qt\qt\options.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -1196,4 +1196,4 @@ class Ui_Dialog(object):
         self.shutdown_button.setText(_translate("Dialog", "Shutdown"))
         self.restart_button.setText(_translate("Dialog", "Reboot"))
 from qtwidgets import AnimatedToggle
-from waqd.ui.widgets.jumpslider import JumpSlider
+from waqd.ui.qt.widgets.jumpslider import JumpSlider

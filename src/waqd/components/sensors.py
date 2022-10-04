@@ -35,10 +35,12 @@ import requests
 from typing import Optional, TYPE_CHECKING
 
 from pint import Quantity
+from waqd import LOCAL_TIMEZONE
 from waqd.app import unit_reg
 from waqd.base.component import Component, CyclicComponent
 from waqd.base.component_reg import ComponentRegistry
-from waqd.base.logger import Logger, SensorLogger
+from waqd.base.logger import Logger, SensorFileLogger
+from waqd.components.sensor_logger import InfluxSensorLogger
 from waqd.base.network import Network
 from waqd.settings import LAST_ALTITUDE_M_VALUE, LAST_TEMP_C_OUTSIDE_VALUE, LOG_SENSOR_DATA, MH_Z19_VALUE_OFFSET, REMOTE_MODE_URL, Settings
 
@@ -79,7 +81,7 @@ class SensorImpl():
         To be used with pimpl pattern and not as a base class!
     """
 
-    def __init__(self, logging_enabled: bool, log_measure_type: str, log_location_type: str,
+    def __init__(self, logging_enabled: bool, log_location_type: str, log_measure_type: str,
                  min_value: float, max_value: float, max_measure_points=5, default_value=0, invalidation_time_s=30):
         self.log_values = False
 
@@ -98,7 +100,8 @@ class SensorImpl():
         self._logging_enabled = logging_enabled
 
         # even if logging is disabled now we should attempt to restore the last recorded value
-        log_values = SensorLogger.get_sensor_values(self._log_location_type + "_" + self._log_measure_type)
+        # TODO does not work because of time limit - need find last value
+        log_values = InfluxSensorLogger().get_sensor_values(self._log_location_type, self._log_measure_type)
         if log_values:
             if len(log_values[0]) < 2:
                 Logger().warning(
@@ -108,7 +111,7 @@ class SensorImpl():
                     last_date = log_values[0][0]
                 except:
                     return
-                if (last_date - datetime.datetime.now()) < datetime.timedelta(hours=3):
+                if (last_date - datetime.datetime.now(LOCAL_TIMEZONE)) < datetime.timedelta(hours=3):
                     self._values.append(log_values[0][1])
         else:
             self._values.append(default_value)
@@ -137,7 +140,7 @@ class SensorImpl():
             # log only at full measurement window - slower logging
             if self._logging_enabled and self.log_values:
                 # log the mean average of the values
-                SensorLogger(self._log_location_type + "_" + self._log_measure_type).info(self.get_value())
+                InfluxSensorLogger().set_value(self._log_location_type, self._log_measure_type, self.get_value())
         return True
 
 
@@ -145,7 +148,7 @@ class TempSensor(SensorComponent):
     """ Base class for all temperature sensors """
 
     def __init__(self, logging_enabled, max_measure_points=5, enabled=True, log_location_type=SENSOR_INTERIOR_TYPE,
-                 log_measure_type="temp_degC", invalidation_time_s=15):
+                 log_measure_type="temp_degC", invalidation_time_s=15):  # TODO add consts for "temp_degC"
         """ is_disabled is for the case, when no sensor can be instantiated """
         SensorComponent.__init__(self, enabled=enabled)
         min_value = -30
@@ -880,7 +883,7 @@ class WAQDRemoteStation(TempSensor, HumiditySensor, BarometricSensor, CO2Sensor,
     def _read_sensor(self):
         Network().wait_for_network()
         try:
-            response = requests.get("http://" + self._url + "/api/remoteIntSensor")
+            response = requests.get(self._url + "/api/remoteIntSensor", timeout=5)  # "http://"
         except Exception as e:
             Logger().warning(f"Cannot reach {self._url}")
             return

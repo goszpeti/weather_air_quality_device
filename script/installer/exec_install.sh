@@ -36,6 +36,9 @@ function waqd_install() {
     sudo apt autoremove -y
     # Install security updates daily - see https://wiki.debian.org/UnattendedUpgrades
     sudo apt-get install unattended-upgrades -y
+    # /etc/apt/apt.conf.d/20auto-upgrades 
+    # APT::Periodic::Update-Package-Lists "1";
+    # APT::Periodic::Unattended-Upgrade "1";
     # sed '/Unattended-Upgrade::MinimalSteps "true";/s/^////' -i /etc/apt/apt.conf.d/50unattended-upgrades
     # enables shutdown while updating
     #/etc/apt/apt.conf.d/50unattended-upgrades
@@ -43,12 +46,17 @@ function waqd_install() {
 
     echo "# Install Wifi Connector... (Step 3/5)"
     # TODO can'T do this in the middle of an update, only after it?
+	# resets network 1st time installed
     chmod +x ./install_wifi-connect.sh
     ./install_wifi-connect.sh -y
 
-    echo "# Setting up the system (Step 4/5)"
+    echo "# Installing InfluxDB Database... (Step 4/6)"
+    chmod +x ./install_influx.sh
+    ./install_influx.sh -y
+
+    echo "# Setting up the system (Step 5/6)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
-    echo "# Installing application... (Step 5/5)"
+    echo "# Installing application... (Step 6/6)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --install
     # needs installed app
     export PYTHONPATH=${SRC_DIR}

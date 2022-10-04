@@ -25,12 +25,12 @@ from typing import TYPE_CHECKING
 from waqd.assets import get_asset_file
 from waqd.base.network import Network
 from waqd.app import unit_reg
-from waqd.ui import common
-from waqd.ui.main_subs import sub_ui
-from waqd.ui.weather_detail_view import WeatherDetailView
+from .. import common
+from . import sub_ui
+from ..weather_detail_view import WeatherDetailView
 
 if TYPE_CHECKING:
-    from waqd.ui.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_ui import WeatherMainUi
 
 
 Qt = QtCore.Qt

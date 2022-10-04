@@ -20,8 +20,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
-from waqd.ui.widgets import ClickableLabel
-from waqd.ui.common import get_font
+from waqd.ui.qt.widgets import ClickableLabel
+from waqd.ui.qt.common import get_font
 
 
 class DisplayBar(ClickableLabel):

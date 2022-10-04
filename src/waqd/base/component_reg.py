@@ -30,7 +30,7 @@ from waqd.settings import (AUTO_UPDATER_ENABLED, BME_280_ENABLED,
                            DHT_22_DISABLED, DHT_22_PIN, DISPLAY_TYPE, EVENTS_ENABLED, LANG,
                            LOCATION, MH_Z19_ENABLED, MOTION_SENSOR_ENABLED,
                            MOTION_SENSOR_PIN, NIGHT_MODE_END, OW_API_KEY, OW_CITY_IDS, REMOTE_MODE_URL, SERVER_ENABLED,
-                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL,
+                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, USER_SESSION_SECRET,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, Settings)
 
 if TYPE_CHECKING:
@@ -175,7 +175,8 @@ class ComponentRegistry():
     @property
     def server(self) -> "Server":
         from waqd.components import Server
-        return self._create_component_instance(Server, [self, self._settings.get(SERVER_ENABLED)])
+        return self._create_component_instance(Server, [self, 
+                self._settings.get(SERVER_ENABLED), self._settings.get(USER_SESSION_SECRET)])
 
     @property
     def temp_sensor(self) -> "TempSensor":

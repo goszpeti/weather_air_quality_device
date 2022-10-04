@@ -20,6 +20,7 @@
 import configparser
 import logging
 import os
+import bcrypt
 from pathlib import Path
 from typing import Union, Dict
 
@@ -29,7 +30,7 @@ from waqd.settings import (ALLOW_UNATTENDED_UPDATES, AUTO_UPDATER_ENABLED,
                            DISPLAY_TYPE, FONT_SCALING, FORECAST_ENABLED, LANG, MH_Z19_VALUE_OFFSET, REMOTE_MODE_URL, UPDATER_USER_BETA_CHANNEL,
                            LANG_GERMAN, LOCATION, MOTION_SENSOR_ENABLED, MOTION_SENSOR_PIN,
                            NIGHT_MODE_BEGIN, NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT, OW_API_KEY,
-                           OW_CITY_IDS, PREFER_ACCU_WEATHER, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED, BMP_280_ENABLED,
+                           OW_CITY_IDS, PREFER_ACCU_WEATHER, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED, BMP_280_ENABLED, USER_SESSION_SECRET,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, DHT_22_DISABLED, LOG_SENSOR_DATA, SERVER_ENABLED)
 
 
@@ -86,7 +87,8 @@ class Settings():
                 ALLOW_UNATTENDED_UPDATES: True,
                 LAST_ALTITUDE_M_VALUE: 400.0,
                 LAST_TEMP_C_OUTSIDE_VALUE: 23.5,
-                REMOTE_MODE_URL: ""
+                REMOTE_MODE_URL: "",
+                USER_SESSION_SECRET: bcrypt.gensalt(4).decode("utf-8")
             },
             self._GUI_SECTION_NAME: {
                 FONT_SCALING: 1.0,

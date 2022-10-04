@@ -17,29 +17,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-
 """
-Contains global constants and basic/ui variables.
-Should not contain any 3rd party imports!
+This package contains the addditional custom widgets widgets.
 """
 
-from pathlib import Path
-import datetime
-__version__ = "1.6.0b5"
-
-### Global constants ###
-PROG_NAME = "W.A.Q.D"
-GITHUB_REPO_NAME = "goszpeti/WeatherAirQualityDevice"
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 480
-
-### Global variables ###
-# 0: No debug, 1 = logging on, 2: remote debugging on
-# 3: wait for remote debugger, 4: quick-load
-DEBUG_LEVEL = 0
-LOCAL_TIMEZONE = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
-
-# paths to find folders
-base_path = Path(__file__).absolute().parent
-assets_path = base_path / "assets"
-user_config_dir = Path().home() / ".waqd"
+from waqd.ui.qt.widgets.clickable_label import ClickableLabel
+from waqd.ui.qt.widgets.display_bar import DisplayBar
+from waqd.ui.qt.widgets.fader_widget import FaderWidget
+from waqd.ui.qt.widgets.fading_image import FadingImage
+from waqd.ui.qt.widgets.jumpslider import JumpSlider
+from waqd.ui.qt.widgets.splashscreen import SplashScreen

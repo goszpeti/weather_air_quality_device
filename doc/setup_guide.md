@@ -138,7 +138,7 @@ https://www.instructables.com/id/Rotate-Raspberry-Pi-Display-and-Touchscreen/
 
     sudo apt install xscreensaver
 
-and disable in settings (TODO)
+and disable in settings
 
     @xscreensaver -no-splash
 

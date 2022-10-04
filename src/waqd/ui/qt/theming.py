@@ -5,7 +5,7 @@ import waqd.app as app
 
 from jinja2 import Template
 from PyQt5.QtWidgets import QApplication
-from waqd.ui import common
+from. import common
 
 
 def configure_theme(qss_template_path: Path, font_size_pt: int, font_family:str) -> str:
@@ -25,7 +25,7 @@ def activate_theme(scaling: float, font_family: str):
     style_file = "light_style.qss.in"
     base_font_size = 12
     scaled_font_size = int(base_font_size * scaling)
-    style_sheet = configure_theme(app.base_path / "ui" / style_file, scaled_font_size, font_family)
+    style_sheet = configure_theme(app.base_path / "ui" / "qt" / style_file, scaled_font_size, font_family)
 
     qapp = QApplication.instance()
     if not qapp:

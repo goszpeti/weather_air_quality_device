@@ -14,6 +14,12 @@ import waqd
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
 
+def is_ci_job():
+    """ Test runs in CI environment """
+    if os.getenv("GITHUB_WORKSPACE"):
+        return True
+    return False
+
 class PathSetup():
     def __init__(self):
         self.test_path = Path(os.path.dirname(__file__))

@@ -107,16 +107,22 @@ class Logger(logging.Logger):
         return logger
 
 
-class SensorLogger(logging.Logger):
-    def __new__(cls, name: str, output_path: Path = Path(".")):
-        return cls._init_logger(name, output_path)
+class SensorFileLogger(logging.Logger):
+    def __new__(cls, sensor_location: str, sensor_type: str, output_path: Path = Path(".")):
+        return cls._init_logger(sensor_location, sensor_type, output_path)
 
-    def __init__(self, name: str, output_path: Path = Path(".")) -> None:
+    def __init__(self, sensor_location: str, sensor_type: str, output_path: Path = Path(".")) -> None:
         pass
 
     @staticmethod
-    def get_sensor_logfile_path(sensor_name) -> Path:
-        logger = SensorLogger(sensor_name, output_path=waqd.user_config_dir / "sensor_logs")
+    def set_value(sensor_location: str, sensor_type: str, value: Optional[float]):
+        logger = SensorFileLogger(sensor_location, sensor_type,output_path=waqd.user_config_dir / "sensor_logs")
+        logger.info(value)
+
+    @staticmethod
+    def __get_sensor_logfile_path(sensor_location: str, sensor_type: str) -> Path:
+        logger = SensorFileLogger(sensor_location, sensor_type,
+                                  output_path=waqd.user_config_dir / "sensor_logs")
         if logger.handlers == 0:
             return Path("InvalidPath")
         try:
@@ -125,14 +131,14 @@ class SensorLogger(logging.Logger):
                 filename = Path(logger.handlers[0].baseFilename)  # can be any type of handler
             return filename
         except Exception as e:
-            print(f"WARNING: Can't find file handler for {sensor_name} logger.")
+            print(f"WARNING: Can't find file handler for {sensor_location} {sensor_type} logger.")
             return Path("InvalidPath")
 
     @staticmethod
     # zero reads the last value
-    def get_sensor_values(sensor_name: str, minutes_to_read: int = 0) -> List[Tuple[datetime, float]]:
+    def get_sensor_values(sensor_location: str, sensor_type: str, minutes_to_read: int = 0) -> List[Tuple[datetime, float]]:
 
-        log_file_path = SensorLogger.get_sensor_logfile_path(sensor_name)
+        log_file_path = SensorFileLogger.__get_sensor_logfile_path(sensor_location, sensor_type)
         if not log_file_path.exists():
             return []
         current_time = datetime.now()
@@ -156,9 +162,9 @@ class SensorLogger(logging.Logger):
         return time_value_pairs
 
     @staticmethod
-    def _init_logger(sensor_name: str, output_path: Path) -> logging.Logger:
+    def _init_logger(sensor_location, sensor_type: str, output_path: Path) -> logging.Logger:
         """ Logger used by sensors to store values to display in detail view """
-        logger = logging.getLogger(sensor_name)
+        logger = logging.getLogger(sensor_location + "_" + sensor_type)
 
         # return already initalized logger when calling multiple times
         if len(logger.handlers) > 0:
@@ -167,7 +173,7 @@ class SensorLogger(logging.Logger):
         logger.setLevel(logging.DEBUG)
 
         os.makedirs(output_path, exist_ok=True)
-        log_file_path = output_path / (sensor_name + ".log")
+        log_file_path = output_path / (sensor_location + "_" + sensor_type + ".log")
 
         # delete old logfile
         delete_large_logfile(log_file_path, size_mbytes=100)

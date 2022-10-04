@@ -1082,6 +1082,6 @@ class Ui_MainWindow(object):
         self.ol_sensors_label.setText(_translate("MainWindow", "Show Values over time"))
         self.ol_wh_forecast_label.setText(_translate("MainWindow", "Show Weather for selected day"))
         self.ol_title_label.setText(_translate("MainWindow", "Click to show additional information!"))
-from waqd.ui.widgets.clickable_label import ClickableLabel
-from waqd.ui.widgets.display_bar import DisplayBar
-from waqd.ui.widgets.fading_image import FadingImage
+from waqd.ui.qt.widgets.clickable_label import ClickableLabel
+from waqd.ui.qt.widgets.display_bar import DisplayBar
+from waqd.ui.qt.widgets.fading_image import FadingImage

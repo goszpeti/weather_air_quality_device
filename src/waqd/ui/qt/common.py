@@ -229,7 +229,7 @@ def format_float_temp_text(html_text: str, value: Optional[Quantity], color="whi
     if value is None:
         temp_val = format_text(html_text, "N/A", "string", color=color)
     else:
-        temp_val = format_text(html_text, value.m_as(app.unit_reg.degC), "float", color=color)
+        temp_val = format_text(html_text, float(value.m_as(app.unit_reg.degC)), "float", color=color)
     return temp_val
 
 

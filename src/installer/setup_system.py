@@ -13,6 +13,8 @@ from installer.common import (HOME, USER_CONFIG_PATH, add_line_to_file, assure_f
 
 
 def enable_hw_access():
+    # TODO need to add dtoverlay=rpi-backlight to /boot/config.txt
+
     # enable non-sudo usage of rpi-backlight
     rules_dir = "/etc/udev/rules.d"
     rules_file = "backlight-permissions.rules"
@@ -119,7 +121,6 @@ def do_setup():
     add_to_autostart(["pcmanfm --desktop --profile LXDE-pi"])
     remove_from_autostart(["lxpanel --profile"])
 
-    # TODO need to add dtoverlay=rpi-backlight to /boot/config.ini
 
     # Cosmetic setup
     customize_splash_screen()

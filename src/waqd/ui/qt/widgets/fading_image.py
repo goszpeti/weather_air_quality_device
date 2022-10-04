@@ -19,7 +19,7 @@
 #
 from PyQt5 import QtGui, QtWidgets
 
-from waqd.ui.widgets.fader_widget import FaderWidget
+from waqd.ui.qt.widgets.fader_widget import FaderWidget
 
 
 class FadingImage(QtWidgets.QStackedWidget):

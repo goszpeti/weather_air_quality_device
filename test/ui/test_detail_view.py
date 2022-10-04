@@ -5,22 +5,25 @@ from freezegun import freeze_time
 from PyQt5 import QtWidgets
 from waqd.components import OpenWeatherMap
 from waqd.settings import LOCATION, Settings
-from waqd.ui.sensor_detail_view import SensorDetailView
-from waqd.ui.weather_detail_view import WeatherDetailView
+from waqd.ui.qt.sensor_detail_view import SensorDetailView
+from waqd.ui.qt.weather_detail_view import WeatherDetailView
 
 
 def testSensorDetailView(base_fixture, qtbot):
     parent = QtWidgets.QMainWindow()
     parent.resize(800, 480)
+    parent.move(0,0,)
+    parent.show()
     with freeze_time("2021-03-15 08:25:50"):
         log_file = base_fixture.testdata_path / "sensor_logs" / "temperature.log"
         widget = SensorDetailView(log_file, "Celsius", parent)
+    qtbot.addWidget(parent)
     qtbot.addWidget(widget)
     widget.show()
     qtbot.waitExposed(widget)
 
-    # while True:
-    #     QtWidgets.QApplication.processEvents()
+    while True:
+        QtWidgets.QApplication.processEvents()
     assert widget.isVisible()
     assert widget._time_value_pairs[-1][0] - widget._time_value_pairs[0][0] <= timedelta(minutes=180)
 
@@ -28,6 +31,7 @@ def testSensorDetailView(base_fixture, qtbot):
 def testWeatherDetailView(base_fixture, qtbot):
     parent = QtWidgets.QMainWindow()
     parent.resize(800, 480)
+    parent.show()
     # initalize settings
     settings = Settings(base_fixture.testdata_path / "integration")
 
@@ -42,7 +46,7 @@ def testWeatherDetailView(base_fixture, qtbot):
         [daytime_forecast_points, nighttime_forecast_points] = weather.get_forecast_points()
 
     widget = WeatherDetailView(daytime_forecast_points[0], settings, parent)
-    qtbot.addWidget(widget)
+    qtbot.addWidget(parent)
     widget.show()
     qtbot.waitExposed(widget)
 

@@ -23,13 +23,14 @@ import waqd
 from PyQt5 import QtGui
 from waqd.components.sensors import SENSOR_INTERIOR_TYPE
 from waqd.settings import FONT_NAME, INTERIOR_BG
-from waqd.ui import common
-from waqd.ui.main_subs import sub_ui
-from waqd.ui.sensor_detail_view import SensorDetailView
+from waqd.ui.qt import common
+from waqd.ui.qt.sensor_detail_view import SensorDetailView
+
+from . import sub_ui
 
 if TYPE_CHECKING:
-    from waqd.ui.main_ui import WeatherMainUi
     from waqd.settings import Settings
+    from waqd.ui.qt.main_ui import WeatherMainUi
 
 class Interior(sub_ui.SubUi):
     """ Interior segment of the main ui. Displays the interior sensor data. """
@@ -76,20 +77,15 @@ class Interior(sub_ui.SubUi):
 
         # connect sensor detail views
         self._ui.interior_temp_value.clicked.connect(
-            lambda: self.show_detail("temp_degC" + "_" + SENSOR_INTERIOR_TYPE, "°Celsius"))
-
+            lambda: self.show_detail("temp_degC", "°Celsius"))
         if self._co2_bar:
-            self._co2_bar.clicked.connect(lambda: self.show_detail(
-                "CO2_ppm" + "_" + SENSOR_INTERIOR_TYPE, "PPM"))
+            self._co2_bar.clicked.connect(lambda: self.show_detail("CO2_ppm", "PPM"))
         if self._pressure_ui_bar:
-            self._pressure_ui_bar.clicked.connect(lambda: self.show_detail(
-                "pressure_hPa" + "_" + SENSOR_INTERIOR_TYPE, "hPa"))
+            self._pressure_ui_bar.clicked.connect(lambda: self.show_detail("pressure_hPa", "hPa"))
         if self._tvoc_ui_bar:
-            self._tvoc_ui_bar.clicked.connect(lambda: self.show_detail(
-                "TVOC" + "_" + SENSOR_INTERIOR_TYPE, "PPB"))
+            self._tvoc_ui_bar.clicked.connect(lambda: self.show_detail("TVOC", "PPB"))
         if self._humidity_ui_bar:
-            self._humidity_ui_bar.clicked.connect(lambda: self.show_detail(
-                "humidity_%" + "_" + SENSOR_INTERIOR_TYPE, "%"))
+            self._humidity_ui_bar.clicked.connect(lambda: self.show_detail("humidity_%", "%"))
 
         # call once at begin
         self.init_with_cyclic_update()
@@ -156,5 +152,4 @@ class Interior(sub_ui.SubUi):
 
     def show_detail(self, sensor_type: str, sensor_value_unit: str):
         """ Placholder for daily detail view popup """
-        log_file = waqd.user_config_dir / "sensor_logs" / (sensor_type + ".log")
-        self.det = SensorDetailView(log_file, sensor_value_unit, self._main_ui)
+        self.det = SensorDetailView(SENSOR_INTERIOR_TYPE, sensor_type, sensor_value_unit, self._main_ui)

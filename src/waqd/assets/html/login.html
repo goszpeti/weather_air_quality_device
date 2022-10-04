@@ -1,0 +1,23 @@
+<style>
+    #login {
+        font-size: 0.5em;
+        margin-bottom: 3cm;
+    }
+</style>
+
+<div id="login" class="block">
+    <form id="login_form" action="/login" method="post">
+        <div id="username_row" class="row">
+            <span>Username: <input name="username" type="text"/></span>
+        </div>
+        <div id="password_row" class="row">
+            <span>Password:  <input name="password" type="password" required,
+                pattern="^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,64}$"
+ /></span>
+        </div>
+        <!--  style="text-align: center;padding-bottom: 0px" -->
+        <div id="login_button_row" class="row">
+            <span><input value="Login" type="submit"/></span>
+        </div>
+    </form>
+</div>

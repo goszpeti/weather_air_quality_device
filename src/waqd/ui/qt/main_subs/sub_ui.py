@@ -23,12 +23,11 @@ from typing import TYPE_CHECKING, Callable
 from PyQt5 import QtCore
 
 from waqd.base.logger import Logger
-from waqd.base.network import Network
 
 if TYPE_CHECKING:
-    from waqd.ui.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_ui import WeatherMainUi
     from waqd.settings import Settings
-    from waqd.ui.qt.weather_ui import Ui_MainWindow
+    from waqd.ui.qt.qt.weather_ui import Ui_MainWindow
 
 class WorkerObject(QtCore.QObject):
 

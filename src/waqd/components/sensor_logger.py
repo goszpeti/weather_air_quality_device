@@ -1,44 +1,109 @@
-from datetime import datetime
+from configparser import ConfigParser
+from datetime import datetime, timezone
+import os
+from pathlib import Path
 from time import sleep
+from typing import List, Optional, Tuple
 
 from influxdb_client import InfluxDBClient, Point, WritePrecision, AuthorizationsApi
 from influxdb_client.client.write_api import SYNCHRONOUS
-#setup client:
-# influx setup -org waqd-local --bucket waqd-test --username waqd-local-user --password ExAmPl3PA55W0rD --force
+from waqd.base.component import Component
+from waqd.base.logger import Logger
+from waqd import LOCAL_TIMEZONE
 
-# TODO Password?
 
-# influx auth create --org waqd-local --all-access
-#TODO get default token from .influxdbv2 config
+# setup client:
+#
+#
+
+# TODO get default token from .influxdbv2 config
 # TODO set http bind-address = "127.0.0.1:8088" to only expose on localhost
 # config.yml in cwd for database
 # You can generate an API token from the "API Tokens Tab" in the UI
-token = "SssT-lmMEUW6CRKMOHUBBPpXJwba5SJ6hYIXGssKb2GAw_qj7mCBqR42RfgmizdepCtwcSEGYRunKlYCyRzrHQ=="
 org = "waqd-local"
 bucket = "waqd-test"
 
-with InfluxDBClient(url="http://localhost:8086", token=token, org=org) as client:
-    write_api = client.write_api(write_options=SYNCHRONOUS)
 
-    data = "mem,host=host1 used_percent=23.43234543"
-    write_api.write(bucket, org, data)
-    
-    # limit sensor recording to 1 sample per minute
+class InfluxSensorLogger():
+    _token = ""
+    _enabled = True
+    _initialized = False
+    """ Emulate Logger class with info to log and get_sensor_values"""
 
-    for i in range(10):
-        sleep(1)
-        point = Point("air_quality") \
-        .tag("type", "interior") \
-        .field("temp_deg_c", 23.43234543+i) \
-        .field("pressure_hPa", 23.43234543+i) \
-            .time(datetime.utcnow(), WritePrecision.S)
+    @classmethod
+    def __init__(cls):
+        if not cls._enabled or cls._initialized:
+            return
+        config_file = Path().home() / ".influxdbv2" / "configs"
+        if not config_file.is_file():
+            cls.setup_db()
+        parser = ConfigParser()
+        try:
+            parser.read(config_file)
+            default_entry = parser["default"]
+            org = default_entry.get("org").replace('"', "")
+            assert org == 'waqd-local'
+            assert default_entry.get("active") == "true"
+            cls._token = default_entry.get("token").replace('"', "")
+        except Exception as e:
+            Logger().error(f"SensorDB: {str(e)}")
+            cls._enabled = False
+            return
+        # Try bucket
+        with InfluxDBClient(url="http://localhost:8086", token=cls._token, org=org) as client:
+            try:
+                if not client.buckets_api().find_bucket_by_name(bucket):
+                    client.buckets_api().create_bucket(bucket)
+            except Exception as e:
+                Logger().error(f"SensorDB: {str(e)}")
+                cls._enabled = False
+        cls._initialized = True
 
-    #     write_api.write(bucket, org, point)
-    query = 'from(bucket: "waqd") |> range(start: -10m) |> filter(fn: (r) => r["type"] == "interior")' \
-  '|> filter(fn: (r) => r["_field"] == "deg_c")' \
-  '|> filter(fn: (r) => r["_measurement"] == "temp")'
-    tables = client.query_api().query(query, org=org)
-    for table in tables:
-        for record in table.records:
-            print(record)
-#client.close()
+    @staticmethod
+    def setup_db():
+        os.system(
+            "influx setup -org waqd-local --bucket waqd-test --username waqd-local-user --password ExAmPl3PA55W0rD --force")
+# influx auth create - -org waqd-local - -all-access
+
+    @classmethod
+    def set_value(cls, sensor_location: str, sensor_type: str, value: Optional[float]):
+        if not cls._enabled:
+            return
+        if value is None:
+            return
+        with InfluxDBClient(url="http://localhost:8086", token=cls._token, org=org) as client:
+            write_api = client.write_api(write_options=SYNCHRONOUS)
+            point = Point("air_quality") \
+                .tag("type", sensor_location) \
+                .field(sensor_type, value) \
+                .time(datetime.now(LOCAL_TIMEZONE), WritePrecision.S)
+            try:
+                write_api.write(bucket, org, point)
+            except Exception as e:
+                Logger().error(f"SensorDB: {str(e)}")
+
+    @classmethod
+    def get_sensor_values(cls, sensor_location: str, sensor_type: str, minutes_to_read: int = 1440, last_value=False) -> List[Tuple[datetime, float]]:
+        # zero reads the last value
+        if not cls._enabled:
+            return []
+        tables = None
+        try:
+            with InfluxDBClient(url="http://localhost:8086", token=cls._token, org=org) as client:
+                filter_expression = f"range(start: -{str(minutes_to_read)}m)"
+                if last_value:
+                    filter_expression += " |> last()"
+                query = f'from(bucket: "{bucket}") |> {filter_expression}' \
+                    f'|> filter(fn: (r) => r["type"] == "{sensor_location}")' \
+                    f'|> filter(fn: (r) => r["_field"] == "{sensor_type}")' \
+                    '|> filter(fn: (r) => r["_measurement"] == "air_quality")'
+                tables = client.query_api().query(query, org=org)
+        except Exception as e:
+            Logger().error(f"Error while quering {sensor_location} {sensor_type} from InfluxDB: {str(e)}")
+            return []
+        time_value_pairs: List[Tuple[datetime, float]] = []
+        for table in tables:
+            for record in table.records:
+                time_value_pairs.append((record.get_time(), float(record.get_value())))
+
+        return time_value_pairs

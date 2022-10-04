@@ -22,6 +22,7 @@ REQUIRES_PYTHON = '>=3.7.0'
 # What packages are required for this module to be executed?
 REQUIRED = [
     # Backend
+    "bcrypt>=4.0.0, <5.0.0",  # Password hashing - Apache Software License (Apache License, Version 2.0)
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
     "JsonSchema==4.7.2",  # MIT License - for events json schema validation
     "bottle==0.12.21",  # MIT License - webserver for remote sensors

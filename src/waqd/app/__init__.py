@@ -178,7 +178,6 @@ def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
     Returns qt_app object.
     """
     from PyQt5 import QtCore, QtGui, QtWidgets
-    from waqd.ui import common
     Qt = QtCore.Qt
 
     # apply Qt attributes (only at init possible)
@@ -190,11 +189,11 @@ def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
     # set icon
     icon_path = get_asset_file("gui_base", "icon")
     qt_app.setWindowIcon(QtGui.QIcon(str(icon_path)))
-    from waqd.ui import common
+    from waqd.ui.qt.common import set_ui_language
 
     # install translator
-    common.set_ui_language(qt_app, settings)
-    from waqd.ui.theming import activate_theme
+    set_ui_language(qt_app, settings)
+    from waqd.ui.qt.theming import activate_theme
     activate_theme(settings.get_float(FONT_SCALING), settings.get_string(FONT_NAME))
 
     return qt_app
@@ -210,10 +209,10 @@ def loading_sequence(comp_ctrl: ComponentController, settings: Settings):
     # start init for all components
     comp_ctrl.init_all()
     from PyQt5 import QtCore, QtWidgets
-    from waqd.ui import main_ui
-    from waqd.ui.widgets.fader_widget import FaderWidget
-    from waqd.ui.widgets.splashscreen import SplashScreen
-    app_main_ui = main_ui.WeatherMainUi(comp_ctrl, settings)
+    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.widgets.fader_widget import FaderWidget
+    from waqd.ui.qt.widgets.splashscreen import SplashScreen
+    app_main_ui = WeatherMainUi(comp_ctrl, settings)
 
     if RuntimeSystem().is_target_system:  # only remove titlebar on RPi
         app_main_ui.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
