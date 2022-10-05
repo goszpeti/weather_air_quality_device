@@ -36,6 +36,10 @@ class SensorApi_0_1(TypedDict):
 # Endpoint constants
 ROUTE_WAQD = "/waqd"
 ROUTE_WAQD_TEMP_HISTORY = "/waqd/temp_history"
+ROUTE_WAQD_HUM_HISTORY = "/waqd/humidity_history"
+ROUTE_WAQD_PRES_HISTORY = "/waqd/pressure_history"
+ROUTE_WAQD_CO2_HISTORY = "/waqd/co2_history"
+
 ROUTE_CSS = "/style.css"
 ROUTE_ABOUT = "/about"
 ROUTE_SETTINGS = "/settings"
@@ -88,6 +92,9 @@ class BottleServer(Component):
         route(ROUTE_SIGNOUT, 'GET', self.logout)
         route(ROUTE_CSS, 'GET', self.css)
         route(ROUTE_WAQD_TEMP_HISTORY, 'GET', self.plot_graph)
+        route(ROUTE_WAQD_HUM_HISTORY, 'GET', self.plot_graph)
+        route(ROUTE_WAQD_PRES_HISTORY, 'GET', self.plot_graph)
+        route(ROUTE_WAQD_CO2_HISTORY, 'GET', self.plot_graph)
 
         # api endpoints
         route(ROUTE_API_REMOTE_EXT_SENSOR, 'POST', self.post_sensor_values)
@@ -174,9 +181,29 @@ class BottleServer(Component):
         return tpl.render(menu=menu, content=page_content, login_msg=login_msg)
 
     def plot_graph(self):
+        time_m = 180
         my_plot_div = ""
+        route = request.path
+        sensor_type = ""
+        display_name = ""
+        if route == ROUTE_WAQD_TEMP_HISTORY:
+            sensor_type = "temp_degC"
+            display_name = "Temperature (°C)"
+        elif route == ROUTE_WAQD_HUM_HISTORY:
+            sensor_type = "humidity_%"
+            display_name = "Humidity (%)"
+        elif route == ROUTE_WAQD_PRES_HISTORY:
+            sensor_type = "pressure_hPa"
+            display_name = "Atmospheric pressure (hPa)"
+        elif route == ROUTE_WAQD_CO2_HISTORY:
+            sensor_type = "CO2_ppm"
+            display_name = "CO2 (ppm)"
+        if not sensor_type:
+            return
+        # TODO constants
+        # pressure_hPa
         times_value_pairs = InfluxSensorLogger.get_sensor_values(
-        "interior", "temp_degC", 180)
+            "interior", sensor_type, time_m)
         if times_value_pairs:  # .isoformat(sep=" ")
             times = [times_value_pair[0].astimezone(waqd.LOCAL_TIMEZONE)
                     for times_value_pair in times_value_pairs]
@@ -189,7 +216,7 @@ class BottleServer(Component):
         page_content = get_asset_file("html", "popup.html").read_text()
         tpl = Jinja2Template(page_content)
         # (waqd.base_path / "plotly.html").write_text(tpl.render(title="Temperature History", content=my_plot_div))
-        return tpl.render(title="Temperature History", content=my_plot_div)
+        return tpl.render(title=f"{display_name} History", content=my_plot_div)
         
 
     def _generate_menu(self):
