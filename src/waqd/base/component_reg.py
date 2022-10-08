@@ -22,7 +22,7 @@
 import threading
 # this allows to use forward declarations to avoid circular imports
 from typing import TYPE_CHECKING, Dict, List, Optional, Type, TypeVar, Union
-
+import waqd
 from waqd.base.component import Component, CyclicComponent
 from waqd.base.logger import Logger
 from waqd.settings import (AUTO_UPDATER_ENABLED, BME_280_ENABLED,
@@ -72,7 +72,7 @@ class ComponentRegistry():
         """ Get a list of names of all components"""
         return list(self._components)
 
-    def  get(self, name) -> Union[Component, CyclicComponent, None]:
+    def get(self, name) -> Union[Component, CyclicComponent, None]:
         """ Get a specific component instance """
         return self._components.get(name)
 
@@ -116,12 +116,17 @@ class ComponentRegistry():
             # call destructors
             del component
 
-    def show(self):
+    def watch_all(self):
         """ Check all components and thus initialize them """
-        return [
-                self.display, self.sound, self.auto_updater, self.tts, self.temp_sensor, self.humidity_sensor,
-                self.tvoc_sensor, self.pressure_sensor, self.co2_sensor, self.motion_detection_sensor,
-                self.server, self.energy_saver,  self.weather_info, self.event_handler]
+        # filter for headless mode
+        comps = [
+            self.auto_updater, self.temp_sensor, self.humidity_sensor,
+            self.tvoc_sensor, self.pressure_sensor, self.co2_sensor, self.motion_detection_sensor,
+            self.server, self.weather_info]
+        if not waqd.HEADLESS_MODE:
+            comps += [self.event_handler, self.display, self.tts, self.sound, self.energy_saver]
+
+        return comps
 
     @property
     def display(self) -> "Display":

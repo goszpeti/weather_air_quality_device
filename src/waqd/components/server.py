@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 import os
+import re
 from turtle import width
 import plotly.graph_objects as go
 from plotly.graph_objs import Scattergl
-from plotly import offline
+from plotly.offline.offline import get_plotlyjs
 from plotly.io import to_html
 import html
 import json
@@ -11,11 +12,15 @@ from threading import Thread
 from time import sleep
 from typing import TYPE_CHECKING, List, Tuple, TypedDict
 from waqd.components.sensor_logger import InfluxSensorLogger
+from htmlmin.main import minify
+from functools import partial
+extra_minify = partial(minify, remove_comments=True, remove_empty_space=True)
+
 
 import waqd
 import waqd.app as app
 from bottle import (Jinja2Template, default_app, request, response, route, redirect,
-                    static_file)
+                    static_file, HTTPResponse)
 from pint import Quantity
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
@@ -39,6 +44,7 @@ ROUTE_WAQD_TEMP_HISTORY = "/waqd/temp_history"
 ROUTE_WAQD_HUM_HISTORY = "/waqd/humidity_history"
 ROUTE_WAQD_PRES_HISTORY = "/waqd/pressure_history"
 ROUTE_WAQD_CO2_HISTORY = "/waqd/co2_history"
+ROUTE_PLOTLY_JS = "/script/plotly.js"
 
 ROUTE_CSS = "/style.css"
 ROUTE_ABOUT = "/about"
@@ -82,6 +88,7 @@ class BottleServer(Component):
     def _run_server(self):
         # use programatic routing to connect class instance methods to routes
         route('/static/<path:path>', 'GET', self.get_static_file)
+        route('/static/script/<path:path>', 'GET', self.get_static_file)
         route('/', 'GET', self.index)
         route(ROUTE_ABOUT, 'GET', self.index)
         route(ROUTE_WAQD, 'GET', self.index)
@@ -95,6 +102,8 @@ class BottleServer(Component):
         route(ROUTE_WAQD_HUM_HISTORY, 'GET', self.plot_graph)
         route(ROUTE_WAQD_PRES_HISTORY, 'GET', self.plot_graph)
         route(ROUTE_WAQD_CO2_HISTORY, 'GET', self.plot_graph)
+        route(ROUTE_PLOTLY_JS, 'GET', self.get_plotlyjs)
+        
 
         # api endpoints
         route(ROUTE_API_REMOTE_EXT_SENSOR, 'POST', self.post_sensor_values)
@@ -118,6 +127,15 @@ class BottleServer(Component):
     def css(self):
         response = static_file("style.css", root=waqd.assets_path / "html")
         response.set_header("Cache-Control", "public, max-age=0")
+        return response    
+
+    def get_plotlyjs(self):
+        max_age = str(604800 * 12) # 12 weeks
+        response = HTTPResponse()
+        response.set_header("Cache-Control", f"public, max-age={max_age}")
+        response.set_header("Content-Type",  "application/javascript")
+        response.content_type = "text/javascript"
+        response.body = get_plotlyjs()
         return response
 
     def logout(self):
@@ -144,7 +162,10 @@ class BottleServer(Component):
     def get_static_file(self, path: str):
         response = static_file(path, root=waqd.assets_path)
         # 1 week
-        response.set_header("Cache-Control", "public, max-age=0")  # 604800
+        max_age = "604800"
+        if waqd.DEBUG_LEVEL > 1:
+            max_age = "0"
+        response.set_header("Cache-Control", f"public, max-age={max_age}")
         return response
 
     def index(self):
@@ -178,7 +199,7 @@ class BottleServer(Component):
 
         if current_user:
             login_msg = f'<p class="login_msg">Logged in as {current_user}</p>'
-        return tpl.render(menu=menu, content=page_content, login_msg=login_msg)
+        return extra_minify(tpl.render(menu=menu, content=page_content, login_msg=login_msg))
 
     def plot_graph(self):
         time_m = 180
@@ -210,14 +231,25 @@ class BottleServer(Component):
             values = [times_value_pair[1] for times_value_pair in times_value_pairs]
             graph = Scattergl(x=times, y=values)
             fig = go.Figure(graph)
-            my_plot_div = to_html(fig, default_width="auto", full_html=False)
+            fig.update_layout(
+                margin=dict(l=20, r=20),
+                paper_bgcolor="LightSteelBlue",)
+            my_plot_div = to_html(fig, default_width="auto", include_plotlyjs=False, full_html=False)
             # my_plot_div = offline.plot(fig, include_plotlyjs=True, output_type='div')
 
         page_content = get_asset_file("html", "popup.html").read_text()
         tpl = Jinja2Template(page_content)
         # (waqd.base_path / "plotly.html").write_text(tpl.render(title="Temperature History", content=my_plot_div))
-        return tpl.render(title=f"{display_name} History", content=my_plot_div)
-        
+        return extra_minify(tpl.render(title=f"{display_name} History", content=my_plot_div))
+    
+    # def strip_comments(self, text) -> str:
+    #     m = re.findall("(?=<!--)([\s\S]*?)-->", text, re.DOTALL)
+    #     result = text
+    #     count = 0
+    #     for match in m:
+    #         result = re.sub(match, '', result)
+    #         count += 1
+    #     return result
 
     def _generate_menu(self):
         menu_items = ""

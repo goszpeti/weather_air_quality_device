@@ -37,6 +37,7 @@ SCREEN_HEIGHT = 480
 # 0: No debug, 1 = logging on, 2: remote debugging on
 # 3: wait for remote debugger, 4: quick-load
 DEBUG_LEVEL = 0
+HEADLESS_MODE = False
 LOCAL_TIMEZONE = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
 
 # paths to find folders

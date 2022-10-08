@@ -43,7 +43,7 @@ from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.logger import Logger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import (DISP_TYPE_HEADLESS, DISP_TYPE_RPI,
+from waqd.settings import (DISP_TYPE_RPI,
                            DISP_TYPE_WAVESHARE_5_LCD,
                            DISP_TYPE_WAVESHARE_EPAPER_2_9, DISPLAY_TYPE, FONT_NAME,
                            FONT_SCALING,
@@ -103,21 +103,21 @@ def main(settings_path: Optional[Path] = None):
 
     comp_ctrl = ComponentController(settings)
     comp_ctrl = comp_ctrl
-    if waqd.DEBUG_LEVEL > 0: # disable startup sound
+    if waqd.DEBUG_LEVEL > 1: # disable startup sound
        comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
     # Load the selected GUI mode
     display_type = settings.get(DISPLAY_TYPE)
     try:
-        if display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
+        if waqd.HEADLESS_MODE:
+            comp_ctrl.init_all()
+            comp_ctrl._stop_event.wait()
+        elif display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
             qt_app = qt_app_setup(settings)
             # main_ui must be held in this context, otherwise the gc will destroy the gui
             loading_sequence(comp_ctrl, settings)
             qt_app.exec_()
         elif display_type == DISP_TYPE_WAVESHARE_EPAPER_2_9:
             pass
-        elif display_type == DISP_TYPE_HEADLESS:
-            comp_ctrl.init_all()
-            comp_ctrl._stop_event.wait()
     except:  # pylint:disable=bare-except
             trace_back = traceback.format_exc()
             Logger().error("Application crashed: \n%s", trace_back)
@@ -148,8 +148,7 @@ def handle_cmd_args(settings):
     if debug_env_var:
         waqd.DEBUG_LEVEL = int(debug_env_var)
     if args.headless:
-        settings.set(DISPLAY_TYPE, DISP_TYPE_HEADLESS)
-
+        waqd.HEADLESS_MODE = True
 
 def start_remote_debug():
     """ Start remote debugging from level 2 and wait on it from level 3"""

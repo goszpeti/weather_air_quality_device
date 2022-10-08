@@ -24,7 +24,6 @@
 LANG_GERMAN = "Deutsch"
 LANG_ENGLISH = "English"
 LANG_HUNGARIAN = "Magyar"
-DISP_TYPE_HEADLESS = "headless"
 DISP_TYPE_RPI = "RPI_TD" # original 7" rpi touch display
 DISP_TYPE_WAVESHARE_5_LCD = "Waveshare_LCD" # Waveshare 5" touch display
 DISP_TYPE_WAVESHARE_EPAPER_2_9 = "Waveshare_Epaper_2_9"

@@ -22,9 +22,12 @@ REQUIRES_PYTHON = '>=3.7.0'
 # What packages are required for this module to be executed?
 REQUIRED = [
     # Backend
-    "bcrypt>=4.0.0, <5.0.0",  # Password hashing - Apache Software License (Apache License, Version 2.0)
+    "htmlmin==0.1.12" # BSD License - HTML minifier (removes comments and whitespace)
+    "plotly==5.10.0",  # MIT License - web graph plotting
+    "influxdb-client==1.30.0", # MIT License - influxdb API
+    "bcrypt>=4.0.0, <5.0.0",  # Apache License, Version 2.0 - Password hashing
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
-    "JsonSchema==4.7.2",  # MIT License - for events json schema validation
+    "JsonSchema==4.16.0",  # MIT License - for events json schema validation
     "bottle==0.12.21",  # MIT License - webserver for remote sensors
     "paste==3.5.0", # server backend for bottle
     "pint==0.19.2",  # BSD 3-clause style license - physical units for sensors
@@ -37,7 +40,7 @@ REQUIRED = [
     "Python-VLC==3.0.16120",  # LGPLv2+ - use VLC for playing sounds
     # HW
     "RPi-Backlight==2.4.1",  # MIT License
-    "Adafruit-Blinka==7.1.1",
+    "Adafruit-Blinka==7.1.1", # For all other Adafruit drivers
     #"Adafruit-PlatformDetect==2.4.0",  # MIT License - target and model detection - up to 3.10 not working with BMP280
     "Adafruit-CircuitPython-DHT==3.7.1",  # MIT License - temp/hum sensor
     "Adafruit-CircuitPython-CCS811==1.3.7",  # MIT License - co2/tvoc sensor
@@ -51,12 +54,12 @@ REQUIRED = [
 ]
 REQUIRED_NON_RPI = [
     # UI
-    "PyQt5>=5.12.3",  # GPLv3 - Must be compiled on RPi (takes an eternity) - so use system libs
+    "PyQt5>=5.12.0",  # GPLv3 - Must be compiled on RPi (takes an eternity) - so use system libs
     "PyQtChart>=5.12.0",  # GPLv3 - for DetailView
 ]
 REQUIRED_LINUX = [  # this package does not install on windows, because of RPi.GPIO dependency
     "MH-Z19==3.1.3", # MIT License
-    ]
+]
 #epd-library=0.2.3 GPL v3GPLv3 - Waveshare 2.9 inch epaper 296×128
 machine = platform.machine()
 if not (machine.startswith("armv") or machine.startswith("aarch64")):

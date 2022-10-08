@@ -96,14 +96,14 @@ class ComponentController():
 
     def _watchdog_loop(self):
         time.sleep(2)  # wait for execution
-        self._components.show()
+        self._components.watch_all()
 
         ticker = threading.Event()
         while not ticker.wait(self.UPDATE_TIME):
             if self._stop_event.is_set():
                 self._stop_event.clear()
                 return
-            self._components.show()
+            self._components.watch_all()
             self._watch_components()
 
     def _watch_components(self):

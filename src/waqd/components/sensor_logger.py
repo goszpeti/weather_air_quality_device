@@ -75,7 +75,7 @@ class InfluxSensorLogger():
             write_api = client.write_api(write_options=SYNCHRONOUS)
             point = Point("air_quality") \
                 .tag("type", sensor_location) \
-                .field(sensor_type, value) \
+                .field(sensor_type, float(value)) \
                 .time(datetime.now(LOCAL_TIMEZONE), WritePrecision.S)
             try:
                 write_api.write(bucket, org, point)
