@@ -22,7 +22,7 @@ REQUIRES_PYTHON = '>=3.7.0'
 # What packages are required for this module to be executed?
 REQUIRED = [
     # Backend
-    "htmlmin==0.1.12" # BSD License - HTML minifier (removes comments and whitespace)
+    "htmlmin==0.1.12", # BSD License - HTML minifier (removes comments and whitespace)
     "plotly==5.10.0",  # MIT License - web graph plotting
     "influxdb-client==1.30.0", # MIT License - influxdb API
     "bcrypt>=4.0.0, <5.0.0",  # Apache License, Version 2.0 - Password hashing

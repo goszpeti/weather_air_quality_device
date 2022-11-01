@@ -74,12 +74,12 @@ class SensorComponent(Component):
         self._disabled = False
         return value
 
-
 class SensorImpl():
     """ Class for any sensor type to store measurements with a moving average.
         Logs to file, if "log_to_file" is activated.
         To be used with pimpl pattern and not as a base class!
     """
+    LOGGING_INTERVAL = datetime.timedelta(minutes=1)
 
     def __init__(self, logging_enabled: bool, log_location_type: str, log_measure_type: str,
                  min_value: float, max_value: float, max_measure_points=5, default_value=0, invalidation_time_s=30):
@@ -94,14 +94,16 @@ class SensorImpl():
         self._values = []
         # After invalidation_time_s has passed, the sensor value will be considered out of date and return None for value
         # Does not make sense for motion sensors and such.
-        self._last_value_received = datetime.datetime.now()
+        self._last_value_rcv_time = datetime.datetime.now()
         self._value_invalidation_time_s = invalidation_time_s
+        self._last_logging_time = datetime.datetime.now()
         # only check at init - options will reset this flag, with the exception of non-resettable sensors
         self._logging_enabled = logging_enabled
 
         # even if logging is disabled now we should attempt to restore the last recorded value
         # TODO does not work because of time limit - need find last value
-        log_values = InfluxSensorLogger().get_sensor_values(self._log_location_type, self._log_measure_type)
+        # use file logger when shuttings down and read back here
+        log_values = SensorFileLogger.get_sensor_values(self._log_location_type, self._log_measure_type)
         if log_values:
             if len(log_values[0]) < 2:
                 Logger().warning(
@@ -111,15 +113,20 @@ class SensorImpl():
                     last_date = log_values[0][0]
                 except:
                     return
-                if (last_date - datetime.datetime.now(LOCAL_TIMEZONE)) < datetime.timedelta(hours=3):
+                if (last_date - datetime.datetime.now()) < datetime.timedelta(hours=3):
                     self._values.append(log_values[0][1])
         else:
             self._values.append(default_value)
 
+    def stop(self):
+        # save value to reread, when initializing
+        SensorFileLogger.set_value(self._log_location_type, self._log_measure_type, self.get_value())
+
+
     def get_value(self) -> Optional[float]:
         """ Return measurement value. """
         # invalidation guard
-        if datetime.datetime.now() - self._last_value_received > datetime.timedelta(seconds=self._value_invalidation_time_s):
+        if datetime.datetime.now() - self._last_value_rcv_time > datetime.timedelta(seconds=self._value_invalidation_time_s):
             return None
         if self._values_capacity == 1:
             return self._values[0]
@@ -133,14 +140,17 @@ class SensorImpl():
                              self._log_measure_type, value)
             return False
         self._values.append(value)
-        self._last_value_received = datetime.datetime.now()
+        self._last_value_rcv_time = datetime.datetime.now()
 
         if len(self._values) > self._values_capacity:
             self._values.pop(0)
-            # log only at full measurement window - slower logging
-            if self._logging_enabled and self.log_values:
-                # log the mean average of the values
-                InfluxSensorLogger().set_value(self._log_location_type, self._log_measure_type, self.get_value())
+        # log only at full measurement window - slower logging
+        if self._logging_enabled and self.log_values:
+            # if datetime.datetime.now() - self._last_logging_time <= self.LOGGING_INTERVAL:
+            #     return True
+            # log the mean average of the values
+            InfluxSensorLogger().set_value(self._log_location_type, self._log_measure_type, self.get_value())
+            self._last_logging_time = datetime.datetime.now()
         return True
 
 
@@ -170,6 +180,8 @@ class TempSensor(SensorComponent):
     def _set_temperature(self, value: float) -> bool:
         return self._temp_impl.set_value(value)
 
+    def stop(self):
+        self._temp_impl.stop()
 
 class BarometricSensor(SensorComponent):
     """ Base class for all barometric sensors """
@@ -196,6 +208,9 @@ class BarometricSensor(SensorComponent):
         """ Converts raw absolute readings to above sea level relative readings, which are used in weather forecasts. """
         return pressure * pow(1 - (0.0065 * height_asl / (temp_outdoor + (0.0065 * height_asl) + 273.15)), -5.257)
 
+    def stop(self):
+        self._pres_impl.stop()
+
 
 class HumiditySensor(SensorComponent):
     """ Base class for all humidity sensors """
@@ -219,6 +234,8 @@ class HumiditySensor(SensorComponent):
     def _set_humidity(self, value):
         self._hum_impl.set_value(value)
 
+    def stop(self):
+        self._hum_impl.stop()
 
 class TvocSensor(SensorComponent):
     """ Base class for all TVOC sensors """
@@ -241,6 +258,8 @@ class TvocSensor(SensorComponent):
     def _set_tvoc(self, value):
         self._tvoc_impl.set_value(value)
 
+    def stop(self):
+        self._tvoc_impl.stop()
 
 class CO2Sensor(SensorComponent):
     """ Base class for all CO2 sensors """
@@ -263,6 +282,8 @@ class CO2Sensor(SensorComponent):
     def _set_co2(self, value):
         self._co2_impl.set_value(value)
 
+    def stop(self):
+        self._co2_impl.stop()
 
 class DustSensor(SensorComponent):
     """ Base class for all dust sensors """
@@ -284,7 +305,9 @@ class DustSensor(SensorComponent):
 
     def _set_dust(self, value):
         self._dust_impl.set_value(value)
-
+  
+    def stop(self):
+        self._dust_impl.stop()
 
 class LightSensor(SensorComponent):
     """ Base class for all light sensors """
@@ -307,6 +330,8 @@ class LightSensor(SensorComponent):
     def _set_light(self, value):
         self._light_impl.set_value(value)
 
+    def stop(self):
+        self._light_impl.stop()
 
 class DHT22(TempSensor, HumiditySensor, CyclicComponent):
     """

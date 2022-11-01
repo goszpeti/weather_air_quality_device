@@ -55,13 +55,6 @@ if TYPE_CHECKING:
     from PyQt5 import QtCore, QtWidgets
     Qt = QtCore.Qt
 
-if platform.system() == "Windows":
-    # Workaround for Windows, so that on the taskbar the
-    # correct icon will be shown (and not the default python icon).
-    from PyQt5.QtWinExtras import QtWin
-    MY_APP_ID = 'ConanAppLauncher.' + WAQD_VERSION
-    QtWin.setCurrentProcessExplicitAppUserModelID(MY_APP_ID)
-
 
 # GLOBAL VARIABLES
 
@@ -92,17 +85,20 @@ def main(settings_path: Optional[Path] = None):
         settings_path = waqd.user_config_dir
     settings = Settings(ini_folder=settings_path)
 
-    handle_cmd_args(settings)  # cmd args set Debug level for logger
+    parse_cmd_args(settings)  # cmd args set Debug level for logger
 
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
-
     Logger(output_path=waqd.user_config_dir)  # singleton, no assigment needed
     if waqd.DEBUG_LEVEL > 0:
         Logger().info(f"DEBUG level set to {waqd.DEBUG_LEVEL}")
 
+    if waqd.MIGRATE_SENSOR_LOGS:
+        from waqd.base.logger import SensorFileLogger
+        SensorFileLogger.migrate_txts_to_db()
+        return
+    global comp_ctrl
     comp_ctrl = ComponentController(settings)
-    comp_ctrl = comp_ctrl
     if waqd.DEBUG_LEVEL > 1: # disable startup sound
        comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
     # Load the selected GUI mode
@@ -115,7 +111,7 @@ def main(settings_path: Optional[Path] = None):
             qt_app = qt_app_setup(settings)
             # main_ui must be held in this context, otherwise the gc will destroy the gui
             loading_sequence(comp_ctrl, settings)
-            qt_app.exec_()
+            qt_app.exec()
         elif display_type == DISP_TYPE_WAVESHARE_EPAPER_2_9:
             pass
     except:  # pylint:disable=bare-except
@@ -123,15 +119,15 @@ def main(settings_path: Optional[Path] = None):
             Logger().error("Application crashed: \n%s", trace_back)
 
     # unload modules - wait for every thread to quit
-    if runtime_system.is_target_system:
-        Logger().info("Prepare to exit...")
-        if comp_ctrl:
-            comp_ctrl.unload_all()
-            while not comp_ctrl.all_unloaded:
-                time.sleep(.1)
+    # if runtime_system.is_target_system:
+    Logger().info("Prepare to exit...")
+    if comp_ctrl:
+        comp_ctrl.unload_all()
+        while not comp_ctrl.all_unloaded:
+            time.sleep(.1)
 
 
-def handle_cmd_args(settings):
+def parse_cmd_args(settings):
     """
     All CLI related functions.
     """
@@ -139,8 +135,9 @@ def handle_cmd_args(settings):
         prog=PROG_NAME, description=f"{PROG_NAME} command line interface")
     parser.add_argument("-v", "--version", action="version",
                         version=WAQD_VERSION)
-    parser.add_argument("-H", "--headless", action='store_true', dest='headless')
+    parser.add_argument("-H", "--headless", action='store_true')
     parser.add_argument("-D", "--debug_level", type=int, default=waqd.DEBUG_LEVEL)
+    parser.add_argument("-M", "--migrate_sensor_logs", action='store_true')
 
     args = parser.parse_args()
     waqd.DEBUG_LEVEL = args.debug_level
@@ -149,6 +146,8 @@ def handle_cmd_args(settings):
         waqd.DEBUG_LEVEL = int(debug_env_var)
     if args.headless:
         waqd.HEADLESS_MODE = True
+    if args.migrate_sensor_logs:
+        waqd.MIGRATE_SENSOR_LOGS = True
 
 def start_remote_debug():
     """ Start remote debugging from level 2 and wait on it from level 3"""
@@ -178,6 +177,13 @@ def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
     """
     from PyQt5 import QtCore, QtGui, QtWidgets
     Qt = QtCore.Qt
+    if platform.system() == "Windows":
+        # Workaround for Windows, so that on the taskbar the
+        # correct icon will be shown (and not the default python icon).
+        from PyQt5.QtWinExtras import QtWin
+        MY_APP_ID = 'ConanAppLauncher.' + WAQD_VERSION
+        QtWin.setCurrentProcessExplicitAppUserModelID(MY_APP_ID)
+
 
     # apply Qt attributes (only at init possible)
     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)

@@ -334,7 +334,7 @@ class OpenWeatherMap(Component):
                                            nighttime_forecast_points: List[List[Weather]],
                                            current_weather: Weather):
         """ Calculate the daily weather form the points and set self._five_day_forecast """
-
+        self._five_day_forecast = []
         # determine overall weather and wind to set the shown icon
         for day_idx in range(0, 6):
             forecast_points = daytime_forecast_points[day_idx]
@@ -524,26 +524,3 @@ class OpenWeatherMap(Component):
         if not file_path:
             file_path = get_asset_file("gui_base", "dummy.png")
         return file_path
-
-
-### Currently unused code ###
-# class AccuWeather():
-#     location = None
-#     cid = None
-#     current_weather = None
-#     three_day_forecast = {}
-#     forecast = None  # save for later use
-#     base_path = None
-
-#     def __init__(self, location):
-#         pass
-
-#     def get_5_day_forecast(self, current_date_time=datetime.now()):
-#         # http://dataservice.accuweather.com/forecasts/v1/daily/5day/187944?
-#           apikey=jDNdKjSNoyqCsJpLcuhAWOJsWFcpfuo0&details=true&metric=true HTTP/1.1
-#         pass
-
-#     def get_current_weather(self):
-#         # http://dataservice.accuweather.com/currentconditions/v1/187944?
-#           apikey=jDNdKjSNoyqCsJpLcuhAWOJsWFcpfuo0&details=true HTTP/1.1
-#         pass

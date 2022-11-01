@@ -21,6 +21,7 @@ import threading
 import time
 
 from typing import Optional
+from waqd.base.component import Component
 
 from waqd.base.logger import Logger
 from waqd.base.component_reg import ComponentRegistry
@@ -72,8 +73,10 @@ class ComponentController():
             self._unload_thread.join()
         self._stop_event.clear()
         Logger().info("Start initializing all components")
+
         self._watch_thread = threading.Thread(name="Watchdog", target=self._watchdog_loop, daemon=True)
         self._watch_thread.start()
+
 
     def unload_all(self, reload_intended=False, updating=False):
         """
@@ -113,7 +116,8 @@ class ComponentController():
         # check and restart wifi
         #if RuntimeSystem().is_target_system:
         Network().check_internet_connection()
-
+        import objsize
+        print("Size: " + str(objsize.get_deep_size(self)))
         try:
             for comp_name in self._components.get_names():
                 component = self._components.get(comp_name)

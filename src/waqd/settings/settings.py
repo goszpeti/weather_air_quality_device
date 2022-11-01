@@ -30,7 +30,7 @@ from waqd.settings import (ALLOW_UNATTENDED_UPDATES, AUTO_UPDATER_ENABLED,
                            DISPLAY_TYPE, FONT_SCALING, FORECAST_ENABLED, LANG, MH_Z19_VALUE_OFFSET, REMOTE_MODE_URL, UPDATER_USER_BETA_CHANNEL,
                            LANG_GERMAN, LOCATION, MOTION_SENSOR_ENABLED, MOTION_SENSOR_PIN,
                            NIGHT_MODE_BEGIN, NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT, OW_API_KEY,
-                           OW_CITY_IDS, PREFER_ACCU_WEATHER, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED, BMP_280_ENABLED, USER_SESSION_SECRET,
+                           OW_CITY_IDS, PREFER_ACCU_WEATHER, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED, BMP_280_ENABLED, USER_API_KEY, USER_SESSION_SECRET,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, DHT_22_DISABLED, LOG_SENSOR_DATA, SERVER_ENABLED)
 
 
@@ -88,7 +88,8 @@ class Settings():
                 LAST_ALTITUDE_M_VALUE: 400.0,
                 LAST_TEMP_C_OUTSIDE_VALUE: 23.5,
                 REMOTE_MODE_URL: "",
-                USER_SESSION_SECRET: bcrypt.gensalt(4).decode("utf-8")
+                USER_SESSION_SECRET: bcrypt.gensalt(4).decode("utf-8"),
+                USER_API_KEY: bcrypt.gensalt(4).decode("utf-8")[3:]
             },
             self._GUI_SECTION_NAME: {
                 FONT_SCALING: 1.0,
@@ -131,16 +132,16 @@ class Settings():
         return str(self.get(name))
 
     def get_int(self, name: str) -> int:
-        return int(self.get(name))
+        return int(self.get(name)) # type: ignore
 
     def get_float(self, name: str) -> float:
-        return float(self.get(name))
+        return float(self.get(name))  # type: ignore
 
     def get_bool(self, name: str) -> bool:
         return bool(self.get(name))
 
     def get_dict(self, name: str) -> Dict[str, str]:
-        return self.get(name)
+        return self.get(name)  # type: ignore
 
     def set(self, setting_name: str, value: Union[str, int, float, bool]):
         """ Set the value of a specific setting. Does not write to file, if value is already set. """

@@ -1,4 +1,4 @@
-
+# TODO use apt via python for a full Python based installer?
 #import apt
 # cache = apt.Cache()
 # apt.update()

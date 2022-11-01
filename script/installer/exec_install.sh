@@ -12,6 +12,8 @@ sudo apt install feh zenity xdotool wmctrl -y
 pcmanfm --desktop --profile LXDE-pi </dev/null &>/dev/null &
 # kill zenity - need exactly one proc for grep later
 pkill zenity || true
+# stop sensor db for possible update
+sudo systemctl stop influxdb || true
 
 echo "##### Starting installer #####" 
 
@@ -21,7 +23,7 @@ function waqd_install() {
     pkill waqd || true
     pkill python3 || true
 
-    echo "# Install needed system libraries... (Step 1/5)"
+    echo "# Install needed system libraries... (Step 1/6)"
     # python dependencies
     # sudo apt -y install python3-apt # TODO: if apt via python is used
     sudo apt -y install python3-libgpiod python3-venv python3-pyrsistent python3-pyqt5 python3-pyqt5.qtmultimedia python3-pyqt5.qtsvg python3-pyqt5.qtchart
@@ -31,28 +33,23 @@ function waqd_install() {
     # xscreensaver - for no auto screen turn off
     sudo apt -y install xscreensaver
 
-    echo "# Full system update... (Step 2/5)"
+    echo "# Full system update... (Step 2/6)"
     sudo apt full-upgrade -y --force-yes
     sudo apt autoremove -y
     # Install security updates daily - see https://wiki.debian.org/UnattendedUpgrades
     sudo apt-get install unattended-upgrades -y
-    # /etc/apt/apt.conf.d/20auto-upgrades 
-    # APT::Periodic::Update-Package-Lists "1";
-    # APT::Periodic::Unattended-Upgrade "1";
-    # sed '/Unattended-Upgrade::MinimalSteps "true";/s/^////' -i /etc/apt/apt.conf.d/50unattended-upgrades
-    # enables shutdown while updating
-    #/etc/apt/apt.conf.d/50unattended-upgrades
-    # TODO use //Unattended-Upgrade::MinimalSteps "true";
 
-    echo "# Install Wifi Connector... (Step 3/5)"
+    echo "# Installing InfluxDB Database... (Step 3/6)"
+    cd $CURRENT_DIR
+    chmod +x ./install_influx.sh
+    ./install_influx.sh
+
+    echo "# Install Wifi Connector... (Step 4/5)"
     # TODO can'T do this in the middle of an update, only after it?
 	# resets network 1st time installed
+    cd $CURRENT_DIR
     chmod +x ./install_wifi-connect.sh
     ./install_wifi-connect.sh -y
-
-    echo "# Installing InfluxDB Database... (Step 4/6)"
-    chmod +x ./install_influx.sh
-    ./install_influx.sh -y
 
     echo "# Setting up the system (Step 5/6)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system

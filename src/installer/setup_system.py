@@ -132,3 +132,20 @@ def do_setup():
 
     # Enable needed hardware access
     enable_hw_access()
+
+
+def configure_unnattended_updates(auto_updates_path=Path("/etc/apt/apt.conf.d/20auto-upgrades"),
+                                  unattended_updates_path=Path("/etc/apt/apt.conf.d/50unattended-upgrades")):
+    pass
+    # 
+    # APT::Periodic::Update-Package-Lists "1";
+    # APT::Periodic::Unattended-Upgrade "1";
+    # sed '/Unattended-Upgrade::MinimalSteps "true";/s/^////' -i /etc/apt/apt.conf.d/50unattended-upgrades
+    # enables shutdown while updating
+    # Unattended-Upgrade::Remove-Unused-Dependencies "true";
+    # Unattended-Upgrade::AutoFixInterruptedDpkg "true";
+    # TODO use //Unattended-Upgrade::MinimalSteps "true";
+    #  "origin=Debian,codename=${distro_codename},label=Debian";
+    # "origin=Debian,codename=${distro_codename},label=Debian-Security"
+    #"origin=Debian,codename=${distro_codename}-security,label=Debian-Security"
+    # "origin=Debian,codename=${distro_codename}-updates";

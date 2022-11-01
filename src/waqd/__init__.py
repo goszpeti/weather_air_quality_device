@@ -25,10 +25,10 @@ Should not contain any 3rd party imports!
 
 from pathlib import Path
 import datetime
-__version__ = "1.6.0b5"
+__version__ = "2.0.0"
 
 ### Global constants ###
-PROG_NAME = "W.A.Q.D"
+PROG_NAME = "WAQD"
 GITHUB_REPO_NAME = "goszpeti/WeatherAirQualityDevice"
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 480
@@ -38,6 +38,7 @@ SCREEN_HEIGHT = 480
 # 3: wait for remote debugger, 4: quick-load
 DEBUG_LEVEL = 0
 HEADLESS_MODE = False
+MIGRATE_SENSOR_LOGS = False
 LOCAL_TIMEZONE = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
 
 # paths to find folders

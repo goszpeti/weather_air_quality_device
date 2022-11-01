@@ -1,17 +1,26 @@
-import os
-from pathlib import Path
-from threading import Lock
-import time
-from waqd.base.logger import Logger
-
 import base64
 import hashlib
 import hmac
 import json
 import logging
+import os
+import random
+import string
+import time
+from pathlib import Path
+from threading import Lock
+
 import bcrypt
-from bottle import request, response, redirect, abort
 import waqd
+from bottle import request, response
+from waqd.base.logger import Logger
+
+DEFAULT_USERNAME = "default_waqd_user"
+
+def create_password(length=8):
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(random.choice(characters) for i in range(length))
+    return password
 class WAQDSession(dict):
 
     encoding = 'UTF-8'
@@ -126,6 +135,7 @@ class UserFileDB():
             os.makedirs(self.__pw_file_path.parent, exist_ok=True)
             self.__pw_file_path.touch()
             self.__pw_file_path.write_text("{}")
+            self.write_entry(DEFAULT_USERNAME, create_password(8))
             Logger().warning('User-DB: Creating user database file')
 
     def write_entry(self, username: str, password: str):

@@ -120,7 +120,7 @@ class SensorFileLogger(logging.Logger):
         logger.info(value)
 
     @staticmethod
-    def __get_sensor_logfile_path(sensor_location: str, sensor_type: str) -> Path:
+    def _get_sensor_logfile_path(sensor_location: str, sensor_type: str) -> Path:
         logger = SensorFileLogger(sensor_location, sensor_type,
                                   output_path=waqd.user_config_dir / "sensor_logs")
         if logger.handlers == 0:
@@ -138,7 +138,7 @@ class SensorFileLogger(logging.Logger):
     # zero reads the last value
     def get_sensor_values(sensor_location: str, sensor_type: str, minutes_to_read: int = 0) -> List[Tuple[datetime, float]]:
 
-        log_file_path = SensorFileLogger.__get_sensor_logfile_path(sensor_location, sensor_type)
+        log_file_path = SensorFileLogger._get_sensor_logfile_path(sensor_location, sensor_type)
         if not log_file_path.exists():
             return []
         current_time = datetime.now()
@@ -185,3 +185,42 @@ class SensorFileLogger(logging.Logger):
         logger.addHandler(file_handler)
         logger.propagate = False
         return logger
+
+    @staticmethod
+    def migrate_txts_to_db():
+        from waqd.components.sensor_logger import InfluxSensorLogger
+        sensor_files = (waqd.user_config_dir / "sensor_logs").glob("*.log")
+        db_logger = InfluxSensorLogger()
+        for sensor_file in sensor_files:
+            if "interior" in sensor_file.stem:
+                sensor_location = "interior"
+            elif "exterior" in sensor_file.stem:
+                sensor_location = "exterior"
+            else:
+                Logger().info(f"Unknown sensor log file {sensor_file.stem} to migrate.")
+                continue
+            sensor_type = sensor_file.stem.replace("interior", "").lstrip("_").rstrip("_")
+            Logger().info(f"Starting to migrate {sensor_location} {sensor_type} from txt to db...")
+            with open(sensor_file) as fd:
+                ln = 0
+                while True:
+                    line = fd.readline()
+                    if ln % 100 == 0:
+                        Logger().info(
+                            f"Migrated {str(ln)} entries.")
+                    if not line:
+                        Logger().info(
+                            f"Finished  migrating {str(ln)} entries from {sensor_location} {sensor_type}.")
+                        break
+                    ln += 1
+                    try:  # parse file format
+                        content = line.split("=")
+                        time = datetime.fromisoformat(content[0])
+                        value = float(content[1])
+                    except Exception as e:
+                        Logger().debug(
+                            f"Can't parse {str(line)} entry from {sensor_location} {sensor_type} logfile.")
+                        continue
+                    db_logger.set_value(sensor_location, sensor_type, value, time)
+
+            delete_log_file(sensor_file)

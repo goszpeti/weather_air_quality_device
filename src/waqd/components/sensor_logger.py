@@ -1,5 +1,6 @@
 from configparser import ConfigParser
 from datetime import datetime, timezone
+from multiprocessing import Lock
 import os
 from pathlib import Path
 from time import sleep
@@ -8,7 +9,7 @@ from typing import List, Optional, Tuple
 from influxdb_client import InfluxDBClient, Point, WritePrecision, AuthorizationsApi
 from influxdb_client.client.write_api import SYNCHRONOUS
 from waqd.base.component import Component
-from waqd.base.logger import Logger
+from waqd.base.logger import Logger, SensorFileLogger
 from waqd import LOCAL_TIMEZONE
 
 
@@ -66,24 +67,27 @@ class InfluxSensorLogger():
 # influx auth create - -org waqd-local - -all-access
 
     @classmethod
-    def set_value(cls, sensor_location: str, sensor_type: str, value: Optional[float]):
+    def set_value(cls, sensor_location: str, sensor_type: str, value: Optional[float], time=None):
         if not cls._enabled:
             return
         if value is None:
             return
+        if time is None:
+            time = datetime.now(LOCAL_TIMEZONE)
         with InfluxDBClient(url="http://localhost:8086", token=cls._token, org=org) as client:
             write_api = client.write_api(write_options=SYNCHRONOUS)
             point = Point("air_quality") \
                 .tag("type", sensor_location) \
                 .field(sensor_type, float(value)) \
-                .time(datetime.now(LOCAL_TIMEZONE), WritePrecision.S)
+                .time(time, WritePrecision.S)
             try:
                 write_api.write(bucket, org, point)
             except Exception as e:
                 Logger().error(f"SensorDB: {str(e)}")
+            write_api.close()
 
     @classmethod
-    def get_sensor_values(cls, sensor_location: str, sensor_type: str, minutes_to_read: int = 1440, last_value=False) -> List[Tuple[datetime, float]]:
+    def get_sensor_values(cls, sensor_location: str, sensor_type: str, minutes_to_read: int = 180, last_value=False) -> List[Tuple[datetime, float]]:
         # zero reads the last value
         if not cls._enabled:
             return []

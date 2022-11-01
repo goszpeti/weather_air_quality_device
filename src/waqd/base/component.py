@@ -43,7 +43,11 @@ class Component:
         self._runtime_system = RuntimeSystem()
         self._reload_forbidden = False  # must be set manually in the child class
         self._disabled = not enabled
+        self._ready = False
+        if enabled and self._ready:
+            self._logger.info("ComponentRegistry: Starting %s", self.__class__.__name__)
         self._ready = True
+
 
     @property
     def is_ready(self) -> bool:

@@ -33,11 +33,9 @@ class Sound(Component):
     """
     lock = Lock()  # lock for playing
 
-    def __init__(self, components: ComponentRegistry, enabled = True):
-        super().__init__()
-        self._disabled = not enabled
+    def __init__(self, components: ComponentRegistry, enabled=True):
+        super().__init__(components, enabled=enabled)
         self._sound_thread = Thread()
-        self._comps = components
 
     def play(self, audio_file: PathLike):
         if self._disabled:

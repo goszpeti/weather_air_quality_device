@@ -92,7 +92,6 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         if not self._exterior_ui:
             self._exterior_ui = exterior.Exterior(self, self._settings)
 
-
         # translate ui
         self._ui.retranslateUi(self)
 
