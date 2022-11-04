@@ -1,0 +1,104 @@
+<script>
+  // Server side event to update values
+  var source = new EventSource("api/events/remoteIntSensor");
+  source.onmessage = function (message) {
+    // console.log(message.data)
+    var jdata = JSON.parse(message.data);
+    document.getElementById("temp_value").innerHTML = jdata.temp;
+    document.getElementById("humidity_value").innerHTML = jdata.hum;
+    document.getElementById("pressure_value").innerHTML = jdata.baro;
+    document.getElementById("co2_value").innerHTML = jdata.co2;
+  }
+
+  // When the user clicks on <div>, open the popup
+  function toggle_history(type) {
+    var overlay = document.getElementById("loading_overlay");
+    overlay.style.display = "block";
+
+    fetch("/waqd/" + type + "_history")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+        return response.text();
+      })
+      .then((text) => {
+        var overlay = document.getElementById("loading_overlay");
+        overlay.style.display = "none";
+        var modal_popup = document.getElementById("modal_popup");
+        if (modal_popup == null){
+          var newDiv = document.createElement("div");
+          newDiv.id = "modal_popup"
+          newDiv.innerHTML = text
+          document.getElementById("app").appendChild(newDiv)
+          modal_popup = newDiv
+        }
+        else{
+          modal_popup.innerHTML = text
+        }
+        // Execute embedded javascript
+        var scripts = modal_popup.getElementsByTagName("script");
+        for (var i = 0; i < scripts.length; i++) {
+          eval(scripts[i].innerText);
+        }
+        var modal = document.getElementById("myModal");
+        modal.style.display = "block";
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            var modal = document.getElementById("myModal");
+            modal.style.display = "none";
+        }
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+          if (event.target == modal) {
+            var modal = document.getElementById("myModal");
+            modal.style.display = "none";
+          }
+        }
+        // Execute 1 resize so plot is ized correctly
+        window.dispatchEvent(new Event('resize'));
+      })
+  }
+</script>
+<div id="waqd_view" class="block">
+  <div id="weather_overall" class="row" onclick="toggle_weather()" style="text-align: center;padding-bottom: 0px;margin-bottom: 0px">
+      <img class="svg-white" src="static/{{weather_icon}}" alt="weather_icon" style="width: 50%;">
+  </div>
+  <div id="exterior" class="row">
+    <h4>Exterior</h4>
+  </div>
+  <hr style="width:50%;height:2px;border-width:0;margin-bottom: 20px">
+  <div id="temp_exterior" class="row">
+    <img class="svg-white" src="static/weather_icons/wi-thermometer_full.svg" alt="temp_icon" width="15%">
+    <span id="temp_value">{{temp}}</span>
+  </div>
+  <div id="hum_exterior" class="row">
+    <img class="svg-white" src="static/weather_icons/wi-humidity.svg" alt="baro_icon" width="15%">
+    <span id="humidity_value">{{humidity}}</span>
+  </div>
+  <br>
+  <div id="interior" class="row">
+    <h4>Interior</h4>
+  </div>
+  <hr style="width:50%;height:2px;border-width:0;margin-bottom: 20px">
+  
+  <div id="temp_interior" class="row", style="cursor: pointer;">
+      <img class="svg-white" src="static/weather_icons/wi-thermometer_full.svg" onclick="toggle_temp()"; alt="temp_icon" width="15%">
+      <span id="temp_value" onclick="toggle_history('temp')">{{temp}}</span>
+  </div>
+  <div id="hum_interior" class="row", style="cursor: pointer;">
+      <img class="svg-white" src="static/weather_icons/wi-humidity.svg" alt="baro_icon" width="15%">
+      <span id="humidity_value" onclick="toggle_history('humidity')">{{humidity}}</span>
+  </div>
+  <div id="baro_interior" class="row", style="cursor: pointer;">
+      <img class="svg-white" src="static/weather_icons/wi-barometer.svg" alt="baro_icon" width="15%">
+      <span id="pressure_value" onclick="toggle_history('pressure')">{{pressure}}</span>
+  </div>
+  <div id="co2_interior" class="row", style="cursor: pointer;">
+    <p style="font-size: 1em;margin-top: 0cm;">
+      CO<sub>2</sub> <span id="co2_value" onclick="toggle_history('co2')">{{co2}}</span>
+    </p>
+  </div>
+</div>

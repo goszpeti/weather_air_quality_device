@@ -19,12 +19,11 @@ def testGetWithouFileType(base_fixture):
 
 
 def testNoFileToc(base_fixture, capsys):
+    # Test, that a file without ToC works too (ONLY if no ToC is present)
     rsc_folder = base_fixture.testdata_path / "assets"
-    dummy1 = get_asset_file(rsc_folder, "dummy1")
-    captured = capsys.readouterr()
-    assert not dummy1.exists()
-    assert "ERROR" in captured.out
-    assert "Cannot find catalog" in captured.out
+    dummy1 = get_asset_file(rsc_folder, "dummy1_value.png")
+    assert dummy1 == rsc_folder / "dummy1_value.png"
+
 
 
 def testNoTocEntry(base_fixture, capsys):

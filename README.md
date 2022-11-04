@@ -2,7 +2,7 @@
 
 # Weather and Air Quality Device - based on Raspberry Pi
 
-![tests](https://github.com/goszpeti/WeatherAirQualityDevice/workflows/tests/badge.svg)
+![Python tests](https://github.com/goszpeti/WeatherAirQualityDevice/workflows/tests/badge.svg)
 
 ## Quick Overview
 
@@ -41,7 +41,9 @@ The project will be written with the usage of Qt in Python.
 ### Case
 
 #### SmartiPi Touch 2
-  * recommended because of cable management and supports all RPi Versions up to RPi4.
+* recommended because of cable management and supports all RPi Versions up to RPi4.
+
+# <img src="./doc/images/waqd_station.jpg" width="300">
 
 ##### Sensor holding case:
 
@@ -104,9 +106,9 @@ Use virtualenv:
 
 ## Included 3rd-Party Assets
 
-* Weather Icons licensed under [SIL OFL 1.1](http://scripts.sil.org/OFL) from http://weathericons.io)
+* Weather Icons licensed under [SIL OFL 1.1](http://scripts.sil.org/OFL) from https://github.com/erikflowers/weather-icons)
 * Franzo Font under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) from https://fontlibrary.org/en/font/franzo
-* wifi-connect under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) from https://github.com/balena-os/wifi-connect
+* Using icons by https://icons8.com under [Universal Multimedia Licensing Agreement for Icons8](https://icons8.com/vue-static/landings/pricing/icons8-license.pdf)
 * Images from Unsplash under [Unsplash license](https://unsplash.com/license) from https://unsplash.com
   * https://unsplash.com/photos/VjMJmwZOs9M from Jesse Borovnica
   * https://unsplash.com/photos/GLf7bAwCdYg from Adrian Infernus
@@ -131,22 +133,31 @@ Use virtualenv:
   * https://unsplash.com/photos/06qZZZNfzD8 from Scott Webb
   * https://unsplash.com/photos/n2poVQijgzo from Zuzana Ruttkay
 
-
-
 ## Used software
 
-* For Python libs see setup.py
-* For system packages see /scripts/installer/start_installer.sh ("Install needed system libraries" section)
+* For all natively installed Python libs see setup.py
+* pipx from PyPi [MIT License](<http://opensource.org/licenses/mit-license.php>)
+* Python packages installed via system package manager
+  * PyQt5 (including python3-pyqt5.qtsvg python3-pyqt5.qtchart) by Riverbank Computing Limited, [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+  * python3-libgpiod
+  * python3-venv
+* wifi-connect under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) from https://github.com/balena-os/wifi-connect
+## Needed Operating System and builtin dependencies
 
-## Needed Software
-
-* Raspberry PI OS - 32 bit (Buster) - 64 bit is still missing some libraries.
+* Raspberry Pi OS - 64 bit (Bullseye) - 32 bit no longer supported
+  * APT
   * LightDM desktop manager
   * XFCE desktop environment with pcmanfm
   * Plymouth for boot screen customization
   * raspi-config
-  * Python 3.7
-
+  * Python 3.9
+  * Installed official apt packages
+    * feh
+    * zenity
+    * xdotool
+    * wmctrl
+    * xscreensaver
+    * unattended-upgrades
 ## Author:
 
-Copyright (c) 2021 Péter Gosztolya and contributors.
+Copyright (c) 2022 Péter Gosztolya and contributors.

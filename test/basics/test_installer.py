@@ -12,7 +12,9 @@ def testAddToAutostart(base_fixture):
     temp_autostart_file = Path(tempfile.gettempdir()) / "tmp.txt"
 
     copy_file(str(auto_update_file), str(temp_autostart_file))
-    setup_system.add_to_autostart("xscreensaver -no-splash", ["waqd"], temp_autostart_file)
+    setup_system.add_to_autostart(["xscreensaver -no-splash"], temp_autostart_file)
+    setup_system.remove_from_autostart(["waqd"], temp_autostart_file)
+
     with open(temp_autostart_file) as ft:
         read = ft.readlines()
     assert read[0] == "@lxpanel --profile LXDE-pi\n"
@@ -20,7 +22,7 @@ def testAddToAutostart(base_fixture):
     assert read[2] == "@xscreensaver -no-splash\n"
     
     # 2nd run - don't change anything
-    setup_system.add_to_autostart("xscreensaver -no-splash", [], temp_autostart_file)
+    setup_system.add_to_autostart(["xscreensaver -no-splash"], temp_autostart_file)
     with open(temp_autostart_file) as ft:
         read = ft.readlines()
     assert read[0] == "@lxpanel --profile LXDE-pi\n"
@@ -80,11 +82,11 @@ def testRegisterAutostart(base_fixture):
     assert read[2] == "@" + str(start_waqd_path) + "\n"
 
 
-def testCleanDesktop():
+def testCleanDesktop(base_fixture):
     # no error should happen if file does not exist
-    desktop_path = Path("nonexistant/bullshit.conf")
+    desktop_path = base_fixture.testdata_path / "nonexistant/bullshit.conf"
     setup_system.clean_lxde_desktop(desktop_path) 
-    assert not desktop_path.exists()
+    assert desktop_path.exists()
 
     desktop_path = Path(tempfile.gettempdir()) / "tmp.conf"
     with open(desktop_path, "w") as fd:

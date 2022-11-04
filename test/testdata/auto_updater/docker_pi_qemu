@@ -1,0 +1,98 @@
+# Build stage for qemu-system-arm
+FROM debian:stable-slim AS qemu-builder
+ARG QEMU_VERSION=6.0.0
+ENV QEMU_TARBALL="qemu-${QEMU_VERSION}.tar.xz"
+WORKDIR /qemu
+
+RUN # Update package lists
+RUN apt-get update
+
+RUN # Pull source
+RUN apt-get -y install wget
+RUN wget "https://download.qemu.org/${QEMU_TARBALL}"
+
+RUN # Verify signatures
+RUN apt-get -y install gpg
+RUN wget "https://download.qemu.org/${QEMU_TARBALL}.sig"
+RUN gpg --keyserver keyserver.ubuntu.com --recv-keys CEACC9E15534EBABB82D3FA03353C9CEF108B584
+RUN gpg --verify "${QEMU_TARBALL}.sig" "${QEMU_TARBALL}"
+
+RUN # Extract source tarball
+RUN apt-get -y install pkg-config
+RUN tar xvf "${QEMU_TARBALL}"
+
+RUN # Build source
+# These seem to be the only deps actually required for a successful  build
+RUN apt-get -y install python build-essential libglib2.0-dev libpixman-1-dev ninja-build
+# These don't seem to be required but are specified here: https://wiki.qemu.org/Hosts/Linux
+RUN apt-get -y install libfdt-dev zlib1g-dev
+# Not required or specified anywhere but supress build warnings
+RUN apt-get -y install flex bison
+RUN "qemu-${QEMU_VERSION}/configure" --static --target-list=arm-softmmu,aarch64-softmmu
+RUN make -j$(nproc)
+
+RUN # Strip the binary, this gives a substantial size reduction!
+RUN strip "arm-softmmu/qemu-system-arm" "aarch64-softmmu/qemu-system-aarch64" "qemu-img"
+
+
+# Build stage for fatcat
+FROM debian:stable-slim AS fatcat-builder
+ARG FATCAT_VERSION=v1.1.0
+ARG FATCAT_CHECKSUM="303efe2aa73cbfe6fbc5d8af346d0f2c70b3f996fc891e8859213a58b95ad88c"
+ENV FATCAT_TARBALL="${FATCAT_VERSION}.tar.gz"
+WORKDIR /fatcat
+
+RUN # Update package lists
+RUN apt-get update
+
+RUN # Pull source
+RUN apt-get -y install wget
+RUN wget "https://github.com/Gregwar/fatcat/archive/${FATCAT_TARBALL}"
+RUN echo "${FATCAT_CHECKSUM} ${FATCAT_TARBALL}" | sha256sum --check
+
+RUN # Extract source tarball
+RUN tar xvf "${FATCAT_TARBALL}"
+
+RUN # Build source
+RUN apt-get -y install build-essential cmake
+RUN cmake fatcat-* -DCMAKE_CXX_FLAGS='-static'
+RUN make -j$(nproc)
+
+
+# Build the dockerpi VM image
+FROM busybox:1.34 AS dockerpi-vm
+LABEL maintainer="Luke Childs <lukechilds123@gmail.com>"
+ARG RPI_KERNEL_URL="https://github.com/dhruvvyas90/qemu-rpi-kernel/archive/1938fb5ac06188c12fc88b266cf6912e3fea6f68.zip"
+ARG RPI_KERNEL_CHECKSUM="cb5bd7eccba3252101c6546919689e497a0ed5d64ef882210573d3dd25a8ed0e"
+
+COPY --from=qemu-builder /qemu/arm-softmmu/qemu-system-arm /usr/local/bin/qemu-system-arm
+COPY --from=qemu-builder /qemu/aarch64-softmmu/qemu-system-aarch64 /usr/local/bin/qemu-system-aarch64
+COPY --from=qemu-builder /qemu/qemu-img /usr/local/bin/qemu-img
+COPY --from=fatcat-builder /fatcat/fatcat /usr/local/bin/fatcat
+
+ADD $RPI_KERNEL_URL /tmp/qemu-rpi-kernel.zip
+
+RUN cd /tmp && \
+    echo "$RPI_KERNEL_CHECKSUM  qemu-rpi-kernel.zip" | sha256sum -c && \
+    unzip qemu-rpi-kernel.zip && \
+    mkdir -p /root/qemu-rpi-kernel && \
+    cp qemu-rpi-kernel-*/kernel-qemu-5.10.63-bullseye /root/qemu-rpi-kernel/ && \
+    cp qemu-rpi-kernel-*/versatile-pb-bullseye-5.10.63.dtb /root/qemu-rpi-kernel/ && \
+    rm -rf /tmp/*
+
+VOLUME /sdcard
+
+ADD ./entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
+
+
+# Build the dockerpi image
+# It's just the VM image with a compressed Raspbian filesystem added
+FROM dockerpi-vm as dockerpi
+LABEL maintainer=""
+ARG FILESYSTEM_IMAGE_URL="http://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2022-01-28/2022-01-28-raspios-bullseye-arm64.zip"
+ARG FILESYSTEM_IMAGE_CHECKSUM="a50237c2f718bd8d806b96df5b9d2174ce8b789eda1f03434ed2213bbca6c6ff"
+
+ADD $FILESYSTEM_IMAGE_URL /filesystem.zip
+
+RUN echo "$FILESYSTEM_IMAGE_CHECKSUM  /filesystem.zip" | sha256sum -c

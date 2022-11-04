@@ -10,7 +10,7 @@ from pathlib import Path
 from installer.common import (
     INSTALL_TARGET_ROOT, AUTOSTART_FILE, USER_CONFIG_PATH, INSTALL_DIR_SUFFIX, LOCAL_BIN_PATH, USERNAME,
     installer_root_dir,
-    add_to_autostart, get_waqd_version, get_waqd_bin_name, set_write_premissions, setup_logger)
+    add_to_autostart, get_waqd_version, get_waqd_bin_name, remove_from_autostart, set_write_permissions, setup_logger)
 
 def install_waqd(waqd_version: str):
     logging.info("Installing with pipx")
@@ -41,16 +41,13 @@ def register_waqd_autostart(bin_path: Path = LOCAL_BIN_PATH, autostart_file: Pat
     os.chmod(waqd_start_bin_path, os.stat(waqd_start_bin_path).st_mode | stat.S_IEXEC)
     os.system(f"chown {USERNAME} {waqd_start_bin_path}")
     logging.info(f"Add respawning {str(waqd_start_bin_path)} to autostart file {str(autostart_file)}")
-    add_to_autostart(str(waqd_start_bin_path), ["waqd", "PiWeather"], autostart_file)
+    # first remove, to not aciddentally remove added lines
+    remove_from_autostart(["waqd", "PiWeather"], autostart_file)
+    add_to_autostart([str(waqd_start_bin_path)], autostart_file)
 
 def do_install():
     # install and add to autostart
-    set_write_premissions(INSTALL_TARGET_ROOT)
+    set_write_permissions(INSTALL_TARGET_ROOT)
     install_waqd(get_waqd_version())
 
     register_waqd_autostart()
-    # restart only if not in docker (for testing)
-    ret = os.system("grep -q docker /proc/1/cgroup")
-    if ret != 0:
-        os.system("sudo reboot")
-        logging.info("Restarting in one minute...")

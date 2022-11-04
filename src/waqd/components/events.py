@@ -32,7 +32,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from dateutil.parser import parse as parse_date
 from dateutil.relativedelta import relativedelta
 
-from waqd import config
+import waqd
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
 from waqd.base.component_reg import ComponentRegistry
@@ -95,7 +95,7 @@ class Event():
         self._triggers = new_value
 
     @property
-    def actions(self):
+    def actions(self) -> Dict[str, str]:
         """ The actions to execute with the event. """
         return self._actions
 
@@ -198,14 +198,14 @@ class EventHandler(Component):
 
     def __init__(self,  components: ComponentRegistry, lang: str, night_mode_end: int, enabled=True):
         super().__init__(components, enabled=enabled)
+        self._scheduler: Optional[BackgroundScheduler] = None
         if not enabled:
             return
         self._lang = lang
         self._night_mode_end = night_mode_end
         self.gui_background_update_sig: Optional[pyqtBoundSignal] = None
-        self._config_events_file = config.user_config_dir / "events.json"
+        self._config_events_file = waqd.user_config_dir / "events.json"
         self._events = parse_event_file(self._config_events_file)
-        self._scheduler: Optional[BackgroundScheduler] = None
 
         self._init_thread = threading.Thread(
             name="StartScheduler", target=self._init_scheduler, daemon=True)
@@ -306,7 +306,7 @@ class EventHandler(Component):
                     time.sleep(2)
                     current_date_time = datetime.datetime.now()
 
-            text = event.actions.get("text_2_speach")
+            text = event.actions.get("text_2_speach", "")
             if text:  # replace known patterns
                 text = text.replace("${day_time_greeting}", self._comps.tts.get_tts_string(
                     get_time_of_day(), self._lang))
@@ -314,7 +314,8 @@ class EventHandler(Component):
             self._comps.tts.say(text, self._lang)
 
         if "play_sound" in event.actions:
-            self._comps.sound.play(event.actions.get("play_sound"))
+            sound = event.actions.get("play_sound", "")
+            self._comps.sound.play(Path(sound))
 
         event.last_triggered = str(datetime.datetime.now())
         write_events_file(self._config_events_file, self._events)

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>WAQD</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0", charset="utf-8">
+<style>
+/* Cannot be in stylesheet.css */
+@font-face {
+     font-family: MyFranzo;
+     src: url('static/font/Franzo-E4GA.woff');
+ }
+ </style>
+<link rel="stylesheet" href="style.css"/>
+<script src="script/plotly.js"></script>
+</head>
+<link rel="icon" href="static/gui_base/icon.png" type="image/png">
+<body>
+    <nav class="navbar">
+        <div class="navbar-container container">
+            <input type="checkbox" name="" id="">
+            <div class="hamburger-lines">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+            </div>
+            {{menu}}
+            <h1 class="logo">WAQD</h1>
+        </div>
+    </nav>
+    <div id="app" class="app", style="padding-top: 60px;">
+    <!-- loading overlay -->
+    <div id="loading_overlay" class="overlay">
+        <div class="overlay__inner">
+            <div class="overlay__content"><span class="spinner"></span></div>
+        </div>
+    </div>
+    {{content}}
+    {{login_msg}}
+    </div>
+</body>
+<footer>
+    (c) 2022 P&eacute;ter Gosztolya and contributors.
+</footer>
+</html>

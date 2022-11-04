@@ -24,7 +24,6 @@
 LANG_GERMAN = "Deutsch"
 LANG_ENGLISH = "English"
 LANG_HUNGARIAN = "Magyar"
-DISP_TYPE_HEADLESS = "headless"
 DISP_TYPE_RPI = "RPI_TD" # original 7" rpi touch display
 DISP_TYPE_WAVESHARE_5_LCD = "Waveshare_LCD" # Waveshare 5" touch display
 DISP_TYPE_WAVESHARE_EPAPER_2_9 = "Waveshare_Epaper_2_9"
@@ -48,9 +47,16 @@ CCS811_ENABLED = "ccs811_enabled"
 MH_Z19_ENABLED = "mh_z19_enabled"
 MH_Z19_VALUE_OFFSET = "mh_z19_value_offset"
 LOG_SENSOR_DATA = "log_sensor_data"
+USER_SESSION_SECRET = "user_session_secret"
+USER_API_KEY = "user_api_key"
 
 AUTO_UPDATER_ENABLED = "auto_updater_enabled"
 UPDATER_USER_BETA_CHANNEL = "updater_use_beta_channel"
+ALLOW_UNATTENDED_UPDATES = "unattended_updates" # TODO does nothing
+
+LAST_ALTITUDE_M_VALUE = "last_alitude_value"
+LAST_TEMP_C_OUTSIDE_VALUE  = "last_temp_outside_value"
+REMOTE_MODE_URL = "remote_mode_url"
 # gui
 FONT_SCALING = "font_scaling"
 FONT_NAME = "font_name"

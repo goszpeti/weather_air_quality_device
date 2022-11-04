@@ -5,14 +5,14 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from waqd import config
+import waqd
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.logger import Logger
 from waqd.components.events import (EventHandler, get_time_of_day,
                                     parse_event_file, write_events_file)
 from waqd.settings import (NIGHT_MODE_BEGIN, NIGHT_MODE_END, SOUND_ENABLED,
                            Settings)
-from waqd.ui.main_ui import WeatherMainUi
+from waqd.ui.qt.main_ui import WeatherMainUi
 
 
 def testParser(base_fixture, target_mockup_fixture):
@@ -43,9 +43,9 @@ def testDailyGreeting(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
         comps.energy_saver
         wmu = WeatherMainUi(comp_ctrl, settings)
         from pytestqt.plugin import _qapp_instance
-        config.qt_app = _qapp_instance
+        # waqd.qt_app = _qapp_instance
         qtbot.addWidget(wmu)
-        ev = EventHandler(comps, settings)
+        ev = EventHandler(comps, "en", 0)
         t = get_time_of_day()
 
         current_date_time = datetime.now()
@@ -76,10 +76,10 @@ def testEventScheduler(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
         comps.energy_saver
         wmu = WeatherMainUi(comp_ctrl, settings)
         from pytestqt.plugin import _qapp_instance
-        config.qt_app = _qapp_instance
+        # waqd.qt_app = _qapp_instance
         qtbot.addWidget(wmu)
         #monkeypatch.setattr('apscheduler.triggers.date.datetime', frozen)
-        ev = EventHandler(comps, settings)
+        ev = EventHandler(comps, "en", 0)
         t = get_time_of_day()
 
         current_date_time = datetime.now()

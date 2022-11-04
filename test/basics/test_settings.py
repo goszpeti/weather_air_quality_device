@@ -56,7 +56,7 @@ def testSaveToFile(base_fixture):
     sets.set(NIGHT_STANDBY_TIMEOUT, night_standby_timeout)
     sets.set(FONT_SCALING, font_scaling)
 
-    sets.save_all_options()
+    sets.save()
 
     # read file
     parser = configparser.ConfigParser()

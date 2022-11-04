@@ -129,6 +129,7 @@
         "thermometer_almost_full": "wi-thermometer_high",
         "thermometer_half": "wi-thermometer_middle",
         "thermometer_almost_empty": "wi-thermometer_middle_low",
-        "thermometer_empty": "wi-thermometer_low"
+        "thermometer_empty": "wi-thermometer_low",
+        "N/A": "wi-na"
     }
 }

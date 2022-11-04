@@ -22,15 +22,15 @@
 import threading
 # this allows to use forward declarations to avoid circular imports
 from typing import TYPE_CHECKING, Dict, List, Optional, Type, TypeVar, Union
-
+import waqd
 from waqd.base.component import Component, CyclicComponent
 from waqd.base.logger import Logger
 from waqd.settings import (AUTO_UPDATER_ENABLED, BME_280_ENABLED,
                            BMP_280_ENABLED, BRIGHTNESS, CCS811_ENABLED,
                            DHT_22_DISABLED, DHT_22_PIN, DISPLAY_TYPE, EVENTS_ENABLED, LANG,
                            LOCATION, MH_Z19_ENABLED, MOTION_SENSOR_ENABLED,
-                           MOTION_SENSOR_PIN, NIGHT_MODE_END, OW_API_KEY, OW_CITY_IDS, SERVER_ENABLED,
-                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL,
+                           MOTION_SENSOR_PIN, NIGHT_MODE_END, OW_API_KEY, OW_CITY_IDS, REMOTE_MODE_URL, SERVER_ENABLED,
+                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, USER_API_KEY, USER_SESSION_SECRET,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, Settings)
 
 if TYPE_CHECKING:
@@ -72,7 +72,7 @@ class ComponentRegistry():
         """ Get a list of names of all components"""
         return list(self._components)
 
-    def  get(self, name) -> Union[Component, CyclicComponent, None]:
+    def get(self, name) -> Union[Component, CyclicComponent, None]:
         """ Get a specific component instance """
         return self._components.get(name)
 
@@ -116,11 +116,16 @@ class ComponentRegistry():
             # call destructors
             del component
 
-    def show(self):
+    def watch_all(self):
         """ Check all components and thus initialize them """
-        return [self.display, self.sound, self.auto_updater, self.tts, self.temp_sensor, self.humidity_sensor,
-                self.tvoc_sensor, self.pressure_sensor, self.co2_sensor, self.server,
-                self.motion_detection_sensor, self.energy_saver, self.weather_info, self.event_handler]
+        # filter for headless mode
+        comps = [
+            self.auto_updater, self.temp_sensor, self.humidity_sensor,
+            self.tvoc_sensor, self.pressure_sensor, self.co2_sensor, self.motion_detection_sensor,
+            self.server, self.weather_info]
+        if not waqd.HEADLESS_MODE:
+            comps += [self.event_handler, self.display, self.tts, self.sound, self.energy_saver]
+        return comps
 
     @property
     def display(self) -> "Display":
@@ -147,7 +152,7 @@ class ComponentRegistry():
     @property
     def sound(self) -> "Sound":
         """ Access for Sound singleton """
-        from waqd.components.sound import Sound
+        from waqd.components import Sound
         return self._create_component_instance(Sound, [self, self._settings.get(SOUND_ENABLED)])
 
     @property
@@ -160,8 +165,8 @@ class ComponentRegistry():
     def weather_info(self) -> "OpenWeatherMap":
         """ Access for OnlineWeather singleton """
         from waqd.components.online_weather import OpenWeatherMap
-        location = self._settings.get(LOCATION)
-        return self._create_component_instance(OpenWeatherMap, [self._settings.get_dict(OW_CITY_IDS).get(location),
+        location = self._settings.get_string(LOCATION)
+        return self._create_component_instance(OpenWeatherMap, [self._settings.get_dict(OW_CITY_IDS).get(location, ""),
                                                                 self._settings.get(OW_API_KEY)])
 
     @property
@@ -174,7 +179,8 @@ class ComponentRegistry():
     @property
     def server(self) -> "Server":
         from waqd.components import Server
-        return self._create_component_instance(Server, [self, self._settings.get(SERVER_ENABLED)])
+        return self._create_component_instance(Server, [self, 
+                self._settings.get(SERVER_ENABLED), self._settings.get(USER_SESSION_SECRET), self._settings.get(USER_API_KEY)])
 
     @property
     def temp_sensor(self) -> "TempSensor":
@@ -183,12 +189,14 @@ class ComponentRegistry():
         sensor = self._get_sensor(sensors.TempSensor)
         if not sensor:
             dht22_pin = self._settings.get(DHT_22_PIN)
-            if dht22_pin != DHT_22_DISABLED:
-                sensor = self._create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
+            if self._settings.get_string(REMOTE_MODE_URL):
+                sensor = self._create_component_instance(sensors.WAQDRemoteStation, [self, self._settings])
             elif self._settings.get(BME_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
             elif self._settings.get(BMP_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
+            elif dht22_pin != DHT_22_DISABLED:
+                            sensor = self._create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
             else:  # create a default instance that is disabled, so the watchdog
                 # won't try to instantiate a new one over and over
                 sensor = self._create_component_instance(sensors.TempSensor, [False, 1, False])
@@ -204,7 +212,9 @@ class ComponentRegistry():
         if not sensor:
             # DHT-22 is prioritized, if both are available
             dht22_pin = self._settings.get(DHT_22_PIN)
-            if dht22_pin != DHT_22_DISABLED:
+            if self._settings.get_string(REMOTE_MODE_URL):
+                sensor = self._create_component_instance(sensors.WAQDRemoteStation, [self, self._settings])
+            elif dht22_pin != DHT_22_DISABLED:
                 sensor = self._create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
             elif self._settings.get(BME_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
@@ -221,7 +231,9 @@ class ComponentRegistry():
         from waqd.components import sensors
         sensor = self._get_sensor(sensors.BarometricSensor)
         if not sensor:
-            if self._settings.get(BME_280_ENABLED):
+            if self._settings.get_string(REMOTE_MODE_URL):
+                sensor = self._create_component_instance(sensors.WAQDRemoteStation, [self, self._settings])
+            elif self._settings.get(BME_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
             elif self._settings.get(BMP_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
@@ -239,7 +251,9 @@ class ComponentRegistry():
         sensor = self._get_sensor(sensors.CO2Sensor)
         if not sensor:
             # MH_Z19 is prioritized, if both are available
-            if self._settings.get(MH_Z19_ENABLED):
+            if self._settings.get_string(REMOTE_MODE_URL):
+                sensor = self._create_component_instance(sensors.WAQDRemoteStation, [self, self._settings])
+            elif self._settings.get(MH_Z19_ENABLED):
                 sensor = self._create_component_instance(sensors.MH_Z19, [self._settings])
             elif self._settings.get(CCS811_ENABLED):
                 sensor = self._create_component_instance(sensors.CCS811, [self, self._settings])
@@ -362,7 +376,6 @@ class ComponentRegistry():
             if self._unload_in_progress:
                 pass
                 # time.sleep(100) TODO: do here something meaningful...
-            self._logger.info("ComponentRegistry: Starting %s", name)
             if issubclass(class_ref, Component):
                 component = class_ref(*args)
                 self._components.update({name: component})

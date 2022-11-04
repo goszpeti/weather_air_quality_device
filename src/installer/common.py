@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Tuple, Union, Literal
 
 
 USERNAME = os.environ.get("SUDO_USER", "")  # the original user
@@ -32,9 +32,10 @@ def setup_logger(log_file: Path):
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def set_write_premissions(path: Path):
+def set_write_permissions(path: Path):
     os.system(f"sudo chmod ugo+rwx {str(path)}")
     os.system(f"sudo chown {USERNAME} {str(path)}")
+
 
 def get_waqd_install_path(package_root_dir: Path = installer_root_dir) -> Path:
     # determine path to installation
@@ -55,32 +56,92 @@ def get_waqd_bin_name(package_root_dir: Path = installer_root_dir) -> str:
     suffix = INSTALL_DIR_SUFFIX.format(version=waqd_version)
     return "waqd" + suffix
 
+
 def get_waqd_version(package_root_dir: Path = installer_root_dir) -> str:
     """ Determine version from config file - need to read it manually,
     # importing is not possible without dependencies """
     about: Dict[str, str] = {}
-    with open(os.path.join(package_root_dir, "src", "waqd", '__init__.py')) as fd:
-        exec(fd.read(), about)  # pylint: disable=exec-used
-    return about["__version__"]
+    version = "latest"
+    try:
+        sys.path.insert(0, os.path.join(package_root_dir, "src"))
+        import waqd
+        version = waqd.__version__
+    except Exception as e:
+        logging.error(str(e))
+    return version
 
 
-def add_to_autostart(cmd_to_add: str, remove_items: List[str] = [], autostart_file: Path = AUTOSTART_FILE):
-    """ Uses LXDE autostart file and format """
-    os.makedirs(autostart_file.parent, exist_ok=True)
-    os.system(f"sudo chown {USERNAME} {str(autostart_file.parent)}")
-    # append the current cmd to remove items- we don't want it twice
-    remove_items.append(cmd_to_add)
-    autostart_file.touch(exist_ok=True)
-    with open(autostart_file, "r+") as fd:
-        entries = fd.readlines()
-        # delete all entries in the file
+def assure_file_exists(file_path: Path, chown=True):
+    """ Create dirs, add to current user and create file. Returns True if file existed before. """
+    if file_path.exists():
+        return True
+    logging.info(f"Cannot find file {str(file_path)}- creating it")
+    os.makedirs(file_path.parent, exist_ok=True)
+    if chown:
+        (f"sudo chown {USERNAME} {str(file_path.parent)}")
+    file_path.touch(exist_ok=True)
+    return False
+
+
+def replace_in_file(search_replace: Dict[str, str], file_path: Path):
+    """ Replace exact entries in file"""
+    assure_file_exists(file_path)
+    text = file_path.read_text()
+    for search, replace in search_replace.items():
+        text = text.replace(search, replace)
+    file_path.write_text(text)
+
+
+def remove_line_in_file(remove_lines: List[str], file_path: Path):
+    """ Remove lines in file """
+    assure_file_exists(file_path)
+    with open(file_path, "r+") as fd:
+        lines = fd.readlines()
         fd.seek(0)
         fd.truncate()
         new_entries = []
-        # remove lxpanel --profile entry and legacy entries
-        for entry in entries:
-            if not any(remove_entry in entry for remove_entry in remove_items):
-                new_entries.append(entry)
-        # add new entry
-        new_entries.append(f"@{cmd_to_add}\n")
+        for line in lines:
+            if not any(remove_line in line for remove_line in remove_lines):
+                new_entries.append(line)
         fd.writelines(new_entries)
+
+
+def add_line_to_file(lines_to_add: List[str], file_path: Path, unique=True):
+    """ Add lines to file, unqiue to check, if it should appear only once """
+    assure_file_exists(file_path)
+    with open(file_path, "r+") as fd:
+        entries = fd.readlines()
+        for line_to_add in lines_to_add:
+            if not unique:
+                fd.write(f"{line_to_add}\n")
+                break
+            if line_to_add + "\n" not in entries:
+                fd.write(f"{line_to_add}\n")
+
+
+def comment_line_in_file(line_to_comment: str, file_path: Path, comment_char="#", uncomment=False):
+    text = file_path.read_text()
+    new_text = ""
+    for line in text.splitlines():
+        if line_to_comment in line:
+            if uncomment:
+                line.replace(comment_char, "")
+            else:
+                line = comment_char + " " + line
+        new_text += line + "\n"
+
+    file_path.write_text(new_text)
+
+
+def add_to_autostart(cmds_to_add: List[str], autostart_file: Path = AUTOSTART_FILE):
+    """ Uses LXDE autostart file and format """
+    lines_to_add = []
+    for cmd_to_add in cmds_to_add:
+        if not cmd_to_add.startswith("@"):
+            lines_to_add.append("@" + cmd_to_add)
+    add_line_to_file(lines_to_add, autostart_file)
+
+
+def remove_from_autostart(remove_items: List[str] = [], autostart_file: Path = AUTOSTART_FILE):
+    """ Uses LXDE autostart file and format """
+    remove_line_in_file(remove_items, autostart_file)

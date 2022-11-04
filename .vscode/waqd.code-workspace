@@ -45,5 +45,107 @@
         //"${workspaceFolder}/.venv/Scripts/python.exe", // "${workspaceFolder}/.venv/bin/python3"
         "git.ignoreLimitWarning": true,
         "python.analysis.stubPath": "test/mock",
+        "python.terminal.activateEnvInCurrentTerminal": true,
+        "scm.defaultViewMode": "tree",
+    },
+    "launch": {
+        "configurations": [
+            {
+                "name": "Main",
+                "type": "python",
+                "request": "launch",
+                "program": "${workspaceFolder}/src/waqd/__main__.py",
+                "args": [
+                    "-D=3"
+                ],
+                "console": "integratedTerminal",
+                "subProcess": true,
+                "justMyCode": true
+            },
+            {
+                "name": "Python: Current File",
+                "type": "python",
+                "request": "launch",
+                "program": "${file}",
+                "console": "integratedTerminal",
+                "subProcess": true,
+                "justMyCode": false
+            },
+            {
+                "name": "Python Raspberry Pi: Attach",
+                "type": "python",
+                "request": "attach",
+                "subProcess": true,
+                "pathMappings": [
+                    {
+                        "localRoot": "${workspaceFolder}/src/waqd",
+                        "remoteRoot": "/home/pi/.local/pipx/venvs/waqd-1-6-0b4/lib64/python3.9/site-packages/waqd/"
+                    }
+                ],
+                "port": 3003,
+                "host": "mypi",
+                "justMyCode": false
+            },
+            {
+                "name": "Python: Testing",
+                "type": "python",
+                "request": "test",
+                "console": "integratedTerminal",
+                "subProcess": true,
+                "justMyCode": false,
+                "python": "${command:python.interpreterPath}",
+                "env": {}
+            },
+            {
+                "type": "pwa-msedge",
+                "name": "Launch Microsoft Edge",
+                "request": "launch",
+                "runtimeArgs": [
+                    "--remote-debugging-port=9222"
+                ],
+                "url": "c:\\Users\\peter\\.vscode\\extensions\\ms-edgedevtools.vscode-edge-devtools-2.1.0\\out\\startpage\\index.html",
+                "presentation": {
+                    "hidden": true
+                }
+            },
+            {
+                "type": "pwa-msedge",
+                "name": "Launch Microsoft Edge in headless mode",
+                "request": "launch",
+                "runtimeArgs": [
+                    "--headless",
+                    "--remote-debugging-port=9222"
+                ],
+                "url": "c:\\Users\\peter\\.vscode\\extensions\\ms-edgedevtools.vscode-edge-devtools-2.1.0\\out\\startpage\\index.html",
+                "presentation": {
+                    "hidden": true
+                }
+            },
+            {
+                "type": "vscode-edge-devtools.debug",
+                "name": "Open Edge DevTools",
+                "request": "attach",
+                "url": "c:\\Users\\peter\\.vscode\\extensions\\ms-edgedevtools.vscode-edge-devtools-2.1.0\\out\\startpage\\index.html",
+                "presentation": {
+                    "hidden": true
+                }
+            }
+        ],
+        "compounds": [
+            {
+                "name": "Launch Edge Headless and attach DevTools",
+                "configurations": [
+                    "Launch Microsoft Edge in headless mode",
+                    "Open Edge DevTools"
+                ]
+            },
+            {
+                "name": "Launch Edge and attach DevTools",
+                "configurations": [
+                    "Launch Microsoft Edge",
+                    "Open Edge DevTools"
+                ]
+            }
+        ]
     }
 }

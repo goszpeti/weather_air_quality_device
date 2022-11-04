@@ -27,10 +27,12 @@ from time import sleep
 
 from github import Github, Repository
 
-import waqd.config as config
+import waqd
+import waqd.app as app
 from waqd import __version__ as WAQD_VERSION
 from waqd.base.component import CyclicComponent
 from waqd.base.component_reg import ComponentRegistry
+from waqd.base.network import Network
 
 class OnlineUpdater(CyclicComponent):
     """
@@ -39,7 +41,7 @@ class OnlineUpdater(CyclicComponent):
     This entry point should not be changed!
     """
     UPDATE_TIME = 600  # 10 minutes in seconds
-    INIT_WAIT_TIME = 10  # don't start updating until the station is ready
+    INIT_WAIT_TIME = 20  # don't start updating until the station is ready
     STOP_TIMEOUT = 2  # override because of long update time
 
 
@@ -47,8 +49,9 @@ class OnlineUpdater(CyclicComponent):
         super().__init__(components, enabled=enabled)
         if self._disabled:
             return
+        self._comps: ComponentRegistry
         self._use_beta_channel = use_beta_channel
-        self._base_path = config.base_path  # save for multiprocessing
+        self._base_path = waqd.base_path  # save for multiprocessing
         self._repository: Repository.Repository
 
         self._new_version_path = Path.home() / ".waqd" / "updater"
@@ -64,9 +67,11 @@ class OnlineUpdater(CyclicComponent):
 
     def _updater_sequence(self):
         """ Check, that runs continously and start the installation if a new version is available. """
+        if not Network().wait_for_internet():
+            return
         try:
             self._connect_to_repository()
-        except:
+        except Exception:
             self._logger.error("Updater: Cannot connect to updater Server.")
             return
 
@@ -76,14 +81,13 @@ class OnlineUpdater(CyclicComponent):
         update_available = self._check_should_update(latest_tag)
         if update_available:
             self._logger.info("Updater: Found newer version %s", latest_tag)
-            if self._comps:
-                self._comps.tts.say_internal("new_version", [latest_tag])
+            self._comps.tts.say_internal("new_version", [latest_tag])
             self._install_update(latest_tag)
 
     def _connect_to_repository(self):
         """ Get Github repo object """
         github = Github()
-        self._repository = github.get_repo(config.GITHUB_REPO_NAME)
+        self._repository = github.get_repo(waqd.GITHUB_REPO_NAME)
 
     def _get_latest_version_tag(self) -> str:
         """ Check, if an update is found and return it's version. """
@@ -111,7 +115,7 @@ class OnlineUpdater(CyclicComponent):
             # alpha and beta release handling
             if latest_version.prerelease:
                 # alpha - only with debug mode on - switch is possible from b3 to a4
-                if latest_version.prerelease[0] == "a" and config.DEBUG_LEVEL > 0 \
+                if latest_version.prerelease[0] == "a" and waqd.DEBUG_LEVEL > 0 \
                         and self._use_beta_channel and current_version.prerelease:
                     if latest_version.prerelease[1] > current_version.prerelease[1]:
                         return True
@@ -152,8 +156,7 @@ class OnlineUpdater(CyclicComponent):
         update_dir = Path(update_dir[0])
 
         # Wait for previous peach to finish berfore this app intance is killed
-        if self._comps:
-            self._comps.tts.wait_for_tts()
+        self._comps.tts.wait_for_tts()
 
         # start updater script - location hardcoded
         if self._runtime_system.is_target_system:
@@ -163,9 +166,9 @@ class OnlineUpdater(CyclicComponent):
                 return
             try:
                 # shutdown other components gracefully
-                if config.comp_ctrl:
-                    config.comp_ctrl.unload_all(updating=True)
-                    while not config.comp_ctrl.all_unloaded:
+                if app.comp_ctrl:
+                    app.comp_ctrl.unload_all(updating=True)
+                    while not app.comp_ctrl.all_unloaded:
                         sleep(1)
                 self._logger.info("Updater: Starting updater")
                 os.system("chmod +x " + str(installer_script))

@@ -81,7 +81,7 @@
 ### Flash Image to SD-Card
 
 * Download and install Raspberry Pi Imager from https://www.raspberrypi.org/software/ for your PC.
-* Start Raspberry Pi Imager and select the default Raspberry Pi OS (32bit)
+* Start Raspberry Pi Imager and select the default Raspberry Pi OS (64bit)
 * Press CTRL + SHIFT + X for advanced panel
   * Set "Enable SSH" and change the default password
   * If you want to connect via WiFi: Enable "Configure wifi" and enter your Wifi information.
@@ -138,7 +138,7 @@ https://www.instructables.com/id/Rotate-Raspberry-Pi-Display-and-Touchscreen/
 
     sudo apt install xscreensaver
 
-and disable in settings (TODO)
+and disable in settings
 
     @xscreensaver -no-splash
 

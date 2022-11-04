@@ -20,7 +20,7 @@
 import json
 from pathlib import Path
 
-from waqd import config
+import waqd
 from waqd.base.logger import Logger
 
 TOC_FILE_NAME = "filetoc.json"
@@ -36,29 +36,29 @@ def get_asset_file(rsc_dir: str, rsc_id: str) -> Path:
     if rsc_id == "dummy-pic": # specal case for a dummy picture
         rsc_dir = "gui_base"
     # read filetoc.json
-    rsc_path = config.assets_path / rsc_dir
+    rsc_path = waqd.assets_path / rsc_dir
     ftoc_path = rsc_path / TOC_FILE_NAME
-    content = {}
     logger = Logger()
 
     if not ftoc_path.exists():
-        logger.error("Cannot find catalog file %s", ftoc_path)
-        return Path("NULL")
+        logger.debug("Cannot find catalog file %s, fallback to real filename.", ftoc_path)
+        file_name = rsc_id
+    else:
+        content = {}
+        with open(ftoc_path, encoding='utf-8') as filetoc:
+            content = json.load(filetoc)
 
-    with open(ftoc_path, encoding='utf-8') as filetoc:
-        content = json.load(filetoc)
+        # get filetype and filelist
+        filetype = content.get("filetype", "")
+        filelist = content.get("filelist", {})
 
-    # get filetype and filelist
-    filetype = content.get("filetype", "")
-    filelist = content.get("filelist", {})
-
-    file_name = filelist.get(rsc_id, "")
-    if not file_name:
-        logger.error(f"Cannot find resource id {rsc_id} in catalog")
-        return Path("NULL")
-    # append filetype, if applicable
-    if filetype:
-        file_name = file_name + "." + filetype
+        file_name = filelist.get(rsc_id, "")
+        if not file_name:
+            logger.error(f"Cannot find resource id {rsc_id} in catalog")
+            return Path("NULL")
+        # append filetype, if applicable
+        if filetype:
+            file_name = file_name + "." + filetype
 
     rsc_file_path = rsc_path / file_name
     if not rsc_file_path.exists():
