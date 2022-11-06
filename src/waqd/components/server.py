@@ -9,20 +9,19 @@ import os
 import plotly.graph_objects as go
 import waqd
 import waqd.app as app
-from bottle import (Jinja2Template, default_app, redirect,
+from bottle import (Jinja2Template, default_app, redirect, jinja2_template,
                     request, response, route, static_file)
 from htmlmin.main import minify
 from pint import Quantity
 from plotly.graph_objs import Scattergl
 from plotly.io import to_html
-from waqd.assets import get_asset_file
 from waqd.base.component import Component
-from waqd.base.password import UserFileDB
-from waqd.components.sensor_logger import InfluxSensorLogger
+from waqd.base.web_session import LoginPlugin
+from waqd.base.authentification import UserFileDB
+from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.system import RuntimeSystem
 import waqd
 
-from ..base.web_session import LoginPlugin
 
 extra_minify = partial(minify, remove_comments=True, remove_empty_space=True)
 
@@ -92,6 +91,7 @@ class BottleServer(Component):
         self._app.config['SECRET_KEY'] = user_session_secret
         self._run_thread = Thread(name="RunServer", target=self._run_server, daemon=True)
         self._run_thread.start()
+        self._html_path = app.base_path / "ui" / "html"
         # currently user settings are the same as app settings
         # self._user_settings = {}
         # user_data = self._user_db.get_entry(current_user)
@@ -129,7 +129,6 @@ class BottleServer(Component):
         route(ROUTE_API_EVENTS_REMOTE_EXT_SENSOR, "GET", self.trigger_event_remote_value)
         # Can't start server from bottle, because it does not support stopping it without a hack
         from paste import httpserver
-        self._main_page_tpl = get_asset_file("html", "index.html").read_text()
         self._ready = True
         self._server = httpserver.serve(self._app, host='0.0.0.0', port='80',
                                         daemon_threads=True, start_loop=True, use_threadpool=True)
@@ -148,8 +147,8 @@ class BottleServer(Component):
 
     def login(self):
         try:
-            username = request.forms.get('username')
-            password = request.forms.get('password')
+            username = request.forms.get('username') # type: ignore
+            password = request.forms.get('password')  # type: ignore
         except Exception:
             return redirect(ROUTE_LOGIN_FAILED)
         if self._user_db.check_login(username, password):
@@ -183,10 +182,9 @@ class BottleServer(Component):
         # default entrypoint to waqd view
         if route == "/":
             redirect(ROUTE_WAQD)
-        if waqd.DEBUG_LEVEL > 0:
-            self._main_page_tpl = get_asset_file("html", "index.html").read_text()
+        # if waqd.DEBUG_LEVEL > 0:
+        #     self._main_page_tpl = .read_text()
 
-        tpl = Jinja2Template(self._main_page_tpl)
         page_content = ""
         login_msg = ""
         if current_user:
@@ -196,7 +194,7 @@ class BottleServer(Component):
         elif route == ROUTE_WAQD:
             page_content = self._get_waqd_subpage()
         elif route == ROUTE_LOGIN:
-            page_content = get_asset_file("html", "login.html").read_text()
+            page_content = (self._html_path / "login.html").read_text()
         elif route == ROUTE_LOGOUT:
             login_msg = '<p class="login_msg" style="margin-bottom: 100px">Logged out successfully.</p>'
         elif route == ROUTE_LOGIN_FAILED:
@@ -205,9 +203,9 @@ class BottleServer(Component):
             page_content = self._get_settings_subpage()
 
         menu = self.generate_menu()
-
-        return extra_minify(tpl.render(menu=menu, content=page_content, login_msg=login_msg,
-                                       ))
+        tpl = jinja2_template(str(self._html_path / "index.html"), menu=menu,
+                       content=page_content, login_msg=login_msg)
+        return extra_minify(tpl)
 
     def generate_menu(self):
         menu_items = ""
@@ -270,7 +268,7 @@ class BottleServer(Component):
                 paper_bgcolor="LightSteelBlue",)
             my_plot_div = to_html(fig, default_width="auto", include_plotlyjs=False, full_html=False)
 
-        page_content = get_asset_file("html", "popup.html").read_text()
+        page_content = (self._html_path / "popup.html").read_text()
         tpl = Jinja2Template(page_content)
         return extra_minify(tpl.render(title=f"{display_name} History", content=my_plot_div))
 
@@ -279,12 +277,12 @@ class BottleServer(Component):
 
 
     def _get_about_subpage(self):
-        page_content = get_asset_file("html", "about.html").read_text()
+        page_content = (self._html_path / "about.html").read_text()
         tpl = Jinja2Template(page_content)
         return tpl.render(version=waqd.__version__, platform=RuntimeSystem().platform)
 
     def _get_waqd_subpage(self):
-        page_content = get_asset_file("html", "waqd.html").read_text()
+        page_content = (self._html_path / "waqd.html").read_text()
         interior_data = self._get_interior_sensor_values(units=True)
         exterior_data = self._get_exterior_sensor_values(units=True)
         current_weather = self._comps.weather_info.get_current_weather()
@@ -304,13 +302,13 @@ class BottleServer(Component):
 
     def _get_login_subpage(self):
         # Implement login (you can check passwords here or etc)
-        page_content = get_asset_file("html", "login.html").read_text()
+        page_content = (self._html_path / "login.html").read_text()
         tpl = Jinja2Template(page_content)
         return tpl.render()
 
     def _get_settings_subpage(self):
         # Implement login (you can check passwords here or etc)
-        page_content = get_asset_file("html", "settings.html").read_text()
+        page_content = (self._html_path / "settings.html").read_text()
         tpl = Jinja2Template(page_content)
         return tpl.render()
 
@@ -346,7 +344,7 @@ class BottleServer(Component):
 
     def get_remote_exterior_values(self, args=""):
         # retrieve data for remote WAQD feature
-        if not self._check_api_key(request.query.get("APPID", "")):
+        if not self._check_api_key(request.query.get("APPID", "")):  # type: ignore
             response.status = 403
             return response
 
@@ -354,7 +352,7 @@ class BottleServer(Component):
 
     def get_remote_interior_values(self, args=""):
         # retrieve data for remote WAQD feature
-        if not self._check_api_key(request.query.get("APPID", "")):
+        if not self._check_api_key(request.query.get("APPID", "")):  # type: ignore
             response.status = 403
             return response
 
@@ -362,7 +360,7 @@ class BottleServer(Component):
 
     def post_sensor_values(self, args=""):
         # Receive values for standalone hardware
-        if not self._check_api_key(request.query.get("APPID", "")):
+        if not self._check_api_key(request.query.get("APPID", "")):  # type: ignore
             response.status = 403
             return response
         from waqd.app import comp_ctrl

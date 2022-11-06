@@ -1,7 +1,7 @@
 import json
 from waqd.settings import LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN
 from waqd.assets import get_asset_file
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 
 # Runtime translations
 

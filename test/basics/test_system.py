@@ -25,7 +25,7 @@ def testInitOnTarget(base_fixture, mocker):
     cur_system = RuntimeSystem()
     assert cur_system.is_target_system
     # Actual string is platform dependent
-    assert cur_system.platform == "RASPBERRY_PI_4B"
+    assert cur_system.platform == "RASPBERRY PI 4B"
 
 def testShutdown(base_fixture, mocker):
     mock_run_on_target(mocker)

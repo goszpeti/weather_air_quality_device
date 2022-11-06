@@ -25,7 +25,7 @@ import types
 # this allows to use forward declarations to avoid circular imports
 from typing import TYPE_CHECKING, Callable, Optional
 
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
 from waqd.settings import Settings
 

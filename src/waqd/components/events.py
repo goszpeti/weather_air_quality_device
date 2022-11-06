@@ -33,7 +33,7 @@ import waqd
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
 from waqd.base.component_reg import ComponentRegistry
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 
 if TYPE_CHECKING:
     from PyQt5.QtCore import pyqtBoundSignal

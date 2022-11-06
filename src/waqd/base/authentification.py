@@ -6,7 +6,7 @@ import os
 import waqd
 import random
 import string
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 
 
 DEFAULT_USERNAME = "default_waqd_user"

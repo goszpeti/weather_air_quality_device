@@ -21,7 +21,7 @@ import json
 from pathlib import Path
 
 import waqd
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 
 TOC_FILE_NAME = "filetoc.json"
 

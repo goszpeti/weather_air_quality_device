@@ -30,7 +30,7 @@ import waqd
 from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.network import Network
-from waqd.base.password import UserFileDB
+from waqd.base.authentification import UserFileDB
 from waqd.base.system import RuntimeSystem
 from waqd.base.translation import Translation
 from waqd.components.sensors import MH_Z19
@@ -475,7 +475,7 @@ class OptionMainUi(QtWidgets.QDialog):
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
         msg.setIcon(QtWidgets.QMessageBox.Information)
         msg.setWindowTitle("Reset Password")
-        from waqd.base.password import DEFAULT_USERNAME, bcrypt
+        from waqd.base.authentification import DEFAULT_USERNAME, bcrypt
 
         new_pw = bcrypt.gensalt(4).decode("utf-8")[18:]
         self._settings.set(USER_DEFAULT_PW, new_pw)

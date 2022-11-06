@@ -7,7 +7,7 @@ from freezegun import freeze_time
 
 import waqd
 from waqd.base.component_ctrl import ComponentController
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.components.events import (EventHandler, get_time_of_day,
                                     parse_event_file, write_events_file)
 from waqd.settings import (NIGHT_MODE_BEGIN, NIGHT_MODE_END, SOUND_ENABLED,
@@ -92,11 +92,7 @@ def testEventScheduler(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
         time.sleep(8)
 
         comps.motion_detection_sensor._motion_detected = 0
-        time.sleep(10)
-        time.sleep(10)
-        time.sleep(10)
-        time.sleep(10)
-
+        # time.sleep(10)
 
     # with freeze_time("2020-12-24 22:59:57", tick=True):
     #     time.sleep(5)

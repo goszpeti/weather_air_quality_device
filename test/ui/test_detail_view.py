@@ -4,9 +4,11 @@ from datetime import timedelta
 from freezegun import freeze_time
 from PyQt5 import QtWidgets
 from waqd.components import OpenWeatherMap
+from waqd.components.sensors import SENSOR_INTERIOR_TYPE
 from waqd.settings import LOCATION, Settings
 from waqd.ui.qt.sensor_detail_view import SensorDetailView
 from waqd.ui.qt.weather_detail_view import WeatherDetailView
+import waqd
 
 
 def testSensorDetailView(base_fixture, qtbot):
@@ -14,16 +16,17 @@ def testSensorDetailView(base_fixture, qtbot):
     parent.resize(800, 480)
     parent.move(0,0,)
     parent.show()
-    with freeze_time("2021-03-15 08:25:50"):
-        log_file = base_fixture.testdata_path / "sensor_logs" / "temperature.log"
-        widget = SensorDetailView(log_file, "Celsius", parent)
+    waqd.user_config_dir = base_fixture.testdata_path
+    from waqd.base.file_logger import SensorFileLogger
+
+    with freeze_time("2021-03-15 08:25:50", tick=True):
+        # log_file = base_fixture.testdata_path / "sensor_logs" / "temperature.log"
+        widget = SensorDetailView(SENSOR_INTERIOR_TYPE, "temp_degC", "°Celsius", parent, SensorFileLogger)
     qtbot.addWidget(parent)
     qtbot.addWidget(widget)
     widget.show()
     qtbot.waitExposed(widget)
 
-    while True:
-        QtWidgets.QApplication.processEvents()
     assert widget.isVisible()
     assert widget._time_value_pairs[-1][0] - widget._time_value_pairs[0][0] <= timedelta(minutes=180)
 

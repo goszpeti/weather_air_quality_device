@@ -24,7 +24,7 @@ import threading
 from typing import TYPE_CHECKING, Dict, List, Optional, Type, TypeVar, Union
 import waqd
 from waqd.base.component import Component, CyclicComponent
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.settings import (AUTO_UPDATER_ENABLED, BME_280_ENABLED,
                            BMP_280_ENABLED, BRIGHTNESS, CCS811_ENABLED,
                            DHT_22_DISABLED, DHT_22_PIN, DISPLAY_TYPE, EVENTS_ENABLED, LANG,

@@ -35,7 +35,7 @@ import socket
 import subprocess
 from typing import Callable, Tuple
 from time import sleep
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
 from waqd.base.signal import QtSignalRegistry
 

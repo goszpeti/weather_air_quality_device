@@ -42,7 +42,7 @@ from waqd import __version__ as WAQD_VERSION
 from waqd import base_path
 from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
 from waqd.settings import (DISP_TYPE_RPI,
                            DISP_TYPE_WAVESHARE_5_LCD,
@@ -95,7 +95,7 @@ def main(settings_path: Optional[Path] = None):
         Logger().info(f"DEBUG level set to {waqd.DEBUG_LEVEL}")
 
     if waqd.MIGRATE_SENSOR_LOGS:
-        from waqd.base.logger import SensorFileLogger
+        from waqd.base.file_logger import SensorFileLogger
         SensorFileLogger.migrate_txts_to_db()
         return
     global comp_ctrl

@@ -20,7 +20,7 @@
 
 from os import PathLike
 from threading import Lock, Thread
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.base.component_reg import Component, ComponentRegistry
 
 

@@ -23,7 +23,7 @@ import time
 from typing import Optional
 from waqd.base.component import Component
 
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.base.component_reg import ComponentRegistry
 from waqd.base.network import Network
 from waqd.base.signal import QtSignalRegistry

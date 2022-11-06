@@ -35,7 +35,7 @@ from waqd import DEBUG_LEVEL, LOCAL_TIMEZONE
 from waqd.ui.qt.widgets.jumpslider import JumpSlider
 from waqd.base.translation import Translation
 from waqd.settings import LANG
-from waqd.components.sensor_logger import InfluxSensorLogger
+from waqd.base.db_logger import InfluxSensorLogger
 Qt = QtCore.Qt
 if TYPE_CHECKING:
     from waqd.ui.qt.main_ui import WeatherMainUi
@@ -44,12 +44,14 @@ class SensorDetailView(QtWidgets.QDialog):
     _layout = None
     TIME_WINDOW_MINUTES = 180
 
-    def __init__(self, sensor_location: str, sensor_type: str, sensor_value_unit: str, main_ui: "WeatherMainUi"):
+    def __init__(self, sensor_location: str, sensor_type: str, sensor_value_unit: str,
+                 main_ui: "WeatherMainUi", logger_class=InfluxSensorLogger):
         super().__init__(parent=None)
         self._main_ui = main_ui
         self._sensor_location = sensor_location
         self._sensor_type = sensor_type
         self._sensor_value_unit = sensor_value_unit
+        self._logger_class = logger_class
 
         # set up  window style and size
         # frameless modal window fullscreen (same as main ui)
@@ -69,24 +71,15 @@ class SensorDetailView(QtWidgets.QDialog):
             self._splash_screen.setFocus()
         else:
             self._splash_screen.show()
-        # thread = QtCore.QThread(main_ui)
-        # thread.started.connect(self.load)
-        # thread.start()
+
         self._update_thread = threading.Thread(name=self.__class__.__name__,
                                                target=self.load,
                                                daemon=True)
         self._update_thread.start()
-        start = time()
-
-        while not self._ready or (time() < start + 2):
+        while not self._ready:
             QtWidgets.QApplication.processEvents()
 
         if not self._time_value_pairs:
-            # self.show()
-            # fade_length = 1  # second
-            # self._fader_widget = FaderWidget(  # pylint: disable=unused-variable
-            #     self._splash_screen, self, length=fade_length*1000)
-            # self._splash_screen.finish(self._main_ui)
             self._splash_screen.finish(self._main_ui)
             self.not_enough_values_dialog(self._main_ui)
             return
@@ -141,21 +134,14 @@ class SensorDetailView(QtWidgets.QDialog):
         self.show()
         self._splash_screen.finish(self._main_ui)
 
-    # def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
-    #     self.deleteLater()
-    #     return super().closeEvent(a0)
-
     def load(self):
         # add values to qt graph
         # time values are converted to "- <Minutes>" format
-        self._time_value_pairs = InfluxSensorLogger.get_sensor_values(
+        self._time_value_pairs = self._logger_class.get_sensor_values(
             self._sensor_location, self._sensor_type, self.TIME_WINDOW_MINUTES)
         self._ready = True
     
     def _draw_chart(self):
-        # if len(self._time_value_pairs) < 2:  # insufficient data
-        #     self.not_enough_values_dialog(self.parent())
-        #     return
         current_time = datetime.now(LOCAL_TIMEZONE)
 
         series = QtChart.QLineSeries()

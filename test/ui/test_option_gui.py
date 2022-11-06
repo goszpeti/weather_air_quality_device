@@ -8,9 +8,12 @@ from waqd.ui.qt.main_ui import WeatherMainUi
 from PyQt5 import QtCore
 from waqd.settings import Settings
 from waqd.base.component_ctrl import ComponentController
-import waqd
 
 from test.conftest import mock_run_on_target
+
+# For debug:
+# while True:
+#     _qapp_instance.processEvents()
 
 def testOptions(base_fixture, qtbot, mocker):  # target_mockup_fixture
     """
@@ -28,10 +31,6 @@ def testOptions(base_fixture, qtbot, mocker):  # target_mockup_fixture
 
     widget.show()
     qtbot.waitExposed(widget)
-
-    # For debug:
-    while True:
-       _qapp_instance.processEvents()
 
     assert widget.isEnabled()
     qtbot.mouseClick(widget._ui.ok_button, QtCore.Qt.LeftButton)

@@ -36,7 +36,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
 from waqd.base.network import Network
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 
 
 def is_daytime(sunrise, sunset, date_time=None):

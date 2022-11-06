@@ -47,20 +47,28 @@
         "python.analysis.stubPath": "test/mock",
         "python.terminal.activateEnvInCurrentTerminal": true,
         "scm.defaultViewMode": "tree",
+        "python.autoComplete.extraPaths": [
+            "${workspaceFolder}/src"
+        ],
+        "python.analysis.extraPaths": [
+            "${workspaceFolder}/src"
+        ],
     },
     "launch": {
         "configurations": [
+            
             {
                 "name": "Main",
                 "type": "python",
                 "request": "launch",
                 "program": "${workspaceFolder}/src/waqd/__main__.py",
                 "args": [
-                    "-D=3"
+                    "-D=1",
+                    // "-H"
                 ],
                 "console": "integratedTerminal",
                 "subProcess": true,
-                "justMyCode": true
+                "justMyCode": false
             },
             {
                 "name": "Python: Current File",
@@ -85,16 +93,6 @@
                 "port": 3003,
                 "host": "mypi",
                 "justMyCode": false
-            },
-            {
-                "name": "Python: Testing",
-                "type": "python",
-                "request": "test",
-                "console": "integratedTerminal",
-                "subProcess": true,
-                "justMyCode": false,
-                "python": "${command:python.interpreterPath}",
-                "env": {}
             },
             {
                 "type": "pwa-msedge",

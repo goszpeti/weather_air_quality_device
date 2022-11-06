@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Callable, Dict
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 
 if TYPE_CHECKING:
     from PyQt5.QtCore import pyqtBoundSignal

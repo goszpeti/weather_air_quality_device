@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 from typing import List, Optional, Tuple
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd import LOCAL_TIMEZONE
 
 
@@ -60,7 +60,7 @@ class InfluxSensorLogger():
     def setup_db():
         os.system(
             "influx setup -org waqd-local --bucket waqd-test --username waqd-local-user --password ExAmPl3PA55W0rD --force")
-# influx auth create - -org waqd-local - -all-access
+            # influx auth create - -org waqd-local - -all-access
 
     @classmethod
     def set_value(cls, sensor_location: str, sensor_type: str, value: Optional[float], time=None):
