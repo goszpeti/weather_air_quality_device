@@ -99,3 +99,7 @@ class SplashScreen(QtWidgets.QSplashScreen):
         """ Stop movie, when it is hidden. """
         if self._spinner:
             self._spinner.stop()
+
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        self.deleteLater()
+        return super().closeEvent(a0)

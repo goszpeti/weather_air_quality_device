@@ -38,7 +38,7 @@ class RuntimeSystem():
         return cls._instance
 
     def init(self):
-        self._platform = f"{platform.system()} on {platform.machine()}"
+        self._platform = f"{platform.system()}@{platform.machine()}"
         self._determine_if_target_system()
 
     def _determine_if_target_system(self):
@@ -53,7 +53,7 @@ class RuntimeSystem():
     @property
     def platform(self) -> str:
         """ Return target platform (RPi version like Model B) or current platform name. """
-        return str(self._platform)
+        return str(self._platform).replace("_", " ")
 
     @property
     def is_target_system(self) -> bool:

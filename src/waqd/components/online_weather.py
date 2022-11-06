@@ -25,7 +25,6 @@ An own abstraction class was created to generalize the weather data.
 
 from datetime import datetime, time
 import json
-import os
 import urllib.request
 import requests
 
@@ -37,7 +36,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
 from waqd.base.network import Network
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 
 
 def is_daytime(sunrise, sunset, date_time=None):
@@ -210,6 +209,9 @@ class OpenWeatherMap(Component):
         self._fc_json_file: str = ""  # for testing access
         self.daytime_forecast_points = []
         self.nighttime_forecast_points = []
+        # query data ini init, so it doesn't run in the GUI thread
+        self.get_5_day_forecast()
+        self._ready = True
 
     def get_current_weather(self) -> Optional[Weather]:
         """ Public API function to get the current weather. """

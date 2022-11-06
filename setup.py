@@ -17,7 +17,7 @@ NAME = 'waqd'
 DESCRIPTION = 'Weather Air Quality Device - base package'
 URL = 'https://github.com/goszpeti/WeatherAirQualityDevice'
 AUTHOR = 'Peter Gosztolya'
-REQUIRES_PYTHON = '>=3.7.0'
+REQUIRES_PYTHON = '>=3.9.0'
 
 # What packages are required for this module to be executed?
 REQUIRED = [

@@ -22,7 +22,7 @@ import os
 from pathlib import Path
 
 import waqd
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 
 # compile uic files at dev time, if needed
 if waqd.DEBUG_LEVEL > 0:

@@ -1,15 +1,9 @@
 from configparser import ConfigParser
-from datetime import datetime, timezone
-from multiprocessing import Lock
+from datetime import datetime
 import os
 from pathlib import Path
-from time import sleep
 from typing import List, Optional, Tuple
-
-from influxdb_client import InfluxDBClient, Point, WritePrecision, AuthorizationsApi
-from influxdb_client.client.write_api import SYNCHRONOUS
-from waqd.base.component import Component
-from waqd.base.logger import Logger, SensorFileLogger
+from waqd.base.file_logger import Logger
 from waqd import LOCAL_TIMEZONE
 
 
@@ -51,6 +45,8 @@ class InfluxSensorLogger():
             cls._enabled = False
             return
         # Try bucket
+
+        from influxdb_client import InfluxDBClient
         with InfluxDBClient(url="http://localhost:8086", token=cls._token, org=org) as client:
             try:
                 if not client.buckets_api().find_bucket_by_name(bucket):
@@ -64,7 +60,7 @@ class InfluxSensorLogger():
     def setup_db():
         os.system(
             "influx setup -org waqd-local --bucket waqd-test --username waqd-local-user --password ExAmPl3PA55W0rD --force")
-# influx auth create - -org waqd-local - -all-access
+            # influx auth create - -org waqd-local - -all-access
 
     @classmethod
     def set_value(cls, sensor_location: str, sensor_type: str, value: Optional[float], time=None):
@@ -74,6 +70,8 @@ class InfluxSensorLogger():
             return
         if time is None:
             time = datetime.now(LOCAL_TIMEZONE)
+        from influxdb_client import InfluxDBClient, Point, WritePrecision
+        from influxdb_client.client.write_api import SYNCHRONOUS
         with InfluxDBClient(url="http://localhost:8086", token=cls._token, org=org) as client:
             write_api = client.write_api(write_options=SYNCHRONOUS)
             point = Point("air_quality") \
@@ -93,6 +91,7 @@ class InfluxSensorLogger():
             return []
         tables = None
         try:
+            from influxdb_client import InfluxDBClient
             with InfluxDBClient(url="http://localhost:8086", token=cls._token, org=org) as client:
                 filter_expression = f"range(start: -{str(minutes_to_read)}m)"
                 if last_value:

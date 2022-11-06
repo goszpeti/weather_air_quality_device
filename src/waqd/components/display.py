@@ -20,8 +20,6 @@
 import os
 import threading
 
-from rpi_backlight import Backlight
-
 from waqd.base.component import Component
 from waqd.settings import DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD
 
@@ -48,6 +46,7 @@ class Display(Component):
             os.system("gpio pwmr 1000")
         # set configured brightness at startup
         self.set_brightness(brightness)
+        self._ready = True
 
     def get_brightness(self) -> int:
         """ Returns the current display brightness in percent, e.g. 75"""
@@ -70,6 +69,7 @@ class Display(Component):
                     pin = self._waveshare_brightness_pin
                     os.system("gpio -g pwm " + str(pin) + " " + str(pwm_val))
                 elif disp_type == DISP_TYPE_RPI:
+                    from rpi_backlight import Backlight
                     backlight = Backlight()
                     backlight.fade_duration = 0.5
                     backlight.brightness = brightness

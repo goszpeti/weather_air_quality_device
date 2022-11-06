@@ -56,7 +56,6 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._init_thread: Optional[threading.Thread] = None
         self._settings = settings
 
-        self._ui = None
         self._exterior_ui: Optional[exterior.Exterior] = None
         self._interior_ui: Optional[interior.Interior] = None
         self._forecast_ui: Optional[forecast.Forecast] = None
@@ -79,9 +78,13 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         """ Retranslates, then loads all SubUi elements. """
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
+
         activate_theme(self._settings.get_float(FONT_SCALING), self._settings.get_string(FONT_NAME))
         common.apply_shadow_to_labels(self)
-
+        if self._option_ui is not None:
+            self._option_ui.deleteLater()
+            del self._option_ui
+            self._option_ui = None
         # initialize all modules
         if not self._interior_ui:
             self._interior_ui = interior.Interior(self, self._settings)
@@ -108,11 +111,12 @@ class WeatherMainUi(QtWidgets.QMainWindow):
 
         self.ready = True
 
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        self.deleteLater()
+        return super().closeEvent(a0)
+
     def unload_gui(self):
         """ Deletes all SubUi elements """
-
-        # self._init_thread.join()
-
         if self._exterior_ui:
             self._exterior_ui.stop()
         if self._interior_ui:
@@ -132,6 +136,8 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._forecast_ui = None
         self._infopane_ui = None
 
+        self._ui = None
+
     def _change_background(self, file_id: str):
         """ Slot for change background signal """
         background = get_asset_file("gui_base", file_id)
@@ -145,12 +151,6 @@ class WeatherMainUi(QtWidgets.QMainWindow):
     def show_options_window(self):
         """ Callback for Options button. Unloads this gui and starts the Options Gui."""
         self.ready = False
-        # hold the option_ui as an instance variable for gc protection.
-        # destroy a possible previous instance.
-        while self._option_ui:
-            del self._option_ui
-            self._option_ui = None
-            time.sleep(0)
         self.unload_gui()
 
         # unload all components, except those which forbid reload

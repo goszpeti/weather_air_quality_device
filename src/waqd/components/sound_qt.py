@@ -20,10 +20,9 @@
 
 from os import PathLike
 from threading import Lock, Thread
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.base.component_reg import Component, ComponentRegistry
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5 import QtCore
+
 
 class Sound(Component):
     """
@@ -35,9 +34,12 @@ class Sound(Component):
     def __init__(self, components: ComponentRegistry, enabled=True):
         super().__init__(components, enabled=enabled)
         self._sound_thread = Thread()
+        from PyQt5.QtMultimedia import QMediaPlayer
         self._player = QMediaPlayer()
         self._player.mediaStatusChanged.connect(self.on_player_status_changed)
-        
+        self._ready = True
+
+
     def on_player_status_changed(self, id):
         Logger().debug(f"Media: {id}")
         # release lock, to play the next file
@@ -54,6 +56,8 @@ class Sound(Component):
     def _call_qt(self, audio_file: PathLike):
         """
         """
+        from PyQt5.QtMultimedia import QMediaContent
+        from PyQt5 import QtCore
         try:
             self.lock.acquire(True)  # wait for previous sound to end
             self._player.setMedia(QMediaContent(QtCore.QUrl.fromLocalFile(str(audio_file))))

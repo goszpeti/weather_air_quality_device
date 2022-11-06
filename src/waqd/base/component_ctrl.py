@@ -23,7 +23,7 @@ import time
 from typing import Optional
 from waqd.base.component import Component
 
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.base.component_reg import ComponentRegistry
 from waqd.base.network import Network
 from waqd.base.signal import QtSignalRegistry
@@ -42,14 +42,19 @@ class ComponentController():
         self._stop_event = threading.Event()  # own stop event for watchdog
         # thread for waiting for comps unload
         self._unload_thread: Optional[threading.Thread] = None # re-usable thread, assignment is in unload_all
+        self._inited_all = False
+
 
     @property
     def all_ready(self) -> bool:
         """ Signals, that all modules have been started loading """
         all_ready = False
-        for comp_name in self._components.get_names():
+        if not self._inited_all:
+            return False
+        names = self._components.get_names()
+        for comp_name in names:
             component = self._components.get(comp_name)
-            if component:
+            if component and not component.is_disabled:
                 all_ready |= component.is_ready
         return all_ready
 
@@ -73,7 +78,6 @@ class ComponentController():
             self._unload_thread.join()
         self._stop_event.clear()
         Logger().info("Start initializing all components")
-
         self._watch_thread = threading.Thread(name="Watchdog", target=self._watchdog_loop, daemon=True)
         self._watch_thread.start()
 
@@ -98,15 +102,16 @@ class ComponentController():
             self._stop_event.set()
 
     def _watchdog_loop(self):
-        time.sleep(2)  # wait for execution
+        # thois import statemant import all the components at first
+        import waqd.components
         self._components.watch_all()
-
+        self._inited_all = True
         ticker = threading.Event()
         while not ticker.wait(self.UPDATE_TIME):
             if self._stop_event.is_set():
                 self._stop_event.clear()
                 return
-            self._components.watch_all()
+            # self._components.watch_all()
             self._watch_components()
 
     def _watch_components(self):
@@ -116,8 +121,6 @@ class ComponentController():
         # check and restart wifi
         #if RuntimeSystem().is_target_system:
         Network().check_internet_connection()
-        import objsize
-        print("Size: " + str(objsize.get_deep_size(self)))
         try:
             for comp_name in self._components.get_names():
                 component = self._components.get(comp_name)
@@ -157,4 +160,5 @@ class ComponentController():
                     continue
             self._components.stop_component(comp_name, reload_intended)
         Logger().info("ComponentRegistry: All components unloaded.")
+        self._inited_all = False
         self._components.set_unload_finished()

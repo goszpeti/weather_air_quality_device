@@ -23,6 +23,7 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Optional, Tuple
+from waqd import LOCAL_TIMEZONE
 
 from file_read_backwards import FileReadBackwards
 import waqd
@@ -141,7 +142,7 @@ class SensorFileLogger(logging.Logger):
         log_file_path = SensorFileLogger._get_sensor_logfile_path(sensor_location, sensor_type)
         if not log_file_path.exists():
             return []
-        current_time = datetime.now()
+        current_time = datetime.now(LOCAL_TIMEZONE)
         time_value_pairs: List[Tuple[datetime, float]] = []
         try:
             with FileReadBackwards(str(log_file_path), encoding="utf-8") as fp:
@@ -149,6 +150,7 @@ class SensorFileLogger(logging.Logger):
                 for line in fp:
                     time_value_pair = line.split("=")
                     timestamp = datetime.fromisoformat(time_value_pair[0])
+                    timestamp = timestamp.replace(tzinfo=LOCAL_TIMEZONE)
                     time_value_pair[0] = timestamp
                     if not minutes_to_read:
                         time_value_pair[1] = float(time_value_pair[1])  # always cast to float
@@ -188,7 +190,7 @@ class SensorFileLogger(logging.Logger):
 
     @staticmethod
     def migrate_txts_to_db():
-        from waqd.components.sensor_logger import InfluxSensorLogger
+        from waqd.base.db_logger import InfluxSensorLogger
         sensor_files = (waqd.user_config_dir / "sensor_logs").glob("*.log")
         db_logger = InfluxSensorLogger()
         for sensor_file in sensor_files:

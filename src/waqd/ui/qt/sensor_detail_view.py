@@ -17,10 +17,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
+
+import threading
+from time import time
+from waqd.ui.qt.widgets.splashscreen import SplashScreen
+from waqd.ui.qt.widgets.fader_widget import FaderWidget
 from datetime import datetime, timedelta
 import os
 from pathlib import Path
-from typing import List, Tuple
+from typing import TYPE_CHECKING, List, Tuple
+from waqd.base.system import RuntimeSystem
 
 from file_read_backwards import FileReadBackwards
 from PyQt5 import QtChart, QtCore, QtGui, QtWidgets
@@ -29,37 +35,54 @@ from waqd import DEBUG_LEVEL, LOCAL_TIMEZONE
 from waqd.ui.qt.widgets.jumpslider import JumpSlider
 from waqd.base.translation import Translation
 from waqd.settings import LANG
-from waqd.components.sensor_logger import InfluxSensorLogger
+from waqd.base.db_logger import InfluxSensorLogger
 Qt = QtCore.Qt
-
-
+if TYPE_CHECKING:
+    from waqd.ui.qt.main_ui import WeatherMainUi
 class SensorDetailView(QtWidgets.QDialog):
     """ A popup window plotting the sensor values. """
     _layout = None
     TIME_WINDOW_MINUTES = 180
 
-    def __init__(self, sensor_location: str, sensor_type: str, sensor_value_unit: str, main_ui):
-        super().__init__(parent=main_ui)
+    def __init__(self, sensor_location: str, sensor_type: str, sensor_value_unit: str,
+                 main_ui: "WeatherMainUi", logger_class=InfluxSensorLogger):
+        super().__init__(parent=None)
+        self._main_ui = main_ui
         self._sensor_location = sensor_location
         self._sensor_type = sensor_type
         self._sensor_value_unit = sensor_value_unit
-        self._time_value_pairs = InfluxSensorLogger.get_sensor_values(
-            sensor_location, sensor_type, self.TIME_WINDOW_MINUTES)
+        self._logger_class = logger_class
 
         # set up  window style and size
         # frameless modal window fullscreen (same as main ui)
         self.setWindowFlags(Qt.WindowType(Qt.FramelessWindowHint))
         self.setWindowModality(Qt.WindowModal)
-        self.setGeometry(main_ui.geometry())
-        self.move(0,0)
+        self.setGeometry(self._main_ui.geometry())
+        # self.move(0, 0)
+
+        # start fader - variable must be held otherwise gc will claim it
+        # initialize splash screen for the closing of the UI and make a screenshot
+        self._splash_screen = SplashScreen(background=False)
+        # this splash screen works only in full screen under RPI - god knows why...
+        self._runtime_system = RuntimeSystem()
+        self._ready = False
+        if self._runtime_system.is_target_system:
+            self._splash_screen.showFullScreen()
+            self._splash_screen.setFocus()
+        else:
+            self._splash_screen.show()
+
+        self._update_thread = threading.Thread(name=self.__class__.__name__,
+                                               target=self.load,
+                                               daemon=True)
+        self._update_thread.start()
+        while not self._ready:
+            QtWidgets.QApplication.processEvents()
 
         if not self._time_value_pairs:
-            self.not_enough_values_dialog(main_ui)
+            self._splash_screen.finish(self._main_ui)
+            self.not_enough_values_dialog(self._main_ui)
             return
-
-        # add values to qt graph
-        # time values are converted to "- <Minutes>" format
-
         # chart needs a chartview to be displayed
         sensor_chart_view = QtChart.QChartView()
         sensor_chart_view.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -68,7 +91,7 @@ class SensorDetailView(QtWidgets.QDialog):
         sensor_chart_view.setMinimumSize(600, 300)
         sensor_chart_view.setBackgroundBrush(self._get_background_brush())
         self._sensor_chart_view = sensor_chart_view
-        
+
         self._draw_chart()
         delta_label = QtWidgets.QLabel(self)
 
@@ -80,7 +103,7 @@ class SensorDetailView(QtWidgets.QDialog):
         last_hour_values: List[float] = [time_value_pair[1] for time_value_pair in last_hour_time_val_pairs]
         if last_hour_values:
             delta_label.setText(
-                f"Change: {max(last_hour_values) - min(last_hour_values):.2f} {sensor_value_unit}/hour")
+                f"Change: {max(last_hour_values) - min(last_hour_values):.2f} {self._sensor_value_unit}/hour")
 
         # Button to close
         ok_button = QtWidgets.QPushButton("OK", self)
@@ -95,12 +118,12 @@ class SensorDetailView(QtWidgets.QDialog):
         self._time_slider.valueChanged.connect(self.on_slider_changed)
         self._time_slider.setTickInterval(30)
         self._time_slider.setTickPosition(QtWidgets.QSlider.NoTicks)
-         
+
         # add everything to the qt layout
         self._layout = QtWidgets.QVBoxLayout(self)
         self._layout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
-        
-        if DEBUG_LEVEL > 0: # TODO feature flag
+
+        if DEBUG_LEVEL > 0:  # TODO feature flag
             self._layout.addWidget(self._time_slider)
         self._layout.addWidget(sensor_chart_view)
         self._layout.addWidget(delta_label)
@@ -109,11 +132,16 @@ class SensorDetailView(QtWidgets.QDialog):
         # event filter handles closing - one click/touch closes the window
         self.installEventFilter(self)
         self.show()
+        self._splash_screen.finish(self._main_ui)
+
+    def load(self):
+        # add values to qt graph
+        # time values are converted to "- <Minutes>" format
+        self._time_value_pairs = self._logger_class.get_sensor_values(
+            self._sensor_location, self._sensor_type, self.TIME_WINDOW_MINUTES)
+        self._ready = True
     
     def _draw_chart(self):
-        # if len(self._time_value_pairs) < 2:  # insufficient data
-        #     self.not_enough_values_dialog(self.parent())
-        #     return
         current_time = datetime.now(LOCAL_TIMEZONE)
 
         series = QtChart.QLineSeries()
@@ -170,3 +198,5 @@ class SensorDetailView(QtWidgets.QDialog):
         msg.move(int((main_ui.geometry().width() - msg.width()) / 2),
                  int((main_ui.geometry().height() - msg.height()) / 2))
         msg.exec_()
+        msg.deleteLater()
+        self.deleteLater()

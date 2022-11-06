@@ -36,6 +36,7 @@ class Sound(Component):
     def __init__(self, components: ComponentRegistry, enabled=True):
         super().__init__(components, enabled=enabled)
         self._sound_thread = Thread()
+        self._ready = True
 
     def play(self, audio_file: PathLike):
         if self._disabled:

@@ -24,11 +24,8 @@ import json
 import threading
 import time
 from pathlib import Path
-from typing import List, Optional, Dict
-from PyQt5.QtCore import pyqtBoundSignal
+from typing import List, Optional, Dict, TYPE_CHECKING
 
-import jsonschema
-from apscheduler.schedulers.background import BackgroundScheduler
 from dateutil.parser import parse as parse_date
 from dateutil.relativedelta import relativedelta
 
@@ -36,8 +33,11 @@ import waqd
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
 from waqd.base.component_reg import ComponentRegistry
-from waqd.base.logger import Logger
-from waqd.settings import EVENTS_ENABLED, LANG, NIGHT_MODE_END, Settings
+from waqd.base.file_logger import Logger
+
+if TYPE_CHECKING:
+    from PyQt5.QtCore import pyqtBoundSignal
+    from apscheduler.schedulers.background import BackgroundScheduler
 
 
 class Event():
@@ -128,6 +128,7 @@ def parse_event_file(events_file_path: Path) -> List[Event]:
         try:
             events_config = json.load(config_file)
             with open(get_asset_file("base", "events_schema")) as schema_file:
+                import jsonschema
                 json_schema = json.load(schema_file)
                 jsonschema.validate(instance=events_config, schema=json_schema)
         except BaseException as error:
@@ -198,12 +199,13 @@ class EventHandler(Component):
 
     def __init__(self,  components: ComponentRegistry, lang: str, night_mode_end: int, enabled=True):
         super().__init__(components, enabled=enabled)
-        self._scheduler: Optional[BackgroundScheduler] = None
+
+        self._scheduler: Optional["BackgroundScheduler"] = None
         if not enabled:
             return
         self._lang = lang
         self._night_mode_end = night_mode_end
-        self.gui_background_update_sig: Optional[pyqtBoundSignal] = None
+        self.gui_background_update_sig: Optional["pyqtBoundSignal"] = None
         self._config_events_file = waqd.user_config_dir / "events.json"
         self._events = parse_event_file(self._config_events_file)
 
@@ -216,11 +218,13 @@ class EventHandler(Component):
             self._scheduler.shutdown(wait=False)
 
     def _init_scheduler(self):
+        from apscheduler.schedulers.background import BackgroundScheduler
         self._scheduler = BackgroundScheduler()
         self._scheduler.configure(job_defaults={"misfire_grace_time": 3, "max_instances": 1})
         for event in self._events:
             self._register_event(event)
         self._scheduler.start()
+        self._ready = True
 
     def _register_event(self, event: Event):
         self._logger.debug("EventHandler: Registering " + event.name)

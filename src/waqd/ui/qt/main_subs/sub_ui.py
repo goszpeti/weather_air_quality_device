@@ -22,7 +22,7 @@ import abc
 from typing import TYPE_CHECKING, Callable
 from PyQt5 import QtCore
 
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 
 if TYPE_CHECKING:
     from waqd.ui.qt.main_ui import WeatherMainUi

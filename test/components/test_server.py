@@ -7,7 +7,7 @@ from waqd.components import Server
 from waqd.base.component_reg import ComponentRegistry
 from waqd.settings import SERVER_ENABLED
 from waqd.settings.settings import Settings
-from waqd.components.web_session import UserFileDB
+from waqd.base.authentification import UserFileDB
 
 def testServer(base_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")

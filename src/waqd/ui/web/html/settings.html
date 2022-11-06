@@ -1,0 +1,66 @@
+<style>
+    #settings {
+        font-size: 1.6em;
+    }
+
+    input {
+        width: 400px;
+        font-size: 0.8em;
+    }
+</style>
+
+<div id="settings" class="block">
+    <div class="small_row">
+    <h2>Profile</h2>
+    </div>
+    <hr style="width:50%;height:2px;border-width:0;">
+    <form id="user_form" action="/user" method="post">
+        <label for="username">Username</label><br>
+        <div class="small_row">
+            <input type="text" id="username" name="username">
+        </div>
+        <div class="small_row">
+            <span><input value="Change name" type="submit" class="btn btn-secondary" /></span>
+        </div>
+    </form>
+    <form id="pw_form" action="/user" method="post">
+        <label for="password">Password</label><br>
+        <div class="small_row">
+            <input id="password" name="password" type="password" required />
+        </div>
+        <div class="small_row">
+            <span><input value="Change Password" type="submit" class="btn btn-secondary" /></span>
+        </div>
+    </form>
+    <div class="small_row" style="margin-inline: 16px;">
+        <h2>Online Weather</h2>
+    </div>
+    <hr style="width:50%;height:2px;border-width:0;">
+    <form id="ow_form" action="/ow" method="post">
+        <label for="ow_api">OpenWeather API key</label><br>
+        <div class="small_row">
+            <input class="small_row" id="ow_api" name="ow_api" type="text" required />
+        </div>
+        <div class="small_row">
+            <span><input value="Save" type="submit" class="btn btn-secondary" /></span>
+        </div>
+    </form>
+    <h2>Locations</h3>
+        <div style="padding-inline: 16px;"></div>
+        <button style="margin-bottom: 30px" class="btn btn-third">Add new</button>
+        <div style="margin-bottom: 30px">
+            <label for="loc1">Location1</label><br>
+            <input name="loc1" type="text" required />
+            <br>
+            <button class="btn btn-third">Edit</button>
+            <button class="btn btn-third">Remove</button>
+        </div>
+        <div style="margin-bottom: 30px">
+            <label for="loc2">Location2</label><br>
+            <input name="loc2" type="text" required />
+            <br>
+            <button class="btn btn-third">Edit</button>
+            <button class="btn btn-third">Remove</button>
+        </div>
+</div>
+</div>

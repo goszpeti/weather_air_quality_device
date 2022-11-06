@@ -177,3 +177,7 @@ class WeatherDetailView(QtWidgets.QDialog):
                 icon_label.show()
 
         return super().eventFilter(source, event)
+
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        self.deleteLater()
+        return super().closeEvent(a0)

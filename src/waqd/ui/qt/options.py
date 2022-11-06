@@ -30,6 +30,7 @@ import waqd
 from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.network import Network
+from waqd.base.authentification import UserFileDB
 from waqd.base.system import RuntimeSystem
 from waqd.base.translation import Translation
 from waqd.components.sensors import MH_Z19
@@ -40,7 +41,7 @@ from waqd.settings import (BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS, CCS811_
                            LANG, LOCATION, MOTION_SENSOR_ENABLED, MH_Z19_ENABLED,
                            NIGHT_MODE_BEGIN, NIGHT_MODE_END, INTERIOR_BG, FORECAST_BG,
                            NIGHT_STANDBY_TIMEOUT, OW_CITY_IDS, LOG_SENSOR_DATA,
-                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, MH_Z19_VALUE_OFFSET, Settings)
+                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, MH_Z19_VALUE_OFFSET, USER_DEFAULT_PW, Settings)
 from . import common
 from waqd.ui.qt.theming import activate_theme
 from waqd.ui.qt.main_subs import sub_ui
@@ -107,6 +108,7 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.connect_wlan_button.clicked.connect(self._connect_wlan)
         self._ui.mh_z19_calibrate_button.clicked.connect(self._calibrate_mh_z19)
         self._ui.motion_sensor_test_button.clicked.connect(self._test_motion_sensor)
+        self._ui.reset_pw_button.clicked.connect(self._reset_pw)
 
         self._ui.lang_cbox.currentTextChanged.connect(self._update_language_cbox)
         self._ui.forecast_background_cbox.currentTextChanged.connect(self._update_preview_forecast)
@@ -466,6 +468,23 @@ class OptionMainUi(QtWidgets.QDialog):
             # this is the default updater on RaspberryPi OS
             os.system("sudo apt update")  # TODO this takes a while, but is necessary
             os.system("pi-gpk-update-viewer&")
+
+    def _reset_pw(self):
+        msg = QtWidgets.QMessageBox(parent=self)
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setWindowTitle("Reset Password")
+        from waqd.base.authentification import DEFAULT_USERNAME, bcrypt
+
+        new_pw = bcrypt.gensalt(4).decode("utf-8")[18:]
+        self._settings.set(USER_DEFAULT_PW, new_pw)
+        user_db = UserFileDB()
+        user_db.write_entry(DEFAULT_USERNAME, new_pw)
+        msg.setText(f"Username: {DEFAULT_USERNAME} Password: {new_pw}")
+        msg.move(int((self._main_ui.geometry().width() - self.height()) / 2),
+                 int((self._main_ui.geometry().height() - msg.height()) / 2))
+        msg.exec_()
 
     def _connect_wlan(self):
         ssid_name = "Connect_WAQD"

@@ -24,13 +24,13 @@ import threading
 from typing import TYPE_CHECKING, Dict, List, Optional, Type, TypeVar, Union
 import waqd
 from waqd.base.component import Component, CyclicComponent
-from waqd.base.logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.settings import (AUTO_UPDATER_ENABLED, BME_280_ENABLED,
                            BMP_280_ENABLED, BRIGHTNESS, CCS811_ENABLED,
                            DHT_22_DISABLED, DHT_22_PIN, DISPLAY_TYPE, EVENTS_ENABLED, LANG,
                            LOCATION, MH_Z19_ENABLED, MOTION_SENSOR_ENABLED,
                            MOTION_SENSOR_PIN, NIGHT_MODE_END, OW_API_KEY, OW_CITY_IDS, REMOTE_MODE_URL, SERVER_ENABLED,
-                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, USER_API_KEY, USER_SESSION_SECRET,
+                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, USER_API_KEY, USER_DEFAULT_PW, USER_SESSION_SECRET,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, Settings)
 
 if TYPE_CHECKING:
@@ -111,7 +111,7 @@ class ComponentRegistry():
             if reload_intended and component.reload_forbidden:
                 return
             self._components.pop(name)
-            self._logger.info("ComponentRegistry: Stopping %s", name)
+            self._logger.info("ComponentRegistry: Stopping" + name)
             component.stop()
             # call destructors
             del component
@@ -119,13 +119,14 @@ class ComponentRegistry():
     def watch_all(self):
         """ Check all components and thus initialize them """
         # filter for headless mode
+        comps_non_headless = []
         comps = [
-            self.auto_updater, self.temp_sensor, self.humidity_sensor,
+            self.weather_info, self.auto_updater, self.temp_sensor, self.humidity_sensor,
             self.tvoc_sensor, self.pressure_sensor, self.co2_sensor, self.motion_detection_sensor,
-            self.server, self.weather_info]
+            self.server]
         if not waqd.HEADLESS_MODE:
-            comps += [self.event_handler, self.display, self.tts, self.sound, self.energy_saver]
-        return comps
+            comps_non_headless = [self.event_handler, self.display, self.tts, self.sound, self.energy_saver]
+        return comps, comps_non_headless
 
     @property
     def display(self) -> "Display":
@@ -158,13 +159,13 @@ class ComponentRegistry():
     @property
     def energy_saver(self) -> "ESaver":
         """ Access for ESaver singleton """
-        from waqd.components.power import ESaver
+        from waqd.components import ESaver
         return self._create_component_instance(ESaver, [self, self._settings])
 
     @property
     def weather_info(self) -> "OpenWeatherMap":
         """ Access for OnlineWeather singleton """
-        from waqd.components.online_weather import OpenWeatherMap
+        from waqd.components import OpenWeatherMap
         location = self._settings.get_string(LOCATION)
         return self._create_component_instance(OpenWeatherMap, [self._settings.get_dict(OW_CITY_IDS).get(location, ""),
                                                                 self._settings.get(OW_API_KEY)])
@@ -172,7 +173,7 @@ class ComponentRegistry():
     @property
     def auto_updater(self) -> "OnlineUpdater":
         """ Access for OnlineUpdater singleton """
-        from waqd.components.updater import OnlineUpdater
+        from waqd.components import OnlineUpdater
         return self._create_component_instance(OnlineUpdater, [self, self._settings.get(AUTO_UPDATER_ENABLED),
                                                                self._settings.get(UPDATER_USER_BETA_CHANNEL)])
 
@@ -180,7 +181,8 @@ class ComponentRegistry():
     def server(self) -> "Server":
         from waqd.components import Server
         return self._create_component_instance(Server, [self, 
-                self._settings.get(SERVER_ENABLED), self._settings.get(USER_SESSION_SECRET), self._settings.get(USER_API_KEY)])
+                self._settings.get(SERVER_ENABLED), self._settings.get(USER_SESSION_SECRET), 
+            self._settings.get(USER_API_KEY), self._settings.get_string(USER_DEFAULT_PW)])
 
     @property
     def temp_sensor(self) -> "TempSensor":
@@ -377,6 +379,7 @@ class ComponentRegistry():
                 pass
                 # time.sleep(100) TODO: do here something meaningful...
             if issubclass(class_ref, Component):
+                self._logger.info("ComponentRegistry: Starting " + name)
                 component = class_ref(*args)
                 self._components.update({name: component})
             else:

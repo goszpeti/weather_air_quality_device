@@ -132,7 +132,7 @@ input[type="button"] {
     color: #fff;
     background: #1479A7;
      /* #1ea336; */
-    padding: 0.2em 1.0em;
+    padding: 0.2em 0.8em;
     border-radius: 0px;
 }
 .btn-third {
@@ -152,7 +152,15 @@ input[type="button"] {
     align-content: stretch;
     text-align: center;
 }
-
+.small_row {
+    font-size: 1em;
+    width: auto;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-content: stretch;
+    text-align: center;
+}
 .block {
     width: 95%;
     border-style: solid;
