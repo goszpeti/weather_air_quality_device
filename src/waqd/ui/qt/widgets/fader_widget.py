@@ -45,6 +45,10 @@ class FaderWidget(QtWidgets.QWidget):
         self.resize(new_widget.size())
         self.show()
 
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        self.deleteLater()
+        return super().closeEvent(a0)
+
     def paintEvent(self, event):  # pylint: disable=unused-argument,invalid-name
         """ callback from animate - repaint sets the actual image """
         painter = QtGui.QPainter()

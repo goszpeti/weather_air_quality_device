@@ -66,10 +66,6 @@ def apply_font(font_name: str):
     if qapp is None:
         return
     qapp.setFont(font)
-    # for qt_obj in qt_root_obj.findChildren(QWidget):
-    #     obj_font = qt_obj.font()
-    #     obj_font.setFamily(font.family())
-
 
 def set_ui_language(qt_app: QApplication, settings: Settings):
     """ Set the ui language. Retranslate must be called afterwards."""

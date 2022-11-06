@@ -112,6 +112,7 @@ def clean_lxde_desktop(desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/de
     # Can't be run as sudo, or as sudo -runuser. Needs desktop manager running.
     logging.info("Cleanup desktop icons...")
     assure_file_exists(desktop_conf_path)
+    # needs to be under * 
     remove_line_in_file(["show_trash", "show_mounts"], desktop_conf_path)
     add_line_to_file(["show_trash=0", "show_mounts=0"], desktop_conf_path)
 

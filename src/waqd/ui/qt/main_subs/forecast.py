@@ -44,7 +44,7 @@ class Forecast(sub_ui.SubUi):
         super().__init__(main_ui, main_ui.ui, settings)
         self._default_min_max_text = self._ui.forecast_d1_day_temps_value.text()
         self._comps = main_ui._comps
-
+        self.det = None
         # set default day night icons - sunny clear
         day_icon = get_asset_file("weather_icons", "day-800")
         # night-clear
@@ -97,6 +97,11 @@ class Forecast(sub_ui.SubUi):
 
         self._ui.forecast_d3_night_temps_value.setText(
             common.format_temp_text_minmax(self._default_min_max_text, None, None))
+
+    def stop(self):
+        super().stop()
+        if self.det:
+            del self.det
 
     def show_detail(self, day):
         """ Detail view day 1 """

@@ -17,15 +17,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
+# 
+from waqd.base.component import CyclicComponent
+
 import os
-import shutil
-import tarfile
-import urllib.request
 from distutils.version import StrictVersion as Version
 from pathlib import Path
 from time import sleep
+from typing import TYPE_CHECKING
 
-from github import Github, Repository
 
 import waqd
 import waqd.app as app
@@ -33,6 +33,10 @@ from waqd import __version__ as WAQD_VERSION
 from waqd.base.component import CyclicComponent
 from waqd.base.component_reg import ComponentRegistry
 from waqd.base.network import Network
+
+if TYPE_CHECKING:
+    from github import Repository
+
 
 class OnlineUpdater(CyclicComponent):
     """
@@ -45,20 +49,21 @@ class OnlineUpdater(CyclicComponent):
     STOP_TIMEOUT = 2  # override because of long update time
 
 
-    def __init__(self, components: ComponentRegistry, enabled=True, use_beta_channel=False):
+    def __init__(self, components: "ComponentRegistry", enabled=True, use_beta_channel=False):
         super().__init__(components, enabled=enabled)
         if self._disabled:
             return
-        self._comps: ComponentRegistry
+        self._comps: "ComponentRegistry"
         self._use_beta_channel = use_beta_channel
         self._base_path = waqd.base_path  # save for multiprocessing
-        self._repository: Repository.Repository
+        self._repository: "Repository.Repository"
 
         self._new_version_path = Path.home() / ".waqd" / "updater"
 
         # delete downloaded version to clean up
         if self._new_version_path.exists():
             try:
+                import shutil
                 shutil.rmtree(self._new_version_path)
             except PermissionError:
                 os.system(f"sudo rm -rf {str(self._new_version_path)}")
@@ -86,6 +91,7 @@ class OnlineUpdater(CyclicComponent):
 
     def _connect_to_repository(self):
         """ Get Github repo object """
+        from github import Github
         github = Github()
         self._repository = github.get_repo(waqd.GITHUB_REPO_NAME)
 
@@ -139,7 +145,8 @@ class OnlineUpdater(CyclicComponent):
         script/installer/start_installer.sh
         """
         # TODO do a popup later with deferring option?
-
+        import tarfile
+        import urllib.request
         # download as tar because direct support
         self._logger.info("Updater: Downloading new release")
         [update_file, _] = urllib.request.urlretrieve(

@@ -58,7 +58,7 @@ class Exterior(sub_ui.SubUi):
         self._ui.exterior_forecast_hum_value.setText(common.format_int_meas_text(self._default_hum_text,
                                                                                  None,
                                                                                  tag_id=1))
-
+        self.det = None
         na_icon = get_asset_file("weather_icons", "N/A")
         # common.draw_svg(self._ui.exterior_forecast_icon, na_icon, scale=3)
         common.draw_svg(self._ui.exterior_temp_icon, common.get_temperature_icon(
@@ -73,6 +73,11 @@ class Exterior(sub_ui.SubUi):
         # call once at begin
         Network().register_network_notification(main_ui.network_available_sig, self._cyclic_update)
         self.init_with_cyclic_update()
+
+    def stop(self):
+        super().stop()
+        if self.det:
+            del self.det
 
     def show_detail(self):
         """ Daily detail view popup """

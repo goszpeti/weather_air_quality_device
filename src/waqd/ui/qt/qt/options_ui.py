@@ -166,7 +166,7 @@ class Ui_Dialog(object):
         self.general_scroll_area.setWidgetResizable(True)
         self.general_scroll_area.setObjectName("general_scroll_area")
         self.general_scroll_widgets = QtWidgets.QWidget()
-        self.general_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 252, 420))
+        self.general_scroll_widgets.setGeometry(QtCore.QRect(0, 0, 638, 415))
         self.general_scroll_widgets.setObjectName("general_scroll_widgets")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.general_scroll_widgets)
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -310,6 +310,10 @@ class Ui_Dialog(object):
         self.connect_wlan_button.setFont(font)
         self.connect_wlan_button.setObjectName("connect_wlan_button")
         self.general_layout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.connect_wlan_button)
+        self.reset_pw_button = QtWidgets.QPushButton(self.general_scroll_widgets)
+        self.reset_pw_button.setMaximumSize(QtCore.QSize(360, 16777215))
+        self.reset_pw_button.setObjectName("reset_pw_button")
+        self.general_layout.setWidget(7, QtWidgets.QFormLayout.FieldRole, self.reset_pw_button)
         self.verticalLayout_3.addLayout(self.general_layout)
         self.general_scroll_area.setWidget(self.general_scroll_widgets)
         self.verticalLayout_4.addWidget(self.general_scroll_area)
@@ -1104,7 +1108,7 @@ class Ui_Dialog(object):
         self.verticalLayout_5.addLayout(self.main_layout)
 
         self.retranslateUi(Dialog)
-        self.page_stacked_widget.setCurrentIndex(2)
+        self.page_stacked_widget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -1127,6 +1131,7 @@ class Ui_Dialog(object):
         self.auto_updater_enable_label.setText(_translate("Dialog", "Auto Updates"))
         self.updater_beta_channel_label.setText(_translate("Dialog", "Enable beta updates"))
         self.connect_wlan_button.setText(_translate("Dialog", "Connect to WLAN"))
+        self.reset_pw_button.setText(_translate("Dialog", "Reset Server Password"))
         self.night_mode_end_value.setText(_translate("Dialog", "8"))
         self.night_mode_begin_label.setText(_translate("Dialog", "Turn off display at"))
         self.night_mode_end_unit.setText(_translate("Dialog", "h"))

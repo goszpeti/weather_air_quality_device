@@ -51,6 +51,7 @@ class ESaver(CyclicComponent):
         self._is_awake = False
         self._sleep_timer = None
         self._start_update_loop(update_func=self._set_day_night_mode)
+        self._ready = True
 
     @property
     def is_awake(self):

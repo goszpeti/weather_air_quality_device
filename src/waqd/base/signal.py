@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List
+from typing import TYPE_CHECKING, Callable, Dict
 from waqd.base.logger import Logger
 
 if TYPE_CHECKING:

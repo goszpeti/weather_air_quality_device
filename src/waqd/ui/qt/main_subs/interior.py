@@ -51,7 +51,7 @@ class Interior(sub_ui.SubUi):
         self._co2_bar = None
         self._default_temp_text = self._ui.interior_temp_value.text()
         self._ui_bars = [self._ui.interior_1_bar, self._ui.interior_2_bar, self._ui.interior_3_bar]
-
+        self.det = None
         # set background
         self._ui.interior_background.setPixmap(QtGui.QPixmap(
             str(waqd.assets_path / "gui_bgrs" / settings.get_string(INTERIOR_BG))))
@@ -89,6 +89,11 @@ class Interior(sub_ui.SubUi):
 
         # call once at begin
         self.init_with_cyclic_update()
+
+    def stop(self):
+        super().stop()
+        if self.det:
+            del self.det
 
     def set_available_bar(self, bar_opts: Tuple[str,str,str], font_name: str):
         for bar in self._ui_bars:

@@ -23,7 +23,7 @@ Entry module of WAQD
 Sets up cmd arguments, settings and starts the gui
 """
 
-from pint import UnitRegistry
+ 
 from typing import TYPE_CHECKING
 import argparse
 import logging
@@ -34,6 +34,7 @@ import time
 import traceback
 from pathlib import Path
 from typing import Optional
+from pint import UnitRegistry
 
 import waqd
 from waqd import PROG_NAME
@@ -101,16 +102,16 @@ def main(settings_path: Optional[Path] = None):
     comp_ctrl = ComponentController(settings)
     if waqd.DEBUG_LEVEL > 1: # disable startup sound
        comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
+    comp_ctrl.init_all()
     # Load the selected GUI mode
     display_type = settings.get(DISPLAY_TYPE)
     try:
         if waqd.HEADLESS_MODE:
-            comp_ctrl.init_all()
             comp_ctrl._stop_event.wait()
         elif display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
             qt_app = qt_app_setup(settings)
             # main_ui must be held in this context, otherwise the gc will destroy the gui
-            loading_sequence(comp_ctrl, settings)
+            qt_loading_sequence(comp_ctrl, settings)
             qt_app.exec()
         elif display_type == DISP_TYPE_WAVESHARE_EPAPER_2_9:
             pass
@@ -204,7 +205,7 @@ def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
     return qt_app
 
 
-def loading_sequence(comp_ctrl: ComponentController, settings: Settings):
+def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
     """
     Load modules with watchdog and display Splashscreen until loading is finished.
     """
@@ -212,32 +213,33 @@ def loading_sequence(comp_ctrl: ComponentController, settings: Settings):
     # when the splash screen is already loading. It is a non-blocking call.
 
     # start init for all components
-    comp_ctrl.init_all()
     from PyQt5 import QtCore, QtWidgets
     from waqd.ui.qt.main_ui import WeatherMainUi
     from waqd.ui.qt.widgets.fader_widget import FaderWidget
     from waqd.ui.qt.widgets.splashscreen import SplashScreen
-    app_main_ui = WeatherMainUi(comp_ctrl, settings)
-
-    if RuntimeSystem().is_target_system:  # only remove titlebar on RPi
-        app_main_ui.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
-
     # show splash screen
     splash_screen = SplashScreen()
     splash_screen.show()
 
+    # wait for finishing loading - processEvents is needed for animations to work (loader)
+    loading_minimum_time_s = 5
+    start = time.time()
+    while not comp_ctrl.all_ready:
+        QtWidgets.QApplication.processEvents()
+
     # start gui init in separate qt thread
+    app_main_ui = WeatherMainUi(comp_ctrl, settings)
+
+    if RuntimeSystem().is_target_system:  # only remove titlebar on RPi
+        app_main_ui.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
     thread = QtCore.QThread(app_main_ui)
     thread.started.connect(app_main_ui.init_gui)
     thread.start()
-
-    # wait for finishing loading - processEvents is needed for animations to work (loader)
-    loading_minimum_time = 10  # seconds
-    start = time.time()
-    while (not app_main_ui.ready or not comp_ctrl.all_ready) \
-        or (time.time() < start + loading_minimum_time) \
+    while (not app_main_ui.ready) \
+        or (time.time() < start + loading_minimum_time_s) \
             and waqd.DEBUG_LEVEL <= 3:
         QtWidgets.QApplication.processEvents()
+
 
     # splash screen can be disabled - with fader
     app_main_ui.show()

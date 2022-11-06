@@ -1,28 +1,28 @@
 import html
 import json
 from functools import partial
-from re import I
 from threading import Thread
 from time import sleep
-from typing import TYPE_CHECKING, List, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 from typing_extensions import NotRequired
-
+import os
 import plotly.graph_objects as go
 import waqd
 import waqd.app as app
-from bottle import (HTTPResponse, Jinja2Template, default_app, redirect,
+from bottle import (Jinja2Template, default_app, redirect,
                     request, response, route, static_file)
 from htmlmin.main import minify
 from pint import Quantity
 from plotly.graph_objs import Scattergl
 from plotly.io import to_html
-from plotly.offline.offline import get_plotlyjs
 from waqd.assets import get_asset_file
 from waqd.base.component import Component
+from waqd.base.password import UserFileDB
 from waqd.components.sensor_logger import InfluxSensorLogger
-from waqd.settings import USER_API_KEY
+from waqd.base.system import RuntimeSystem
+import waqd
 
-from .web_session import LoginPlugin, UserFileDB
+from ..base.web_session import LoginPlugin
 
 extra_minify = partial(minify, remove_comments=True, remove_empty_space=True)
 
@@ -61,6 +61,9 @@ ROUTE_LOGIN_FAILED = "/login_failed"
 ROUTE_API_REMOTE_EXT_SENSOR = "/api/remoteExtSensor"
 ROUTE_API_REMOTE_INT_SENSOR = "/api/remoteIntSensor"
 ROUTE_API_EVENTS_REMOTE_INT_SENSOR = "/api/events/remoteIntSensor"
+ROUTE_API_EVENTS_REMOTE_EXT_SENSOR = "/api/events/remoteExtSensor"
+
+EVENT_UPDATE_FREQ_S = 15
 
 
 class BottleServer(Component):
@@ -77,7 +80,8 @@ class BottleServer(Component):
     # pages which need the user to log in
     needs_login = [ROUTE_WAQD, ROUTE_SETTINGS]
 
-    def __init__(self, components: "ComponentRegistry", enabled=True, user_session_secret="SECRET", user_api_key="API_KEY"):
+    def __init__(self, components: "ComponentRegistry", enabled=True,
+                 user_session_secret="SECRET", user_api_key="API_KEY", user_default_pw="TestPw"):
         super().__init__(components, enabled=enabled)
         self._server = None
         if self._disabled:
@@ -93,7 +97,7 @@ class BottleServer(Component):
         # user_data = self._user_db.get_entry(current_user)
 
         self._login: LoginPlugin = self._app.install(LoginPlugin())
-        self._user_db = UserFileDB()
+        self._user_db = UserFileDB(user_default_pw)
 
     # Load user by id here
     def _run_server(self):
@@ -122,11 +126,13 @@ class BottleServer(Component):
         route(ROUTE_API_REMOTE_EXT_SENSOR + "<args:re:.*>", "GET", self.get_remote_exterior_values)
         route(ROUTE_API_REMOTE_INT_SENSOR + "<args:re:.*>", "GET", self.get_remote_interior_values)
         route(ROUTE_API_EVENTS_REMOTE_INT_SENSOR, "GET", self.trigger_event_remote_value)
-
+        route(ROUTE_API_EVENTS_REMOTE_EXT_SENSOR, "GET", self.trigger_event_remote_value)
         # Can't start server from bottle, because it does not support stopping it without a hack
         from paste import httpserver
+        self._main_page_tpl = get_asset_file("html", "index.html").read_text()
+        self._ready = True
         self._server = httpserver.serve(self._app, host='0.0.0.0', port='80',
-                                        daemon_threads=True, start_loop=True)
+                                        daemon_threads=True, start_loop=True, use_threadpool=True)
 
     def stop(self):
         # must stop, because wlan captive portal would block port 80?
@@ -158,6 +164,8 @@ class BottleServer(Component):
 
     def get_static_file(self, path: str):
         response = static_file(path, root=waqd.assets_path)
+        if path.endswith(".woff"):
+            response.content_type = 'font/woff; charset=utf-8'
         # 1 week
         max_age = "604800"
         if waqd.DEBUG_LEVEL > 1:
@@ -168,7 +176,6 @@ class BottleServer(Component):
     def index(self):
         """ Single page entrypoint """
         route = request.path
-
         current_user = self._login.get_user()
         if not current_user and route in self.needs_login:
             return redirect(ROUTE_LOGIN)
@@ -176,9 +183,10 @@ class BottleServer(Component):
         # default entrypoint to waqd view
         if route == "/":
             redirect(ROUTE_WAQD)
+        if waqd.DEBUG_LEVEL > 0:
+            self._main_page_tpl = get_asset_file("html", "index.html").read_text()
 
-        page = get_asset_file("html", "index.html").read_text()
-        tpl = Jinja2Template(page)
+        tpl = Jinja2Template(self._main_page_tpl)
         page_content = ""
         login_msg = ""
         if current_user:
@@ -198,7 +206,8 @@ class BottleServer(Component):
 
         menu = self.generate_menu()
 
-        return extra_minify(tpl.render(menu=menu, content=page_content, login_msg=login_msg))
+        return extra_minify(tpl.render(menu=menu, content=page_content, login_msg=login_msg,
+                                       ))
 
     def generate_menu(self):
         menu_items = ""
@@ -216,12 +225,14 @@ class BottleServer(Component):
         return menu
 
     def get_plotlyjs(self):
-        max_age = str(604800 * 12)  # 12 weeks
-        response = HTTPResponse()
+        import plotly
+        path = os.path.join(plotly.__file__, "..", "package_data")
+        response = static_file("plotly.min.js", root=path)
+        # 1 week
+        max_age = "604800"
+        if waqd.DEBUG_LEVEL > 1:
+            max_age = "0"
         response.set_header("Cache-Control", f"public, max-age={max_age}")
-        response.set_header("Content-Type",  "application/javascript")
-        response.content_type = "text/javascript"
-        response.body = get_plotlyjs()
         return response
 
     def plot_graph(self):
@@ -270,11 +281,12 @@ class BottleServer(Component):
     def _get_about_subpage(self):
         page_content = get_asset_file("html", "about.html").read_text()
         tpl = Jinja2Template(page_content)
-        return tpl.render()
+        return tpl.render(version=waqd.__version__, platform=RuntimeSystem().platform)
 
     def _get_waqd_subpage(self):
         page_content = get_asset_file("html", "waqd.html").read_text()
         interior_data = self._get_interior_sensor_values(units=True)
+        exterior_data = self._get_exterior_sensor_values(units=True)
         current_weather = self._comps.weather_info.get_current_weather()
         icon_rel_path = "weather_icons/wi-na.svg"  # default N/A
         if current_weather:
@@ -285,7 +297,10 @@ class BottleServer(Component):
                           temp=interior_data["temp"],
                           humidity=interior_data["hum"],
                           pressure=interior_data["baro"],
-                          co2=interior_data["co2"])
+                          co2=interior_data["co2"],
+                          temp_ext=exterior_data["temp"],
+                          hum_ext=exterior_data["hum"]
+                          )
 
     def _get_login_subpage(self):
         # Implement login (you can check passwords here or etc)
@@ -302,10 +317,10 @@ class BottleServer(Component):
 
 ###### API endpoints ######
 
-### args are given in the format ?Key=Value
+# args are given in the format ?Key=Value
 
     def trigger_event_remote_value(self):
-        response.content_type = 'text/event-stream'
+        response.content_type = 'text/event-stream; charset=utf-8'
         response.set_header("Cache-Control", "no-cache")
 
         if not self._login.get_user():
@@ -313,29 +328,25 @@ class BottleServer(Component):
             return response
 
         yield 'retry: 1000\n\n'
+        route = request.path
+
         while True:
-            sleep(10)
-            # TODO don't push updates if we don't read anything?
-            yield "data: " + json.dumps(self._get_interior_sensor_values(units=True)) + "\n\n"
+            sleep(EVENT_UPDATE_FREQ_S)
+            values = {}
+            if route == ROUTE_API_EVENTS_REMOTE_INT_SENSOR:
+                values = self._get_interior_sensor_values(units=True)
+            elif route == ROUTE_API_EVENTS_REMOTE_EXT_SENSOR:
+                values = self._get_exterior_sensor_values(units=True)
+            yield "data: " + json.dumps(values) + "\n\n"
 
     def _check_api_key(self, api_key):
         if api_key == self._user_api_key:
             return True
         return False
 
-    def _parse_api_args(self, args: str):
-        args_dict = {}
-        args_list = args.split("&")
-        for arg in args_list:
-            if "APPID" in arg.split("=")[0]:
-                api_key = arg.split("=")[1]
-                args_dict["api_key"] = api_key
-        return args_dict
-
     def get_remote_exterior_values(self, args=""):
         # retrieve data for remote WAQD feature
-        args_dict = self._parse_api_args(args)
-        if not self._check_api_key(args_dict["api_key"]):
+        if not self._check_api_key(request.query.get("APPID", "")):
             response.status = 403
             return response
 
@@ -343,8 +354,7 @@ class BottleServer(Component):
 
     def get_remote_interior_values(self, args=""):
         # retrieve data for remote WAQD feature
-        args_dict = self._parse_api_args(args)
-        if not self._check_api_key(args_dict["api_key"]):
+        if not self._check_api_key(request.query.get("APPID", "")):
             response.status = 403
             return response
 
@@ -352,8 +362,7 @@ class BottleServer(Component):
 
     def post_sensor_values(self, args=""):
         # Receive values for standalone hardware
-        args_dict = self._parse_api_args(args)
-        if not self._check_api_key(args_dict["api_key"]):
+        if not self._check_api_key(request.query.get("APPID", "")):
             response.status = 403
             return response
         from waqd.app import comp_ctrl
@@ -382,7 +391,7 @@ class BottleServer(Component):
         co2 = self._comps.co2_sensor.get_co2()
         temp_disp = self._format_sensor_disp_value(temp, units)
 
-        if units: 
+        if units:
             hum = self._format_sensor_disp_value(hum, "%", 0)
             pres = self._format_sensor_disp_value(pres, "hPa", 0)
             co2 = self._format_sensor_disp_value(co2, "ppm", 0)
@@ -399,9 +408,15 @@ class BottleServer(Component):
     def _get_exterior_sensor_values(self, units=False):
         temp = self._comps.remote_exterior_sensor.get_temperature()
         hum = self._comps.remote_exterior_sensor.get_humidity()
+
+        if temp is None or hum is None:
+            current_weather = self._comps.weather_info.get_current_weather()
+            if current_weather:
+                temp = Quantity(current_weather.temp, app.unit_reg.degC)
+                hum = current_weather.humidity
         if units:  # format non unit values
             temp = self._format_sensor_disp_value(temp, True)
-            hum = self._format_sensor_disp_value(hum, "%")
+            hum = self._format_sensor_disp_value(hum, "%", 0)
         else:
             temp = self._format_sensor_disp_value(temp)
             hum = self._format_sensor_disp_value(hum, "")
@@ -418,7 +433,7 @@ class BottleServer(Component):
                 # .m_as(app.unit_reg.degC)
                 disp_value = f"{float(quantity.m):.{precision}f}"
                 if unit:
-                    disp_value += " " +app.unit_reg.get_symbol(str(quantity.u))
+                    disp_value += " " + app.unit_reg.get_symbol(str(quantity.u))
             else:
                 disp_value = f"{float(quantity):.{precision}f}"
                 if unit:

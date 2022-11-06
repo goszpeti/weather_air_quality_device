@@ -103,6 +103,11 @@ Use virtualenv:
 
     python3 -m venv python
 
+## Performance Profiling
+
+https://github.com/dfeneyrou/palanteer/releases
+
+    python -m palanteer -c -m waqd
 
 ## Included 3rd-Party Assets
 
