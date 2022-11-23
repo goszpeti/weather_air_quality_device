@@ -30,7 +30,7 @@ import waqd
 from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.network import Network
-from waqd.base.authentification import UserFileDB
+from waqd.base.authentification import UserAuth
 from waqd.base.system import RuntimeSystem
 from waqd.base.translation import Translation
 from waqd.components.sensors import MH_Z19
@@ -479,9 +479,8 @@ class OptionMainUi(QtWidgets.QDialog):
 
         new_pw = bcrypt.gensalt(4).decode("utf-8")[18:]
         self._settings.set(USER_DEFAULT_PW, new_pw)
-        user_db = UserFileDB()
-        user_db.write_entry(DEFAULT_USERNAME, new_pw)
-        msg.setText(f"Username: {DEFAULT_USERNAME} Password: {new_pw}")
+        self._comps.server.user_auth.set_password(DEFAULT_USERNAME, new_pw)
+        msg.setText(f"Username: {DEFAULT_USERNAME} Password: \"{new_pw}\"")
         msg.move(int((self._main_ui.geometry().width() - self.height()) / 2),
                  int((self._main_ui.geometry().height() - msg.height()) / 2))
         msg.exec_()
@@ -492,6 +491,7 @@ class OptionMainUi(QtWidgets.QDialog):
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
         try:
+            # TODO shutdown server
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.setWindowTitle("Connect to WLAN")
             msg.setText(f"Connect to WLAN '{ssid_name}' on your phone or pc, where you can select your network and enter your password!")

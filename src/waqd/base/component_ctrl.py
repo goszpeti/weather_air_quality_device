@@ -18,10 +18,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 import threading
-import time
 
 from typing import Optional
-from waqd.base.component import Component
 
 from waqd.base.file_logger import Logger
 from waqd.base.component_reg import ComponentRegistry
@@ -102,7 +100,7 @@ class ComponentController():
             self._stop_event.set()
 
     def _watchdog_loop(self):
-        # thois import statemant import all the components at first
+        # this import statement imports all the components initially
         import waqd.components
         self._components.watch_all()
         self._inited_all = True

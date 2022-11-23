@@ -3,6 +3,8 @@ import json
 from functools import partial
 from threading import Thread
 from time import sleep
+import re
+
 from typing import TYPE_CHECKING, TypedDict
 from typing_extensions import NotRequired
 import os
@@ -17,9 +19,10 @@ from plotly.graph_objs import Scattergl
 from plotly.io import to_html
 from waqd.base.component import Component
 from waqd.base.web_session import LoginPlugin
-from waqd.base.authentification import UserFileDB
+from waqd.base.authentification import UserAuth, validate_password, validate_username
 from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.system import RuntimeSystem
+from waqd.settings import OW_API_KEY, Settings
 import waqd
 
 
@@ -56,6 +59,10 @@ ROUTE_LOGIN = "/login"
 ROUTE_LOGOUT = "/logout"
 ROUTE_LOGIN_FAILED = "/login_failed"
 
+ROUTE_CHANGE_USER_NAME = "/change_name"
+ROUTE_CHANGE_PW = "/change_pw"
+ROUTE_SET_OW_API_KEY = "/set_ow_api_key"
+
 # API endpoint constants
 ROUTE_API_REMOTE_EXT_SENSOR = "/api/remoteExtSensor"
 ROUTE_API_REMOTE_INT_SENSOR = "/api/remoteIntSensor"
@@ -79,9 +86,9 @@ class BottleServer(Component):
     # pages which need the user to log in
     needs_login = [ROUTE_WAQD, ROUTE_SETTINGS]
 
-    def __init__(self, components: "ComponentRegistry", enabled=True,
+    def __init__(self, components: "ComponentRegistry", settings: "Settings", enabled=True,
                  user_session_secret="SECRET", user_api_key="API_KEY", user_default_pw="TestPw"):
-        super().__init__(components, enabled=enabled)
+        super().__init__(components, settings, enabled)
         self._server = None
         if self._disabled:
             return
@@ -91,13 +98,9 @@ class BottleServer(Component):
         self._app.config['SECRET_KEY'] = user_session_secret
         self._run_thread = Thread(name="RunServer", target=self._run_server, daemon=True)
         self._run_thread.start()
-        self._html_path = app.base_path / "ui" / "html"
-        # currently user settings are the same as app settings
-        # self._user_settings = {}
-        # user_data = self._user_db.get_entry(current_user)
-
+        self._html_path = app.base_path / "ui" / "web" / "html"
         self._login: LoginPlugin = self._app.install(LoginPlugin())
-        self._user_db = UserFileDB(user_default_pw)
+        self.user_auth = UserAuth(user_default_pw)
 
     # Load user by id here
     def _run_server(self):
@@ -110,6 +113,8 @@ class BottleServer(Component):
         route(ROUTE_LOGIN, "GET", self.index)
         route(ROUTE_LOGOUT, "GET", self.index)
         route(ROUTE_SETTINGS, "GET", self.index)
+        route(ROUTE_CHANGE_USER_NAME, "POST", self.index)
+        route(ROUTE_CHANGE_PW, "POST", self.index)
         route(ROUTE_LOGIN, "POST", self.login)
         route(ROUTE_LOGIN_FAILED, "GET", self.index)
         route(ROUTE_LOGOUT, "GET", self.logout)
@@ -141,7 +146,7 @@ class BottleServer(Component):
 # HTML display endpoints
 
     def css(self):
-        response = static_file("style.css", root=waqd.assets_path / "html")
+        response = static_file("style.css", root=self._html_path)
         response.set_header("Cache-Control", "public, max-age=0")
         return response
 
@@ -151,11 +156,46 @@ class BottleServer(Component):
             password = request.forms.get('password')  # type: ignore
         except Exception:
             return redirect(ROUTE_LOGIN_FAILED)
-        if self._user_db.check_login(username, password):
+        if self.user_auth.check_login(username, password):
             self._login.login_user(username)
             return redirect('/waqd')
         else:
             return redirect(ROUTE_LOGIN_FAILED)
+
+    def change_user_name(self):
+        new_username = request.forms.get('username', "") # type: ignore
+        old_username = self._login.get_user()
+        # not changed
+        if new_username == old_username:
+            return "<p>Username unchanged.</p>"
+        # validate username schema
+        if not validate_username(new_username):
+            return """<p>Username does not fit the following criteria:</p>
+            <ul>
+                <li>5 to 25 charachters with letters (upper and lowercase) and numbers.</li>
+                <li>Allowed special characters are: _ - and .</li>
+            </ul>
+            """
+        self.user_auth.change_user_name(old_username, new_username)
+        self._login.login_user(new_username)
+        return "<p>Changed name to " + new_username + " successfully!</p>"
+
+    def change_password(self):
+        username = self._login.get_user()
+        old_pw = request.forms.get('old_password', "")  # type: ignore
+        new_pw = request.forms.get('password', "")  # type: ignore
+        # validate pw
+        if not validate_password(new_pw):
+            return """<p>Username does not fit the following criteria:</p>
+            <ul>
+                <li>5 to 25 charachters with letters (upper and lowercase) and numbers.</li>
+                <li>Allowed special characters are: _ - and .</li>
+            </ul>
+            """
+
+        if self.user_auth.check_login(username, old_pw):
+            self.user_auth.set_password(username, new_pw)
+        return "<p>Password changed successfully!</p>"
 
     def logout(self):
         self._login.logout_user()
@@ -182,13 +222,12 @@ class BottleServer(Component):
         # default entrypoint to waqd view
         if route == "/":
             redirect(ROUTE_WAQD)
-        # if waqd.DEBUG_LEVEL > 0:
-        #     self._main_page_tpl = .read_text()
 
+        top_msg = ""
         page_content = ""
-        login_msg = ""
+        bottom_msg = ""
         if current_user:
-            login_msg = f'<p class="login_msg">Logged in as {current_user}</p>'
+            bottom_msg = f'<p class="login_msg">Logged in as {current_user}</p>'
         if route == ROUTE_ABOUT:
             page_content = self._get_about_subpage()
         elif route == ROUTE_WAQD:
@@ -196,15 +235,24 @@ class BottleServer(Component):
         elif route == ROUTE_LOGIN:
             page_content = (self._html_path / "login.html").read_text()
         elif route == ROUTE_LOGOUT:
-            login_msg = '<p class="login_msg" style="margin-bottom: 100px">Logged out successfully.</p>'
+            bottom_msg = '<p class="login_msg" style="margin-bottom: 100px">Logged out successfully.</p>'
         elif route == ROUTE_LOGIN_FAILED:
-            login_msg = '<p class="login_msg" style="margin-bottom: 20px;">Login Failed.\nCheck your credentials!</p>'
+            bottom_msg = '<p class="login_msg" style="margin-bottom: 20px;">Login Failed.\nCheck your credentials!</p>'
         elif route == ROUTE_SETTINGS:
             page_content = self._get_settings_subpage()
+        elif route == ROUTE_CHANGE_USER_NAME:
+            msg = self.change_user_name()
+            page_content = self._get_settings_subpage()
+            top_msg = f'<div class="login_msg" style="margin-bottom: 20px;">{msg}</div>'
+        elif route == ROUTE_CHANGE_PW:
+            msg = self.change_password()
+            page_content = self._get_settings_subpage()
+            top_msg = f'<div class="login_msg" style="margin-bottom: 20px;">{msg}</div>'
+
 
         menu = self.generate_menu()
         tpl = jinja2_template(str(self._html_path / "index.html"), menu=menu,
-                       content=page_content, login_msg=login_msg)
+                              content=page_content, top_msg=top_msg, bottom_msg=bottom_msg)
         return extra_minify(tpl)
 
     def generate_menu(self):
@@ -275,7 +323,6 @@ class BottleServer(Component):
 
 ###### Subpages ######
 
-
     def _get_about_subpage(self):
         page_content = (self._html_path / "about.html").read_text()
         tpl = Jinja2Template(page_content)
@@ -310,7 +357,7 @@ class BottleServer(Component):
         # Implement login (you can check passwords here or etc)
         page_content = (self._html_path / "settings.html").read_text()
         tpl = Jinja2Template(page_content)
-        return tpl.render()
+        return tpl.render(username=self._login.get_user(), ow_api_key=self._settings.get_string(OW_API_KEY))
 
 
 ###### API endpoints ######

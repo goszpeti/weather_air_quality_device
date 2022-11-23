@@ -180,7 +180,7 @@ class ComponentRegistry():
     @property
     def server(self) -> "Server":
         from waqd.components import Server
-        return self._create_component_instance(Server, [self, 
+        return self._create_component_instance(Server, [self, self._settings,
                 self._settings.get(SERVER_ENABLED), self._settings.get(USER_SESSION_SECRET), 
             self._settings.get(USER_API_KEY), self._settings.get_string(USER_DEFAULT_PW)])
 

@@ -167,7 +167,6 @@ input[type="button"] {
     border-width: 2px;
     border-radius: 5px;
     margin: auto;
-    max-width: max-content;
 }
 
 .svg-white {

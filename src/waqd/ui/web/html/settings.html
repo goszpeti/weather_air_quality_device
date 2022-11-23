@@ -8,41 +8,46 @@
         font-size: 0.8em;
     }
 </style>
-
 <div id="settings" class="block">
     <div class="small_row">
-    <h2>Profile</h2>
+        <h2>Profile</h2>
     </div>
     <hr style="width:50%;height:2px;border-width:0;">
-    <form id="user_form" action="/user" method="post">
-        <label for="username">Username</label><br>
-        <div class="small_row">
-            <input type="text" id="username" name="username">
+    <form id="user_form" action="/change_name" method="post">
+        <label for="username" >Username</label>
+        <div style="padding-top: 20px;" class="small_row">
+            <input type="text" id="username" name="username" value={{username}}>
         </div>
         <div class="small_row">
-            <span><input value="Change name" type="submit" class="btn btn-secondary" /></span>
+            <input value="Change name" type="submit" class="btn btn-secondary" />
         </div>
     </form>
-    <form id="pw_form" action="/user" method="post">
+    <form id="pw_form" action="/change_pw" method="post">
         <label for="password">Password</label><br>
+        <div class="small_row"><label for="password" style="font-size: 0.8em;padding-top: 20px;">
+            Old Password</label></div>
+        <div class="small_row">
+            <input id="old_password" name="old_password" type="password" required />
+        </div>
+        <div class="small_row"><label for="password" style="font-size: 0.8em;">New Password</label></div>
         <div class="small_row">
             <input id="password" name="password" type="password" required />
         </div>
         <div class="small_row">
-            <span><input value="Change Password" type="submit" class="btn btn-secondary" /></span>
+            <input value="Change Password" type="submit" class="btn btn-secondary" />
         </div>
     </form>
     <div class="small_row" style="margin-inline: 16px;">
         <h2>Online Weather</h2>
     </div>
     <hr style="width:50%;height:2px;border-width:0;">
-    <form id="ow_form" action="/ow" method="post">
+    <form id="ow_form" action="/set_ow_api_key" method="post">
         <label for="ow_api">OpenWeather API key</label><br>
-        <div class="small_row">
-            <input class="small_row" id="ow_api" name="ow_api" type="text" required />
+        <div class="small_row" style="padding-top: 20px;">
+            <input id="ow_api" name="ow_api" type="text" value="{{ow_api_key}}" required />
         </div>
         <div class="small_row">
-            <span><input value="Save" type="submit" class="btn btn-secondary" /></span>
+            <input value="Save" type="submit" class="btn btn-secondary" />
         </div>
     </form>
     <h2>Locations</h3>
@@ -62,5 +67,4 @@
             <button class="btn btn-third">Edit</button>
             <button class="btn btn-third">Remove</button>
         </div>
-</div>
 </div>
