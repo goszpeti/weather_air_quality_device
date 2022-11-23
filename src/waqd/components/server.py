@@ -3,8 +3,6 @@ import json
 from functools import partial
 from threading import Thread
 from time import sleep
-import re
-
 from typing import TYPE_CHECKING, TypedDict
 from typing_extensions import NotRequired
 import os
@@ -222,6 +220,8 @@ class BottleServer(Component):
         # default entrypoint to waqd view
         if route == "/":
             redirect(ROUTE_WAQD)
+        # if waqd.DEBUG_LEVEL > 0:
+        #     self._main_page_tpl = .read_text()
 
         top_msg = ""
         page_content = ""
