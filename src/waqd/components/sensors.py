@@ -35,6 +35,7 @@ import requests
 from typing import Optional, TYPE_CHECKING
 
 from pint import Quantity
+from waqd import LOCAL_TIMEZONE
 from waqd.app import unit_reg
 from waqd.base.component import Component, CyclicComponent
 from waqd.base.component_reg import ComponentRegistry
@@ -124,7 +125,7 @@ class SensorImpl():
                     last_date = log_values[0][0]
                 except:
                     return
-                if (last_date - datetime.datetime.now()) < datetime.timedelta(hours=3):
+                if (last_date - datetime.datetime.now(LOCAL_TIMEZONE)) < datetime.timedelta(hours=3):
                     self._values.append(log_values[0][1])
         else:
             self._values.append(default_value)
@@ -156,10 +157,11 @@ class SensorImpl():
 
         if self._max_delta and self._first_value_written:
             if current_value := self._values[-1]:
-                if abs(value - current_value) >= self._max_delta:
+                current_delta = abs(value - current_value)
+                if  current_delta >= self._max_delta:
                     if self._n_delta_violation <= self.MAX_TIMES_DELTA_VIOLATED:
                         Logger().warning("%s: %s max delta reached %s", self.__class__.__name__,
-                                        self._log_measure_type, value)
+                                         self._log_measure_type, current_delta)
                     else:
                         self._n_delta_violation = 0
                     return False

@@ -79,9 +79,9 @@ def set_ui_language(qt_app: QApplication, settings: Settings):
 
     tr_file = Path("NULL")
     if settings.get(LANG) == LANG_GERMAN:
-        tr_file = waqd.base_path / "ui/qt/german.qm"
+        tr_file = waqd.base_path / "ui/qt/qt/german.qm"
     if settings.get(LANG) == LANG_HUNGARIAN:
-        tr_file = waqd.base_path / "ui/qt/hungarian.qm"
+        tr_file = waqd.base_path / "ui/qt/qt/hungarian.qm"
     if not tr_file.exists():
         logger.error("Cannot find %s translation file.", str(tr_file))
 
