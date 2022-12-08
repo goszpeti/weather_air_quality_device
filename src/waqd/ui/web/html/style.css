@@ -9,6 +9,9 @@
     opacity: 50%;
     z-index: 1;
 }
+body, input { 
+  font-family: "MyFranzo"
+}
 
 .overlay__inner {
     left: 0;
@@ -48,7 +51,6 @@
 *::before {
     box-sizing: border-box;
     padding: 0;
-    FONT-WEIGHT: 200;
     margin: 0;
 }
 
@@ -74,9 +76,14 @@ h1 {
 }
 h2 {
     font-size: 2em;
+    font-weight: 200;
 }
 h3 {
     font-size: 1.6em;
+    font-weight: 200;
+}
+h4 {
+    font-weight: 200;
 }
 
 p {
@@ -145,7 +152,7 @@ input[type="button"] {
 
 .row {
     font-size: 3.5em;
-    width: auto;
+    width: fit-content;
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -154,7 +161,8 @@ input[type="button"] {
 }
 .small_row {
     font-size: 1em;
-    width: auto;
+    width: 95%;
+    max-width: max-content;
     margin: 0 auto;
     display: flex;
     justify-content: center;

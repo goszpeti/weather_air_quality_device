@@ -20,7 +20,7 @@ from waqd.base.web_session import LoginPlugin
 from waqd.base.authentification import UserAuth, validate_password, validate_username
 from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import OW_API_KEY, Settings
+from waqd.settings import OW_API_KEY, OW_CITY_IDS, Settings
 import waqd
 
 
@@ -220,8 +220,6 @@ class BottleServer(Component):
         # default entrypoint to waqd view
         if route == "/":
             redirect(ROUTE_WAQD)
-        # if waqd.DEBUG_LEVEL > 0:
-        #     self._main_page_tpl = .read_text()
 
         top_msg = ""
         page_content = ""
@@ -357,7 +355,8 @@ class BottleServer(Component):
         # Implement login (you can check passwords here or etc)
         page_content = (self._html_path / "settings.html").read_text()
         tpl = Jinja2Template(page_content)
-        return tpl.render(username=self._login.get_user(), ow_api_key=self._settings.get_string(OW_API_KEY))
+        locations = self._settings.get_dict(OW_CITY_IDS)
+        return tpl.render(username=self._login.get_user(), ow_api_key=self._settings.get_string(OW_API_KEY), locations=locations)
 
 
 ###### API endpoints ######

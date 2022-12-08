@@ -37,34 +37,40 @@
             <input value="Change Password" type="submit" class="btn btn-secondary" />
         </div>
     </form>
-    <div class="small_row" style="margin-inline: 16px;">
-        <h2>Online Weather</h2>
-    </div>
+    <h2>Online Weather</h2>
     <hr style="width:50%;height:2px;border-width:0;">
     <form id="ow_form" action="/set_ow_api_key" method="post">
         <label for="ow_api">OpenWeather API key</label><br>
         <div class="small_row" style="padding-top: 20px;">
-            <input id="ow_api" name="ow_api" type="text" value="{{ow_api_key}}" required />
+            <input id="ow_api" name="ow_api" type="text" value="{{ow_api_key}}" required/> 
         </div>
         <div class="small_row">
             <input value="Save" type="submit" class="btn btn-secondary" />
         </div>
     </form>
     <h2>Locations</h3>
-        <div style="padding-inline: 16px;"></div>
-        <button style="margin-bottom: 30px" class="btn btn-third">Add new</button>
-        <div style="margin-bottom: 30px">
-            <label for="loc1">Location1</label><br>
-            <input name="loc1" type="text" required />
-            <br>
-            <button class="btn btn-third">Edit</button>
-            <button class="btn btn-third">Remove</button>
-        </div>
-        <div style="margin-bottom: 30px">
-            <label for="loc2">Location2</label><br>
-            <input name="loc2" type="text" required />
-            <br>
-            <button class="btn btn-third">Edit</button>
-            <button class="btn btn-third">Remove</button>
-        </div>
+         <p style="font-size: 0.8em";>Add the selectable location(s) for online weather data.
+            Please serach for your city on https://openweathermap.org/, then enter the id from
+            the browsers address bar to the field below.
+            E.g. London -> https://openweathermap.org/city/2643743 -> Enter 2643743
+         </p>
+        
+        <button class="btn btn-third" type="submit" style="margin-bottom: 20px">Add new</button>
+        <ul style="list-style: none;">
+        {% for location, id in locations.items() %}
+        <li>
+        <form id="{{location}}_form" action="/set_ow_api_key" method="post" style="margin-top: 20px">
+                <label for="{{location}}">{{location}}</label>
+                <br>
+                <div class="small_row">
+                   <input name="{{location}}" type="text" value="{{id}}" required />
+                </div>
+                <button class="btn btn-third" type="submit">Set</button>
+                <button class="btn btn-third" type="button">Remove</button>
+                <button class="btn btn-third" type="button">Check</button>
+        </form>
+        </li>
+        {% endfor %}
+        </ul>
+
 </div>

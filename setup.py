@@ -21,6 +21,7 @@ REQUIRES_PYTHON = '>=3.9.0'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
+    "wheel", # for pep 517 legacy setup.py mode
     # Backend
     "htmlmin==0.1.12", # BSD License - HTML minifier (removes comments and whitespace)
     "plotly==5.10.0",  # MIT License - web graph plotting
@@ -29,6 +30,7 @@ REQUIRED = [
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
     "JsonSchema==4.16.0",  # MIT License - for events json schema validation
     "bottle==0.12.21",  # MIT License - webserver for remote sensors
+    "jinja2==3.1.2",
     "paste==3.5.0", # server backend for bottle
     "pint==0.19.2",  # BSD 3-clause style license - physical units for sensors
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
@@ -98,7 +100,7 @@ setup(
     packages=find_packages("src"),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
-    package_data={"": ["ui/**/*.ui", "ui/**/*.in", "ui/qt/*.qm", "assets/**/*.*"]},
+    package_data={"": ["ui/**/*.ui", "ui/**/*.in", "ui/**/*.html", "ui/qt/*.qm", "assets/**/*.*"]},
     install_requires=REQUIRED,
     include_package_data=True,
     license='AGPL',

@@ -45,7 +45,6 @@ class InfluxSensorLogger():
             cls._enabled = False
             return
         # Try bucket
-
         from influxdb_client import InfluxDBClient
         with InfluxDBClient(url="http://localhost:8086", token=cls._token, org=org) as client:
             try:
@@ -70,6 +69,7 @@ class InfluxSensorLogger():
             return
         if time is None:
             time = datetime.now(LOCAL_TIMEZONE)
+        InfluxSensorLogger() # do setup if not initialized
         from influxdb_client import InfluxDBClient, Point, WritePrecision
         from influxdb_client.client.write_api import SYNCHRONOUS
         with InfluxDBClient(url="http://localhost:8086", token=cls._token, org=org) as client:
@@ -90,6 +90,7 @@ class InfluxSensorLogger():
         if not cls._enabled:
             return []
         tables = None
+        InfluxSensorLogger()  # do setup if not initialized
         try:
             from influxdb_client import InfluxDBClient
             with InfluxDBClient(url="http://localhost:8086", token=cls._token, org=org) as client:

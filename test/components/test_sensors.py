@@ -3,17 +3,36 @@ from threading import Thread
 
 from waqd.components import sensors
 from waqd.base.component_reg import ComponentRegistry
-from waqd.settings import Settings
+from waqd.settings import LOG_SENSOR_DATA, Settings
 from waqd.base.system import RuntimeSystem
 
 from test.conftest import mock_run_on_non_target
+import waqd.app as app
+
+
+def test_max_delta(base_fixture, target_mockup_fixture, capsys):
+
+    import adafruit_dht
+    settings = Settings(base_fixture.testdata_path / "integration")
+    sensor = sensors.TempSensor(False, 2)
+    sensor._temp_impl._values = [22]  # default value
+    sensor._set_temperature(22) # first value written check
+    sensor._set_temperature(59)
+    sensor._set_temperature(59)
+
+    temp_value = sensor.get_temperature()
+    captured = capsys.readouterr()
+    text = captured.out
+    assert temp_value.m_as(app.unit_reg.degC) == adafruit_dht.TEMP
+    # 
+
 
 def testDHT22(base_fixture, target_mockup_fixture):
     from adafruit_dht import TEMP, HUM
     settings = Settings(base_fixture.testdata_path / "integration")
     comps = ComponentRegistry(settings)
     measure_points = 2
-    sensors.DHT22.M = measure_points
+    sensors.DHT22.MEASURE_POINTS = measure_points
     sensors.DHT22.UPDATE_TIME = 1
     sensor = sensors.DHT22(pin=22, components=comps, settings=settings)
 
@@ -25,7 +44,7 @@ def testDHT22(base_fixture, target_mockup_fixture):
     time.sleep(sensor.UPDATE_TIME * (measure_points + 1))
 
     assert sensor.get_humidity() == HUM
-    assert sensor.get_temperature().m == TEMP
+    assert sensor.get_temperature() == TEMP
 
 
 def testCCS811(base_fixture, target_mockup_fixture):
@@ -52,7 +71,6 @@ def testMH_Z19(base_fixture, target_mockup_fixture, mocker):
     assert not RuntimeSystem().is_target_system
     settings = Settings(base_fixture.testdata_path / "integration")
     measure_points = 2
-    sensors.MH_Z19.MEASURE_POINTS = measure_points
     sensor = sensors.MH_Z19(settings)
 
     time.sleep(1)

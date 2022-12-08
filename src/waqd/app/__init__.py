@@ -86,7 +86,7 @@ def main(settings_path: Optional[Path] = None):
         settings_path = waqd.user_config_dir
     settings = Settings(ini_folder=settings_path)
 
-    parse_cmd_args(settings)  # cmd args set Debug level for logger
+    parse_cmd_args()  # cmd args set Debug level for logger
 
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
@@ -128,7 +128,7 @@ def main(settings_path: Optional[Path] = None):
             time.sleep(.1)
 
 
-def parse_cmd_args(settings):
+def parse_cmd_args():
     """
     All CLI related functions.
     """

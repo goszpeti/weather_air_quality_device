@@ -5,6 +5,8 @@ from pathlib import Path
 from tempfile import gettempdir
 import shutil
 import pytest
+import waqd
+waqd.DEBUG_LEVEL = 1
 import waqd.base.file_logger
 import waqd.base.system
 import waqd.base.network

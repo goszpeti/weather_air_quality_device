@@ -87,29 +87,28 @@ class SensorDetailView(QtWidgets.QDialog):
         sensor_chart_view = QtChart.QChartView()
         sensor_chart_view.setRenderHint(QtGui.QPainter.Antialiasing)
         sensor_chart_view.setSizeAdjustPolicy(QtChart.QChartView.AdjustToContents)
-        sensor_chart_view.setMaximumSize(2000, 2000)
-        sensor_chart_view.setMinimumSize(600, 300)
         sensor_chart_view.setBackgroundBrush(self._get_background_brush())
         self._sensor_chart_view = sensor_chart_view
 
         self._draw_chart()
-        delta_label = QtWidgets.QLabel(self)
+        #delta_label = QtWidgets.QLabel(self)
 
         # calculate delta of last hour
-        current_time = datetime.now(LOCAL_TIMEZONE)
-        last_hour_time_val_pairs = list(filter(lambda time_value_pair:
-                                               (current_time - time_value_pair[0]) < timedelta(minutes=60),
-                                               self._time_value_pairs))
-        last_hour_values: List[float] = [time_value_pair[1] for time_value_pair in last_hour_time_val_pairs]
-        if last_hour_values:
-            delta_label.setText(
-                f"Change: {max(last_hour_values) - min(last_hour_values):.2f} {self._sensor_value_unit}/hour")
+        # current_time = datetime.now(LOCAL_TIMEZONE)
+        # last_hour_time_val_pairs = list(filter(lambda time_value_pair:
+        #                                        (current_time - time_value_pair[0]) < timedelta(minutes=60),
+        #                                        self._time_value_pairs))
+        # # last_hour_values: List[float] = [time_value_pair[1] for time_value_pair in last_hour_time_val_pairs]
+        # if last_hour_values:
+        #     delta_label.setText(
+        #         f"Change: {max(last_hour_values) - min(last_hour_values):.2f} {self._sensor_value_unit}/hour")
 
         # Button to close
         ok_button = QtWidgets.QPushButton("OK", self)
         ok_button.clicked.connect(self.close)
 
         # Jumpslider for setting timespan
+        # TODO Use dropdown or modal with fixed valueys
         self._time_slider = JumpSlider(self)
         self._time_slider.setOrientation(QtCore.Qt.Horizontal)
         self._time_slider.setMinimum(60)
@@ -122,11 +121,9 @@ class SensorDetailView(QtWidgets.QDialog):
         # add everything to the qt layout
         self._layout = QtWidgets.QVBoxLayout(self)
         self._layout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
-
-        if DEBUG_LEVEL > 0:  # TODO feature flag
-            self._layout.addWidget(self._time_slider)
+        self._layout.addWidget(self._time_slider)
         self._layout.addWidget(sensor_chart_view)
-        self._layout.addWidget(delta_label)
+        #self._layout.addWidget(delta_label)
         self._layout.addWidget(ok_button)
 
         # event filter handles closing - one click/touch closes the window
