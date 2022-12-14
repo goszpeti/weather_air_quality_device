@@ -7,7 +7,7 @@ echo "##### Start updater process #####"
 sudo apt-get -o Acquire::Check-Valid-Until=false -o Acquire::Check-Date=false update  --allow-releaseinfo-change
 echo "##### Install feh and zenity #####" 
 # zenity for dialog and feh background screen - xdotool and wmctrl for x-window manipulation
-sudo apt install feh zenity xdotool wmctrl -y
+sudo apt-get install feh zenity xdotool wmctrl -y
 # assure desktop manager is running
 pcmanfm --desktop --profile LXDE-pi </dev/null &>/dev/null &
 # kill zenity - need exactly one proc for grep later
@@ -26,16 +26,16 @@ function waqd_install() {
     echo "# Install needed system libraries... (Step 1/6)"
     # python dependencies
     # sudo apt -y install python3-apt # TODO: if apt via python is used
-    sudo apt -y install python3-libgpiod python3-venv python3-pyrsistent python3-pyqt5 python3-pyqt5.qtmultimedia python3-pyqt5.qtsvg python3-pyqt5.qtchart
+    sudo apt-get -y install python3-libgpiod python3-venv python3-pyrsistent python3-pyqt5 python3-pyqt5.qtmultimedia python3-pyqt5.qtsvg python3-pyqt5.qtchart
     # install pipx for venv based app creation
     python3 -m pip install --user pipx==1.1.0
     python3 -m pipx ensurepath
     # xscreensaver - for no auto screen turn off
-    sudo apt -y install xscreensaver
+    sudo apt-get -y install xscreensaver
 
     echo "# Full system update... (Step 2/6)"
-    sudo apt full-upgrade -y --force-yes
-    sudo apt autoremove -y
+    sudo apt-get full-upgrade -y --force-yes
+    sudo apt-get autoremove -y
     # Install security updates daily - see https://wiki.debian.org/UnattendedUpgrades
     sudo apt-get install unattended-upgrades -y
 
