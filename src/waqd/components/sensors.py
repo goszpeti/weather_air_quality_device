@@ -87,7 +87,7 @@ class SensorImpl():
         To be used with pimpl pattern and not as a base class!
     """
     LOGGING_INTERVAL = datetime.timedelta(minutes=1)
-    MAX_TIMES_DELTA_VIOLATED = 3
+    MAX_TIMES_DELTA_VIOLATED = 1
 
     def __init__(self, logging_enabled: bool, log_location_type: str, log_measure_type: str,
                  min_value: float, max_value: float, max_measure_points=DEFAULT_MAX_MEASURE_POINTS, 
@@ -115,20 +115,24 @@ class SensorImpl():
         # even if logging is disabled now we should attempt to restore the last recorded value
         # TODO does not work because of time limit - need find last value
         # use file logger when shuttings down and read back here
-        log_values = SensorFileLogger.get_sensor_values(self._log_location_type, self._log_measure_type)
-        if log_values:
-            if len(log_values[0]) < 2:
-                Logger().warning(
-                    f"Cant initialize {log_measure_type} sensor from log. Invalid log format.")
+        if logging_enabled:
+            log_values = InfluxSensorLogger.get_sensor_values(self._log_location_type, self._log_measure_type)
+            if log_values:
+                if len(log_values[0]) < 2:
+                    Logger().warning(
+                        f"Cant initialize {log_measure_type} sensor from log. Invalid log format.")
+                else:
+                    try:
+                        last_date = log_values[0][0]
+                    except:
+                        return
+                    if (last_date - datetime.datetime.now(LOCAL_TIMEZONE)) < datetime.timedelta(hours=3):
+                        self._values.append(log_values[0][1])
             else:
-                try:
-                    last_date = log_values[0][0]
-                except:
-                    return
-                if (last_date - datetime.datetime.now(LOCAL_TIMEZONE)) < datetime.timedelta(hours=3):
-                    self._values.append(log_values[0][1])
+                self._values.append(default_value)
         else:
             self._values.append(default_value)
+
 
     def stop(self):
         # save value to reread, when initializing
@@ -138,6 +142,7 @@ class SensorImpl():
         """ Return measurement value. """
         # invalidation guard
         if datetime.datetime.now() - self._last_value_rcv_time > datetime.timedelta(seconds=self._value_invalidation_time_s):
+            Logger().debug(f"Invalidated value of {self.__class__.__name__} {self._log_measure_type}")
             return None
         if self._values_capacity == 1:
             return self._values[0]
@@ -147,6 +152,8 @@ class SensorImpl():
     def set_value(self, value: Optional[float]) -> bool:
         """ Generic method to write values into the measurement list and manage its length """
         # out of bounds check
+        Logger().debug("%s: %s Attempting to write %f",
+                        self.__class__.__name__, self._log_measure_type, value)
         if not value:
             return False
         if not self._min_value <= value <= self._max_value:
@@ -159,12 +166,15 @@ class SensorImpl():
             if current_value := self._values[-1]:
                 current_delta = abs(value - current_value)
                 if  current_delta >= self._max_delta:
-                    if self._n_delta_violation <= self.MAX_TIMES_DELTA_VIOLATED:
+                    if self._n_delta_violation < self.MAX_TIMES_DELTA_VIOLATED:
+                        self._n_delta_violation += 1
                         Logger().warning("%s: %s max delta reached %s", self.__class__.__name__,
                                          self._log_measure_type, current_delta)
+                        return False
                     else:
+                        Logger().warning("%s: %s taking value after max delta reached.",
+                                self.__class__.__name__, self._log_measure_type)
                         self._n_delta_violation = 0
-                    return False
         self._values.append(value)
         self._last_value_rcv_time = datetime.datetime.now()
         self._first_value_written = True
