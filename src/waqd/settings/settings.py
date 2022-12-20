@@ -65,7 +65,7 @@ class Settings():
             self._ini_file_path.open('a').close()
             self._logger.warning('Settings: Creating settings ini-file')
         else:
-            self._logger.info('Settings: Using %s', self._ini_file_path)
+            self._logger.info('Settings: Using %s', str(self._ini_file_path))
         self._auto_save = auto_save
 
         ### default setting values ###
