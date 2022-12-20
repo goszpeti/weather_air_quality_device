@@ -29,7 +29,7 @@ REQUIRED = [
     "bcrypt>=4.0.0, <5.0.0",  # Apache License, Version 2.0 - Password hashing
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
     "JsonSchema==4.16.0",  # MIT License - for events json schema validation
-    "bottle==0.12.21",  # MIT License - webserver for remote sensors
+    "bottle==0.12.23",  # MIT License - webserver for remote sensors
     "jinja2==3.1.2",
     "paste==3.5.0", # server backend for bottle
     "pint==0.19.2",  # BSD 3-clause style license - physical units for sensors
@@ -100,7 +100,7 @@ setup(
     packages=find_packages("src"),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
-    package_data={"": ["ui/**/*.ui", "ui/**/*.in", "ui/**/*.html", "ui/qt/*.qm", "assets/**/*.*"]},
+    package_data={"": ["ui/**/*.ui", "ui/**/*.in", "ui/web/**/*.html", "ui/qt/*.qm", "assets/**/*.*"]},
     install_requires=REQUIRED,
     include_package_data=True,
     license='AGPL',
