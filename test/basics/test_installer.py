@@ -84,23 +84,32 @@ def testRegisterAutostart(base_fixture):
 
 def testCleanDesktop(base_fixture):
     # no error should happen if file does not exist
-    desktop_path = base_fixture.testdata_path / "nonexistant/bullshit.conf"
-    setup_system.clean_lxde_desktop(desktop_path) 
-    assert desktop_path.exists()
+    desktop_path = Path(tempfile.gettempdir()) / "tmp.conf"
+    # setup_system.clean_lxde_desktop(desktop_path)
+    #assert desktop_path.exists()
 
     desktop_path = Path(tempfile.gettempdir()) / "tmp.conf"
     with open(desktop_path, "w") as fd:
-        fd.write("sometext\n")
-        fd.write("\tshow_trash=1\n")
-        fd.write("\tshow_mounts=1\n")
-        fd.write("someothertext\n")
+        fd.write("[*]\n")
+        fd.write("show_trash=1\n")
+        fd.write("show_mounts=1\n")
+        fd.write("[New]\n")
+        fd.write("x=1\n")
     setup_system.clean_lxde_desktop(desktop_path)
-    text = ""
-    with open(desktop_path, "r") as fd:
-        text = fd.read()
-    assert "someothertext" in text
+    text = desktop_path.read_text()
     assert "show_trash=0" in text
     assert "show_mounts=0" in text
+
+
+def testUnattendedUpgradesConfig(base_fixture):
+    auto_updates_path = Path(tempfile.gettempdir()) / "tmp.conf"
+    with open(auto_updates_path, "w") as fd:
+        fd.write('APT::Periodic::Update-Package-Lists "0";\n')
+        fd.write('APT::Periodic::Unattended-Upgrade "1";')
+    setup_system.configure_unnattended_updates(auto_updates_path)
+    content = auto_updates_path.read_text()
+    assert 'Update-Package-Lists "1"' in content
+    assert 'Unattended-Upgrade "1"' in content
 
 # TODO
 # def testEnableHwAccess

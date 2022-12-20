@@ -6,6 +6,7 @@ import os
 import sys
 from distutils.file_util import copy_file
 from pathlib import Path
+from configparser import ConfigParser
 from subprocess import check_output
 
 from installer.common import (HOME, USER_CONFIG_PATH, add_line_to_file, assure_file_exists, installer_root_dir,
@@ -21,7 +22,7 @@ def enable_hw_access():
     rules_path = Path(rules_dir) / rules_file
     assure_file_exists(rules_path, chown=False)
     enable_text = 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness' \
-                ' /sys/class/backlight/%k/bl_power"'
+        ' /sys/class/backlight/%k/bl_power"'
     add_line_to_file([enable_text], rules_path, unique=True)
 
     # enable all needed hw accesses
@@ -96,7 +97,7 @@ def setup_supported_locales():
 def set_wallpaper(install_path: Path):
     # Can't be run as sudo, or as sudo -runuser. Needs desktop manager running.
     # set wallpaper - get image from install dir
-    lib_paths = (install_path / "lib").iterdir() # TODO does not work anymore
+    lib_paths = (install_path / "lib").iterdir()  # TODO does not work anymore
     for lib_path in lib_paths:
         if "python" in lib_path.name:
             image = lib_path / "site-packages/waqd/assets/gui_base/pre_loading_screen.png"
@@ -112,16 +113,26 @@ def clean_lxde_desktop(desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/de
     # Can't be run as sudo, or as sudo -runuser. Needs desktop manager running.
     logging.info("Cleanup desktop icons...")
     assure_file_exists(desktop_conf_path)
-    # needs to be under * 
-    remove_line_in_file(["show_trash", "show_mounts"], desktop_conf_path)
-    add_line_to_file(["show_trash=0", "show_mounts=0"], desktop_conf_path)
+    # needs to be under *
+    cp = ConfigParser()
+    cp.read(desktop_conf_path, encoding="UTF-8")
+    cp["*"]["show_trash"] = "0"
+    cp["*"]["show_mounts"] = "0"
+    with open(desktop_conf_path, "w") as fd:
+        cp.write(fd, space_around_delimiters=False)
+
+
+# TODO
+def customize_wifi_connect(self):
+    # /usr/local/share/wifi-connect/ui/static/media/logo*.png
+    pass
+
 
 def do_setup():
     # System setup
     # Start only the desktop, but not the taskbar
     add_to_autostart(["pcmanfm --desktop --profile LXDE-pi"])
     remove_from_autostart(["lxpanel --profile"])
-
 
     # Cosmetic setup
     customize_splash_screen()
@@ -137,16 +148,25 @@ def do_setup():
 
 def configure_unnattended_updates(auto_updates_path=Path("/etc/apt/apt.conf.d/20auto-upgrades"),
                                   unattended_updates_path=Path("/etc/apt/apt.conf.d/50unattended-upgrades")):
-    pass
-    # 
-    # APT::Periodic::Update-Package-Lists "1";
-    # APT::Periodic::Unattended-Upgrade "1";
-    # sed '/Unattended-Upgrade::MinimalSteps "true";/s/^////' -i /etc/apt/apt.conf.d/50unattended-upgrades
-    # enables shutdown while updating
-    # Unattended-Upgrade::Remove-Unused-Dependencies "true";
-    # Unattended-Upgrade::AutoFixInterruptedDpkg "true";
-    # TODO use //Unattended-Upgrade::MinimalSteps "true";
-    #  "origin=Debian,codename=${distro_codename},label=Debian";
-    # "origin=Debian,codename=${distro_codename},label=Debian-Security"
-    #"origin=Debian,codename=${distro_codename}-security,label=Debian-Security"
-    # "origin=Debian,codename=${distro_codename}-updates";
+    # enable apt update and the unattended updates feature
+    remove_line_in_file(["APT::Periodic::Update-Package-Lists",
+                        "APT::Periodic::Unattended-Upgrade"],
+                        auto_updates_path)
+    add_line_to_file(['APT::Periodic::Update-Package-Lists "1";',
+                     'APT::Periodic::Unattended-Upgrade "1";'],
+                     auto_updates_path)
+
+    # configure update mechanism
+    remove_line_in_file(["Unattended-Upgrade::Remove-Unused-Dependencies",
+                        "Unattended-Upgrade::AutoFixInterruptedDpkg",
+                        "Unattended-Upgrade::MinimalSteps"],
+                        unattended_updates_path)
+    add_line_to_file([
+        # we have enough space, we don't know what pkgs are removed -> safety
+        'Unattended-Upgrade::Remove-Unused-Dependencies "false;', 
+        # try to repair if somehow update was interrupted
+        'Unattended-Upgrade::AutoFixInterruptedDpkg "true";',
+        # use minimal steps to have the lowest possible rate of failure if update is interrupted
+        'Unattended-Upgrade::MinimalSteps "true"'],
+        unattended_updates_path)
+    # TODO Uncomment? //      "origin=Debian,codename=${distro_codename}-updates";
