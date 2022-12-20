@@ -37,8 +37,9 @@ class UserAuth():
             os.makedirs(self.__pw_file_path.parent, exist_ok=True)
             self.__pw_file_path.touch()
             self.__pw_file_path.write_text("{}")
-            self.set_password(DEFAULT_USERNAME, default_pw)
             Logger().warning('User-DB: Creating user database file')
+            self.__user_db = {} # init empty
+            self.set_password(DEFAULT_USERNAME, default_pw)
         with open(self.__pw_file_path, "r") as fp:
             self.__user_db: Dict[str, Dict[str, str]] = json.load(fp)
 
@@ -61,10 +62,8 @@ class UserAuth():
         assert bcrypt.checkpw(password.encode(self.encoding), hashed_pw)
         user_entry = {"pw": hashed_pw.decode(self.encoding)}
         with self.lock:
+            self.__user_db.update({username: user_entry})
             with open(self.__pw_file_path, "w") as fp:
-                # if waqd.DEBUG_LEVEL > 2:
-                    # self.__user_db.update({"pw_plain": password})
-                self.__user_db.update({username: user_entry})
                 json.dump(self.__user_db, fp)
 
     def get_entry(self, username: str):
