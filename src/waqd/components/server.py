@@ -144,8 +144,13 @@ class BottleServer(Component):
 # HTML display endpoints
 
     def css(self):
+        # TODO do as static file
+        # 1 week
+        max_age = "604800"
+        if waqd.DEBUG_LEVEL > 0:
+            max_age = "0"
         response = static_file("style.css", root=self._html_path)
-        response.set_header("Cache-Control", "public, max-age=0")
+        response.set_header("Cache-Control", f"public, max-age={max_age}")
         return response
 
     def login(self):
@@ -356,7 +361,8 @@ class BottleServer(Component):
         page_content = (self._html_path / "settings.html").read_text()
         tpl = Jinja2Template(page_content)
         locations = self._settings.get_dict(OW_CITY_IDS)
-        return tpl.render(username=self._login.get_user(), ow_api_key=self._settings.get_string(OW_API_KEY), locations=locations)
+        location, id = list(locations.items())[0]
+        return tpl.render(username=self._login.get_user(), ow_api_key=self._settings.get_string(OW_API_KEY), id=id)
 
 
 ###### API endpoints ######

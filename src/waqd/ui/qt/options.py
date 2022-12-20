@@ -317,10 +317,11 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.night_standby_timeout_cbox.setEnabled(settings.get_bool(MOTION_SENSOR_ENABLED))
 
         # populate location dropdown- only ow for now
-        self._ui.location_combo_box.clear()
-        for city in settings.get_dict(OW_CITY_IDS).keys():
-            self._ui.location_combo_box.addItem(city)
-
+        # self._ui.location_combo_box.clear()
+        # for city in settings.get_dict(OW_CITY_IDS).keys():
+        #     self._ui.location_combo_box.addItem(city)
+        self._ui.location_combo_box.hide() ## one location for now
+        self._ui.location_label.hide()
         # set info labels
         self._ui.system_value.setText(self._runtime_system.platform.replace("_", " "))
         [ipv4, _] = Network().get_ip()
@@ -478,7 +479,7 @@ class OptionMainUi(QtWidgets.QDialog):
         from waqd.base.authentification import DEFAULT_USERNAME, bcrypt
 
         new_pw = bcrypt.gensalt(4).decode("utf-8")[18:]
-        self._settings.set(USER_DEFAULT_PW, new_pw)
+        # self._settings.set(USER_DEFAULT_PW, new_pw) TODO unsafe
         self._comps.server.user_auth.set_password(DEFAULT_USERNAME, new_pw)
         msg.setText(f"Username: {DEFAULT_USERNAME} Password: \"{new_pw}\"")
         msg.move(int((self._main_ui.geometry().width() - self.height()) / 2),
@@ -491,7 +492,8 @@ class OptionMainUi(QtWidgets.QDialog):
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
         try:
-            # TODO shutdown server
+            # TODO shutdown server, so port 80 is free for captive portal
+            self._comps.server.stop() # TODO should start autom. after options closes
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.setWindowTitle("Connect to WLAN")
             msg.setText(f"Connect to WLAN '{ssid_name}' on your phone or pc, where you can select your network and enter your password!")
