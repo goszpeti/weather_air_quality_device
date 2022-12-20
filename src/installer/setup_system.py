@@ -6,7 +6,7 @@ import os
 import sys
 from distutils.file_util import copy_file
 from pathlib import Path
-from configparser import ConfigParser
+from configparser import ConfigParser, DuplicateSectionError
 from subprocess import check_output
 
 from installer.common import (HOME, USER_CONFIG_PATH, add_line_to_file, assure_file_exists, installer_root_dir,
@@ -116,6 +116,10 @@ def clean_lxde_desktop(desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/de
     # needs to be under *
     cp = ConfigParser()
     cp.read(desktop_conf_path, encoding="UTF-8")
+    try:
+        cp.add_section("*")
+    except DuplicateSectionError:
+        pass # don't care
     cp["*"]["show_trash"] = "0"
     cp["*"]["show_mounts"] = "0"
     with open(desktop_conf_path, "w") as fd:

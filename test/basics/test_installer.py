@@ -5,6 +5,7 @@ from pathlib import Path
 
 from waqd import __version__
 from installer import common, setup_system
+from installer.common import assure_file_does_not_exist
 
 
 def testAddToAutostart(base_fixture):
@@ -85,8 +86,9 @@ def testRegisterAutostart(base_fixture):
 def testCleanDesktop(base_fixture):
     # no error should happen if file does not exist
     desktop_path = Path(tempfile.gettempdir()) / "tmp.conf"
-    # setup_system.clean_lxde_desktop(desktop_path)
-    #assert desktop_path.exists()
+    assure_file_does_not_exist(desktop_path)
+    setup_system.clean_lxde_desktop(desktop_path)
+    assert desktop_path.exists()
 
     desktop_path = Path(tempfile.gettempdir()) / "tmp.conf"
     with open(desktop_path, "w") as fd:
@@ -103,6 +105,8 @@ def testCleanDesktop(base_fixture):
 
 def testUnattendedUpgradesConfig(base_fixture):
     auto_updates_path = Path(tempfile.gettempdir()) / "tmp.conf"
+    unattended_updates_path: Path = base_fixture.testdata_path / "auto_updater" / "50unattended-upgrades"
+
     with open(auto_updates_path, "w") as fd:
         fd.write('APT::Periodic::Update-Package-Lists "0";\n')
         fd.write('APT::Periodic::Unattended-Upgrade "1";')
@@ -110,6 +114,11 @@ def testUnattendedUpgradesConfig(base_fixture):
     content = auto_updates_path.read_text()
     assert 'Update-Package-Lists "1"' in content
     assert 'Unattended-Upgrade "1"' in content
+
+    content = unattended_updates_path.read_text()
+    assert 'MinimalSteps "true"' in content
+    assert 'AutoFixInterruptedDpkg "true"' in content
+    assert 'Remove-Unused-Dependencies "false"' in content
 
 # TODO
 # def testEnableHwAccess

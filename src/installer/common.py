@@ -83,6 +83,17 @@ def assure_file_exists(file_path: Path, chown=True):
     return False
 
 
+def assure_file_does_not_exist(file_path: Path, chown=True):
+    """ Create dirs, add to current user and create file. Returns True if file did not exist. """
+    if not file_path.exists():
+        return True
+    logging.info(f"File {str(file_path)} exists - deleting it")
+    if chown:
+        (f"sudo chown {USERNAME} {str(file_path.parent)}")
+    os.remove(file_path)
+    return False
+
+
 def replace_in_file(search_replace: Dict[str, str], file_path: Path):
     """ Replace exact entries in file"""
     assure_file_exists(file_path)
