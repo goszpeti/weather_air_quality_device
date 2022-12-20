@@ -44,20 +44,20 @@ function waqd_install() {
     chmod +x ./install_influx.sh
     ./install_influx.sh
 
-    echo "# Install Wifi Connector... (Step 4/5)"
+    echo "# Setting up the system (Step 4/6)"
+    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
+    echo "# Installing application... (Step 5/6)"
+    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --install
+    # needs installed app
+    export PYTHONPATH=${SRC_DIR}
+    python3 -m installer --set_wallpaper
+    
+    echo "# Install Wifi Connector... (Step 6/6)"
     # TODO can'T do this in the middle of an update, only after it?
 	# resets network 1st time installed
     cd $CURRENT_DIR
     chmod +x ./install_wifi-connect.sh
     ./install_wifi-connect.sh -y
-
-    echo "# Setting up the system (Step 5/6)"
-    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
-    echo "# Installing application... (Step 6/6)"
-    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --install
-    # needs installed app
-    export PYTHONPATH=${SRC_DIR}
-    python3 -m installer --set_wallpaper
-    sudo reboot
     echo "# Waiting for restart..."
+    sudo reboot
 }
