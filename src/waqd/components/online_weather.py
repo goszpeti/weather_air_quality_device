@@ -54,6 +54,7 @@ class Weather():
     This class is used to abstract from weather hosting types.
     Relies heavily on OpenWeather data structure
     """
+    name: str
     main: str  # condition group
     description: str  # condition detail
     date_time: datetime
@@ -234,6 +235,7 @@ class OpenWeatherMap(Component):
         coord = current_info.get("coord", {})
 
         self._current_weather = Weather(
+            current_info.get("name", ""),
             weather_info.get("main"),
             weather_info.get("description"),
             datetime.now(),
@@ -298,6 +300,7 @@ class OpenWeatherMap(Component):
             if not weather_info:
                 continue
             weather_point = Weather(
+                "", # no name necessary
                 weather_info.get("main", ""),
                 weather_info.get("description", ""),
                 entry_date_time,
@@ -371,6 +374,7 @@ class OpenWeatherMap(Component):
 
             # init DailyWeather
             daily_weather = DailyWeather(
+                current_weather.name,
                 overall_weather.main,
                 overall_weather.description,
                 overall_weather.date_time,
