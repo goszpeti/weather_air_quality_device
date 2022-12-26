@@ -20,7 +20,8 @@ from waqd.base.web_session import LoginPlugin
 from waqd.base.authentification import UserAuth, validate_password, validate_username
 from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import OW_API_KEY, OW_CITY_IDS, Settings
+from waqd.settings import LOCATION, OW_API_KEY, OW_CITY_IDS, Settings
+from waqd.components import OpenWeatherMap
 import waqd
 
 
@@ -60,6 +61,7 @@ ROUTE_LOGIN_FAILED = "/login_failed"
 ROUTE_CHANGE_USER_NAME = "/change_name"
 ROUTE_CHANGE_PW = "/change_pw"
 ROUTE_SET_OW_API_KEY = "/set_ow_api_key"
+ROUTE_SET_LOCATION = "/set_location"
 
 # API endpoint constants
 ROUTE_API_REMOTE_EXT_SENSOR = "/api/remoteExtSensor"
@@ -88,6 +90,7 @@ class BottleServer(Component):
                  user_session_secret="SECRET", user_api_key="API_KEY", user_default_pw="TestPw"):
         super().__init__(components, settings, enabled)
         self._server = None
+        self._settings: Settings
         if self._disabled:
             return
         self._comps: "ComponentRegistry"
@@ -111,6 +114,8 @@ class BottleServer(Component):
         route(ROUTE_LOGIN, "GET", self.index)
         route(ROUTE_LOGOUT, "GET", self.index)
         route(ROUTE_SETTINGS, "GET", self.index)
+        route(ROUTE_SET_LOCATION, "POST", self.index)
+        route(ROUTE_SET_OW_API_KEY, "POST", self.index)
         route(ROUTE_CHANGE_USER_NAME, "POST", self.index)
         route(ROUTE_CHANGE_PW, "POST", self.index)
         route(ROUTE_LOGIN, "POST", self.login)
@@ -187,6 +192,7 @@ class BottleServer(Component):
         username = self._login.get_user()
         old_pw = request.forms.get('old_password', "")  # type: ignore
         new_pw = request.forms.get('password', "")  # type: ignore
+        # TOOD use bottle html template helper
         # validate pw
         if not validate_password(new_pw):
             return """<p>Username does not fit the following criteria:</p>
@@ -199,6 +205,41 @@ class BottleServer(Component):
         if self.user_auth.check_login(username, old_pw):
             self.user_auth.set_password(username, new_pw)
         return "<p>Password changed successfully!</p>"
+
+    def set_location(self):
+        new_location_id = request.forms.get("location", "")  # type: ignore
+        api_key = self._settings.get_string(OW_API_KEY)
+        owcs = self._settings.get_dict(OW_CITY_IDS)
+        owcs.update({"Unknown": str(new_location_id)})
+        self._settings.set(OW_CITY_IDS, owcs)
+        try:
+            owm = OpenWeatherMap(new_location_id, api_key)
+            cw = owm.get_current_weather()
+            self._settings.set(LOCATION, cw.name)
+            owcs = self._settings.get_dict(OW_CITY_IDS)
+            del owcs["Unknown"]
+            owcs.update({cw.name: str(new_location_id)})
+            self._settings.set(OW_CITY_IDS, owcs)
+            self._comps.weather_info.stop()  # reset setting
+        except Exception as e:
+            self._settings.set(LOCATION, "Unknown")
+            return "<p>Location set, but does not seem to work!</p>"
+        finally:
+            self._settings.save()
+        return "<p>Location set successfully!</p>"
+
+    def set_owa_api_key(self):
+        new_key = request.forms.get("ow_api", "")  # type: ignore
+        self._settings.set(OW_API_KEY, str(new_key))
+        try:
+            owm = OpenWeatherMap("2643743", str(new_key))
+            owm.get_current_weather()
+            self._comps.weather_info.stop() # reset setting
+        except Exception as e:
+            return "<p>OpenWeatherMap API key set, but does not seem to work!</p>"
+        finally:
+            self._settings.save()
+        return "<p>OpenWeatherMap API key set successfully!</p>"
 
     def logout(self):
         self._login.logout_user()
@@ -251,8 +292,14 @@ class BottleServer(Component):
             msg = self.change_password()
             page_content = self._get_settings_subpage()
             top_msg = f'<div class="login_msg" style="margin-bottom: 20px;">{msg}</div>'
-
-
+        elif route == ROUTE_SET_LOCATION:
+            msg = self.set_location()
+            page_content = self._get_settings_subpage()
+            top_msg = f'<div class="login_msg" style="margin-bottom: 20px;">{msg}</div>'
+        elif route == ROUTE_SET_OW_API_KEY:
+            msg = self.set_owa_api_key()
+            page_content = self._get_settings_subpage()
+            top_msg = f'<div class="login_msg" style="margin-bottom: 20px;">{msg}</div>'
         menu = self.generate_menu()
         tpl = jinja2_template(str(self._html_path / "index.html"), menu=menu,
                               content=page_content, top_msg=top_msg, bottom_msg=bottom_msg)
@@ -361,8 +408,13 @@ class BottleServer(Component):
         page_content = (self._html_path / "settings.html").read_text()
         tpl = Jinja2Template(page_content)
         locations = self._settings.get_dict(OW_CITY_IDS)
-        location, id = list(locations.items())[0]
-        return tpl.render(username=self._login.get_user(), ow_api_key=self._settings.get_string(OW_API_KEY), id=id)
+        try:
+            location, id = list(locations.items())[0]
+        except:
+            location = "Unknown location"
+            id = ""
+        return tpl.render(username=self._login.get_user(), ow_api_key=self._settings.get_string(OW_API_KEY),
+                          id=id, location=location)
 
 
 ###### API endpoints ######
@@ -433,6 +485,8 @@ class BottleServer(Component):
             comp_ctrl.components.remote_exterior_sensor.read_callback(temp, hum)
         elif "remoteIntSensor" in request.fullpath:
             comp_ctrl.components.remote_interior_sensor.read_callback(temp, hum)
+
+        return response
 
     def _get_interior_sensor_values(self, units=False):
         temp = self._comps.temp_sensor.get_temperature()

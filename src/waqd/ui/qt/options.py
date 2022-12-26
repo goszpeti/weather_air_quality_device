@@ -19,7 +19,6 @@
 #
 import time
 import os
-from subprocess import check_call
 from typing import TYPE_CHECKING
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -27,10 +26,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from waqd import __version__ as WAQD_VERSION
 import waqd
-from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.network import Network
-from waqd.base.authentification import UserAuth
 from waqd.base.system import RuntimeSystem
 from waqd.base.translation import Translation
 from waqd.components.sensors import MH_Z19
@@ -41,7 +38,7 @@ from waqd.settings import (BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS, CCS811_
                            LANG, LOCATION, MOTION_SENSOR_ENABLED, MH_Z19_ENABLED,
                            NIGHT_MODE_BEGIN, NIGHT_MODE_END, INTERIOR_BG, FORECAST_BG,
                            NIGHT_STANDBY_TIMEOUT, OW_CITY_IDS, LOG_SENSOR_DATA,
-                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, MH_Z19_VALUE_OFFSET, USER_DEFAULT_PW, Settings)
+                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, MH_Z19_VALUE_OFFSET, Settings)
 from . import common
 from waqd.ui.qt.theming import activate_theme
 from waqd.ui.qt.main_subs import sub_ui
@@ -170,7 +167,7 @@ class OptionMainUi(QtWidgets.QDialog):
         self._calib_dialog_ui = Ui_Dialog()
         self._calib_dialog_ui.setupUi(self._calib_dialog)
         self._calib_dialog.adjustSize()
-        # TODO check if it is he correct one
+        # check if it is the correct one
         if not isinstance(self._comps.co2_sensor, MH_Z19):
             return
         offset = self._settings.get_int(MH_Z19_VALUE_OFFSET)
@@ -211,7 +208,8 @@ class OptionMainUi(QtWidgets.QDialog):
                 self._ui.setupUi(self._dialog)
                 sub_ui.SubUi.__init__(self, self._dialog, self._ui, settings)
                 self._dialog.move(int((parent.geometry().width() - self._dialog.width()) / 2),
-                                  int((parent.geometry().height() - self._dialog.height()) / 2))
+                                  int((parent.geometry().height() - self._dialog.height()) / 2)
+                                  )
                                    
             def _cyclic_update(self):
                 if self._comps.motion_detection_sensor.motion_detected:
@@ -317,17 +315,16 @@ class OptionMainUi(QtWidgets.QDialog):
         self._ui.night_standby_timeout_cbox.setEnabled(settings.get_bool(MOTION_SENSOR_ENABLED))
 
         # populate location dropdown- only ow for now
-        # self._ui.location_combo_box.clear()
-        # for city in settings.get_dict(OW_CITY_IDS).keys():
-        #     self._ui.location_combo_box.addItem(city)
-        self._ui.location_combo_box.hide() ## one location for now
-        self._ui.location_label.hide()
+        self._ui.location_combo_box.clear()
+        for city in settings.get_dict(OW_CITY_IDS).keys():
+            self._ui.location_combo_box.addItem(city)
+        self._ui.location_combo_box.setCurrentText(settings.get_string(LOCATION))
+        if waqd.DEBUG_LEVEL < 1:
+            self._ui.location_combo_box.setDisabled(True) ## one location for now
         # set info labels
         self._ui.system_value.setText(self._runtime_system.platform.replace("_", " "))
         [ipv4, _] = Network().get_ip()
         self._ui.ip_address_value.setText(ipv4)
-
-        self._ui.location_combo_box.setCurrentText(settings.get_string(LOCATION))
         self._ui.lang_cbox.setCurrentText(settings.get_string(LANG))
 
         # set to normal brightness - again, in case it was modified

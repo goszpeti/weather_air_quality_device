@@ -19,19 +19,14 @@
 #
 
 import threading
-from time import time
 from waqd.ui.qt.widgets.splashscreen import SplashScreen
-from waqd.ui.qt.widgets.fader_widget import FaderWidget
-from datetime import datetime, timedelta
-import os
-from pathlib import Path
-from typing import TYPE_CHECKING, List, Tuple
+from datetime import datetime
+from typing import TYPE_CHECKING
 from waqd.base.system import RuntimeSystem
 
-from file_read_backwards import FileReadBackwards
 from PyQt5 import QtChart, QtCore, QtGui, QtWidgets
 
-from waqd import DEBUG_LEVEL, LOCAL_TIMEZONE
+from waqd import LOCAL_TIMEZONE, SELECTEBLE_LOGGER_INTERVAL_VIEW
 from waqd.ui.qt.widgets.jumpslider import JumpSlider
 from waqd.base.translation import Translation
 from waqd.settings import LANG
@@ -58,7 +53,6 @@ class SensorDetailView(QtWidgets.QDialog):
         self.setWindowFlags(Qt.WindowType(Qt.FramelessWindowHint))
         self.setWindowModality(Qt.WindowModal)
         self.setGeometry(self._main_ui.geometry())
-        # self.move(0, 0)
 
         # start fader - variable must be held otherwise gc will claim it
         # initialize splash screen for the closing of the UI and make a screenshot
@@ -91,37 +85,27 @@ class SensorDetailView(QtWidgets.QDialog):
         self._sensor_chart_view = sensor_chart_view
 
         self._draw_chart()
-        #delta_label = QtWidgets.QLabel(self)
-
-        # calculate delta of last hour
-        # current_time = datetime.now(LOCAL_TIMEZONE)
-        # last_hour_time_val_pairs = list(filter(lambda time_value_pair:
-        #                                        (current_time - time_value_pair[0]) < timedelta(minutes=60),
-        #                                        self._time_value_pairs))
-        # # last_hour_values: List[float] = [time_value_pair[1] for time_value_pair in last_hour_time_val_pairs]
-        # if last_hour_values:
-        #     delta_label.setText(
-        #         f"Change: {max(last_hour_values) - min(last_hour_values):.2f} {self._sensor_value_unit}/hour")
-
         # Button to close
         ok_button = QtWidgets.QPushButton("OK", self)
         ok_button.clicked.connect(self.close)
 
         # Jumpslider for setting timespan
         # TODO Use dropdown or modal with fixed valueys
-        self._time_slider = JumpSlider(self)
-        self._time_slider.setOrientation(QtCore.Qt.Horizontal)
-        self._time_slider.setMinimum(60)
-        self._time_slider.setMaximum(48*60)
-        self._time_slider.setSliderPosition(self.TIME_WINDOW_MINUTES)
-        self._time_slider.valueChanged.connect(self.on_slider_changed)
-        self._time_slider.setTickInterval(30)
-        self._time_slider.setTickPosition(QtWidgets.QSlider.NoTicks)
+        if SELECTEBLE_LOGGER_INTERVAL_VIEW:
+            self._time_slider = JumpSlider(self)
+            self._time_slider.setOrientation(QtCore.Qt.Horizontal)
+            self._time_slider.setMinimum(60)
+            self._time_slider.setMaximum(48*60)
+            self._time_slider.setSliderPosition(self.TIME_WINDOW_MINUTES)
+            self._time_slider.valueChanged.connect(self.on_slider_changed)
+            self._time_slider.setTickInterval(30)
+            self._time_slider.setTickPosition(QtWidgets.QSlider.NoTicks)
 
         # add everything to the qt layout
         self._layout = QtWidgets.QVBoxLayout(self)
         self._layout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
-        self._layout.addWidget(self._time_slider)
+        if SELECTEBLE_LOGGER_INTERVAL_VIEW:
+            self._layout.addWidget(self._time_slider)
         self._layout.addWidget(sensor_chart_view)
         #self._layout.addWidget(delta_label)
         self._layout.addWidget(ok_button)

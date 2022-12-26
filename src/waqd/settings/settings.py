@@ -24,15 +24,15 @@ import bcrypt
 from pathlib import Path
 from typing import Union, Dict
 
-from waqd.settings import (ALLOW_UNATTENDED_UPDATES, AUTO_UPDATER_ENABLED,
-                           CCS811_ENABLED, FORECAST_BG, INTERIOR_BG, LAST_ALTITUDE_M_VALUE, 
-                           LAST_TEMP_C_OUTSIDE_VALUE, MH_Z19_ENABLED, AW_API_KEY, EVENTS_ENABLED, FONT_NAME,
-                           AW_CITY_IDS, BRIGHTNESS, DAY_STANDBY_TIMEOUT, DISP_TYPE_RPI,
-                           DISPLAY_TYPE, FONT_SCALING, FORECAST_ENABLED, LANG, MH_Z19_VALUE_OFFSET, 
+from waqd.settings import (AUTO_UPDATER_ENABLED, CCS811_ENABLED, FORECAST_BG, INTERIOR_BG, 
+                           LAST_ALTITUDE_M_VALUE, LAST_TEMP_C_OUTSIDE_VALUE, MH_Z19_ENABLED, 
+                           AW_API_KEY, EVENTS_ENABLED, FONT_NAME, AW_CITY_IDS, BRIGHTNESS, 
+                           DAY_STANDBY_TIMEOUT, DISP_TYPE_RPI, DISPLAY_TYPE, FONT_SCALING, 
+                           FORECAST_ENABLED, LANG, MH_Z19_VALUE_OFFSET,
                            REMOTE_MODE_URL, UPDATER_USER_BETA_CHANNEL,
                            LANG_GERMAN, LOCATION, MOTION_SENSOR_ENABLED, MOTION_SENSOR_PIN,
                            NIGHT_MODE_BEGIN, NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT, OW_API_KEY,
-                           OW_CITY_IDS, PREFER_ACCU_WEATHER, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED, 
+                           OW_CITY_IDS, PREFER_ACCU_WEATHER, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED,
                            BMP_280_ENABLED, USER_API_KEY, USER_SESSION_SECRET, USER_DEFAULT_PW,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, DHT_22_DISABLED, LOG_SENSOR_DATA, SERVER_ENABLED)
 
@@ -87,7 +87,6 @@ class Settings():
                 UPDATER_USER_BETA_CHANNEL: False,
                 LOG_SENSOR_DATA: True,
                 SERVER_ENABLED: True,
-                ALLOW_UNATTENDED_UPDATES: True,
                 LAST_ALTITUDE_M_VALUE: 400.0,
                 LAST_TEMP_C_OUTSIDE_VALUE: 23.5,
                 REMOTE_MODE_URL: "",
@@ -136,7 +135,7 @@ class Settings():
         return str(self.get(name))
 
     def get_int(self, name: str) -> int:
-        return int(self.get(name)) # type: ignore
+        return int(self.get(name))  # type: ignore
 
     def get_float(self, name: str) -> float:
         return float(self.get(name))  # type: ignore
@@ -147,7 +146,7 @@ class Settings():
     def get_dict(self, name: str) -> Dict[str, str]:
         return self.get(name)  # type: ignore
 
-    def set(self, setting_name: str, value: Union[str, int, float, bool]):
+    def set(self, setting_name: str, value: Union[str, int, float, bool, Dict[str, str]]):
         """ Set the value of a specific setting. Does not write to file, if value is already set. """
         for section in self._values.keys():
             if setting_name in self._values[section]:
@@ -240,10 +239,16 @@ class Settings():
     def _write_setting(self, option_name, section_name):
         """ Helper function to write an option. """
         value = self.get(option_name)
-        if isinstance(value, dict):
-            return  # dicts are read only currently
-
         section = self._get_section(section_name)
         if not option_name in section:
             self._logger.error("Option %s to write is unknown", option_name)
-        section[option_name] = str(value)
+        if isinstance(value, dict):
+            # dicts are handled as ordered dicts, where one line is one entry named option_name + _<id>
+            # Values are the key-value pairs separated with ","
+            i = 0
+            for key, value in value.items():
+                section[option_name + "_" + str(i)] = key + "," + value
+                i += 1
+            return
+        else:
+            section[option_name] = str(value)

@@ -33,6 +33,9 @@ GITHUB_REPO_NAME = "goszpeti/WeatherAirQualityDevice"
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 480
 
+### Feature Flags ###
+SELECTEBLE_LOGGER_INTERVAL_VIEW = False
+
 ### Global variables ###
 # 0: No debug, 1 = logging on, 2: remote debugging on
 # 3: wait for remote debugger, 4: quick-load

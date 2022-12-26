@@ -164,7 +164,7 @@ class SensorImpl():
         # out of bounds check
         Logger().debug("%s: %s Attempting to write %f",
                         self.__class__.__name__, self._log_measure_type, value)
-        if not value:
+        if value is None:
             return False
         value = self.round(value, self._rounding_prec, self._rounding_base)
         if not self._min_value <= value <= self._max_value:
@@ -932,6 +932,7 @@ class WAQDRemoteSensor(TempSensor, HumiditySensor):
     MEASURE_POINTS = 3
     EXTERIOR_MODE = 0
     INTERIOR_MODE = 1
+
 
     def __init__(self, settings: Settings, mode=EXTERIOR_MODE):
         log_values = bool(settings.get(LOG_SENSOR_DATA))

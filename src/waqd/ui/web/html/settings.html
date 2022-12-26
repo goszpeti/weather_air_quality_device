@@ -54,19 +54,13 @@
         <p style="font-size: 0.8em;" ;>Then enter the id from the browsers address bar to the field below.</p>
         <p style="font-size: 0.8em;" ;>E.g. London -> https://openweathermap.org/city/2643743 -> Enter 2643743</p>
         
-        <!-- <button class="btn btn-third" type="submit" style="margin-bottom: 20px">Add new</button> -->
-        <!-- <ul style="list-style: none;">
-        <li> -->
-        <form id="location_form" action="/set_ow_api_key" method="post" style="margin-bottom: 20px">
+        <form id="location_form" action="/set_location" method="post" style="margin-bottom: 20px">
+                <label for="location_form">{{location}}</label>
                 <br>
                 <div class="small_row">
-                   <input name="location" type="text" value="{{id}}" required />
+                   <input id="location", name="location" type="text" value="{{id}}" required/>
                 </div>
                 <button class="btn btn-third" type="submit">Set</button>
-                <!-- <button class="btn btn-third" type="button">Remove</button> -->
-                <button class="btn btn-third" type="button">Check</button>
         </form>
-        <!-- </li>
-        </ul> -->
 
 </div>
