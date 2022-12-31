@@ -63,6 +63,9 @@ if TYPE_CHECKING:
 comp_ctrl: Optional["ComponentController"] = None
 # translator for qt app translation singleton
 translator: Optional["QtCore.QTranslator"] = None
+# for built-in Qt strings
+base_translator: Optional["QtCore.QTranslator"] = None
+# for global access to units
 unit_reg = UnitRegistry()
 
 def main(settings_path: Optional[Path] = None):
