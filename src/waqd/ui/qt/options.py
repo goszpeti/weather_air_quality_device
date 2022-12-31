@@ -85,7 +85,6 @@ class OptionMainUi(QtWidgets.QDialog):
         # set version label
         self._ui.version_label.setText(WAQD_VERSION)
 
-        # TODO: connect tab toggling
         self._ui.general_button.clicked.connect(self._switch_pages)
         self._ui.display_button.clicked.connect(self._switch_pages)
         self._ui.theme_button.clicked.connect(self._switch_pages)
@@ -485,7 +484,7 @@ class OptionMainUi(QtWidgets.QDialog):
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
         try:
-            # TODO shutdown server, so port 80 is free for captive portal
+            # shutdown server, so port 80 is free for captive portal
             self._comps.stop_component_instance(self._comps.server) # should start autom. after options closes
             msg.setIcon(QtWidgets.QMessageBox.Information)
             disp_str = Translation().get_localized_string(
