@@ -90,6 +90,7 @@ def main(settings_path: Optional[Path] = None):
     settings = Settings(ini_folder=settings_path)
 
     parse_cmd_args()  # cmd args set Debug level for logger
+    setup_unit_reg()
 
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
@@ -172,6 +173,14 @@ def setup_on_non_target_system():
     os.environ["PYTHONPATH"] = str(mockup_path)  # for mh-z19
     waqd.user_config_dir = base_path.parent
     logging.getLogger("root").info("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
+
+
+def setup_unit_reg():
+    """ Setup custom units """
+    unit_reg.define('fraction = [] = frac')
+    unit_reg.define('percent = 1e-2 frac = %')
+    unit_reg.define('ppm = 1e-6 fraction')
+    unit_reg.define('ppb = 1e-9 fraction')
 
 
 def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":

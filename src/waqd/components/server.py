@@ -8,13 +8,13 @@ from typing_extensions import NotRequired
 import os
 import plotly.graph_objects as go
 import waqd
-import waqd.app as app
 from bottle import (Jinja2Template, default_app, redirect, jinja2_template,
                     request, response, route, static_file)
 from htmlmin.main import minify
 from pint import Quantity
 from plotly.graph_objs import Scattergl
 from plotly.io import to_html
+from waqd.app import unit_reg, base_path
 from waqd.base.component import Component
 from waqd.base.web_session import LoginPlugin
 from waqd.base.authentification import UserAuth, validate_password, validate_username
@@ -22,6 +22,7 @@ from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.system import RuntimeSystem
 from waqd.settings import LOCATION, OW_API_KEY, OW_CITY_IDS, Settings
 from waqd.components import OpenWeatherMap
+from waqd.ui import format_unit_disp_value
 import waqd
 
 
@@ -99,7 +100,7 @@ class BottleServer(Component):
         self._app.config['SECRET_KEY'] = user_session_secret
         self._run_thread = Thread(name="RunServer", target=self._run_server, daemon=True)
         self._run_thread.start()
-        self._html_path = app.base_path / "ui" / "web" / "html"
+        self._html_path = base_path / "ui" / "web" / "html"
         self._login: LoginPlugin = self._app.install(LoginPlugin())
         self.user_auth = UserAuth(user_default_pw)
 
@@ -471,20 +472,22 @@ class BottleServer(Component):
         if not comp_ctrl:
             return
         data: SensorApi_0_1 = request.json  # type: ignore
-        temp = 0
-        hum = 0
+        temp = None
+        hum = None
+        baro = None
         try:
             api_ver = data["api_ver"]
             if api_ver == "0.1":
                 temp = float(data.get("temp", ""))
                 hum = float(data.get("hum", ""))
+                baro = float(data.get("baro", ""))
         except Exception:
             self._logger.debug(f"Server: Invalid response for /remoteSensor: {str(data)}")
 
         if "remoteExtSensor" in request.fullpath:
-            comp_ctrl.components.remote_exterior_sensor.read_callback(temp, hum)
+            comp_ctrl.components.remote_exterior_sensor.read_callback(temp, hum, baro)
         elif "remoteIntSensor" in request.fullpath:
-            comp_ctrl.components.remote_interior_sensor.read_callback(temp, hum)
+            comp_ctrl.components.remote_interior_sensor.read_callback(temp, hum, baro)
 
         return response
 
@@ -516,7 +519,7 @@ class BottleServer(Component):
         if temp is None or hum is None:
             current_weather = self._comps.weather_info.get_current_weather()
             if current_weather:
-                temp = Quantity(current_weather.temp, app.unit_reg.degC)
+                temp = unit_reg.Quantity(current_weather.temp, "degC")
                 hum = current_weather.humidity
         if units:  # format non unit values
             temp = self._format_sensor_disp_value(temp, True)
@@ -530,17 +533,6 @@ class BottleServer(Component):
                                }
         return data
 
-    def _format_sensor_disp_value(self, quantity, unit=None, precision=1):
-        disp_value = "N/A"
-        if quantity is not None:
-            if isinstance(quantity, Quantity):
-                # .m_as(app.unit_reg.degC)
-                disp_value = f"{float(quantity.m):.{precision}f}"
-                if unit:
-                    disp_value += " " + app.unit_reg.get_symbol(str(quantity.u))
-            else:
-                disp_value = f"{float(quantity):.{precision}f}"
-                if unit:
-                    disp_value += " " + unit
-
+    def _format_sensor_disp_value(self, quantity: Quantity, unit=None, precision=1):
+        disp_value = format_unit_disp_value(quantity, unit, precision)
         return html.escape(disp_value)

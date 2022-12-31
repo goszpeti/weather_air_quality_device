@@ -1,3 +1,4 @@
+import pint
 import time
 from threading import Thread
 
@@ -12,6 +13,16 @@ import waqd.app as app
 
 def test_max_delta(base_fixture, target_mockup_fixture, capsys):
 
+
+    ureg = pint.UnitRegistry()
+    ureg.define('fraction = [] = frac')
+    ureg.define('percent = 1e-2 frac = pct')
+    ureg.define('ppm = 1e-6 fraction')
+
+    print(ureg.Quantity('100 pct').to('dimensionless'))
+    print(ureg('0.5 dimensionless').to('pct'))
+    print(ureg('pct').to('ppm'))
+    print(ureg('1e4 ppm').to('pct'))
     import adafruit_dht
     settings = Settings(base_fixture.testdata_path / "integration")
     sensor = sensors.TempSensor(False, 2)
@@ -24,7 +35,6 @@ def test_max_delta(base_fixture, target_mockup_fixture, capsys):
     captured = capsys.readouterr()
     text = captured.out
     assert temp_value.m_as(app.unit_reg.degC) == adafruit_dht.TEMP
-    # 
 
 
 def testDHT22(base_fixture, target_mockup_fixture):
@@ -43,8 +53,8 @@ def testDHT22(base_fixture, target_mockup_fixture):
     # wait until all measurement points are filled up, so that mean value equals the constant value
     time.sleep(sensor.UPDATE_TIME * (measure_points + 1))
 
-    assert sensor.get_humidity() == HUM
-    assert sensor.get_temperature() == TEMP
+    assert sensor.get_humidity().magnitude == HUM
+    assert sensor.get_temperature().magnitude == TEMP
 
 
 def testCCS811(base_fixture, target_mockup_fixture):
@@ -62,15 +72,15 @@ def testCCS811(base_fixture, target_mockup_fixture):
 
     # wait until all measurement points are filled up, so that mean value equals the constant value
     time.sleep(sensor.UPDATE_TIME * (measure_points + 1))
-    assert sensor.get_tvoc() == TVOC
-    assert sensor.get_co2() == CO2
+    assert sensor.get_tvoc().magnitude == TVOC
+    assert sensor.get_co2().magnitude == 1000
 
 
 def testMH_Z19(base_fixture, target_mockup_fixture, mocker):
     mock_run_on_non_target(mocker)
     assert not RuntimeSystem().is_target_system
     settings = Settings(base_fixture.testdata_path / "integration")
-    measure_points = 2
+    sensors.MH_Z19.MEASURE_POINTS = 2
     sensor = sensors.MH_Z19(settings)
 
     time.sleep(1)
@@ -78,10 +88,10 @@ def testMH_Z19(base_fixture, target_mockup_fixture, mocker):
     assert sensor.is_ready
 
     # wait until all measurement points are filled up, so that mean value equals the constant value
-    # -> takes too long, every call spawns a new python process tgis takes a few seconds
-    time.sleep(sensor.UPDATE_TIME * (measure_points + 1))
+    # -> takes too long, every call spawns a new python process takes a few seconds
+    time.sleep(sensor.UPDATE_TIME * (sensors.MH_Z19.MEASURE_POINTS + 1))
     from mh_z19 import CO2
-    assert sensor.get_co2() == CO2
+    assert sensor.get_co2().magnitude == 735
 
 
 def testSR501(base_fixture, target_mockup_fixture, mocker):
@@ -112,9 +122,9 @@ def testBME280(base_fixture, target_mockup_fixture):
 
     # wait until all measurement points are filled up, so that mean value equals the constant value
     time.sleep(sensor.UPDATE_TIME * (sensor.MEASURE_POINTS + 1))
-    assert sensor.get_temperature().m == TEMP
-    assert sensor.get_humidity() == HUMIDITY
-    assert sensor.get_pressure() >= PRESSURE  # adjusted for location
+    assert sensor.get_temperature().magnitude == 28.4
+    assert sensor.get_humidity().magnitude == HUMIDITY
+    assert sensor.get_pressure().magnitude >= PRESSURE  # adjusted for location
 
 
 def testBMP280(base_fixture, target_mockup_fixture):
@@ -134,7 +144,7 @@ def testBMP280(base_fixture, target_mockup_fixture):
 
     # wait until all measurement points are filled up, so that mean value equals the constant value
     time.sleep(sensor.UPDATE_TIME * (measure_points + 1))
-    assert sensor.get_temperature().m == TEMP
-    assert sensor.get_pressure() >= PRESSURE  # adjusted for location
+    assert sensor.get_temperature().magnitude == 28.4
+    assert sensor.get_pressure().magnitude >= PRESSURE  # adjusted for location
 
 

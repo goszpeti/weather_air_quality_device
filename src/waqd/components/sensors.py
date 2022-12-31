@@ -225,10 +225,9 @@ class TempSensor(SensorComponent):
     def get_temperature(self) -> Optional[Quantity]:
         """ Return temperature in degree Celsius """
         value = self.get_value_with_status(self._temp_impl)
-        if value:
-            return Quantity(value, unit_reg.degC)
-        else:
-            return None
+        if value is not None:
+            return unit_reg.Quantity(value, "degC")
+        return None
 
     def _set_temperature(self, value: Optional[float]) -> bool:
         return self._temp_impl.set_value(value)
@@ -255,9 +254,12 @@ class BarometricSensor(SensorComponent):
     def select_for_pres_logging(self):
         self._pres_impl.log_values = True
 
-    def get_pressure(self) -> Optional[float]:
+    def get_pressure(self) -> Optional[Quantity]:
         """ Return the pressure in hPa """
-        return self.get_value_with_status(self._pres_impl)
+        value =  self.get_value_with_status(self._pres_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "hPa")
+        return None
 
     def _set_pressure(self, value: Optional[float]):
         self._pres_impl.set_value(value)
@@ -288,9 +290,12 @@ class HumiditySensor(SensorComponent):
     def select_for_hum_logging(self):
         self._hum_impl.log_values = True
 
-    def get_humidity(self) -> Optional[float]:
+    def get_humidity(self) -> Optional[Quantity]:
         """ Return the humidity in % """
-        return self.get_value_with_status(self._hum_impl)
+        value = self.get_value_with_status(self._hum_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "percent")
+        return None
 
     def _set_humidity(self, value: Optional[float]):
         self._hum_impl.set_value(value)
@@ -317,10 +322,12 @@ class TvocSensor(SensorComponent):
     def select_for_tvoc_logging(self):
         self._tvoc_impl.log_values = True
 
-    def get_tvoc(self) -> Optional[float]:
+    def get_tvoc(self) -> Optional[Quantity]:
         """ Returns TVOC in ppb """
-        return self.get_value_with_status(self._tvoc_impl)
-
+        value = self.get_value_with_status(self._tvoc_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "ppb")
+        return None
     def _set_tvoc(self, value: Optional[float]):
         self._tvoc_impl.set_value(value)
 
@@ -346,10 +353,12 @@ class CO2Sensor(SensorComponent):
     def select_for_co2_logging(self):
         self._co2_impl.log_values = True
 
-    def get_co2(self) -> Optional[float]:
+    def get_co2(self) -> Optional[Quantity]:
         """ Returns equivalent CO2 in ppm """
-        return self.get_value_with_status(self._co2_impl)
-
+        value = self.get_value_with_status(self._co2_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "ppm")
+        return None
     def _set_co2(self, value: Optional[float]):
         self._co2_impl.set_value(value)
 
@@ -375,10 +384,12 @@ class DustSensor(SensorComponent):
     def select_for_dust_logging(self):
         self._dust_impl.log_values = True
 
-    def get_dust(self) -> Optional[float]:
+    def get_dust(self) -> Optional[Quantity]:
         """ Returns dust in ug/m^3 """
-        return self.get_value_with_status(self._dust_impl)
-
+        value = self.get_value_with_status(self._dust_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "ug / m ** 3")
+        return None
     def _set_dust(self, value: Optional[float]):
         self._dust_impl.set_value(value)
 
@@ -403,10 +414,12 @@ class LightSensor(SensorComponent):
     def select_for_light_logging(self):
         self._light_impl.log_values = True
 
-    def get_light(self) -> Optional[float]:
+    def get_light(self) -> Optional[Quantity]:
         """ Returns light in lux """
-        return self.get_value_with_status(self._light_impl)
-
+        value = self.get_value_with_status(self._light_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "lux")
+        return None
     def _set_light(self, value: Optional[float]):
         self._light_impl.set_value(value)
 
@@ -543,7 +556,7 @@ class BMP280(TempSensor, BarometricSensor, CyclicComponent):
             altitude = weather.altitude
             temp_outside = weather.temp
 
-        self._set_pressure(self._convert_abs_pres_to_asl(pressure, altitude, temp_outside))
+        self._set_pressure(self._convert_abs_pres_to_asl(pressure, altitude, temp_outside)) # type: ignore
         self._set_temperature(temperature)
 
         self._logger.debug("BMP280: Temp={0:0.1f}*C  Pressure={1}hPa".format(
@@ -619,7 +632,7 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
     """
     UPDATE_TIME = 3  # in seconds
     MEASURE_POINTS = 5
-    STABILIZE_TIME_MINUTES = 3  # in minutes
+    STABILIZE_TIME_MINUTES = 1  # in minutes
 
     def __init__(self, settings: Settings):
         log_values = bool(settings.get(LOG_SENSOR_DATA))
@@ -744,7 +757,7 @@ class CCS811(CO2Sensor, TvocSensor, CyclicComponent):  # pylint: disable=invalid
         # wait for values to stabilize
         if temperature is None or humidity is None:
             return
-        while not 15 < temperature < 50:
+        while not 15 < temperature.m_as(unit_reg.degC) < 50:
             time.sleep(2)
 
         self._sensor_driver.set_environmental_data(int(humidity), float(temperature))
@@ -940,7 +953,7 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
         self._motion_detected -= 1
 
 
-class WAQDRemoteSensor(TempSensor, HumiditySensor):
+class WAQDRemoteSensor(TempSensor, HumiditySensor, BarometricSensor):
     """ Remote sensor via WAQD HTTP service """
 
     MEASURE_POINTS = 3
@@ -954,15 +967,18 @@ class WAQDRemoteSensor(TempSensor, HumiditySensor):
                             log_location_type=SENSOR_EXTERIOR_TYPE, invalidation_time_s=60)
         HumiditySensor.__init__(self, log_values, self.MEASURE_POINTS,
                                 log_location_type=SENSOR_EXTERIOR_TYPE, invalidation_time_s=60)
+        BarometricSensor.__init__(self, log_values, self.MEASURE_POINTS,
+                                log_location_type=SENSOR_EXTERIOR_TYPE, invalidation_time_s=60)
         self._disabled = True  # don't know if connected at startup
 
-    def read_callback(self, temperature, humidity):
+    def read_callback(self, temperature=None, humidity=None, pressure=None):
         """
         """
         self._disabled = False
 
         self._set_temperature(temperature)
         self._set_humidity(humidity)
+        self._set_pressure(pressure)
         self._logger.debug("WAQDExtTempSensor: Temp={0:0.1f}*C Humidity={1:0.1f}%".format(
             temperature, humidity))
 
@@ -1004,6 +1020,6 @@ class WAQDRemoteStation(TempSensor, HumiditySensor, BarometricSensor, CO2Sensor,
         if (val := content.get("hum", "N/A")) not in ["None", "N/A"]:
             self._set_humidity(float(val))
         if (val := content.get("baro", "N/A")) not in ["None", "N/A"]:
-            self._set_pressure(float(val))
+            self._set_pressure(int(val))
         if (val := content.get("co2", "N/A")) not in ["None", "N/A"]:
             self._set_co2(float(val))

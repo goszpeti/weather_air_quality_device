@@ -27,6 +27,7 @@ from waqd.components.online_weather import Weather
 from waqd.settings import LOCATION
 
 from . import common
+from waqd.ui import get_localized_date
 
 logger = logging.getLogger(PROG_NAME)
 
@@ -104,7 +105,7 @@ class WeatherDetailView(QtWidgets.QDialog):
         # visual style
         chart.legend().setVisible(False)
         chart.setTitle(f"{settings.get(LOCATION)} " +
-                       common.get_localized_date(weather_points[0].date_time, settings))
+                       get_localized_date(weather_points[0].date_time, settings))
         font.setPixelSize(24)
         chart.setTitleBrush(QtGui.QBrush(QtGui.QColor("white")))
         chart.setTitleFont(font)

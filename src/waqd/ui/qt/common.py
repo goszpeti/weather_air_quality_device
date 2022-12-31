@@ -19,15 +19,11 @@
 #
 """ Contains helper methods usually to display some text or image with formatting."""
 
-import locale
 import logging
-import platform
-import time
-import datetime
 import xml.dom.minidom as dom
 from pathlib import Path
 from typing import Optional, Union
-from pint import Quantity
+from pint import Quantity, Unit
 
 from PyQt5 import QtCore, QtSvg, QtGui, QtWidgets
 from PyQt5.QtGui import QFont, QFontDatabase
@@ -36,7 +32,6 @@ import waqd
 import waqd.app as app
 from waqd.assets import get_asset_file
 from waqd.settings import LANG, LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN, Settings
-from waqd.components.online_weather import Weather
 logger = logging.getLogger(waqd.PROG_NAME)
 
 # define Qt so it can be used like the namespace in C++
@@ -211,7 +206,7 @@ def get_temperature_icon(temp_value: Optional[Quantity]) -> Path:
 #### Formatting ####
 
 
-def format_int_meas_text(html_text: str, value: Optional[Union[int, float]], color="white", tag_id=0):
+def format_int_meas_text(html_text: str, value: Optional[Union[int, float, Quantity]], color="white", tag_id=0, unit: Optional[Unit]=None):
     """
     Returns a given html string by switching out the value with the given number.
     :param html_text: the html text containing the value. Can only contain one value.
@@ -221,7 +216,10 @@ def format_int_meas_text(html_text: str, value: Optional[Union[int, float]], col
     if value is None:
         temp_val = format_text(html_text, "N/A", "string", color=color, tag_id=tag_id)
     else:
-        temp_val = format_text(html_text, int(value), "int", color=color, tag_id=tag_id)
+        if unit and isinstance(value, Quantity):
+            temp_val = format_text(html_text, int(value.m_as(unit)), "int", color=color, tag_id=tag_id)
+        else:
+            temp_val = format_text(html_text, int(value), "int", color=color, tag_id=tag_id)
     return temp_val
 
 
@@ -305,36 +303,3 @@ def format_text(html_text: str, value: Union[str, int, float, None],
             return html_dom.toxml()
     return ""
 
-
-def get_localized_date(date_time: datetime.datetime, settings: Settings) -> str:
-    """
-    Returns a formatted date of a day conforming to the actual locale.
-    Contains weekday name, month and day.
-    """
-    # switch locale to selected language - needs reboot on linux
-    if settings.get(LANG) != LANG_ENGLISH:
-        locale_name = ""
-        try:
-            if platform.system() == "Windows":
-                if settings.get(LANG) == LANG_GERMAN:
-                    locale_name = "de_DE"
-                elif settings.get(LANG) == LANG_HUNGARIAN:
-                    locale_name = "hu-HU"
-            elif platform.system() == "Linux":
-                if settings.get(LANG) == LANG_GERMAN:
-                    locale_name = "de_DE.UTF8"
-                elif settings.get(LANG) == LANG_HUNGARIAN:
-                    locale_name = "hu_HU.UTF8"
-            locale.setlocale(locale.LC_ALL, locale_name)
-        except Exception as error:
-            logger.error("Cannot set language to %s: %s", settings.get(LANG), str(error))
-            # "sudo apt-get install language-pack-id" is needed...
-            # or sudo locale-gen
-    else:
-        locale.setlocale(locale.LC_ALL, 'C')
-
-    local_date = time.strftime("%a, %x", date_time.timetuple())
-    # remove year - twice once with following . and once for none
-    local_date = local_date.replace(str(date_time.year) + ".", "")
-    local_date = local_date.replace(str(date_time.year), "")
-    return local_date

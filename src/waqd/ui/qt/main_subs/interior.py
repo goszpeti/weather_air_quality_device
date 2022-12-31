@@ -21,8 +21,10 @@ from typing import TYPE_CHECKING, Tuple
 
 import waqd
 from PyQt5 import QtGui
+from waqd.app import unit_reg
 from waqd.components.sensors import SENSOR_INTERIOR_TYPE
 from waqd.settings import FONT_NAME, INTERIOR_BG
+from waqd.ui import format_unit_disp_value
 from waqd.ui.qt import common
 from waqd.ui.qt.sensor_detail_view import SensorDetailView
 
@@ -119,41 +121,34 @@ class Interior(sub_ui.SubUi):
 
         # set humidity
         if self._humidity_ui_bar:
-            if hum_value is not None:
-                self._humidity_ui_bar.set_value_label(f"{int(hum_value)} %")
-            else:
-                self._humidity_ui_bar.set_value_label("NA")
+                self._humidity_ui_bar.set_value_label(format_unit_disp_value(hum_value, precision=0))
 
         # set pressure
         if self._pressure_ui_bar:
-            if pres_value is not None:
-                self._pressure_ui_bar.set_value_label(f"{int(pres_value)} hPa")
-            else:
-                self._pressure_ui_bar.set_value_label("NA")
+            self._pressure_ui_bar.set_value_label(format_unit_disp_value(pres_value, precision=0))
 
         # set tvoc
         if self._tvoc_ui_bar:
-            if tvoc_value is not None:
-                label_color = "white"  # used as default font color
-                # set to yellow if not stable
-                if tvoc_value and not self._comps.tvoc_sensor.readings_stabilized:
-                    label_color = "yellow"
-                self._tvoc_ui_bar.set_value_label(f"{int(tvoc_value)} ppb", color=label_color)
-            else:
-                self._tvoc_ui_bar.set_value_label("NA", color="white")
-
+            label_color = "white"  # used as default font color
+            # set to yellow if not stable
+            if tvoc_value and not self._comps.tvoc_sensor.readings_stabilized:
+                label_color = "yellow"
+            self._tvoc_ui_bar.set_value_label(format_unit_disp_value(
+                tvoc_value, precision=0), color=label_color)
+    
         # set co2
         # set to yellow if not stable
         label_color = "white"  # used as default font color
         if self._co2_bar:
-            if co2_value is not None:
-                if not self._comps.co2_sensor.readings_stabilized:
-                    label_color = "yellow"
-                elif co2_value >= 1000:
+            if not self._comps.co2_sensor.readings_stabilized:
+                label_color = "yellow"
+            try:
+                if co2_value.m_as(unit_reg.ppm) >= 1000:
                     label_color = "red"
-                self._co2_bar.set_value_label(f"{int(co2_value)} ppm", color=label_color)
-            else:
-                self._co2_bar.set_value_label("NA", color="white")
+            except:
+                pass # no handling
+            self._co2_bar.set_value_label(format_unit_disp_value(co2_value, precision=0), color=label_color)
+
 
     def show_detail(self, sensor_type: str, sensor_value_unit: str):
         """ Placholder for daily detail view popup """

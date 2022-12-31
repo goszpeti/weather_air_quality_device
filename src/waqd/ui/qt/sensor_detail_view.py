@@ -34,6 +34,7 @@ from waqd.base.db_logger import InfluxSensorLogger
 Qt = QtCore.Qt
 if TYPE_CHECKING:
     from waqd.ui.qt.main_ui import WeatherMainUi
+
 class SensorDetailView(QtWidgets.QDialog):
     """ A popup window plotting the sensor values. """
     _layout = None
@@ -179,7 +180,7 @@ class SensorDetailView(QtWidgets.QDialog):
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
         msg.setWindowTitle("Nothing to display!")
         msg.setText(Translation().get_localized_string(
-            "base", "ui_dict", "cant_disp_sensor_logs", main_ui._settings.get_string(LANG))) # TODO
+            "ui_dict", "cant_disp_sensor_logs", main_ui._settings.get_string(LANG))) # TODO
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.setIcon(QtWidgets.QMessageBox.Information)
         msg.adjustSize()

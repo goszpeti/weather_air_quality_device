@@ -29,7 +29,7 @@ from waqd.settings import FORECAST_ENABLED, FORECAST_BG
 from .. import common
 from . import sub_ui
 from waqd.base.network import Network
-
+from waqd.ui import get_localized_date
 from waqd.ui.qt.weather_detail_view import WeatherDetailView
 
 if TYPE_CHECKING:
@@ -121,15 +121,15 @@ class Forecast(sub_ui.SubUi):
         # set up titles
         current_date_time = datetime.datetime.now()
 
-        disp_date = common.get_localized_date(
+        disp_date = get_localized_date(
             current_date_time + datetime.timedelta(days=1), self._settings)
         self._ui.forecast_d1_title.setText(disp_date)
 
-        disp_date = common.get_localized_date(
+        disp_date = get_localized_date(
             current_date_time + datetime.timedelta(days=2), self._settings)
         self._ui.forecast_d2_title.setText(disp_date)
 
-        disp_date = common.get_localized_date(
+        disp_date = get_localized_date(
             current_date_time + datetime.timedelta(days=3), self._settings)
         self._ui.forecast_d3_title.setText(disp_date)
 
