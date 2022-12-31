@@ -141,8 +141,15 @@ class SensorDetailView(QtWidgets.QDialog):
         chart.axisX(series).setTitleText("Minutes")
         chart.axisX(series).setMin(-self.TIME_WINDOW_MINUTES)
         chart.axisX(series).setGridLineVisible(False)
-        chart.axisY(series).setGridLineVisible(False)
-        chart.layout().setContentsMargins(0, 6, 0, 6)
+        chart.axisY(series).setMin(0)
+        chart.axisY(series).setTickCount(10)
+        chart.axisY(series).setMinorTickCount(4)
+        chart.axisY(series).applyNiceNumbers()
+        chart.axisX(series).applyNiceNumbers()
+
+        chart.axisY(series).setMinorGridLinePen(QtGui.QPen(Qt.gray, 1, Qt.PenStyle.DashLine))
+        chart.axisY(series).setGridLineColor(Qt.gray)
+        chart.layout().setContentsMargins(0, 0, 0, 0)
 
         chart.legend().setVisible(False)
 
