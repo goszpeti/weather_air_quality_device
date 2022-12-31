@@ -220,7 +220,7 @@ class BottleServer(Component):
             del owcs["Unknown"]
             owcs.update({cw.name: str(new_location_id)})
             self._settings.set(OW_CITY_IDS, owcs)
-            self._comps.weather_info.stop()  # reset setting
+            self._comps.stop_component_instance(self._comps.weather_info)  # reset setting
         except Exception as e:
             self._settings.set(LOCATION, "Unknown")
             return "<p>Location set, but does not seem to work!</p>"
@@ -234,7 +234,7 @@ class BottleServer(Component):
         try:
             owm = OpenWeatherMap("2643743", str(new_key))
             owm.get_current_weather()
-            self._comps.weather_info.stop() # reset setting
+            self._comps.stop_component_instance(self._comps.weather_info) # reset setting
         except Exception as e:
             return "<p>OpenWeatherMap API key set, but does not seem to work!</p>"
         finally:
