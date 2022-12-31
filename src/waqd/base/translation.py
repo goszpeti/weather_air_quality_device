@@ -21,7 +21,7 @@ class Translation():
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def get_localized_string(self, asset_dir: str, asset_id: str, key: str, lang=LANG_ENGLISH) -> str:
+    def get_localized_string(self, asset_id: str, key: str, lang=LANG_ENGLISH, asset_dir="base") -> str:
         if lang in LANGS_MAP:
             lang = LANGS_MAP.get(lang)
         id = asset_dir + "/" + asset_id

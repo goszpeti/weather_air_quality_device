@@ -214,11 +214,11 @@ class OptionMainUi(QtWidgets.QDialog):
             def _cyclic_update(self):
                 if self._comps.motion_detection_sensor.motion_detected:
                     disp_str = Translation().get_localized_string(
-                        "base", "ui_dict", "motion_reg", self._settings.get_string(LANG))
+                       "ui_dict", "motion_reg", self._settings.get_string(LANG))
                     self._ui.text_browser.append(disp_str)
                 else:
                     disp_str = Translation().get_localized_string(
-                        "base", "ui_dict", "no_motion_reg", self._settings.get_string(LANG))
+                        "ui_dict", "no_motion_reg", self._settings.get_string(LANG))
                     self._ui.text_browser.append(disp_str)
 
             def exec_(self):
@@ -461,12 +461,6 @@ class OptionMainUi(QtWidgets.QDialog):
         self._runtime_system.restart()
         self.close_ui()
 
-    def show_updater_ui(self):
-        if self._runtime_system.is_target_system:
-            # this is the default updater on RaspberryPi OS
-            os.system("sudo apt update")  # TODO this takes a while, but is necessary
-            os.system("pi-gpk-update-viewer&")
-
     def _reset_pw(self):
         msg = QtWidgets.QMessageBox(parent=self)
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -478,7 +472,9 @@ class OptionMainUi(QtWidgets.QDialog):
         new_pw = bcrypt.gensalt(4).decode("utf-8")[18:]
         # self._settings.set(USER_DEFAULT_PW, new_pw) TODO unsafe
         self._comps.server.user_auth.set_password(DEFAULT_USERNAME, new_pw)
-        msg.setText(f"Username: {DEFAULT_USERNAME} Password: \"{new_pw}\"")
+        disp_str = Translation().get_localized_string(
+            "ui_dict", "new_pw_text", self._settings.get_string(LANG))
+        msg.setText(disp_str.format(user_name=DEFAULT_USERNAME, pw=new_pw))
         msg.move(int((self._main_ui.geometry().width() - self.height()) / 2),
                  int((self._main_ui.geometry().height() - msg.height()) / 2))
         msg.exec_()
@@ -490,15 +486,17 @@ class OptionMainUi(QtWidgets.QDialog):
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
         try:
             # TODO shutdown server, so port 80 is free for captive portal
-            self._comps.server.stop() # TODO should start autom. after options closes
+            self._comps.stop_component_instance(self._comps.server) # should start autom. after options closes
             msg.setIcon(QtWidgets.QMessageBox.Information)
-            msg.setWindowTitle("Connect to WLAN")
-            msg.setText(f"Connect to WLAN '{ssid_name}' on your phone or pc, where you can select your network and enter your password!")
+            disp_str = Translation().get_localized_string(
+                "ui_dict", "wlan_portal_help", self._settings.get_string(LANG))
+            msg.setText(disp_str.format(ssid_name=ssid_name))
             os.system(f'sudo wifi-connect -s "{ssid_name}" &')
         except Exception as e:
             msg.setIcon(QtWidgets.QMessageBox.Warning)
-            msg.setWindowTitle("Error while opening connection to WLAN")
-            msg.setText(f"Cannot start WLAN connection portal: {str(e)}")
+            disp_str = Translation().get_localized_string(
+                "ui_dict", "wlan_error_text", self._settings.get_string(LANG))
+            msg.setText(f"{disp_str} {str(e)}")
         # needed because of CustomizeWindowHint
         msg.move(int((self._main_ui.geometry().width() - self.height()) / 2),
                  int((self._main_ui.geometry().height() - msg.height()) / 2))

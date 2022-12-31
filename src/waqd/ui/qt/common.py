@@ -49,7 +49,7 @@ def get_font(font_name) -> QFont:
     qapp = QApplication.instance()
     if qapp is None:
         return QFont()
-    font = qapp.font()
+    font = qapp.font() # type: ignore
     if font_id != -1:
         font_db = QFontDatabase()
         font_styles = font_db.styles(font_name)
@@ -65,28 +65,38 @@ def apply_font(font_name: str):
     qapp = QApplication.instance()
     if qapp is None:
         return
-    qapp.setFont(font)
+    qapp.setFont(font)  # type: ignore
 
 def set_ui_language(qt_app: QApplication, settings: Settings):
     """ Set the ui language. Retranslate must be called afterwards."""
     if app.translator:
         qt_app.removeTranslator(app.translator)
+    if app.base_translator:
+        qt_app.removeTranslator(app.base_translator)
     if settings.get(LANG) == LANG_ENGLISH:  # default case, ui is written in english
         return
 
     if not app.translator:
         app.translator = QtCore.QTranslator(qt_app)
+    if not app.base_translator:
+        app.base_translator = QtCore.QTranslator(qt_app)
 
     tr_file = Path("NULL")
+    tr_base_file = None
     if settings.get(LANG) == LANG_GERMAN:
         tr_file = waqd.base_path / "ui/qt/qt/german.qm"
+        tr_base_file = Path(QtCore.__file__).parent / "Qt5/translations/qtbase_de.qm"
     if settings.get(LANG) == LANG_HUNGARIAN:
         tr_file = waqd.base_path / "ui/qt/qt/hungarian.qm"
+        tr_base_file = Path(QtCore.__file__).parent / "Qt5/translations/qtbase_hu.qm"
     if not tr_file.exists():
         logger.error("Cannot find %s translation file.", str(tr_file))
 
     app.translator.load(str(tr_file))
     qt_app.installTranslator(app.translator)
+    if tr_base_file:
+        app.base_translator.load(str(tr_base_file))
+        qt_app.installTranslator(app.base_translator)
 
 
 def draw_svg(pyqt_obj: QLabel, svg_path: Path, color="white", shadow=False, scale: float=1.0):
