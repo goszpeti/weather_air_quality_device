@@ -153,7 +153,26 @@ class OnlineUpdater(CyclicComponent):
             self._repository.get_archive_link("tarball", tag_name))
         with tarfile.open(str(update_file)) as tar:
             os.makedirs(self._new_version_path, exist_ok=True)
-            tar.extractall(path=self._new_version_path)
+            def is_within_directory(directory, target):
+                
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+            
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+                
+                return prefix == abs_directory
+            
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+            
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+            
+                tar.extractall(path, members, numeric_owner) 
+                
+            
+            safe_extract(tar, path=self._new_version_path)
 
         # the repo will be in a randomly named dir, so we must scan for it
         update_dir = [f.path for f in os.scandir(self._new_version_path) if f.is_dir()]
