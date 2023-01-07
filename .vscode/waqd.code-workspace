@@ -56,7 +56,6 @@
     },
     "launch": {
         "configurations": [
-            
             {
                 "name": "Main",
                 "type": "python",
@@ -127,7 +126,17 @@
                 "presentation": {
                     "hidden": true
                 }
-            }
+            },
+            {
+                "name": "Python: Testing",
+                "type": "python",
+                "request": "test",
+                "console": "integratedTerminal",
+                "subProcess": true,
+                "justMyCode": false,
+                "python": "${command:python.interpreterPath}",
+                "env": {}
+            },
         ],
         "compounds": [
             {

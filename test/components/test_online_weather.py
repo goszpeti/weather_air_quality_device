@@ -5,6 +5,20 @@ from freezegun import freeze_time
 from waqd.components.online_weather import OpenTopoData, OpenWeatherMap, OpenMeteo
 
 
+class MockOpenMeteo(OpenMeteo):
+    daily_test_json = Path()
+    hourly_test_json = Path()
+
+    def _call_api(self, command: str, **kwargs):
+        if "&hourly" in command:
+            with open(self.hourly_test_json) as fp:
+                return json.load(fp)
+        elif "&daily" in command:
+            with open(self.daily_test_json) as fp:
+                return json.load(fp)
+        return {}
+
+
 def testOpenMeteoGeocoder(base_fixture, mocker):
     test_json: Path = base_fixture.testdata_path / "online_weather/om_search_berlin.json"
     om = OpenMeteo()
@@ -24,20 +38,18 @@ def testOpenMeteoGeocoder(base_fixture, mocker):
 
 
 def testOpenMeteo(base_fixture, mocker):
-    test_json: Path = base_fixture.testdata_path / "online_weather/om_current_weather.json"
-    mock_call = mocker.Mock()
-    mock_call.return_value = json.loads(test_json.read_text())
-    mocker.patch("waqd.components.online_weather.OpenMeteo._call_api", mock_call)
-    om = OpenMeteo(13.41053, 52.52437)
-    ret = om.get_current_weather()
+    daily_test_json: Path = base_fixture.testdata_path / "online_weather/om_current_weather.json"
+    hourly_test_json: Path = base_fixture.testdata_path / "online_weather/om_hourly_weather.json"
 
-    test_json: Path = base_fixture.testdata_path / "online_weather/om_hourly_weather.json"
-    mock_call = mocker.Mock()
-    mock_call.return_value = json.loads(test_json.read_text())
-    mocker.patch("waqd.components.online_weather.OpenMeteo._call_api", mock_call)
-    om = OpenMeteo(13.41053, 52.52437)
+    om = MockOpenMeteo(13.41053, 52.52437)
+    om.daily_test_json = daily_test_json
+    om.hourly_test_json = hourly_test_json
+    ret = om.get_current_weather()
+    assert ret
     ret = om.get_5_day_forecast()
     assert ret
+    assert om.nighttime_forecast_points
+    assert om.daytime_forecast_points
 
 
 class MockOpenWeatherMap(OpenWeatherMap):
@@ -61,6 +73,7 @@ def testOpenTopo():
     op._altitude_info["elevation"] = 0
     alt = op.get_altitude(48.2085, 12.3989)
     assert alt == 0
+
 
 def testOpenWeatherForecastApiCall(base_fixture):
     """
@@ -101,10 +114,10 @@ def testOpenWeatherNewDayForecast(base_fixture):
 def testOpenWeatherGet3DayForecast(base_fixture):
     MockOpenWeatherMap.fc_json_file = str(base_fixture.testdata_path / "online_weather/ow_forecast.json")
     MockOpenWeatherMap.cw_json_file = str(
-     base_fixture.testdata_path / "online_weather/ow_current_weather.json")
+        base_fixture.testdata_path / "online_weather/ow_current_weather.json")
 
     weather = MockOpenWeatherMap("city_id", "no_api_key_needed")
-   
+
     # get a date matching with the test data
     #current_date_time = datetime.datetime(2019, 7, 21, 15)
     with freeze_time("2019-07-20 20:00:00"):

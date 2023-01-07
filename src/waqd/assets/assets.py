@@ -25,6 +25,7 @@ from waqd.base.file_logger import Logger
 
 TOC_FILE_NAME = "filetoc.json"
 
+
 def get_asset_file(rsc_dir: str, rsc_id: str) -> Path:
     """
     Get a an indexed resource file from the specified path.
@@ -33,7 +34,7 @@ def get_asset_file(rsc_dir: str, rsc_id: str) -> Path:
     No error is raised, the error is only logged.
     """
 
-    if rsc_id == "dummy-pic": # specal case for a dummy picture
+    if rsc_id == "dummy-pic":  # specal case for a dummy picture
         rsc_dir = "gui_base"
     # read filetoc.json
     rsc_path = waqd.assets_path / rsc_dir
@@ -54,8 +55,8 @@ def get_asset_file(rsc_dir: str, rsc_id: str) -> Path:
 
         file_name = filelist.get(rsc_id, "")
         if not file_name:
-            logger.error(f"Cannot find resource id {rsc_id} in catalog")
-            return Path("NULL")
+            logger.error(f"Cannot find resource id {rsc_id} in catalog, fallback to real filename.")
+            file_name = rsc_id
         # append filetype, if applicable
         if filetype:
             file_name = file_name + "." + filetype

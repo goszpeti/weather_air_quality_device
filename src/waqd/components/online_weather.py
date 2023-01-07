@@ -71,18 +71,18 @@ class Weather():
     name: str  # city name TODO deprecate
     main: str  # condition  TODO deprecate or use WQ
     description: str  # condition detail TODO deprecate
-    date_time: datetime # time of the point or day
+    date_time: datetime  # time of the point or day
     fetch_time: datetime = field(init=False)
-    icon: str # icon name
+    icon: str  # icon name
     wind_speed: float  # m/s
     wind_deg: float
     sunrise: time
     sunset: time
-    pressure: float # hPa
+    pressure: float  # hPa
     pressure_sea_level: float  # = 1013 # default, TODO deprecate (or the other?)
-    humidity: float # percent
+    humidity: float  # percent
     clouds: float  # percent cloudiness TODO deprecate
-    temp: float # degC
+    temp: float  # degC
     altitude: float  # elevation of location in meters, deprecated, use from location instead
 
     def __post_init__(self):
@@ -109,7 +109,6 @@ class Weather():
             bg_name = "bg_night_" + online_weather_category
         return get_asset_file("weather_bgrs", bg_name)
 
-
     def get_icon(self) -> Path:
         """
         Helper function to get icon from condition.
@@ -121,6 +120,7 @@ class Weather():
         if not file_path:
             file_path = get_asset_file("gui_base", "dummy.png")
         return file_path
+
 
 @dataclass
 class DailyWeather(Weather):
@@ -191,7 +191,7 @@ class OpenMeteo(Component):
         85: "wi-day-snow", 86: "wi-day-snow",
         95: "wi-day-thunderstorm",
         96: "wi-day-hail", 99: "wi-day-hail"  # TODO hail
-        }
+    }
     night_code_to_ico = {
         0: "wi-night-clear",
         1: "wi-night-alt-partly-cloudy",
@@ -208,35 +208,35 @@ class OpenMeteo(Component):
         85: "wi-night-alt-snow", 86: "wi-night-alt-snow",
         95: "wi-night-alt-snow-thunderstorm",
         96: "wi-night-alt-snow-thunderstorm", 99: "wi-night-alt-snow-thunderstorm"  # TODO hail
-         }
+    }
     condition_map = {  # for bg image - TODO use WeatherQuality
-        0: "clear", # add table for this
+        0: "clear",  # add table for this
         1: "clouds", 2: "clouds", 3: "clouds",
         45: "fog", 48: "fog",
         51: "drizzle", 53: "drizzle", 55: "drizzle",
-        56: "drizzle", 57: "drizzle", # TODO get image
+        56: "drizzle", 57: "drizzle",  # TODO get image
         61: "rain", 63: "rain", 65: "rain",
-        66: "rain", 67: "rain", # TODO
+        66: "rain", 67: "rain",  # TODO
         71: "snow", 73: "snow", 75: "snow",
         77: "snow",
-        80: "rain", 81: "rain", 82: "rain", # TOODO showers
+        80: "rain", 81: "rain", 82: "rain",  # TOODO showers
         85: "snow", 86: "snow",
-        95: "thunderstorm", 
+        95: "thunderstorm",
         96: "thunderstorm", 99: "thunderstorm"  # TODO hail
     }
-        # 1, 2, 3	Mainly clear, partly cloudy, and overcast
-        # 45, 48	Fog and depositing rime fog
-        # 51, 53, 55	Drizzle: Light, moderate, and dense intensity
-        # 56, 57	Freezing Drizzle: Light and dense intensity
-        # 61, 63, 65	Rain: Slight, moderate and heavy intensity
-        # 66, 67	Freezing Rain: Light and heavy intensity
-        # 71, 73, 75	Snow fall: Slight, moderate, and heavy intensity
-        # 77	Snow grains
-        # 80, 81, 82	Rain showers: Slight, moderate, and violent
-        # 85, 86	Snow showers slight and heavy
-        # 95 * Thunderstorm: Slight or moderate
-        # 96, 99 * Thunderstorm with slight and heavy hail
-    
+    # 1, 2, 3	Mainly clear, partly cloudy, and overcast
+    # 45, 48	Fog and depositing rime fog
+    # 51, 53, 55	Drizzle: Light, moderate, and dense intensity
+    # 56, 57	Freezing Drizzle: Light and dense intensity
+    # 61, 63, 65	Rain: Slight, moderate and heavy intensity
+    # 66, 67	Freezing Rain: Light and heavy intensity
+    # 71, 73, 75	Snow fall: Slight, moderate, and heavy intensity
+    # 77	Snow grains
+    # 80, 81, 82	Rain showers: Slight, moderate, and violent
+    # 85, 86	Snow showers slight and heavy
+    # 95 * Thunderstorm: Slight or moderate
+    # 96, 99 * Thunderstorm with slight and heavy hail
+
     def __init__(self, longitude=0.0, latitude=0.0):
         super().__init__()
         self._longitude = longitude
@@ -262,36 +262,33 @@ class OpenMeteo(Component):
                     result.get("elevation", 0),
                     result.get("latitude", 0),
                     result.get("longitude", 0),
-            ))
+                ))
         return locations
 
     def get_current_weather(self) -> Optional[Weather]:
         """ Public API function to get the current weather. """
-        # return if data is up-to-date in a window of 5 minutes
-        current_date_time = datetime.now()
-        if self._current_weather:
-            if self._current_weather.fetch_time:
-                time_delta = current_date_time - self._current_weather.fetch_time
-                if time_delta.seconds > 60 * 5:  # 5 minutes
-                    self._get_daily_weathers()
-        else:
-            self._get_daily_weathers()
+        self._fetch_weather()
         return self._current_weather
 
     def get_5_day_forecast(self) -> List[DailyWeather]:
-        current_date_time = datetime.now()
-        if len(self._five_day_forecast) > 1:
-            if self._five_day_forecast[1].fetch_time:
-                time_delta = current_date_time - self._five_day_forecast[1].fetch_time
-                if time_delta.seconds > 1800:  # 0.5 h
-                    self._get_hourly_weather()
-                    self._get_daily_weathers()
+        self._fetch_weather()
         return self._five_day_forecast
-        
-    def _get_daily_weathers(self):
+
+    def _fetch_weather(self):
+        # return if data is up-to-date in a window of 5 minutes
+        current_date_time = datetime.now()
+        if self._current_weather and self._current_weather.fetch_time:
+            time_delta = current_date_time - self._current_weather.fetch_time
+            if time_delta.seconds < 60 * 5:  # 5 minutes
+                return
+        self._fetch_daily_weather()
+        self._fetch_hourly_weather()
+        # add pressure, humidty and clouds to cw
+
+    def _fetch_daily_weather(self):
         response = self._call_api(
             self.API_FORECAST_CMD +
-            "&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum," + 
+            "&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum," +
             "rain_sum,showers_sum,snowfall_sum,precipitation_hours,windspeed_10m_max," +
             "winddirection_10m_dominant&current_weather=true&windspeed_unit=ms&timezone=auto",
             latitude=self._latitude, longitude=self._longitude)
@@ -300,21 +297,21 @@ class OpenMeteo(Component):
 
         current_weather = response.get("current_weather", {})
         daily = response.get("daily", {})
-        for i in range(len(daily)):
+        for i in range(len(daily.get("time", []))):
             sunrise = datetime.fromisoformat(daily.get("sunrise", [])[i]).time()
             sunset = datetime.fromisoformat(daily.get("sunset", [])[i]).time()
             is_day = is_daytime(sunrise, sunset)
             daily_weather = DailyWeather(
                 "",
-                "",
+                self._get_main_category(daily.get("weathercode", 0)[i]),
                 "",
                 datetime.fromisoformat(daily.get("time", [])[i]),
-                Weather.get_icon(daily.get("weathercode", [])[i], is_day),
+                self._get_icon_name(daily.get("weathercode", 0)[i], is_day),
                 daily.get("windspeed_10m_max", [])[i],
                 daily.get("winddirection_10m_dominant", [])[i],
                 sunrise, sunset,
-                0,0,0,0,
-                0, response.get("elevation", [])[i]
+                0, 0, 0, 0,
+                0, response.get("elevation", [])
             )
             daily_weather.temp_min = daily.get("temperature_2m_min", [])[i]
             daily_weather.temp_max = daily.get("temperature_2m_max", [])[i]
@@ -323,22 +320,25 @@ class OpenMeteo(Component):
             daily_weather.temp_night_max = daily.get("temperature_2m_min", [])[i]
             self._five_day_forecast.append(daily_weather)
         # current weather
+        if not self._five_day_forecast:
+            self._logger.warning("OpenMeteo: No daily forecast weather data received")
+            return
         sunrise = self._five_day_forecast[0].sunrise
         sunset = self._five_day_forecast[0].sunset
         is_day = is_daytime(sunrise, sunset)
         self._current_weather = Weather(
-            "",  # TODO remove
-            current_weather.get("weathercode", 0),
             "",
-            #current_weather.get("description"), # TODO detail
+            self._get_main_category(current_weather.get("weathercode", 0)),
+            "",
+            # current_weather.get("description"), # TODO detail
             datetime.now(),
-            Weather.get_icon(current_weather.get("weathercode", 0), is_day),
-            response.get("windspeed", 0.0) * 3.6, # km/h -> m/s
-            response.get("winddirection", 0.0),
+            self._get_icon_name(current_weather.get("weathercode", ""), is_day),
+            current_weather.get("windspeed", 0.0) * 3.6,  # km/h -> m/s
+            current_weather.get("winddirection", 0.0),
             sunrise, sunset,
-            1000.0, # no data
-            1000.0,  # no data,
-            0, # TODO get from hourly forecast
+            1000.0,  # no data
+            1000.0,  # no data, TODO get from hourly forecast
+            0,  # TODO get from hourly forecast
             0.0,
             current_weather.get("temperature", 0.0),
             response.get("elevation", 0)
@@ -346,7 +346,7 @@ class OpenMeteo(Component):
 
         return self._current_weather
 
-    def _get_hourly_weather(self):
+    def _fetch_hourly_weather(self):
         response = self._call_api(
             self.API_FORECAST_CMD +
             "&hourly=temperature_2m,relativehumidity_2m,precipitation,cloudcover,weathercode,pressure_msl," +
@@ -358,13 +358,14 @@ class OpenMeteo(Component):
         daytime_forecast_points: List[List[Weather]] = [[] for i in range(7)]
         nighttime_forecast_points: List[List[Weather]] = [[] for i in range(7)]
         # we need sunrise and sunset info from current weather to know what day and night is
-        current_weather = self.get_current_weather()
+        current_weather = self._current_weather
         if not current_weather:
             return ([], [])
         current_datetime = datetime.now()
-        for i in range(len(response.get("time", []))):
+        hourly = response.get("hourly", [])
+        for i in range(len(hourly.get("time", []))):
             # utc to local time
-            entry_date_time = datetime.fromtimestamp(response.get("time", [])[i])
+            entry_date_time = datetime.fromisoformat(hourly.get("time", [])[i])
             time_delta = entry_date_time.date() - current_datetime.date()
             day_idx = time_delta.days
             if day_idx > 5 or day_idx < 0:
@@ -372,18 +373,18 @@ class OpenMeteo(Component):
             is_day = is_daytime(current_weather.sunrise, current_weather.sunset, entry_date_time)
             weather_point = Weather(
                 "",  # no name necessary
-                "",
+                hourly.get("weathercode", "")[i],
                 "",
                 entry_date_time,
-                Weather.get_icon(response.get("weathercode", ""), is_day),
-                response.get("windspeed_10m", [])[i],
-                response.get("winddirection_10m", [])[i],
-                current_weather.sunrise, current_weather.sunset, # TODO use day
-                response.get("surface_pressure", [])[i],
-                response.get("pressure_msl", [])[i],
-                response.get("relativehumidity_2m", [])[i],
-                response.get("relativehumidity_2m", [])[i],
-                response.get("temperature_2m", [])[i],
+                self._get_icon_name(hourly.get("weathercode", "")[i], is_day),
+                hourly.get("windspeed_10m", [])[i],
+                hourly.get("winddirection_10m", [])[i],
+                current_weather.sunrise, current_weather.sunset,  # TODO use day
+                hourly.get("surface_pressure", [])[i],
+                hourly.get("pressure_msl", [])[i],
+                hourly.get("relativehumidity_2m", [])[i],
+                hourly.get("cloudcover", [])[i],
+                hourly.get("temperature_2m", [])[i],
                 current_weather.altitude
             )
 
@@ -434,8 +435,6 @@ class OpenMeteo(Component):
             min_temp = min([point.temp for point in forecast_points])
             self._five_day_forecast[day_idx].temp_night_min = min_temp
 
-
-
     def _call_api(self, command: str, **kwargs) -> Dict[str, Any]:
         """ Call the REST like API of OpenWeatherMap. Return response. """
         if self._disabled:
@@ -453,6 +452,19 @@ class OpenMeteo(Component):
         except Exception as error:
             self._logger.error(f"OpenMeteo: Can't get data: {str(error)}")
         return {}
+
+    def _get_icon_name(self, ident="", is_day=False):
+        """
+        Helper function to get icon from condition.
+        """
+        if is_day:
+            icon_name = self.day_code_to_ico.get(ident)
+        else:
+            icon_name = self.night_code_to_ico.get(ident)
+        return icon_name
+
+    def _get_main_category(self, ident):
+        return self.condition_map.get(ident)
 
 
 class OpenTopoData():
@@ -823,6 +835,7 @@ class OpenWeatherMap(Component):
             self._logger.error(
                 f"OpenWeatherMap: Can't get current weather for {self._city_id} : {str(error)}")
         return {}
+
     @staticmethod
     def _get_icon_name(ident="", is_day=False):
         """
