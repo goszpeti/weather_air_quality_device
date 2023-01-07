@@ -47,7 +47,6 @@ def testSaveToFile(base_fixture):
     sets.set(LANG, lang)
     sets.set(LOCATION, location)
     sets.set(FORECAST_ENABLED, forecast_enabled)
-    sets.set(PREFER_ACCU_WEATHER, accu_weather_prefered)
     sets.set(NIGHT_MODE_BEGIN, night_mode_begin)
     sets.set(NIGHT_MODE_END, night_mode_end)
     sets.set(BRIGHTNESS, brightness)
@@ -66,7 +65,6 @@ def testSaveToFile(base_fixture):
     assert parser.get(sets._GENERAL_SECTION_NAME, LANG) == lang
     assert parser.get(sets._FORECAST_SECTION_NAME, LOCATION) == location
     assert parser.get(sets._FORECAST_SECTION_NAME, FORECAST_ENABLED) == str(forecast_enabled)
-    assert parser.get(sets._FORECAST_SECTION_NAME, PREFER_ACCU_WEATHER) == str(accu_weather_prefered)
     assert parser.get(sets._ENERGY_SECTION_NAME, NIGHT_MODE_BEGIN) == str(night_mode_begin)
     assert parser.get(sets._ENERGY_SECTION_NAME, NIGHT_MODE_END) == str(night_mode_end)
     assert parser.get(sets._ENERGY_SECTION_NAME, MOTION_SENSOR_ENABLED) == str(motion_sensor_enabled)

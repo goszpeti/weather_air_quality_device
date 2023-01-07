@@ -124,7 +124,6 @@ def main(settings_path: Optional[Path] = None):
             Logger().error("Application crashed: \n%s", trace_back)
 
     # unload modules - wait for every thread to quit
-    # if runtime_system.is_target_system:
     Logger().info("Prepare to exit...")
     if comp_ctrl:
         comp_ctrl.unload_all()

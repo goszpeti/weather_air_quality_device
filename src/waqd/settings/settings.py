@@ -25,14 +25,14 @@ from pathlib import Path
 from typing import Union, Dict
 
 from waqd.settings import (AUTO_UPDATER_ENABLED, CCS811_ENABLED, FORECAST_BG, INTERIOR_BG, 
-                           LAST_ALTITUDE_M_VALUE, LAST_TEMP_C_OUTSIDE_VALUE, MH_Z19_ENABLED, 
+                           LOCATION_ALTITUDE_M, LAST_TEMP_C_OUTSIDE, MH_Z19_ENABLED, 
                            AW_API_KEY, EVENTS_ENABLED, FONT_NAME, AW_CITY_IDS, BRIGHTNESS, 
                            DAY_STANDBY_TIMEOUT, DISP_TYPE_RPI, DISPLAY_TYPE, FONT_SCALING, 
-                           FORECAST_ENABLED, LANG, MH_Z19_VALUE_OFFSET,
+                           FORECAST_ENABLED, LANG, MH_Z19_VALUE_OFFSET, LOCATION_LONGITUDE, LOCATION_LATITUDE,
                            REMOTE_MODE_URL, UPDATER_USER_BETA_CHANNEL,
                            LANG_GERMAN, LOCATION, MOTION_SENSOR_ENABLED, MOTION_SENSOR_PIN,
                            NIGHT_MODE_BEGIN, NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT, OW_API_KEY,
-                           OW_CITY_IDS, PREFER_ACCU_WEATHER, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED,
+                           OW_CITY_IDS, SOUND_ENABLED, DHT_22_PIN, BME_280_ENABLED,
                            BMP_280_ENABLED, USER_API_KEY, USER_SESSION_SECRET, USER_DEFAULT_PW,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, DHT_22_DISABLED, LOG_SENSOR_DATA, SERVER_ENABLED)
 
@@ -87,8 +87,7 @@ class Settings():
                 UPDATER_USER_BETA_CHANNEL: False,
                 LOG_SENSOR_DATA: True,
                 SERVER_ENABLED: True,
-                LAST_ALTITUDE_M_VALUE: 400.0,
-                LAST_TEMP_C_OUTSIDE_VALUE: 23.5,
+                LAST_TEMP_C_OUTSIDE: 23.5,
                 REMOTE_MODE_URL: "",
                 USER_SESSION_SECRET: bcrypt.gensalt(4).decode("utf-8"),
                 USER_API_KEY: bcrypt.gensalt(4).decode("utf-8")[3:],
@@ -110,12 +109,15 @@ class Settings():
             },
             self._FORECAST_SECTION_NAME: {
                 FORECAST_ENABLED: True,
-                PREFER_ACCU_WEATHER: False,
                 LOCATION: "None",
+                LOCATION_LATITUDE: 0.0,
+                LOCATION_LONGITUDE: 0.0,
+                LOCATION_ALTITUDE_M: 400.0,
                 OW_API_KEY: "",
                 OW_CITY_IDS: {},
                 AW_API_KEY: "",
-                AW_CITY_IDS: {}}
+                AW_CITY_IDS: {}
+            }
         }
 
         self._read_ini()

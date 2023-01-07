@@ -27,8 +27,8 @@ from waqd.base.component import Component, CyclicComponent
 from waqd.base.file_logger import Logger
 from waqd.settings import (AUTO_UPDATER_ENABLED, BME_280_ENABLED,
                            BMP_280_ENABLED, BRIGHTNESS, CCS811_ENABLED,
-                           DHT_22_DISABLED, DHT_22_PIN, DISPLAY_TYPE, EVENTS_ENABLED, LANG,
-                           LOCATION, MH_Z19_ENABLED, MOTION_SENSOR_ENABLED,
+                           DHT_22_DISABLED, DHT_22_PIN, DISPLAY_TYPE, EVENTS_ENABLED, LANG, LAST_TEMP_C_OUTSIDE,
+                           LOCATION, LOCATION_ALTITUDE_M, LOCATION_LATITUDE, LOCATION_LONGITUDE, MH_Z19_ENABLED, MOTION_SENSOR_ENABLED,
                            MOTION_SENSOR_PIN, NIGHT_MODE_END, OW_API_KEY, OW_CITY_IDS, REMOTE_MODE_URL, SERVER_ENABLED,
                            SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, USER_API_KEY, USER_DEFAULT_PW, USER_SESSION_SECRET,
                            WAVESHARE_DISP_BRIGHTNESS_PIN, Settings)
@@ -60,11 +60,27 @@ class ComponentRegistry():
 
     def set_unload_in_progress(self):
         """ Signals the components, that they are unloading and should not instantiate new objects. """
+        self._save_cached_values()
         self._unload_in_progress = True
 
+    def _save_cached_values(self):
+        """ Save values which need to be cached for next start """
+        try:
+            if not self.weather_info.is_disabled:
+                cw = self.weather_info.get_current_weather()
+                if cw:
+                    self._settings.set(LAST_TEMP_C_OUTSIDE, cw.temp)
+                    self._settings.set(LOCATION_ALTITUDE_M, cw.altitude)
+            if not self.remote_exterior_sensor.is_disabled:
+                import waqd.app as app # resolve circular imports
+                self._settings.set(LAST_TEMP_C_OUTSIDE, 
+                    self.remote_exterior_sensor.get_temperature().m_as(app.unit_reg.degC))
+        except Exception as e:
+            self._logger.debug("ComponentRegistry: Error while writing last values: " + str(e))
+
+
     def set_unload_finished(self):
-        """ Signals the components, that unload finished and business is back as usual. """
-        # reset sensors
+        """ Signals the components, that unload finished and business is back as usual. """        # reset sensors
         self._sensors = {}
         self._unload_in_progress = False
 
@@ -163,13 +179,16 @@ class ComponentRegistry():
         return self._create_component_instance(ESaver, [self, self._settings])
 
     @property
-    def weather_info(self) -> "OpenWeatherMap":
+    def weather_info(self) -> "OpenWeatherMap": # TODO interface
         """ Access for OnlineWeather singleton """
-        from waqd.components import OpenWeatherMap
+        from waqd.components import OpenWeatherMap, OpenMeteo
         location = self._settings.get_string(LOCATION)
-        return self._create_component_instance(OpenWeatherMap, [self._settings.get_dict(OW_CITY_IDS).get(location, ""),
-                                                                self._settings.get(OW_API_KEY)])
-
+        if waqd.WEATHER_DATA_PROVIDER == waqd.WeatherDataProviders.OpenWeatherMap.value:
+            return self._create_component_instance(OpenWeatherMap, [self._settings.get_dict(OW_CITY_IDS).get(location, ""),
+                                                                    self._settings.get(OW_API_KEY)])
+        elif waqd.WEATHER_DATA_PROVIDER == waqd.WeatherDataProviders.OpenMeteo.value:
+            return self._create_component_instance(OpenMeteo, 
+                [self._settings.get_float(LOCATION_LONGITUDE), self._settings.get_float(LOCATION_LATITUDE)])
     @property
     def auto_updater(self) -> "OnlineUpdater":
         """ Access for OnlineUpdater singleton """

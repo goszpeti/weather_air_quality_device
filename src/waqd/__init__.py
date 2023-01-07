@@ -23,6 +23,7 @@ Contains global constants and basic/ui variables.
 Should not contain any 3rd party imports!
 """
 
+from enum import Enum
 from pathlib import Path
 import datetime
 __version__ = "2.0.0"
@@ -35,6 +36,11 @@ SCREEN_HEIGHT = 480
 
 ### Feature Flags ###
 SELECTEBLE_LOGGER_INTERVAL_VIEW = False
+class WeatherDataProviders(Enum): # promote to settings, after stable
+    OpenWeatherMap = 0
+    AccuWeather = 1 # Currently not implemented
+    OpenMeteo = 2
+WEATHER_DATA_PROVIDER = 2
 
 ### Global variables ###
 # 0: No debug, 1 = logging on, 2: remote debugging on

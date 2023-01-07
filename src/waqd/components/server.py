@@ -386,7 +386,7 @@ class BottleServer(Component):
         current_weather = self._comps.weather_info.get_current_weather()
         icon_rel_path = "weather_icons/wi-na.svg"  # default N/A
         if current_weather:
-            icon_rel_path = current_weather.icon.relative_to(waqd.assets_path)
+            icon_rel_path = current_weather.get_icon().relative_to(waqd.assets_path)
         # second pass
         tpl = Jinja2Template(page_content)
         return tpl.render(weather_icon=str(icon_rel_path),

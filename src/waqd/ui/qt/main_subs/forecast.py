@@ -148,9 +148,9 @@ class Forecast(sub_ui.SubUi):
             return
 
         # set icons
-        common.draw_svg(self._ui.forecast_d1_icon, forecast[1].icon, scale=3.5)
-        common.draw_svg(self._ui.forecast_d2_icon, forecast[2].icon, scale=3.5)
-        common.draw_svg(self._ui.forecast_d3_icon, forecast[3].icon, scale=3.5)
+        common.draw_svg(self._ui.forecast_d1_icon, forecast[1].get_icon(), scale=3.5)
+        common.draw_svg(self._ui.forecast_d2_icon, forecast[2].get_icon(), scale=3.5)
+        common.draw_svg(self._ui.forecast_d3_icon, forecast[3].get_icon(), scale=3.5)
 
         # set day temps
         self._ui.forecast_d1_day_temps_value.setText(

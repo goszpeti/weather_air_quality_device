@@ -18,16 +18,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from waqd.base.file_logger import Logger
 import locale
-import logging
 import platform
 import time
 import datetime
 from typing import Optional
-from pint import Quantity, Unit
+from pint import Quantity
 from waqd.settings import LANG, LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN, Settings
-import waqd
-logger = logging.getLogger(waqd.PROG_NAME)
 from waqd.app import unit_reg
 
 
@@ -52,7 +50,7 @@ def get_localized_date(date_time: datetime.datetime, settings: Settings) -> str:
                     locale_name = "hu_HU.UTF8"
             locale.setlocale(locale.LC_ALL, locale_name)
         except Exception as error:
-            logger.error("Cannot set language to %s: %s", settings.get(LANG), str(error))
+            Logger().error("Cannot set language to %s: %s", settings.get(LANG), str(error))
             # "sudo apt-get install language-pack-id" is needed...
             # or sudo locale-gen
     else:
@@ -70,7 +68,6 @@ def format_unit_disp_value(quantity: Optional[Quantity], unit="True", precision=
     disp_value = "N/A"
     if quantity is not None:
         if isinstance(quantity, Quantity):
-            # .m_as(app.unit_reg.degC)
             disp_value = f"{float(quantity.m):.{precision}f}"
             if unit:
                 disp_value += " " + unit_reg.get_symbol(str(quantity.u))

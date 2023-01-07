@@ -42,7 +42,7 @@ from waqd.base.component_reg import ComponentRegistry
 from waqd.base.file_logger import Logger, SensorFileLogger
 from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.network import Network
-from waqd.settings import (LAST_ALTITUDE_M_VALUE, LAST_TEMP_C_OUTSIDE_VALUE,
+from waqd.settings import (LOCATION_ALTITUDE_M, LAST_TEMP_C_OUTSIDE,
                            LOG_SENSOR_DATA, MH_Z19_VALUE_OFFSET, REMOTE_MODE_URL, USER_API_KEY, Settings)
 
 if TYPE_CHECKING:
@@ -549,8 +549,8 @@ class BMP280(TempSensor, BarometricSensor, CyclicComponent):
             # errors happen fairly often, keep going
             self._logger.error("BMP280: Can't read sensor - %s", str(error))
             return
-        altitude = self._settings.get_float(LAST_ALTITUDE_M_VALUE)
-        temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE_VALUE)
+        altitude = self._settings.get_float(LOCATION_ALTITUDE_M)
+        temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE)
         weather = self._comps.weather_info.get_current_weather()
         if weather:
             altitude = weather.altitude
@@ -608,8 +608,8 @@ class BME280(TempSensor, BarometricSensor, HumiditySensor, CyclicComponent):
             return
 
         # change this to match the location's pressure (hPa) at sea level
-        altitude = self._settings.get_float(LAST_ALTITUDE_M_VALUE)
-        temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE_VALUE)
+        altitude = self._settings.get_float(LOCATION_ALTITUDE_M)
+        temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE)
         if Network().internet_connected:
             weather = self._comps.weather_info.get_current_weather()
             if weather:

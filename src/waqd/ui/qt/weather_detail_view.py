@@ -18,18 +18,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-import logging
 from typing import List
 
 from PyQt5 import QtChart, QtCore, QtGui, QtWidgets
-from waqd import PROG_NAME, SCREEN_HEIGHT, SCREEN_WIDTH
+from waqd import SCREEN_HEIGHT, SCREEN_WIDTH
 from waqd.components.online_weather import Weather
 from waqd.settings import LOCATION
 
 from . import common
 from waqd.ui import get_localized_date
 
-logger = logging.getLogger(PROG_NAME)
 
 Qt = QtCore.Qt
 
@@ -173,7 +171,7 @@ class WeatherDetailView(QtWidgets.QDialog):
                 icon_label = QtWidgets.QLabel(self._chart_view)
                 icon_label.setGeometry(int(abs_point_pos.x()), int(abs_point_pos.y() - icon_height/2),
                                        icon_width, icon_height)
-                common.draw_svg(icon_label, point.icon, shadow=False, scale=scale)
+                common.draw_svg(icon_label, point.get_icon(), shadow=False, scale=scale)
                 icon_label.setStyleSheet(f"QLabel{{background-color: {self.AREA_COLOR}}}")
                 icon_label.show()
 

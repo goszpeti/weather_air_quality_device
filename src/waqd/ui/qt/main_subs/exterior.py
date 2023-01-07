@@ -118,7 +118,7 @@ class Exterior(sub_ui.SubUi):
             # set todays forecast
             if not forecast[0]:
                 return
-            common.draw_svg(self._ui.exterior_forecast_icon, forecast[0].icon, scale=3)
+            common.draw_svg(self._ui.exterior_forecast_icon, forecast[0].get_icon(), scale=3)
 
             if not current_weather.is_daytime():
                 temp_min = forecast[0].temp_night_min
