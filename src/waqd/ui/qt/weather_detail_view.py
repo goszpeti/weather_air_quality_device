@@ -18,11 +18,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from datetime import datetime, timedelta
 from typing import List
 
 from PyQt5 import QtChart, QtCore, QtGui, QtWidgets
 from waqd import SCREEN_HEIGHT, SCREEN_WIDTH
-from waqd.components.online_weather import Weather
+from waqd.components.weather import Weather
 from waqd.settings import LOCATION
 
 from . import common
@@ -35,6 +36,7 @@ Qt = QtCore.Qt
 class WeatherDetailView(QtWidgets.QDialog):
     AREA_COLOR = "#2B438C"
     MAX_POINTS = 5
+    OVERHANG = 3600000
 
     def __init__(self, weather_points: List[Weather], settings, main_ui):
         super().__init__(main_ui)
@@ -46,15 +48,23 @@ class WeatherDetailView(QtWidgets.QDialog):
         self.move(0,0)
         # create series from weather points
         series = QtChart.QLineSeries(self)
+        self.series = series
         self._weather_points = weather_points
 
         # sort weather points dataset?
-
+        begin_date_time = None
+        self.end_hour = 0
         for point in weather_points:
-            series.append(QtCore.QPointF(point.date_time.timestamp() * 1000, point.temp))
+            if not begin_date_time and point.date_time + timedelta(hours=1) > datetime.now():
+                begin_date_time = point.date_time
+            if begin_date_time:
+                series.append(QtCore.QPointF(point.date_time.timestamp() * 1000, point.temp))
+        assert isinstance(begin_date_time, datetime)
+        self.begin_hour = begin_date_time.timestamp() * 1000
+        self.end_hour = weather_points[-1].date_time.timestamp() * 1000
+        # +1 point
+        series.append(QtCore.QPointF(self.end_hour + self.OVERHANG/2, point.temp))
 
-        self.begin_hour = (min([point.date_time for point in weather_points])).timestamp() * 1000
-        self.end_hour = (max([point.date_time for point in weather_points])).timestamp() * 1000
         # get min and max temp
         min_temp = min([point.temp for point in weather_points])
         max_temp = max([point.temp for point in weather_points])
@@ -65,7 +75,7 @@ class WeatherDetailView(QtWidgets.QDialog):
         # this is a dummy which marks the bottom of the areas series - so we can color the whole thing
         series_dummy = QtChart.QLineSeries(self)
         series_dummy.append(self.begin_hour, begin_temp)
-        series_dummy.append(self.end_hour, begin_temp)
+        series_dummy.append(self.end_hour + self.OVERHANG/2, begin_temp)
 
         area = QtChart.QAreaSeries(series, series_dummy)
         area.setBrush(QtGui.QColor(self.AREA_COLOR))
@@ -79,7 +89,7 @@ class WeatherDetailView(QtWidgets.QDialog):
         series.setPointLabelsColor(Qt.white)
         series.setPointLabelsFont(font)
         series.setPointLabelsFormat("@yPoint")
-        series.setPointLabelsClipping(True)
+        series.setPointLabelsClipping(False)
 
         # draw a dashed line at the first tick of y axis
         pen = QtGui.QPen(Qt.DashLine)
@@ -91,7 +101,7 @@ class WeatherDetailView(QtWidgets.QDialog):
                                 round(begin_temp), 1)  # chart.axisY().tickCount()
 
         dashed_line_series.append(QtCore.QPointF(self.begin_hour, self.first_tick))
-        dashed_line_series.append(QtCore.QPointF(self.end_hour, self.first_tick))
+        dashed_line_series.append(QtCore.QPointF(self.end_hour + self.OVERHANG/2, self.first_tick))
 
         # chart setup
         chart = QtChart.QChart()
@@ -117,7 +127,7 @@ class WeatherDetailView(QtWidgets.QDialog):
 
         chart.axisY(series).setRange(begin_temp, round(max_temp) + 5)
 
-        chart.axisX().setRange(self.begin_hour - 1800000, self.end_hour + 1800000)
+        chart.axisX().setRange(self.begin_hour, self.end_hour + self.OVERHANG/2)
         axisX = QtChart.QDateTimeAxis()
         axisX.setFormat("h:mm")
         chart.setAxisX(axisX, series)
@@ -163,11 +173,28 @@ class WeatherDetailView(QtWidgets.QDialog):
             icon_width = int(77)
             icon_height = int(70)
             scale = 2.8
+            last_point = None
+            same_icon = 0
+            pic_offset = 3600000
             for point in self._weather_points:
-                if not (self.begin_hour <= point.date_time.timestamp() * 1000 < self.end_hour):
+                if not (self.begin_hour <= point.date_time.timestamp() * 1000 < self.end_hour - pic_offset):
                     continue
                 abs_point_pos = self._chart.mapToPosition(QtCore.QPointF(
-                    (point.date_time.timestamp() * 1000) + 3600000, self.first_tick))
+                    (point.date_time.timestamp() * 1000) + pic_offset, self.first_tick))
+                if last_point is not None:
+                    if point.icon == last_point.icon and same_icon < 4:
+                        same_icon += 1
+                        continue
+                    last_abs_point_pos = self._chart.mapToPosition(QtCore.QPointF(
+                        (last_point.date_time.timestamp() * 1000) + pic_offset, self.first_tick))
+                    if abs(last_abs_point_pos.x() - abs_point_pos.x()) < icon_width:
+                        continue
+
+                same_icon = 0
+                last_point = point
+                # if point.date_time.timestamp() * 1000 + pic_offset >= self.end_hour:
+                #     pic_offset = -pic_offset
+               
                 icon_label = QtWidgets.QLabel(self._chart_view)
                 icon_label.setGeometry(int(abs_point_pos.x()), int(abs_point_pos.y() - icon_height/2),
                                        icon_width, icon_height)

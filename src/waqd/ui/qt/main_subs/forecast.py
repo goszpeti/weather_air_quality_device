@@ -108,7 +108,8 @@ class Forecast(sub_ui.SubUi):
         daytime_points = self._comps.weather_info.daytime_forecast_points
         if not len(daytime_points)+1 > day:
             return
-        self.det = WeatherDetailView(daytime_points[day], self._settings, self._main_ui)
+        self.det = WeatherDetailView(
+            daytime_points[day] + self._comps.weather_info.nighttime_forecast_points[day][:4], self._settings, self._main_ui)
         self.det.show()
 
     def _cyclic_update(self):
