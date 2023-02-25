@@ -133,6 +133,8 @@ class OptionMainUi(QDialog):
         # self._ui.options_tabs.setCurrentIndex(0)
         QScroller.grabGesture(self._ui.hw_scroll_area, QScroller.LeftMouseButtonGesture)
         # set to normal brightness
+        while not comp_ctrl.all_unloaded:
+            time.sleep(0.1)
         self._comps.display.set_brightness(self._settings.get_int(BRIGHTNESS))
 
         # initialize splash screen for the closing of the UI and make a screenshot

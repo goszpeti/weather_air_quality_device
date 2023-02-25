@@ -116,17 +116,14 @@ class ESaver(CyclicComponent):
                 self._comps.display.set_brightness(self._settings.get_int(BRIGHTNESS))
                 time.sleep(self._settings.get_int(DAY_STANDBY_TIMEOUT))
         else:
-            if self.night_mode_active and self._comps.display.get_brightness() > NIGHT_STANDBY_BRIGHTNESS:
-                self._logger.debug("ESaver: Re-entering night mode after wake-up")
-                self._comps.display.set_brightness(NIGHT_MODE_BRIGHTNESS)
-            elif not self.night_mode_active and (current_date_time <= wake_time or current_date_time >= sleep_time):
-                self._logger.debug("ESaver: Night mode")
-                self._night_mode_active = True
-                self._comps.display.set_brightness(NIGHT_MODE_BRIGHTNESS)
-            elif self.night_mode_active and (wake_time <= current_date_time < sleep_time):
+            if self.night_mode_active and (wake_time <= current_date_time < sleep_time):
                 self._logger.debug("ESaver: Normal day mode")
                 self._comps.display.set_brightness(self._settings.get_int(BRIGHTNESS))
                 self._night_mode_active = False
             elif not self.night_mode_active and self._settings.get(MOTION_SENSOR_ENABLED):
                 self._logger.debug("ESaver: Day standby mode")
                 self._comps.display.set_brightness(STANDBY_BRIGHTNESS)
+            if current_date_time <= wake_time or current_date_time >= sleep_time:
+                self._logger.debug("ESaver: Night mode")
+                self._night_mode_active = True
+                self._comps.display.set_brightness(NIGHT_MODE_BRIGHTNESS)
