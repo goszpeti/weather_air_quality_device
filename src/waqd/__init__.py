@@ -26,7 +26,7 @@ Should not contain any 3rd party imports!
 from enum import Enum
 from pathlib import Path
 import datetime
-__version__ = "2.0.0"
+__version__ = "2.0.0b1"
 
 ### Global constants ###
 PROG_NAME = "WAQD"
