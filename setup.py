@@ -4,7 +4,6 @@
 # Note: To use the 'upload' functionality of this file, you must:
 #   $ pipenv install twine --dev
 
-import waqd
 import io
 import os
 import platform
@@ -86,6 +85,7 @@ except FileNotFoundError:
 # Load the package's __version__.py module as a dictionary.
 project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
 sys.path.insert(0, os.path.join(here, "src"))
+import waqd
 about = waqd
 
 

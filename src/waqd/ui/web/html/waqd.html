@@ -6,24 +6,25 @@
   source_int.onmessage = function (message) {
     // console.log(message.data)
     var jdata = JSON.parse(message.data);
-    $("#temp_value").html(jdata.temp);
-    $("#humidity_value").html(jdata.hum);
-    $("#pressure_value").html(jdata.baro);
-    $("#co2_value").html(jdata.co2);
+    document.getElementById("temp_value").innerHTML = jdata.temp;
+    document.getElementById("humidity_value").innerHTML = jdata.hum;
+    document.getElementById("pressure_value").innerHTML = jdata.baro;
+    document.getElementById("co2_value").innerHTML = jdata.co2;
   }
   var source_ext = new EventSource("api/events/remoteExtSensor");
   source_ext.onmessage = function (message) {
+    // console.log(message.data)
     var jdata = JSON.parse(message.data);
-    $("temp_ext_value").html(jdata.temp);
-    $("humidity_ext_value").html(jdata.hum);
+    document.getElementById("temp_ext_value").innerHTML = jdata.temp;
+    document.getElementById("humidity_ext_value").innerHTML = jdata.hum;
+    // document.getElementById("pressure_value").innerHTML = jdata.baro;
+    // document.getElementById("co2_value").innerHTML = jdata.co2;
   }
 
   // When the user clicks on <div>, open the popup
   function toggle_history(type) {
     var overlay = document.getElementById("loading_overlay");
-    $("loading_overlay").css("display", "block")
-    // joverlay.style.display
-    // overlay.style.display = "block";
+    overlay.style.display = "block";
 
     fetch("/waqd/" + type + "_history")
       .then((response) => {
@@ -33,9 +34,8 @@
         return response.text();
       })
       .then((text) => {
-        $("loading_overlay").css("display", "none")
-        // var overlay = document.getElementById("loading_overlay");
-        // overlay.style.display = "none";
+        var overlay = document.getElementById("loading_overlay");
+        overlay.style.display = "none";
         var modal_popup = document.getElementById("modal_popup");
         if (modal_popup == null) {
           var newDiv = document.createElement("div");
