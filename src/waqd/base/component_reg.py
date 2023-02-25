@@ -18,7 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-
+import platform
 import threading
 # this allows to use forward declarations to avoid circular imports
 from typing import TYPE_CHECKING, Dict, List, Optional, Type, TypeVar, Union
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
                                  DustSensor, ESaver, EventHandler,
                                  HumiditySensor, LightSensor, OnlineUpdater,
                                  OpenWeatherMap, WAQDRemoteSensor, SensorComponent,
-                                 Sound, TempSensor, TextToSpeach, TvocSensor, Server)
+                                 SoundInterface, TempSensor, TextToSpeach, TvocSensor, Server)
 
 
 class ComponentRegistry():
@@ -72,12 +72,11 @@ class ComponentRegistry():
                     self._settings.set(LAST_TEMP_C_OUTSIDE, cw.temp)
                     self._settings.set(LOCATION_ALTITUDE_M, cw.altitude)
             if not self.remote_exterior_sensor.is_disabled:
-                import waqd.app as app # resolve circular imports
-                self._settings.set(LAST_TEMP_C_OUTSIDE, 
-                    self.remote_exterior_sensor.get_temperature().m_as(app.unit_reg.degC))
+                import waqd.app as app  # resolve circular imports
+                self._settings.set(LAST_TEMP_C_OUTSIDE,
+                                   self.remote_exterior_sensor.get_temperature().m_as(app.unit_reg.degC))
         except Exception as e:
             self._logger.debug("ComponentRegistry: Error while writing last values: " + str(e))
-
 
     def set_unload_finished(self):
         """ Signals the components, that unload finished and business is back as usual. """        # reset sensors
@@ -167,10 +166,13 @@ class ComponentRegistry():
         return self._create_component_instance(TextToSpeach, [self, self._settings.get(LANG)])
 
     @property
-    def sound(self) -> "Sound":
+    def sound(self) -> "SoundInterface":
         """ Access for Sound singleton """
-        from waqd.components import Sound
-        return self._create_component_instance(Sound, [self, self._settings.get(SOUND_ENABLED)])
+        from waqd.components import SoundQt, SoundVLC
+        sound_impl = SoundQt
+        if platform.system() == "Linux":
+            sound_impl = SoundVLC
+        return self._create_component_instance(sound_impl, [self, self._settings.get(SOUND_ENABLED)])
 
     @property
     def energy_saver(self) -> "ESaver":
@@ -179,7 +181,7 @@ class ComponentRegistry():
         return self._create_component_instance(ESaver, [self, self._settings])
 
     @property
-    def weather_info(self) -> "OpenWeatherMap": # TODO interface
+    def weather_info(self) -> "OpenWeatherMap":  # TODO interface
         """ Access for OnlineWeather singleton """
         from waqd.components import OpenWeatherMap, OpenMeteo
         location = self._settings.get_string(LOCATION)
@@ -187,8 +189,9 @@ class ComponentRegistry():
             return self._create_component_instance(OpenWeatherMap, [self._settings.get_dict(OW_CITY_IDS).get(location, ""),
                                                                     self._settings.get(OW_API_KEY)])
         elif waqd.WEATHER_DATA_PROVIDER == waqd.WeatherDataProviders.OpenMeteo.value:
-            return self._create_component_instance(OpenMeteo, 
-                [self._settings.get_float(LOCATION_LONGITUDE), self._settings.get_float(LOCATION_LATITUDE)])
+            return self._create_component_instance(OpenMeteo,
+                                                   [self._settings.get_float(LOCATION_LONGITUDE), self._settings.get_float(LOCATION_LATITUDE)])
+
     @property
     def auto_updater(self) -> "OnlineUpdater":
         """ Access for OnlineUpdater singleton """
@@ -200,8 +203,9 @@ class ComponentRegistry():
     def server(self) -> "Server":
         from waqd.components import Server
         return self._create_component_instance(Server, [self, self._settings,
-                self._settings.get(SERVER_ENABLED), self._settings.get(USER_SESSION_SECRET), 
-            self._settings.get(USER_API_KEY), self._settings.get_string(USER_DEFAULT_PW)])
+                                                        self._settings.get(SERVER_ENABLED), self._settings.get(
+                                                            USER_SESSION_SECRET),
+                                                        self._settings.get(USER_API_KEY), self._settings.get_string(USER_DEFAULT_PW)])
 
     @property
     def temp_sensor(self) -> "TempSensor":
@@ -217,7 +221,7 @@ class ComponentRegistry():
             elif self._settings.get(BMP_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
             elif dht22_pin != DHT_22_DISABLED:
-                            sensor = self._create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
+                sensor = self._create_component_instance(sensors.DHT22, [dht22_pin, self, self._settings])
             else:  # create a default instance that is disabled, so the watchdog
                 # won't try to instantiate a new one over and over
                 sensor = self._create_component_instance(sensors.TempSensor, [False, 1, False])

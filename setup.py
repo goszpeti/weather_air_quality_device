@@ -31,8 +31,8 @@ REQUIRED = [
     "bcrypt>=4.0.0, <5.0.0",  # Apache License, Version 2.0 - Password hashing
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
     "JsonSchema==4.16.0",  # MIT License - for events json schema validation
-    "bottle==0.12.23",  # MIT License - webserver for remote sensors
-    "jinja2==3.1.2",
+    "Bottle==0.12.23",  # MIT License - webserver for remote sensors
+    "Jinja2==3.1.2",
     "paste==3.5.0",  # server backend for bottle
     "pint==0.19.2",  # BSD 3-clause style license - physical units for sensors
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta

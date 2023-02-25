@@ -57,7 +57,7 @@
                 "program": "${workspaceFolder}/src/waqd/__main__.py",
                 "args": [
                     "-D=1",
-                    "-H"
+                    // "-H"
                 ],
                 "console": "integratedTerminal",
                 "subProcess": true,

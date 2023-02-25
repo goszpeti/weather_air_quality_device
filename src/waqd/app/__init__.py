@@ -23,7 +23,7 @@ Entry module of WAQD
 Sets up cmd arguments, settings and starts the gui
 """
 
- 
+
 from typing import TYPE_CHECKING
 import argparse
 import logging
@@ -37,7 +37,7 @@ from typing import Optional
 from pint import UnitRegistry
 
 import waqd
-from waqd import PROG_NAME
+from waqd import INTRO_JINGLE, PROG_NAME
 from waqd import __version__ as WAQD_VERSION
 from waqd import base_path
 from waqd.assets import get_asset_file
@@ -67,6 +67,7 @@ translator: Optional["QtCore.QTranslator"] = None
 base_translator: Optional["QtCore.QTranslator"] = None
 # for global access to units
 unit_reg = UnitRegistry()
+
 
 def main(settings_path: Optional[Path] = None):
     """
@@ -104,8 +105,8 @@ def main(settings_path: Optional[Path] = None):
         return
     global comp_ctrl
     comp_ctrl = ComponentController(settings)
-    if waqd.DEBUG_LEVEL > 1: # disable startup sound
-       comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
+    if waqd.DEBUG_LEVEL > 1:  # disable startup sound
+        comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
     comp_ctrl.init_all()
     # Load the selected GUI mode
     display_type = settings.get(DISPLAY_TYPE)
@@ -120,8 +121,8 @@ def main(settings_path: Optional[Path] = None):
         elif display_type == DISP_TYPE_WAVESHARE_EPAPER_2_9:
             pass
     except:  # pylint:disable=bare-except
-            trace_back = traceback.format_exc()
-            Logger().error("Application crashed: \n%s", trace_back)
+        trace_back = traceback.format_exc()
+        Logger().error("Application crashed: \n%s", trace_back)
 
     # unload modules - wait for every thread to quit
     Logger().info("Prepare to exit...")
@@ -152,6 +153,7 @@ def parse_cmd_args():
         waqd.HEADLESS_MODE = True
     if args.migrate_sensor_logs:
         waqd.MIGRATE_SENSOR_LOGS = True
+
 
 def start_remote_debug():
     """ Start remote debugging from level 2 and wait on it from level 3"""
@@ -196,7 +198,6 @@ def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
         MY_APP_ID = 'ConanAppLauncher.' + WAQD_VERSION
         QtWin.setCurrentProcessExplicitAppUserModelID(MY_APP_ID)
 
-
     # apply Qt attributes (only at init possible)
     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
@@ -235,6 +236,8 @@ def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
     # wait for finishing loading - processEvents is needed for animations to work (loader)
     loading_minimum_time_s = 5
     start = time.time()
+    if INTRO_JINGLE:
+        comp_ctrl.components.sound.play(get_asset_file("sounds", "pera__introgui.wav"))
     while not comp_ctrl.all_ready:
         QtWidgets.QApplication.processEvents()
 
@@ -250,7 +253,6 @@ def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
         or (time.time() < start + loading_minimum_time_s) \
             and waqd.DEBUG_LEVEL <= 3:
         QtWidgets.QApplication.processEvents()
-
 
     # splash screen can be disabled - with fader
     app_main_ui.show()

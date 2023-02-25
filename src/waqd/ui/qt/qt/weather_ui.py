@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'c:\repos\weatherairqualitydevice\src\waqd\ui\qt\qt\weather.ui'
+# Form implementation generated from reading ui file 'c:\repos\oss\weatherairqualitydevice\src\waqd\ui\qt\qt\weather.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -75,15 +75,7 @@ class Ui_MainWindow(object):
         self.ext_bgr_0 = QtWidgets.QLabel(self.page_0)
         self.ext_bgr_0.setGeometry(QtCore.QRect(0, 0, 281, 291))
         self.ext_bgr_0.setText("")
-
-
-<< << << < Updated upstream
-        self.ext_bgr_0.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/weather_bgrs/valentin-muller-bWtd1ZyEy6w-unsplash.jpg"))
-== == == =
-        self.ext_bgr_0.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/weather_bgrs/valentin-muller-bWtd1ZyEy6w-unsplash.jpg"))
->>>>>> > Stashed changes
+        self.ext_bgr_0.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/weather_bgrs/valentin-muller-bWtd1ZyEy6w-unsplash.jpg"))
         self.ext_bgr_0.setScaledContents(True)
         self.ext_bgr_0.setObjectName("ext_bgr_0")
         self.exterior_background.addWidget(self.page_0)
@@ -119,15 +111,8 @@ class Ui_MainWindow(object):
         self.exterior_forecast_icon.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.exterior_forecast_icon.setStyleSheet("background-color:rgba(255, 255, 255, 0)")
         self.exterior_forecast_icon.setText("")
-<< << << < Updated upstream
-        self.exterior_forecast_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../assets/weather_icons/wi-day-sleet.svg"))
+        self.exterior_forecast_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../assets/weather_icons/wi-day-sleet.svg"))
         self.exterior_forecast_icon.setScaledContents(True)
-== == == =
-        self.exterior_forecast_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../resources/weather_icons/wi-day-cloudy_white.svg"))
-        self.exterior_forecast_icon.setScaledContents(False)
->>>>>> > Stashed changes
         self.exterior_forecast_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.exterior_forecast_icon.setObjectName("exterior_forecast_icon")
         self.horizontalLayout.addWidget(self.exterior_forecast_icon)
@@ -151,12 +136,10 @@ class Ui_MainWindow(object):
         self.exterior_forecast_temps_value.setStyleSheet("QLabel{background-color: transparent;color: white}")
         self.exterior_forecast_temps_value.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.exterior_forecast_temps_value.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.exterior_forecast_temps_value.setText(
-            "<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
+        self.exterior_forecast_temps_value.setText("<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
         self.exterior_forecast_temps_value.setTextFormat(QtCore.Qt.AutoText)
         self.exterior_forecast_temps_value.setScaledContents(False)
-        self.exterior_forecast_temps_value.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.exterior_forecast_temps_value.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.exterior_forecast_temps_value.setIndent(-1)
         self.exterior_forecast_temps_value.setObjectName("exterior_forecast_temps_value")
         self.horizontalLayout.addWidget(self.exterior_forecast_temps_value)
@@ -180,12 +163,10 @@ class Ui_MainWindow(object):
         self.exterior_forecast_hum_value.setStyleSheet("QLabel{background-color: transparent;color: white}")
         self.exterior_forecast_hum_value.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.exterior_forecast_hum_value.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.exterior_forecast_hum_value.setText(
-            "<html><head/><body><p align=\"right\"><span>RH:</span><span>50</span><span>%</span></p></body></html>")
+        self.exterior_forecast_hum_value.setText("<html><head/><body><p align=\"right\"><span>RH:</span><span>50</span><span>%</span></p></body></html>")
         self.exterior_forecast_hum_value.setTextFormat(QtCore.Qt.AutoText)
         self.exterior_forecast_hum_value.setScaledContents(False)
-        self.exterior_forecast_hum_value.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.exterior_forecast_hum_value.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.exterior_forecast_hum_value.setIndent(-1)
         self.exterior_forecast_hum_value.setObjectName("exterior_forecast_hum_value")
         self.horizontalLayout.addWidget(self.exterior_forecast_hum_value)
@@ -209,11 +190,10 @@ class Ui_MainWindow(object):
         self.exterior_temp_value.setFont(font)
         self.exterior_temp_value.setAutoFillBackground(False)
         self.exterior_temp_value.setStyleSheet("")
-        self.exterior_temp_value.setText(
-            "<html><head/><body><p><span style=\" color:#ffffff;\">33.</span><span style=\" font-size:33pt; color:#ffffff;\">5</span><span style=\" color:#ffffff; vertical-align:super;\">°</span></p></body></html>")
+        self.exterior_temp_value.setText("<html><head/><body><p><span style=\" color:#ffffff;\">33.</span><span style=\" font-size:33pt; color:#ffffff;\">5</span><span style=\" color:#ffffff; vertical-align:super;\">°</span></p></body></html>")
         self.exterior_temp_value.setTextFormat(QtCore.Qt.RichText)
         self.exterior_temp_value.setScaledContents(False)
-        self.exterior_temp_value.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
+        self.exterior_temp_value.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
         self.exterior_temp_value.setWordWrap(False)
         self.exterior_temp_value.setObjectName("exterior_temp_value")
         self.exterior_temp_icon = QtWidgets.QLabel(self.exterior_frame)
@@ -225,13 +205,7 @@ class Ui_MainWindow(object):
         self.exterior_temp_icon.setSizePolicy(sizePolicy)
         self.exterior_temp_icon.setStyleSheet("background-color:rgba(255, 255, 255, 0)")
         self.exterior_temp_icon.setText("")
-<< << << < Updated upstream
-        self.exterior_temp_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/weather_icons/wi-thermometer_full.svg"))
-== == == =
-        self.exterior_temp_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/weather_icons/wi-thermometer_full.svg"))
->>>>>> > Stashed changes
+        self.exterior_temp_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/weather_icons/wi-thermometer_full.svg"))
         self.exterior_temp_icon.setScaledContents(True)
         self.exterior_temp_icon.setObjectName("exterior_temp_icon")
         self.exterior_background.raise_()
@@ -244,8 +218,7 @@ class Ui_MainWindow(object):
         self.indoor_frame.setMinimumSize(QtCore.QSize(0, 0))
         self.indoor_frame.setMaximumSize(QtCore.QSize(444444, 444444))
         self.indoor_frame.setBaseSize(QtCore.QSize(0, 0))
-        self.indoor_frame.setStyleSheet(
-            "background-color:qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, stop:0.146067 rgba(30, 135, 232, 255), stop:1 rgba(128, 188, 241, 255))")
+        self.indoor_frame.setStyleSheet("background-color:qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, stop:0.146067 rgba(30, 135, 232, 255), stop:1 rgba(128, 188, 241, 255))")
         self.indoor_frame.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.indoor_frame.setFrameShadow(QtWidgets.QFrame.Plain)
         self.indoor_frame.setObjectName("indoor_frame")
@@ -269,13 +242,7 @@ class Ui_MainWindow(object):
         self.interior_1_bar.setStyleSheet("background-color:rgba(255, 255, 255, 0)")
         self.interior_1_bar.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.interior_1_bar.setText("")
-<< << << < Updated upstream
-        self.interior_1_bar.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/bar_blue.png"))
-== == == =
-        self.interior_1_bar.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/bar_blue.png"))
->>>>>> > Stashed changes
+        self.interior_1_bar.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/bar_blue.png"))
         self.interior_1_bar.setObjectName("interior_1_bar")
         self.interior_2_bar = DisplayBar(self.indoor_frame)
         self.interior_2_bar.setGeometry(QtCore.QRect(20, 330, 281, 51))
@@ -283,13 +250,7 @@ class Ui_MainWindow(object):
         self.interior_2_bar.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.interior_2_bar.setFrameShadow(QtWidgets.QFrame.Plain)
         self.interior_2_bar.setText("")
-<< << << < Updated upstream
-        self.interior_2_bar.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/bar_yellow.png"))
-== == == =
-        self.interior_2_bar.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/bar_yellow.png"))
->>>>>> > Stashed changes
+        self.interior_2_bar.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/bar_yellow.png"))
         self.interior_2_bar.setScaledContents(False)
         self.interior_2_bar.setObjectName("interior_2_bar")
         self.interior_3_bar = DisplayBar(self.indoor_frame)
@@ -297,13 +258,7 @@ class Ui_MainWindow(object):
         self.interior_3_bar.setStyleSheet("background-color:rgba(255, 255, 255, 0)")
         self.interior_3_bar.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.interior_3_bar.setText("")
-<< << << < Updated upstream
-        self.interior_3_bar.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/bar_green.png"))
-== == == =
-        self.interior_3_bar.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/bar_green.png"))
->>>>>> > Stashed changes
+        self.interior_3_bar.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/bar_green.png"))
         self.interior_3_bar.setScaledContents(False)
         self.interior_3_bar.setObjectName("interior_3_bar")
         self.interior_background = QtWidgets.QLabel(self.indoor_frame)
@@ -320,13 +275,7 @@ class Ui_MainWindow(object):
         self.interior_temp_icon.setSizePolicy(sizePolicy)
         self.interior_temp_icon.setStyleSheet("background-color:rgba(255, 255, 255, 0)")
         self.interior_temp_icon.setText("")
-<< << << < Updated upstream
-        self.interior_temp_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/weather_icons/wi-thermometer_full.svg"))
-== == == =
-        self.interior_temp_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/weather_icons/wi-thermometer_full.svg"))
->>>>>> > Stashed changes
+        self.interior_temp_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/weather_icons/wi-thermometer_full.svg"))
         self.interior_temp_icon.setScaledContents(True)
         self.interior_temp_icon.setObjectName("interior_temp_icon")
         self.interior_temp_value = ClickableLabel(self.indoor_frame)
@@ -348,11 +297,10 @@ class Ui_MainWindow(object):
         self.interior_temp_value.setFont(font)
         self.interior_temp_value.setAutoFillBackground(False)
         self.interior_temp_value.setStyleSheet("QLabel{background-color: transparent;color: white}")
-        self.interior_temp_value.setText(
-            "<html><head/><body><p><span style=\" color:#ffffff;\">33.</span><span style=\" font-size:33pt; color:#ffffff;\">5</span><span style=\" color:#ffffff; vertical-align:super;\">°</span></p></body></html>")
+        self.interior_temp_value.setText("<html><head/><body><p><span style=\" color:#ffffff;\">33.</span><span style=\" font-size:33pt; color:#ffffff;\">5</span><span style=\" color:#ffffff; vertical-align:super;\">°</span></p></body></html>")
         self.interior_temp_value.setTextFormat(QtCore.Qt.RichText)
         self.interior_temp_value.setScaledContents(False)
-        self.interior_temp_value.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
+        self.interior_temp_value.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
         self.interior_temp_value.setWordWrap(False)
         self.interior_temp_value.setObjectName("interior_temp_value")
         self.interior_background.raise_()
@@ -386,8 +334,7 @@ class Ui_MainWindow(object):
         self.forecast_grid.setSpacing(0)
         self.forecast_grid.setObjectName("forecast_grid")
         self.forecast_d1_day_temps_value = QtWidgets.QLabel(self.gridLayoutWidget_3)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.forecast_d1_day_temps_value.sizePolicy().hasHeightForWidth())
@@ -402,12 +349,10 @@ class Ui_MainWindow(object):
         self.forecast_d1_day_temps_value.setFont(font)
         self.forecast_d1_day_temps_value.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.forecast_d1_day_temps_value.setAutoFillBackground(False)
-        self.forecast_d1_day_temps_value.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.forecast_d1_day_temps_value.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.forecast_d1_day_temps_value.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d1_day_temps_value.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.forecast_d1_day_temps_value.setText(
-            "<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
+        self.forecast_d1_day_temps_value.setText("<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
         self.forecast_d1_day_temps_value.setTextFormat(QtCore.Qt.AutoText)
         self.forecast_d1_day_temps_value.setScaledContents(False)
         self.forecast_d1_day_temps_value.setAlignment(QtCore.Qt.AlignCenter)
@@ -415,8 +360,7 @@ class Ui_MainWindow(object):
         self.forecast_d1_day_temps_value.setObjectName("forecast_d1_day_temps_value")
         self.forecast_grid.addWidget(self.forecast_d1_day_temps_value, 2, 3, 1, 1)
         self.forecast_d2_day_temps_value = QtWidgets.QLabel(self.gridLayoutWidget_3)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.forecast_d2_day_temps_value.sizePolicy().hasHeightForWidth())
@@ -431,16 +375,13 @@ class Ui_MainWindow(object):
         self.forecast_d2_day_temps_value.setFont(font)
         self.forecast_d2_day_temps_value.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.forecast_d2_day_temps_value.setAutoFillBackground(False)
-        self.forecast_d2_day_temps_value.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.forecast_d2_day_temps_value.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.forecast_d2_day_temps_value.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d2_day_temps_value.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.forecast_d2_day_temps_value.setText(
-            "<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
+        self.forecast_d2_day_temps_value.setText("<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
         self.forecast_d2_day_temps_value.setTextFormat(QtCore.Qt.AutoText)
         self.forecast_d2_day_temps_value.setScaledContents(False)
-        self.forecast_d2_day_temps_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.forecast_d2_day_temps_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.forecast_d2_day_temps_value.setObjectName("forecast_d2_day_temps_value")
         self.forecast_grid.addWidget(self.forecast_d2_day_temps_value, 5, 3, 1, 1)
         self.forecast_d2_icon = ClickableLabel(self.gridLayoutWidget_3)
@@ -458,13 +399,7 @@ class Ui_MainWindow(object):
         self.forecast_d2_icon.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d2_icon.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.forecast_d2_icon.setText("")
-<< << << < Updated upstream
-        self.forecast_d2_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../resources/weather_icons/wi-day-light-wind.svg"))
-== == == =
-        self.forecast_d2_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../resources/weather_icons/wi-day-light-wind.svg"))
->>>>>> > Stashed changes
+        self.forecast_d2_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../resources/weather_icons/wi-day-light-wind.svg"))
         self.forecast_d2_icon.setScaledContents(False)
         self.forecast_d2_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.forecast_d2_icon.setIndent(-1)
@@ -485,8 +420,7 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.forecast_d3_title.setFont(font)
         self.forecast_d3_title.setAutoFillBackground(False)
-        self.forecast_d3_title.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.forecast_d3_title.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.forecast_d3_title.setText("Di, 12.06")
         self.forecast_d3_title.setTextFormat(QtCore.Qt.AutoText)
         self.forecast_d3_title.setScaledContents(False)
@@ -506,13 +440,7 @@ class Ui_MainWindow(object):
         self.forecast_d1_night_icon.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d1_night_icon.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.forecast_d1_night_icon.setText("")
-<< << << < Updated upstream
-        self.forecast_d1_night_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-night-clear.svg"))
-== == == =
-        self.forecast_d1_night_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-night-clear.svg"))
->>>>>> > Stashed changes
+        self.forecast_d1_night_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-night-clear.svg"))
         self.forecast_d1_night_icon.setScaledContents(False)
         self.forecast_d1_night_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.forecast_d1_night_icon.setIndent(-1)
@@ -532,20 +460,13 @@ class Ui_MainWindow(object):
         self.forecast_d1_icon.setAccessibleDescription("")
         self.forecast_d1_icon.setStyleSheet("background-color:rgba(255, 255, 255, 0)")
         self.forecast_d1_icon.setText("")
-<< << << < Updated upstream
-        self.forecast_d1_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../resources/weather_icons/wi-cloudy.svg"))
-== == == =
-        self.forecast_d1_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../resources/weather_icons/wi-cloudy.svg"))
->>>>>> > Stashed changes
+        self.forecast_d1_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../resources/weather_icons/wi-cloudy.svg"))
         self.forecast_d1_icon.setScaledContents(False)
         self.forecast_d1_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.forecast_d1_icon.setObjectName("forecast_d1_icon")
         self.forecast_grid.addWidget(self.forecast_d1_icon, 2, 1, 2, 1)
         self.forecast_d3_night_temps_value = QtWidgets.QLabel(self.gridLayoutWidget_3)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.forecast_d3_night_temps_value.sizePolicy().hasHeightForWidth())
@@ -560,16 +481,13 @@ class Ui_MainWindow(object):
         self.forecast_d3_night_temps_value.setFont(font)
         self.forecast_d3_night_temps_value.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.forecast_d3_night_temps_value.setAutoFillBackground(False)
-        self.forecast_d3_night_temps_value.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.forecast_d3_night_temps_value.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.forecast_d3_night_temps_value.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d3_night_temps_value.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.forecast_d3_night_temps_value.setText(
-            "<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
+        self.forecast_d3_night_temps_value.setText("<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
         self.forecast_d3_night_temps_value.setTextFormat(QtCore.Qt.AutoText)
         self.forecast_d3_night_temps_value.setScaledContents(False)
-        self.forecast_d3_night_temps_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.forecast_d3_night_temps_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.forecast_d3_night_temps_value.setObjectName("forecast_d3_night_temps_value")
         self.forecast_grid.addWidget(self.forecast_d3_night_temps_value, 9, 3, 1, 1)
         self.forecast_d3_day_icon = QtWidgets.QLabel(self.gridLayoutWidget_3)
@@ -585,21 +503,14 @@ class Ui_MainWindow(object):
         self.forecast_d3_day_icon.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d3_day_icon.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.forecast_d3_day_icon.setText("")
-<< << << < Updated upstream
-        self.forecast_d3_day_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-day-sunny.svg"))
-== == == =
-        self.forecast_d3_day_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-day-sunny.svg"))
->>>>>> > Stashed changes
+        self.forecast_d3_day_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-day-sunny.svg"))
         self.forecast_d3_day_icon.setScaledContents(False)
         self.forecast_d3_day_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.forecast_d3_day_icon.setIndent(-1)
         self.forecast_d3_day_icon.setObjectName("forecast_d3_day_icon")
         self.forecast_grid.addWidget(self.forecast_d3_day_icon, 8, 2, 1, 1)
         self.forecast_d3_day_temps_value = QtWidgets.QLabel(self.gridLayoutWidget_3)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.forecast_d3_day_temps_value.sizePolicy().hasHeightForWidth())
@@ -614,16 +525,13 @@ class Ui_MainWindow(object):
         self.forecast_d3_day_temps_value.setFont(font)
         self.forecast_d3_day_temps_value.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.forecast_d3_day_temps_value.setAutoFillBackground(False)
-        self.forecast_d3_day_temps_value.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.forecast_d3_day_temps_value.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.forecast_d3_day_temps_value.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d3_day_temps_value.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.forecast_d3_day_temps_value.setText(
-            "<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
+        self.forecast_d3_day_temps_value.setText("<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
         self.forecast_d3_day_temps_value.setTextFormat(QtCore.Qt.AutoText)
         self.forecast_d3_day_temps_value.setScaledContents(False)
-        self.forecast_d3_day_temps_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.forecast_d3_day_temps_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.forecast_d3_day_temps_value.setObjectName("forecast_d3_day_temps_value")
         self.forecast_grid.addWidget(self.forecast_d3_day_temps_value, 8, 3, 1, 1)
         self.forecast_d1_day_icon = QtWidgets.QLabel(self.gridLayoutWidget_3)
@@ -640,13 +548,7 @@ class Ui_MainWindow(object):
         self.forecast_d1_day_icon.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d1_day_icon.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.forecast_d1_day_icon.setText("")
-<< << << < Updated upstream
-        self.forecast_d1_day_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-day-sunny.svg"))
-== == == =
-        self.forecast_d1_day_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-day-sunny.svg"))
->>>>>> > Stashed changes
+        self.forecast_d1_day_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-day-sunny.svg"))
         self.forecast_d1_day_icon.setScaledContents(False)
         self.forecast_d1_day_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.forecast_d1_day_icon.setIndent(-1)
@@ -665,13 +567,7 @@ class Ui_MainWindow(object):
         self.forecast_d2_night_icon.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d2_night_icon.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.forecast_d2_night_icon.setText("")
-<< << << < Updated upstream
-        self.forecast_d2_night_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-night-clear.svg"))
-== == == =
-        self.forecast_d2_night_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-night-clear.svg"))
->>>>>> > Stashed changes
+        self.forecast_d2_night_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-night-clear.svg"))
         self.forecast_d2_night_icon.setScaledContents(False)
         self.forecast_d2_night_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.forecast_d2_night_icon.setIndent(-1)
@@ -691,13 +587,7 @@ class Ui_MainWindow(object):
         self.forecast_d2_day_icon.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d2_day_icon.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.forecast_d2_day_icon.setText("")
-<< << << < Updated upstream
-        self.forecast_d2_day_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-day-sunny.svg"))
-== == == =
-        self.forecast_d2_day_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-day-sunny.svg"))
->>>>>> > Stashed changes
+        self.forecast_d2_day_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-day-sunny.svg"))
         self.forecast_d2_day_icon.setScaledContents(False)
         self.forecast_d2_day_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.forecast_d2_day_icon.setIndent(-1)
@@ -740,8 +630,7 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.forecast_title.setFont(font)
         self.forecast_title.setAutoFillBackground(False)
-        self.forecast_title.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.forecast_title.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.forecast_title.setTextFormat(QtCore.Qt.AutoText)
         self.forecast_title.setScaledContents(True)
         self.forecast_title.setIndent(-3)
@@ -760,13 +649,7 @@ class Ui_MainWindow(object):
         self.forecast_d3_icon.setAccessibleDescription("")
         self.forecast_d3_icon.setStyleSheet("background-color:rgba(255, 255, 255, 0)")
         self.forecast_d3_icon.setText("")
-<< << << < Updated upstream
-        self.forecast_d3_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../resources/weather_icons/wi-day-sunny_white.svg"))
-== == == =
-        self.forecast_d3_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../resources/weather_icons/wi-day-sunny_white.svg"))
->>>>>> > Stashed changes
+        self.forecast_d3_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../resources/weather_icons/wi-day-sunny_white.svg"))
         self.forecast_d3_icon.setScaledContents(False)
         self.forecast_d3_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.forecast_d3_icon.setObjectName("forecast_d3_icon")
@@ -785,8 +668,7 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.forecast_d1_title.setFont(font)
         self.forecast_d1_title.setAutoFillBackground(False)
-        self.forecast_d1_title.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.forecast_d1_title.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.forecast_d1_title.setText("Di, 12.06")
         self.forecast_d1_title.setTextFormat(QtCore.Qt.AutoText)
         self.forecast_d1_title.setScaledContents(False)
@@ -794,8 +676,7 @@ class Ui_MainWindow(object):
         self.forecast_d1_title.setObjectName("forecast_d1_title")
         self.forecast_grid.addWidget(self.forecast_d1_title, 1, 0, 1, 4)
         self.forecast_d2_night_temps_value = QtWidgets.QLabel(self.gridLayoutWidget_3)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.forecast_d2_night_temps_value.sizePolicy().hasHeightForWidth())
@@ -810,21 +691,17 @@ class Ui_MainWindow(object):
         self.forecast_d2_night_temps_value.setFont(font)
         self.forecast_d2_night_temps_value.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.forecast_d2_night_temps_value.setAutoFillBackground(False)
-        self.forecast_d2_night_temps_value.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.forecast_d2_night_temps_value.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.forecast_d2_night_temps_value.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d2_night_temps_value.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.forecast_d2_night_temps_value.setText(
-            "<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
+        self.forecast_d2_night_temps_value.setText("<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
         self.forecast_d2_night_temps_value.setTextFormat(QtCore.Qt.AutoText)
         self.forecast_d2_night_temps_value.setScaledContents(False)
-        self.forecast_d2_night_temps_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.forecast_d2_night_temps_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.forecast_d2_night_temps_value.setObjectName("forecast_d2_night_temps_value")
         self.forecast_grid.addWidget(self.forecast_d2_night_temps_value, 6, 3, 1, 1)
         self.forecast_d1_night_temps_value = QtWidgets.QLabel(self.gridLayoutWidget_3)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.forecast_d1_night_temps_value.sizePolicy().hasHeightForWidth())
@@ -839,12 +716,10 @@ class Ui_MainWindow(object):
         self.forecast_d1_night_temps_value.setFont(font)
         self.forecast_d1_night_temps_value.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.forecast_d1_night_temps_value.setAutoFillBackground(False)
-        self.forecast_d1_night_temps_value.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.forecast_d1_night_temps_value.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.forecast_d1_night_temps_value.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d1_night_temps_value.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.forecast_d1_night_temps_value.setText(
-            "<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
+        self.forecast_d1_night_temps_value.setText("<html><head/><body><p align=\"center\"><span >21</span><span style=\"vertical-align:super;\">°</span><span >/</span><span >28</span><span style=\" vertical-align:super;\">°</span></p></body></html>")
         self.forecast_d1_night_temps_value.setTextFormat(QtCore.Qt.AutoText)
         self.forecast_d1_night_temps_value.setScaledContents(False)
         self.forecast_d1_night_temps_value.setAlignment(QtCore.Qt.AlignCenter)
@@ -864,13 +739,7 @@ class Ui_MainWindow(object):
         self.forecast_d3_night_icon.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.forecast_d3_night_icon.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.forecast_d3_night_icon.setText("")
-<< << << < Updated upstream
-        self.forecast_d3_night_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-night-clear.svg"))
-== == == =
-        self.forecast_d3_night_icon.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-night-clear.svg"))
->>>>>> > Stashed changes
+        self.forecast_d3_night_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../../../../Users/resources/weather_icons/wi-night-clear.svg"))
         self.forecast_d3_night_icon.setScaledContents(False)
         self.forecast_d3_night_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.forecast_d3_night_icon.setIndent(-1)
@@ -898,8 +767,7 @@ class Ui_MainWindow(object):
         self.forecast_d2_night_icon.raise_()
         self.forecast_background = QtWidgets.QLabel(self.forecast_frame)
         self.forecast_background.setGeometry(QtCore.QRect(0, 0, 231, 481))
-        self.forecast_background.setStyleSheet(
-            "background-color:qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, stop:0.146067 rgba(30, 135, 232, 255), stop:1 rgba(128, 188, 241, 255))")
+        self.forecast_background.setStyleSheet("background-color:qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, stop:0.146067 rgba(30, 135, 232, 255), stop:1 rgba(128, 188, 241, 255))")
         self.forecast_background.setText("")
         self.forecast_background.setScaledContents(True)
         self.forecast_background.setObjectName("forecast_background")
@@ -924,12 +792,11 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.date_disp.setFont(font)
         self.date_disp.setAutoFillBackground(False)
-        self.date_disp.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.date_disp.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.date_disp.setText("14.09.2019")
         self.date_disp.setTextFormat(QtCore.Qt.AutoText)
         self.date_disp.setScaledContents(False)
-        self.date_disp.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
+        self.date_disp.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
         self.date_disp.setObjectName("date_disp")
         self.info_button = QtWidgets.QPushButton(self.info_frame)
         self.info_button.setGeometry(QtCore.QRect(140, 150, 140, 40))
@@ -1141,24 +1008,17 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.time_disp.setFont(font)
         self.time_disp.setAutoFillBackground(False)
-        self.time_disp.setStyleSheet(
-            "QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
+        self.time_disp.setStyleSheet("QLabel{background-color: rgba(255, 255, 255, 0);color: rgb(255, 255, 255);}\\n")
         self.time_disp.setText("11:23")
         self.time_disp.setTextFormat(QtCore.Qt.AutoText)
         self.time_disp.setScaledContents(False)
-        self.time_disp.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
+        self.time_disp.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
         self.time_disp.setObjectName("time_disp")
         self.overlay_background = QtWidgets.QLabel(self.central_widget)
         self.overlay_background.setEnabled(True)
         self.overlay_background.setGeometry(QtCore.QRect(0, 0, 800, 480))
         self.overlay_background.setText("")
-<< << << < Updated upstream
-        self.overlay_background.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/info_overlay.png"))
-== == == =
-        self.overlay_background.setPixmap(QtGui.QPixmap(
-            "c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/info_overlay.png"))
->>>>>> > Stashed changes
+        self.overlay_background.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../assets/gui_base/info_overlay.png"))
         self.overlay_background.setScaledContents(True)
         self.overlay_background.setObjectName("overlay_background")
         self.ol_wh_today_label = QtWidgets.QLabel(self.central_widget)

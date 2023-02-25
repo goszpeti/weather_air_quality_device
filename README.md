@@ -113,6 +113,7 @@ https://github.com/dfeneyrou/palanteer/releases
 
 * Weather Icons licensed under [SIL OFL 1.1](http://scripts.sil.org/OFL) from https://github.com/erikflowers/weather-icons)
 * Franzo Font under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) from https://fontlibrary.org/en/font/franzo
+* introgui by pera under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/legalcode) from https://freesound.org/people/pera/sounds/56231/#
 * Using icons by https://icons8.com under [Universal Multimedia Licensing Agreement for Icons8](https://icons8.com/vue-static/landings/pricing/icons8-license.pdf)
 * Images from Unsplash under [Unsplash license](https://unsplash.com/license) from https://unsplash.com
   * https://unsplash.com/photos/VjMJmwZOs9M from Jesse Borovnica

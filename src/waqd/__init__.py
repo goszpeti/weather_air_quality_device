@@ -36,10 +36,14 @@ SCREEN_HEIGHT = 480
 
 ### Feature Flags ###
 SELECTEBLE_LOGGER_INTERVAL_VIEW = False
-class WeatherDataProviders(Enum): # promote to settings, after stable
+
+
+class WeatherDataProviders(Enum):  # promote to settings, after stable
     OpenWeatherMap = 0
-    AccuWeather = 1 # Currently not implemented
+    AccuWeather = 1  # Currently not implemented
     OpenMeteo = 2
+
+
 WEATHER_DATA_PROVIDER = 2
 
 ### Global variables ###
@@ -49,6 +53,7 @@ DEBUG_LEVEL = 0
 HEADLESS_MODE = False
 MIGRATE_SENSOR_LOGS = False
 LOCAL_TIMEZONE = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
+INTRO_JINGLE = True
 
 # paths to find folders
 base_path = Path(__file__).absolute().parent
