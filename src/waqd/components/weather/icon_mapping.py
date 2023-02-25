@@ -16,7 +16,7 @@
 
 om_day_code_to_ico = {
     0: "wi-day-sunny",  
-    1: "wi-day-overcast",
+    1: "wi-day-sunny-overcast",
     2: "wi-day-cloudy",
     3: "wi-cloudy",
     45: "wi-day-fog", 48: "wi-fog",

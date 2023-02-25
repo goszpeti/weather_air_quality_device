@@ -109,7 +109,7 @@ class OpenMeteo(Component):
                 self._get_main_category(daily.get("weathercode", [])[i]),
                 "",
                 datetime.fromisoformat(daily.get("time", [])[i]),
-                self._get_icon_name(daily.get("weathercode", [])[i], is_day),
+                self._get_icon_name(daily.get("weathercode", [])[i], True), # always show daytime for forecast
                 daily.get("windspeed_10m_max", [])[i],
                 daily.get("winddirection_10m_dominant", [])[i],
                 sunrise, sunset,
@@ -182,6 +182,8 @@ class OpenMeteo(Component):
         for i in range(len(hourly.get("time", []))):
             # utc to local time
             entry_date_time = datetime.fromisoformat(hourly.get("time", [])[i])
+            if entry_date_time < current_datetime: # throw away entries im the past
+                continue
             time_delta = entry_date_time.date() - current_datetime.date()
             day_idx = time_delta.days
             if day_idx > 5 or day_idx < 0:

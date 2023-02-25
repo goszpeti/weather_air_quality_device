@@ -209,7 +209,7 @@
        <x>0</x>
        <y>90</y>
        <width>281</width>
-       <height>71</height>
+       <height>84</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,0">
@@ -238,8 +238,8 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>69</width>
-          <height>69</height>
+          <width>80</width>
+          <height>82</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -276,10 +276,10 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap>../../../../../../resources/weather_icons/wi-day-cloudy_white.svg</pixmap>
+         <pixmap>../../../assets/weather_icons/wi-day-sleet.svg</pixmap>
         </property>
         <property name="scaledContents">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
