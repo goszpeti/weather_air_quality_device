@@ -15,7 +15,7 @@ from waqd.settings import (NIGHT_MODE_BEGIN, NIGHT_MODE_END, SOUND_ENABLED,
 from waqd.ui.qt.main_ui import WeatherMainUi
 
 
-def testParser(base_fixture, target_mockup_fixture):
+def test_parser(base_fixture, target_mockup_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(SOUND_ENABLED, True)
     events = parse_event_file(base_fixture.testdata_path / "events" / "events.json")
@@ -30,7 +30,7 @@ def testParser(base_fixture, target_mockup_fixture):
     assert events_read.get("events")[1].get("name") == "Wakeup"
 
 
-def testDailyGreeting(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
+def test_daily_greeting(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
 
     with freeze_time(datetime(2020, 12, 29, 22, 59, 45), tick=True) as frozen:
         settings = Settings(base_fixture.testdata_path / "integration")
@@ -64,7 +64,7 @@ def testDailyGreeting(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
         # TODO implement
 
 
-def testEventScheduler(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
+def test_event_scheduler(base_fixture, qtbot, target_mockup_fixture, monkeypatch):
 
     with freeze_time(datetime(2020, 12, 24, 22, 59, 45), tick=True) as frozen:
         settings = Settings(base_fixture.testdata_path / "integration")

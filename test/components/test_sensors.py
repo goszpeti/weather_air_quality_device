@@ -13,7 +13,6 @@ import waqd.app as app
 
 def test_max_delta(base_fixture, target_mockup_fixture, capsys):
 
-
     ureg = pint.UnitRegistry()
     ureg.define('fraction = [] = frac')
     ureg.define('percent = 1e-2 frac = pct')
@@ -27,7 +26,7 @@ def test_max_delta(base_fixture, target_mockup_fixture, capsys):
     settings = Settings(base_fixture.testdata_path / "integration")
     sensor = sensors.TempSensor(False, 2)
     sensor._temp_impl._values = [22]  # default value
-    sensor._set_temperature(22) # first value written check
+    sensor._set_temperature(22)  # first value written check
     sensor._set_temperature(59)
     sensor._set_temperature(59)
 
@@ -37,7 +36,7 @@ def test_max_delta(base_fixture, target_mockup_fixture, capsys):
     assert temp_value.m_as(app.unit_reg.degC) == adafruit_dht.TEMP
 
 
-def testDHT22(base_fixture, target_mockup_fixture):
+def test_dht22(base_fixture, target_mockup_fixture):
     from adafruit_dht import TEMP, HUM
     settings = Settings(base_fixture.testdata_path / "integration")
     comps = ComponentRegistry(settings)
@@ -57,7 +56,7 @@ def testDHT22(base_fixture, target_mockup_fixture):
     assert sensor.get_temperature().magnitude == TEMP
 
 
-def testCCS811(base_fixture, target_mockup_fixture):
+def test_ccs811(base_fixture, target_mockup_fixture):
     from adafruit_ccs811 import TVOC, CO2
     settings = Settings(base_fixture.testdata_path / "integration")
     measure_points = 2
@@ -76,7 +75,7 @@ def testCCS811(base_fixture, target_mockup_fixture):
     assert sensor.get_co2().magnitude == 1000
 
 
-def testMH_Z19(base_fixture, target_mockup_fixture, mocker):
+def test_mh_z19(base_fixture, target_mockup_fixture, mocker):
     mock_run_on_non_target(mocker)
     assert not RuntimeSystem().is_target_system
     settings = Settings(base_fixture.testdata_path / "integration")
@@ -94,8 +93,8 @@ def testMH_Z19(base_fixture, target_mockup_fixture, mocker):
     assert sensor.get_co2().magnitude == 735
 
 
-def testSR501(base_fixture, target_mockup_fixture, mocker):
-    sensor = sensors.SR501(pin=8) # TODO get from CI config file
+def test_sr501(base_fixture, target_mockup_fixture, mocker):
+    sensor = sensors.SR501(pin=8)  # TODO get from CI config file
     assert not sensor.motion_detected
     # the call blocks, so use a thread
     wake_up_thread = Thread(target=sensor._wake_up_from_sensor, args=[None, ])
@@ -127,7 +126,7 @@ def testBME280(base_fixture, target_mockup_fixture):
     assert sensor.get_pressure().magnitude >= PRESSURE  # adjusted for location
 
 
-def testBMP280(base_fixture, target_mockup_fixture):
+def test_bmp280(base_fixture, target_mockup_fixture):
     from adafruit_bmp280 import TEMP, PRESSURE
     settings = Settings(base_fixture.testdata_path / "integration")
 
@@ -137,7 +136,7 @@ def testBMP280(base_fixture, target_mockup_fixture):
 
     comps = ComponentRegistry(settings)
     sensor = sensors.BMP280(comps, settings)
-    
+
     time.sleep(1)
     assert sensor.is_alive
     assert sensor.is_ready
@@ -146,5 +145,3 @@ def testBMP280(base_fixture, target_mockup_fixture):
     time.sleep(sensor.UPDATE_TIME * (measure_points + 1))
     assert sensor.get_temperature().magnitude == 28.4
     assert sensor.get_pressure().magnitude >= PRESSURE  # adjusted for location
-
-

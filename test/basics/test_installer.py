@@ -8,7 +8,7 @@ from installer import common, setup_system
 from installer.common import assure_file_does_not_exist
 
 
-def testAddToAutostart(base_fixture):
+def test_add_to_autostart(base_fixture):
     auto_update_file = base_fixture.testdata_path / "auto_updater" / "autostart.txt"
     temp_autostart_file = Path(tempfile.gettempdir()) / "tmp.txt"
 
@@ -21,7 +21,7 @@ def testAddToAutostart(base_fixture):
     assert read[0] == "@lxpanel --profile LXDE-pi\n"
     assert read[1] == "@pcmanfm --desktop --profile LXDE-pi\n"
     assert read[2] == "@xscreensaver -no-splash\n"
-    
+
     # 2nd run - don't change anything
     setup_system.add_to_autostart(["xscreensaver -no-splash"], temp_autostart_file)
     with open(temp_autostart_file) as ft:
@@ -31,19 +31,20 @@ def testAddToAutostart(base_fixture):
     assert read[2] == "@xscreensaver -no-splash\n"
     assert len(read) == 3
 
-def testGetVersion():
+
+def test_get_version():
     assert common.get_waqd_version(common.installer_root_dir) == __version__
 
 
-def testGetWaqdBinName():
+def test_get_waqd_bin_name():
     assert common.get_waqd_bin_name() == ("waqd." + __version__)
 
 
-def testGetWaqdBinDirName():
+def test_get_waqd_bin_dir_name():
     assert common.get_waqd_bindir_name() == ("waqd." + __version__).replace(".", "-")
 
 
-def testGetInstallPath():
+def test_get_install_path():
     # reimport with env var set
     home = os.getenv("HOME", "")
     if not home:  # for windows
@@ -57,7 +58,7 @@ def testGetInstallPath():
     assert install_path.as_posix() == Path(f"{home}/.local/pipx/venvs/waqd-{version_suffix}").as_posix()
 
 
-def testRegisterAutostart(base_fixture):
+def test_register_autostart(base_fixture):
     from installer.common import get_waqd_bin_name
     auto_update_file = base_fixture.testdata_path / "auto_updater" / "autostart.txt"
     os.environ["SUDO_USER"] = "user"
@@ -83,7 +84,7 @@ def testRegisterAutostart(base_fixture):
     assert read[2] == "@" + str(start_waqd_path) + "\n"
 
 
-def testCleanDesktop(base_fixture):
+def test_clean_desktop(base_fixture):
     # no error should happen if file does not exist
     desktop_path = Path(tempfile.gettempdir()) / "tmp.conf"
     assure_file_does_not_exist(desktop_path)
@@ -103,7 +104,7 @@ def testCleanDesktop(base_fixture):
     assert "show_mounts=0" in text
 
 
-def testUnattendedUpgradesConfig(base_fixture):
+def test_unattended_upgrades_config(base_fixture):
     auto_updates_path = Path(tempfile.gettempdir()) / "tmp.conf"
     unattended_updates_path: Path = base_fixture.testdata_path / "auto_updater" / "50unattended-upgrades"
 

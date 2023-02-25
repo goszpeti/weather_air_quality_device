@@ -3,7 +3,7 @@ from waqd.settings import SOUND_ENABLED, Settings
 from waqd.base.component_reg import ComponentRegistry
 
 
-def testTTSParallel(base_fixture, capsys):
+def test_tts_parallel(base_fixture, capsys):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(SOUND_ENABLED, True)
     comps = ComponentRegistry(settings)
@@ -21,7 +21,7 @@ def testTTSParallel(base_fixture, capsys):
     assert "Sound: Cannot play sound" not in captured.out
 
 
-def testOnSoundDisabled(base_fixture, capsys):
+def test_on_sound_disabled(base_fixture, capsys):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(SOUND_ENABLED, "en")
     comps = ComponentRegistry(settings)

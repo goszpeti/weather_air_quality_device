@@ -6,6 +6,7 @@ import logging
 import time
 from bottle import request, response
 
+
 class WAQDSession(dict):
 
     encoding = 'UTF-8'
@@ -90,7 +91,7 @@ class LoginPlugin(object):
     def load_user(self, func):
         self.user_loader = func
 
-    def get_user(self):
+    def get_user(self) -> str:
         session = request.environ['session']
         user_id = session.get('user_id')
         if not user_id:

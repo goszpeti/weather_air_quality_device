@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
+import waqd.app as app
 import threading
 import time
 from typing import Optional
@@ -33,6 +34,10 @@ from .qt.weather_ui import Ui_MainWindow
 
 # define Qt so we can use it like the namespace in C++
 Qt = QtCore.Qt
+
+
+class QtBackChannel(QtCore.QObject):
+    re_init_gui = QtCore.pyqtSignal()
 
 
 class WeatherMainUi(QtWidgets.QMainWindow):
@@ -60,6 +65,8 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._interior_ui: Optional[interior.Interior] = None
         self._forecast_ui: Optional[forecast.Forecast] = None
         self._infopane_ui: Optional[infopane.InfoPane] = None
+        app.qt_backchannel = QtBackChannel()
+        app.qt_backchannel.re_init_gui.connect(self.re_init_gui)
 
     @property
     def ui(self) -> Ui_MainWindow:
@@ -73,6 +80,10 @@ class WeatherMainUi(QtWidgets.QMainWindow):
             self._comps.energy_saver.wake_up(10)
             self.hide_info_screen()
         return super().eventFilter(source, event)
+
+    def re_init_gui(self):
+        self.unload_gui()
+        self.init_gui()
 
     def init_gui(self):
         """ Retranslates, then loads all SubUi elements. """

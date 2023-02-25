@@ -49,32 +49,25 @@
             <input value="Save" type="submit" class="btn btn-secondary" />
         </div>
     </form> -->
-    <h2>Location</h2>
-    <p style="font-size: 0.8em;" ;>Select the location for online weather data.</p>
+
+
     <form id="location_form" action="/set_location" method="post" style="margin-bottom: 20px">
-        <br>
+        <label for="location">Location</label>
+        <p style="font-size: 0.7em; padding-top: 20px;" ;>Select the location for online weather data.</p>
         <div class="small_row">
             <datalist id="location_results"></datalist>
-            <input type="text" id="location" list="location_results" autocomplete="off" placeholder={{location}}
-                required>
+            <input type="text" id="location" name="location" list="location_results" autocomplete="off" required
+                placeholder="{{location}}">
         </div>
-        <button class="btn btn-third" type="submit">Set</button>
+        <div class="small_row">
+            <input value="Set" type="submit" class="btn btn-secondary" />
+        </div>
     </form>
 </div>
 <script>
     $("#location").change(onChangeSearch);
     $("#location").keyup(onChangeSearch);
     var last_search = null;
-    // $('#location_results').on("click", "a", function (e) {
-    //     e.preventDefault();
-    //     var row = $(e.currentTarget).data('item')
-    //     $('#latitude').val(row.latitude.toFixed(2));
-    //     $('#longitude').val(row.longitude.toFixed(2));
-    //     $('#select_city').val(row.name);
-    //     $('#select_city').blur();
-    //     $('#api_form').submit();
-    //     $('#select_city').dropdown('hide');
-    // });
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
@@ -88,7 +81,7 @@
         for (var i = 0, len = items.length; i < len; i++) {
             let row = items[i];
             var res = $(`<option value="${row.name} - ${row.admin1 || ''}, ${capitalizeFirstLetter(row.country)}` +
-                `(${row.latitude.toFixed(2)}&#186;E ${row.longitude.toFixed(2)}&#186;N ${row.elevation}m asl)">`
+                `(${row.latitude.toFixed(5)}&#186;E ${row.longitude.toFixed(5)}&#186;N">`
             );
             resultsDiv.append(res);
         }

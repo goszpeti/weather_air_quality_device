@@ -19,7 +19,7 @@ class MockOpenMeteo(OpenMeteo):
         return {}
 
 
-def testOpenMeteoGeocoder(base_fixture, mocker):
+def test_open_meteo_geocoder(base_fixture, mocker):
     test_json: Path = base_fixture.testdata_path / "online_weather/om_search_berlin.json"
     om = OpenMeteo()
     mock_call = mocker.Mock()
@@ -37,7 +37,7 @@ def testOpenMeteoGeocoder(base_fixture, mocker):
     assert ret[0].latitude == 52.52437
 
 
-def testOpenMeteo(base_fixture, mocker):
+def test_open_meteo(base_fixture, mocker):
     daily_test_json: Path = base_fixture.testdata_path / "online_weather/om_current_weather.json"
     hourly_test_json: Path = base_fixture.testdata_path / "online_weather/om_hourly_weather.json"
 
@@ -66,7 +66,7 @@ class MockOpenWeatherMap(OpenWeatherMap):
         return {}
 
 
-def testOpenTopo():
+def test_open_topo():
     op = OpenTopoData()
     alt = op.get_altitude(48.2085, 12.3989)
     assert alt > 439 and alt < 440
@@ -75,7 +75,7 @@ def testOpenTopo():
     assert alt == 0
 
 
-def testOpenWeatherForecastApiCall(base_fixture):
+def test_open_weather_forecast_api_call(base_fixture):
     """
     Simply tests call api correct return for Forecats (mocked by file)
     This ensures, that further tests work correctly.
@@ -91,7 +91,7 @@ def testOpenWeatherForecastApiCall(base_fixture):
     assert forecast_info.get("list")[0].get("main").get("humidity") == 69
 
 
-def testOpenWeatherNewDayForecast(base_fixture):
+def test_open_weather_new_day_forecast(base_fixture):
     MockOpenWeatherMap.fc_json_file = str(
         base_fixture.testdata_path / "online_weather/ow_new_day_forecast.json")
     MockOpenWeatherMap.cw_json_file = str(base_fixture.testdata_path / "online_weather/ow_new_day_cw.json")
@@ -111,7 +111,7 @@ def testOpenWeatherNewDayForecast(base_fixture):
         assert forecast[0].description == "broken clouds"
 
 
-def testOpenWeatherGet3DayForecast(base_fixture):
+def test_open_weather_get3_day_forecast(base_fixture):
     MockOpenWeatherMap.fc_json_file = str(base_fixture.testdata_path / "online_weather/ow_forecast.json")
     MockOpenWeatherMap.cw_json_file = str(
         base_fixture.testdata_path / "online_weather/ow_current_weather.json")

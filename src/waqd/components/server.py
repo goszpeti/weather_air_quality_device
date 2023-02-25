@@ -6,6 +6,7 @@ from time import sleep
 from typing import TYPE_CHECKING, TypedDict
 from typing_extensions import NotRequired
 import os
+import PyQt5
 import plotly.graph_objects as go
 import waqd
 from bottle import (Jinja2Template, default_app, redirect, jinja2_template,
@@ -14,17 +15,16 @@ from htmlmin.main import minify
 from pint import Quantity
 from plotly.graph_objs import Scattergl
 from plotly.io import to_html
-from waqd.app import unit_reg, base_path
+import waqd.app as app
 from waqd.base.component import Component
 from waqd.base.web_session import LoginPlugin
 from waqd.base.authentification import UserAuth, validate_password, validate_username
 from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import LOCATION, OW_API_KEY, OW_CITY_IDS, Settings
+from waqd.settings import LOCATION, LOCATION_LATITUDE, LOCATION_LONGITUDE, OW_API_KEY, OW_CITY_IDS, Settings
 from waqd.components import OpenWeatherMap
 from waqd.ui import format_unit_disp_value
-import waqd
-
+from waqd import base_path
 
 extra_minify = partial(minify, remove_comments=True, remove_empty_space=True)
 
@@ -210,26 +210,36 @@ class BottleServer(Component):
         return "<p>Password changed successfully!</p>"
 
     def set_location(self):
-        new_location_id = request.forms.get("location", "")  # type: ignore
-        api_key = self._settings.get_string(OW_API_KEY)
-        owcs = self._settings.get_dict(OW_CITY_IDS)
-        owcs.update({"Unknown": str(new_location_id)})
-        self._settings.set(OW_CITY_IDS, owcs)
+
+        new_location_id: str = request.forms.get("location", "")  # type: ignore
+        if not new_location_id:
+            return "<p>Please enter a location!</p>"
         try:
-            owm = OpenWeatherMap(new_location_id, api_key)
-            cw = owm.get_current_weather()
-            self._settings.set(LOCATION, cw.name)
-            owcs = self._settings.get_dict(OW_CITY_IDS)
-            del owcs["Unknown"]
-            owcs.update({cw.name: str(new_location_id)})
-            self._settings.set(OW_CITY_IDS, owcs)
+            loc_name, longitude, latitude = self.parse_location(new_location_id)
+            self._settings.set(LOCATION, loc_name)
+            self._settings.set(LOCATION_LONGITUDE, longitude)
+            self._settings.set(LOCATION_LATITUDE, latitude)
+
             self._comps.stop_component_instance(self._comps.weather_info)  # reset setting
+            if app.qt_backchannel:  # re_init gui to update all values
+                app.qt_backchannel.re_init_gui.emit()
+
         except Exception as e:
             self._settings.set(LOCATION, "Unknown")
             return "<p>Location set, but does not seem to work!</p>"
         finally:
             self._settings.save()
         return "<p>Location set successfully!</p>"
+
+    @staticmethod
+    def parse_location(location_input: str):
+        # comes in form of London - England, United Kingdom(51.51ÂºE -0.13ÂºN 25m asl)
+        # parse location string - optimistic way, not counting on malicious intent
+        # no error handling, caller has to catch errors
+        loc_name = location_input.split(",")[0].strip(" ")
+        latitude = location_input.split("(")[1].split(" ")[0].split("Â")[0]
+        longitude = location_input.split("(")[1].split(" ")[1].split("Â")[0]
+        return (loc_name, longitude, latitude)
 
     def set_owa_api_key(self):
         new_key = request.forms.get("ow_api", "")  # type: ignore
@@ -365,6 +375,7 @@ class BottleServer(Component):
 
 ###### Subpages ######
 
+
     def _get_about_subpage(self):
         page_content = (self._html_path / "about.html").read_text()
         tpl = Jinja2Template(page_content)
@@ -399,21 +410,17 @@ class BottleServer(Component):
         # Implement login (you can check passwords here or etc)
         page_content = (self._html_path / "settings.html").read_text()
         tpl = Jinja2Template(page_content)
-        locations = self._settings.get_dict(OW_CITY_IDS)
-        try:
-            location, id = list(locations.items())[0]
-        except:
-            location = "unknown"
-            id = ""
-        if location.lower() == "unknown":
+        location = self._settings.get_string(LOCATION)
+        if not location or location.lower() == "unknown":
             location = "Search for your location..."
-        return tpl.render(username=self._login.get_user(), ow_api_key=self._settings.get_string(OW_API_KEY),
-                          id=id, location=location)
+        return tpl.render(username=self._login.get_user(),  # ow_api_key=self._settings.get_string(OW_API_KEY)
+                          location=location)
 
 
 ###### API endpoints ######
 
 # args are given in the format ?Key=Value
+
 
     def trigger_event_remote_value(self):
         response.content_type = 'text/event-stream; charset=utf-8'
@@ -512,7 +519,7 @@ class BottleServer(Component):
         if temp is None or hum is None:
             current_weather = self._comps.weather_info.get_current_weather()
             if current_weather:
-                temp = unit_reg.Quantity(current_weather.temp, "degC")
+                temp = app.unit_reg.Quantity(current_weather.temp, "degC")
                 hum = current_weather.humidity
         if units:  # format non unit values
             temp = self._format_sensor_disp_value(temp, True)

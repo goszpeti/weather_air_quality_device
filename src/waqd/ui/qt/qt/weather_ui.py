@@ -112,7 +112,7 @@ class Ui_MainWindow(object):
         self.exterior_forecast_icon.setStyleSheet("background-color:rgba(255, 255, 255, 0)")
         self.exterior_forecast_icon.setText("")
         self.exterior_forecast_icon.setPixmap(QtGui.QPixmap("c:\\repos\\oss\\weatherairqualitydevice\\src\\waqd\\ui\\qt\\qt\\../../../assets/weather_icons/wi-day-sleet.svg"))
-        self.exterior_forecast_icon.setScaledContents(True)
+        self.exterior_forecast_icon.setScaledContents(False)
         self.exterior_forecast_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.exterior_forecast_icon.setObjectName("exterior_forecast_icon")
         self.horizontalLayout.addWidget(self.exterior_forecast_icon)

@@ -3,7 +3,7 @@ import platform
 
 from test.conftest import mock_run_on_target, mock_run_on_non_target
 
-def testInitOnNonTarget(base_fixture, mocker):
+def test_init_on_non_target(base_fixture, mocker):
     mock_run_on_non_target(mocker)
     from waqd.base.system import RuntimeSystem
     from waqd.base.network import Network
@@ -18,7 +18,7 @@ def testInitOnNonTarget(base_fixture, mocker):
     assert not ip4 is None
 
 
-def testInitOnTarget(base_fixture, mocker):
+def test_init_on_target(base_fixture, mocker):
     # Mocks call to get info of Rpi
     mock_run_on_target(mocker)
     from waqd.base.system import RuntimeSystem
@@ -27,7 +27,7 @@ def testInitOnTarget(base_fixture, mocker):
     # Actual string is platform dependent
     assert cur_system.platform == "RASPBERRY PI 4B"
 
-def testShutdown(base_fixture, mocker):
+def test_shutdown(base_fixture, mocker):
     mock_run_on_target(mocker)
     from waqd.base.system import RuntimeSystem
     mocker.patch('os.system')
@@ -38,7 +38,7 @@ def testShutdown(base_fixture, mocker):
         'shutdown now')  # pylint: disable=no-member
 
 
-def testRestart(base_fixture, mocker):
+def test_restart(base_fixture, mocker):
     from waqd.base.system import RuntimeSystem
 
     mock_run_on_target(mocker)
@@ -50,7 +50,7 @@ def testRestart(base_fixture, mocker):
         'shutdown -r now')  # pylint: disable=no-member
 
 
-def testGetIPOnTarget(base_fixture, mocker):
+def test_get_ip_on_target(base_fixture, mocker):
     mock_run_on_target(mocker)
     from waqd.base.system import RuntimeSystem
     cur_system = RuntimeSystem()

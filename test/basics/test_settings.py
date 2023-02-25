@@ -6,7 +6,7 @@ import configparser
 from waqd.settings import *
 
 
-def testReadFromFile(base_fixture):
+def test_read_from_file(base_fixture):
     sets = Settings(ini_folder=base_fixture.testdata_path / "settings/read")
     assert sets.get(LANG) == "MyLanguage"
     assert sets.get(DISPLAY_TYPE) == "RPI_TD"
@@ -25,7 +25,7 @@ def testReadFromFile(base_fixture):
     assert sets.get(NIGHT_STANDBY_TIMEOUT) == 60
 
 
-def testSaveToFile(base_fixture):
+def test_save_to_file(base_fixture):
     # copy testdata to temp
     temp_dir = tempfile.gettempdir()
     temp_ini_path = os.path.join(temp_dir, "config.ini")

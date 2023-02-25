@@ -35,6 +35,7 @@ from .base_types import Location, Weather, DailyWeather, is_daytime
 
 from .icon_mapping import om_condition_map, om_day_code_to_ico, om_night_code_to_ico
 
+
 class OpenMeteo(Component):
     API_FORECAST_CMD = "https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}"
     API_GEOCONDING_CMD = "https://geocoding-api.open-meteo.com/v1/search?name={query}&language={lang}"
@@ -50,7 +51,7 @@ class OpenMeteo(Component):
         self.nighttime_forecast_points = []
 
     def find_location_candidates(self, query: str, lang="en") -> List[Location]:
-        """ """
+        """ TODO currently unused """
         data = self._call_api(self.API_GEOCONDING_CMD, query=query, lang=lang)
         locations = []
         for result in data.get("results", []):
@@ -109,7 +110,8 @@ class OpenMeteo(Component):
                 self._get_main_category(daily.get("weathercode", [])[i]),
                 "",
                 datetime.fromisoformat(daily.get("time", [])[i]),
-                self._get_icon_name(daily.get("weathercode", [])[i], True), # always show daytime for forecast
+                # always show daytime for forecast
+                self._get_icon_name(daily.get("weathercode", [])[i], True),
                 daily.get("windspeed_10m_max", [])[i],
                 daily.get("winddirection_10m_dominant", [])[i],
                 sunrise, sunset,
@@ -149,7 +151,7 @@ class OpenMeteo(Component):
 
         return self._current_weather
 
-    def _complete_daily_weather(self): 
+    def _complete_daily_weather(self):
         # fill up current weather with hourly data
         if not self._current_weather:
             return
@@ -182,7 +184,7 @@ class OpenMeteo(Component):
         for i in range(len(hourly.get("time", []))):
             # utc to local time
             entry_date_time = datetime.fromisoformat(hourly.get("time", [])[i])
-            if entry_date_time < current_datetime: # throw away entries im the past
+            if entry_date_time < current_datetime:  # throw away entries im the past
                 continue
             time_delta = entry_date_time.date() - current_datetime.date()
             day_idx = time_delta.days
@@ -283,4 +285,3 @@ class OpenMeteo(Component):
 
     def _get_main_category(self, ident: int) -> str:
         return om_condition_map.get(ident, "")
-

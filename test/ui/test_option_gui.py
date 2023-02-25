@@ -15,7 +15,7 @@ from test.conftest import mock_run_on_target
 # while True:
 #     _qapp_instance.processEvents()
 
-def testOptions(base_fixture, qtbot, mocker):  # target_mockup_fixture
+def test_options(base_fixture, qtbot, mocker):  # target_mockup_fixture
     """
     Test the option gui.
     """

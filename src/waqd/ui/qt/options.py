@@ -177,7 +177,7 @@ class OptionMainUi(QDialog):
             msg.adjustSize()
             msg.show()
             msg.move(int((self.geometry().width() - msg.width()) / 2),
-                    int((self.geometry().height() - msg.height()) / 2))
+                     int((self.geometry().height() - msg.height()) / 2))
             msg.exec_()
             return
         offset = self._settings.get_int(MH_Z19_VALUE_OFFSET)
@@ -216,7 +216,7 @@ class OptionMainUi(QDialog):
                 self._ui = Ui_Dialog()
                 self._ui.setupUi(self._dialog)
                 sub_ui.SubUi.__init__(self, self._dialog, self._ui, settings)
-                #self._dialog.adjustSize()
+                # self._dialog.adjustSize()
                 self._dialog.move(int((parent.geometry().width() - self._dialog.width()) / 2),
                                   int((parent.geometry().height() - self._dialog.height()) / 2)
                                   )
@@ -325,9 +325,7 @@ class OptionMainUi(QDialog):
 
         # populate location dropdown- only ow for now
         self._ui.location_combo_box.clear()
-        for city in settings.get_dict(OW_CITY_IDS).keys():
-            self._ui.location_combo_box.addItem(city)
-        self._ui.location_combo_box.setCurrentText(settings.get_string(LOCATION))
+        self._ui.location_combo_box.addItem("-".join(settings.get_string(LOCATION).split("-")[:-1]))
         if waqd.DEBUG_LEVEL < 1:
             self._ui.location_combo_box.setDisabled(True)  # one location for now
         # set info labels

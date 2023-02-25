@@ -45,7 +45,7 @@ class Forecast(sub_ui.SubUi):
         super().__init__(main_ui, main_ui.ui, settings)
         self._default_min_max_text = self._ui.forecast_d1_day_temps_value.text()
         self._comps = main_ui._comps
-        self.det = None
+        self.detail_view = None
         # set default day night icons - sunny clear
         day_icon = get_asset_file("weather_icons", "day-800")
         # night-clear
@@ -101,17 +101,17 @@ class Forecast(sub_ui.SubUi):
 
     def stop(self):
         super().stop()
-        if self.det:
-            del self.det
+        if self.detail_view:
+            del self.detail_view
 
     def show_detail(self, day):
         """ Detail view day 1 """
         daytime_points = self._comps.weather_info.daytime_forecast_points
         if not len(daytime_points)+1 > day:
             return
-        self.det = WeatherDetailView(
+        self.detail_view = WeatherDetailView(
             daytime_points[day] + self._comps.weather_info.nighttime_forecast_points[day][:4], self._settings, self._main_ui)
-        self.det.show()
+        self.detail_view.show()
 
     def _cyclic_update(self):
         self._logger.debug("ForecastGui: update")

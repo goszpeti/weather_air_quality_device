@@ -7,7 +7,7 @@ from waqd.base.system import RuntimeSystem
 from waqd.settings import Settings
 
 
-def testComponent(base_fixture):
+def test_component(base_fixture):
     # test default constructor
     TestComponent = Component()
     # check default settings
@@ -27,7 +27,7 @@ def testComponent(base_fixture):
     assert TestComponent._comps == components
 
 
-def testCyclicComponent(base_fixture):
+def test_cyclic_component(base_fixture):
     # minimalistic implementation
     class TestCycComp(CyclicComponent):
         INIT_WAIT_TIME = 1

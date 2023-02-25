@@ -52,6 +52,7 @@ from waqd.settings import (DISP_TYPE_RPI,
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
+    from waqd.ui.qt.main_ui import QtBackChannel
     from waqd.base.component_ctrl import ComponentController
     from PyQt5 import QtCore, QtWidgets
     Qt = QtCore.Qt
@@ -67,6 +68,8 @@ translator: Optional["QtCore.QTranslator"] = None
 base_translator: Optional["QtCore.QTranslator"] = None
 # for global access to units
 unit_reg = UnitRegistry()
+# to send back data form backend to gui, if the gui loaded
+qt_backchannel: Optional["QtBackChannel"] = None
 
 
 def main(settings_path: Optional[Path] = None):

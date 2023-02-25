@@ -11,7 +11,7 @@ from waqd.ui.qt.weather_detail_view import WeatherDetailView
 import waqd
 
 
-def testSensorDetailView(base_fixture, qtbot):
+def test_sensor_detail_view(base_fixture, qtbot):
     parent = QtWidgets.QMainWindow()
     parent.resize(800, 480)
     parent.move(0,0,)
@@ -31,7 +31,7 @@ def testSensorDetailView(base_fixture, qtbot):
     assert widget._time_value_pairs[-1][0] - widget._time_value_pairs[0][0] <= timedelta(minutes=180)
 
 
-def testWeatherDetailView(base_fixture, qtbot):
+def test_weather_detail_view(base_fixture, qtbot):
     parent = QtWidgets.QMainWindow()
     parent.resize(800, 480)
     parent.show()
