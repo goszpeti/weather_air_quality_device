@@ -156,6 +156,8 @@ input[type="button"] {
     justify-content: center;
     align-content: stretch;
     text-align: center;
+    line-height: 100px;
+    height: 100px;
 }
 
 .small_row {

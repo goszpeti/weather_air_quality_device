@@ -39,7 +39,7 @@
     </form>
     <h2>Online Weather</h2>
     <hr style="width:50%;height:2px;border-width:0;">
-    <form id="ow_form" action="/set_ow_api_key" method="post">
+    <!-- <form id="ow_form" action="/set_ow_api_key" method="post">
         <label for="ow_api">OpenWeather API key</label><br>
         <div class="small_row" style="padding-top: 20px;">
             <input id="ow_api" name="ow_api" type="text" value="{{ow_api_key}}" required/> 
@@ -47,20 +47,15 @@
         <div class="small_row">
             <input value="Save" type="submit" class="btn btn-secondary" />
         </div>
-    </form>
+    </form> -->
     <h2>Location</h3>
-        <p style="font-size: 0.8em;";>Add the selectable location for online weather data.</p>
-        <p style="font-size: 0.5em;" ;>Please search for your city on https://openweathermap.org/.</p>
-        <p style="font-size: 0.5em;" ;>Then enter the id from the browsers address bar to the field below.</p>
-        <!-- <p style="font-size: 0.5em;" ;>E.g. London: https://openweathermap.org/city/2643743 - Enter 2643743</p> -->
-        
-        <form id="location_form" action="/set_location" method="post" style="margin-bottom: 20px">
-                <label for="location_form">{{location}}</label>
-                <br>
-                <div class="small_row">
-                   <input id="location", name="location" type="text" value="{{id}}" required/>
-                </div>
-                <button class="btn btn-third" type="submit">Set</button>
-        </form>
-
+    <p style="font-size: 0.8em;" ;>Add the selectable location for online weather data.</p>    
+    <form id="location_form" action="/set_location" method="post" style="margin-bottom: 20px">
+        <label for="location_form">{{location}}</label>
+        <br>
+        <div class="small_row">
+            <input id="location" , name="location" type="text" value="{{id}}" required />
+        </div>
+        <button class="btn btn-third" type="submit">Set</button>
+    </form>
 </div>

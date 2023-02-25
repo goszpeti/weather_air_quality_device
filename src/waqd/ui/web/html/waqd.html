@@ -78,9 +78,9 @@
     <h4>Exterior</h4>
   </div>
   <hr style="width:50%;height:2px;border-width:0;margin-bottom: 20px">
-  <div id="weather_overall" class="row" onclick="toggle_weather()"
+  <div id="weather_overall" class="row" onclick="toggle_weather()"  style="height: 200px"
     style="text-align: center;padding-bottom: 0px;margin-bottom: 0px">
-    <img class="svg-white" src="static/{{weather_icon}}" alt="weather_icon" style="width: 250px;">
+    <img class="svg-white" src="static/{{weather_icon}}" alt="weather_icon" style="width: 200px">
   </div>
   <div id="temp_exterior" class="row">
     <img class="svg-white" src="static/weather_icons/wi-thermometer_full.svg" alt="temp_icon" width="100px">
@@ -103,6 +103,7 @@
   <div id="hum_interior" class="row" , style="cursor: pointer;">
     <img class="svg-white" src="static/weather_icons/wi-humidity.svg" alt="baro_icon" width="100px">
     <span id="humidity_value" onclick="toggle_history('humidity')">{{humidity}}</span>
+    <!-- style="line-height: 100px;height: 100px;" -->
   </div>
   <div id="baro_interior" class="row" , style="cursor: pointer;">
     <img class="svg-white" src="static/weather_icons/wi-barometer.svg" alt="baro_icon" width="100px">
