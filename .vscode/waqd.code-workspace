@@ -4,11 +4,6 @@
             "path": ".."
         }
     ],
-    "extensions": {
-        "recommendations": [
-            "zhoufeng.pyqt-integration"
-        ]
-    },
     "settings": {
         "pyqt-integration.pyuic.compile.filepath": "${ui_name}_ui.py",
         "python.formatting.provider": "autopep8",
@@ -20,9 +15,8 @@
         "python.linting.enabled": false,
         "python.linting.pylintEnabled": true,
         "python.linting.mypyEnabled": true,
-        "pyqt-integration.qtdesigner.path": "pyqt5designer",
+        "python.analysis.typeCheckingMode": "basic",
         "python.linting.lintOnSave": true,
-        "python.linting.pylintUseMinimalCheckers": false,
         "python.linting.pylintCategorySeverity.refactor": "Information",
         "python.terminal.activateEnvironment": true,
         "python.testing.pytestEnabled": true,
@@ -63,7 +57,7 @@
                 "program": "${workspaceFolder}/src/waqd/__main__.py",
                 "args": [
                     "-D=1",
-                    // "-H"
+                    "-H"
                 ],
                 "console": "integratedTerminal",
                 "subProcess": true,
@@ -94,40 +88,6 @@
                 "justMyCode": false
             },
             {
-                "type": "pwa-msedge",
-                "name": "Launch Microsoft Edge",
-                "request": "launch",
-                "runtimeArgs": [
-                    "--remote-debugging-port=9222"
-                ],
-                "url": "c:\\Users\\peter\\.vscode\\extensions\\ms-edgedevtools.vscode-edge-devtools-2.1.0\\out\\startpage\\index.html",
-                "presentation": {
-                    "hidden": true
-                }
-            },
-            {
-                "type": "pwa-msedge",
-                "name": "Launch Microsoft Edge in headless mode",
-                "request": "launch",
-                "runtimeArgs": [
-                    "--headless",
-                    "--remote-debugging-port=9222"
-                ],
-                "url": "c:\\Users\\peter\\.vscode\\extensions\\ms-edgedevtools.vscode-edge-devtools-2.1.0\\out\\startpage\\index.html",
-                "presentation": {
-                    "hidden": true
-                }
-            },
-            {
-                "type": "vscode-edge-devtools.debug",
-                "name": "Open Edge DevTools",
-                "request": "attach",
-                "url": "c:\\Users\\peter\\.vscode\\extensions\\ms-edgedevtools.vscode-edge-devtools-2.1.0\\out\\startpage\\index.html",
-                "presentation": {
-                    "hidden": true
-                }
-            },
-            {
                 "name": "Python: Testing",
                 "type": "python",
                 "request": "test",
@@ -137,22 +97,6 @@
                 "python": "${command:python.interpreterPath}",
                 "env": {}
             },
-        ],
-        "compounds": [
-            {
-                "name": "Launch Edge Headless and attach DevTools",
-                "configurations": [
-                    "Launch Microsoft Edge in headless mode",
-                    "Open Edge DevTools"
-                ]
-            },
-            {
-                "name": "Launch Edge and attach DevTools",
-                "configurations": [
-                    "Launch Microsoft Edge",
-                    "Open Edge DevTools"
-                ]
-            }
         ]
     }
 }

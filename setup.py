@@ -4,6 +4,7 @@
 # Note: To use the 'upload' functionality of this file, you must:
 #   $ pipenv install twine --dev
 
+import waqd
 import io
 import os
 import platform
@@ -21,17 +22,18 @@ REQUIRES_PYTHON = '>=3.9.0'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    "wheel", # for pep 517 legacy setup.py mode
+    "wheel",  # for pep 517 legacy setup.py mode
     # Backend
-    "htmlmin==0.1.12", # BSD License - HTML minifier (removes comments and whitespace)
+    "htmlmin==0.1.12",  # BSD License - HTML minifier (removes comments and whitespace)
+    "js.jquery==3.6.1",  # BSD License - Offline jquery resource and helper
     "plotly==5.10.0",  # MIT License - web graph plotting
-    "influxdb-client==1.30.0", # MIT License - influxdb API
+    "influxdb-client==1.30.0",  # MIT License - influxdb API
     "bcrypt>=4.0.0, <5.0.0",  # Apache License, Version 2.0 - Password hashing
     "DebugPy==1.5.0",  # MS VSCode debugger for dynamic debugging
     "JsonSchema==4.16.0",  # MIT License - for events json schema validation
     "bottle==0.12.23",  # MIT License - webserver for remote sensors
     "jinja2==3.1.2",
-    "paste==3.5.0", # server backend for bottle
+    "paste==3.5.0",  # server backend for bottle
     "pint==0.19.2",  # BSD 3-clause style license - physical units for sensors
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
     "APScheduler==3.9.1",  # MIT License - Scheduler for Events function
@@ -42,8 +44,8 @@ REQUIRED = [
     "Python-VLC==3.0.16120",  # LGPLv2+ - use VLC for playing sounds
     # HW
     "RPi-Backlight==2.4.1",  # MIT License
-    "Adafruit-Blinka==7.1.1", # For all other Adafruit drivers
-    #"Adafruit-PlatformDetect==2.4.0",  # MIT License - target and model detection - up to 3.10 not working with BMP280
+    "Adafruit-Blinka==7.1.1",  # For all other Adafruit drivers
+    # "Adafruit-PlatformDetect==2.4.0",  # MIT License - target and model detection - up to 3.10 not working with BMP280
     "Adafruit-CircuitPython-DHT==3.7.1",  # MIT License - temp/hum sensor
     "Adafruit-CircuitPython-CCS811==1.3.4",  # MIT License - co2/tvoc sensor
     "Adafruit-CircuitPython-BME280==2.6.10",  # MIT License - temp/hum/baro sensor
@@ -61,10 +63,10 @@ REQUIRED_NON_RPI = [
 ]
 
 REQUIRED_LINUX = [  # this package does not install on windows, because of RPi.GPIO dependency
-    "MH-Z19==3.1.3", # MIT License
+    "MH-Z19==3.1.3",  # MIT License
 ]
 
-#epd-library=0.2.3 GPL v3GPLv3 - Waveshare 2.9 inch epaper 296×128
+# epd-library=0.2.3 GPL v3GPLv3 - Waveshare 2.9 inch epaper 296×128
 machine = platform.machine()
 if not (machine.startswith("armv") or machine.startswith("aarch64")):
     REQUIRED += REQUIRED_NON_RPI
@@ -84,7 +86,6 @@ except FileNotFoundError:
 # Load the package's __version__.py module as a dictionary.
 project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
 sys.path.insert(0, os.path.join(here, "src"))
-import waqd
 about = waqd
 
 

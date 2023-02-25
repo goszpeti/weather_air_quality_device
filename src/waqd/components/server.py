@@ -51,6 +51,7 @@ ROUTE_WAQD_HUM_HISTORY = "/waqd/humidity_history"
 ROUTE_WAQD_PRES_HISTORY = "/waqd/pressure_history"
 ROUTE_WAQD_CO2_HISTORY = "/waqd/co2_history"
 ROUTE_PLOTLY_JS = "/script/plotly.js"
+ROUTE_JQUERY_JS = "/script/jquery.min.js"
 
 ROUTE_CSS = "/style.css"
 ROUTE_ABOUT = "/about"
@@ -128,6 +129,7 @@ class BottleServer(Component):
         route(ROUTE_WAQD_PRES_HISTORY, "GET", self.plot_graph)
         route(ROUTE_WAQD_CO2_HISTORY, "GET", self.plot_graph)
         route(ROUTE_PLOTLY_JS, "GET", self.get_plotlyjs)
+        route(ROUTE_JQUERY_JS, "GET", self.get_jqueryjs)
 
         # api endpoints
         route(ROUTE_API_REMOTE_EXT_SENSOR + "<args:re:.*>", "POST", self.post_sensor_values)
@@ -161,7 +163,7 @@ class BottleServer(Component):
 
     def login(self):
         try:
-            username = request.forms.get('username') # type: ignore
+            username = request.forms.get('username')  # type: ignore
             password = request.forms.get('password')  # type: ignore
         except Exception:
             return redirect(ROUTE_LOGIN_FAILED)
@@ -172,7 +174,7 @@ class BottleServer(Component):
             return redirect(ROUTE_LOGIN_FAILED)
 
     def change_user_name(self):
-        new_username = request.forms.get('username', "") # type: ignore
+        new_username = request.forms.get('username', "")  # type: ignore
         old_username = self._login.get_user()
         # not changed
         if new_username == old_username:
@@ -235,7 +237,7 @@ class BottleServer(Component):
         try:
             owm = OpenWeatherMap("2643743", str(new_key))
             owm.get_current_weather()
-            self._comps.stop_component_instance(self._comps.weather_info) # reset setting
+            self._comps.stop_component_instance(self._comps.weather_info)  # reset setting
         except Exception as e:
             return "<p>OpenWeatherMap API key set, but does not seem to work!</p>"
         finally:
@@ -321,17 +323,6 @@ class BottleServer(Component):
         """
         return menu
 
-    def get_plotlyjs(self):
-        import plotly
-        path = os.path.join(plotly.__file__, "..", "package_data")
-        response = static_file("plotly.min.js", root=path)
-        # 1 week
-        max_age = "604800"
-        if waqd.DEBUG_LEVEL > 1:
-            max_age = "0"
-        response.set_header("Cache-Control", f"public, max-age={max_age}")
-        return response
-
     def plot_graph(self):
         time_m = 180
         my_plot_div = ""
@@ -412,8 +403,10 @@ class BottleServer(Component):
         try:
             location, id = list(locations.items())[0]
         except:
-            location = "Unknown location"
+            location = "unknown"
             id = ""
+        if location.lower() == "unknown":
+            location = "Search for your location..."
         return tpl.render(username=self._login.get_user(), ow_api_key=self._settings.get_string(OW_API_KEY),
                           id=id, location=location)
 
@@ -536,3 +529,27 @@ class BottleServer(Component):
     def _format_sensor_disp_value(self, quantity: Quantity, unit=None, precision=1):
         disp_value = format_unit_disp_value(quantity, unit, precision)
         return html.escape(disp_value)
+
+###### Script endpoints for offline access of js libs ######
+
+    def get_plotlyjs(self):
+        import plotly
+        path = os.path.join(plotly.__file__, "..", "package_data")
+        response = static_file("plotly.min.js", root=path)
+        # 1 week
+        max_age = "604800"
+        if waqd.DEBUG_LEVEL > 1:
+            max_age = "0"
+        response.set_header("Cache-Control", f"public, max-age={max_age}")
+        return response
+
+    def get_jqueryjs(self):
+        import js.jquery
+        res = js.jquery.jquery
+        response = static_file(js.jquery.jquery.minified, root=os.path.dirname(res.fullpath()))
+        # 1 week
+        max_age = "604800"
+        if waqd.DEBUG_LEVEL > 1:
+            max_age = "0"
+        response.set_header("Cache-Control", f"public, max-age={max_age}")
+        return response
