@@ -52,8 +52,9 @@ REQUIRED = [
     "Adafruit-Circuitpython-BH1750==1.0.7",  # MIT License - light sensor
     "Adafruit-Circuitpython-ADS1x15==2.2.8",  # MIT License - currently only this ADC is used for analog sensors
     # QT Widgets
-    "QtWidgets==0.18",  # MIT License - for touch friendly Toggle Switch
-    "PyQtSpinner==0.1.1"  # MIT License - a loading Spinner
+    "QtWidgets==1.1",  # MIT License - for touch friendly Toggle Switch
+    "PyQtSpinner==2.0.0",  # MIT License - a loading Spinner
+    "QtPy==2.3.0"  # # MIT License - needed by QtWidgets
 ]
 REQUIRED_NON_RPI = [
     # UI

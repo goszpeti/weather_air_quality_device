@@ -76,8 +76,8 @@ class SplashScreen(QtWidgets.QSplashScreen):
             self._label.setAlignment(Qt.AlignmentFlag(Qt.AlignBottom | Qt.AlignRight))
             self._label.setGeometry(0, 0, 800, 480)
             self._label.show()
-        self._spinner = WaitingSpinner(self, centerOnParent=False, radius=30, roundness=60,
-                                      line_length=20, line_width=6, speed=0.5, color=(15, 67, 116))
+        self._spinner = WaitingSpinner(self, False, radius=30, roundness=60,
+                                      line_length=20, line_width=6, speed=0.5, color=QtGui.QColor(15, 67, 116))
         if self._is_background_set:
             self._spinner.setGeometry(int(self.width()/2 - self._spinner.width()/2),
                                      int(self.height() - self._spinner.height() - 20),
