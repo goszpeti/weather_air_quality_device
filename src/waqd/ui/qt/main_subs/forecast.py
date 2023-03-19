@@ -47,9 +47,9 @@ class Forecast(sub_ui.SubUi):
         self._comps = main_ui._comps
         self.detail_view = None
         # set default day night icons - sunny clear
-        day_icon = get_asset_file("weather_icons", "day-800")
+        day_icon = get_asset_file("weather_icons", "wi-day-sunny")
         # night-clear
-        night_icon = get_asset_file("weather_icons", "night-800")
+        night_icon = get_asset_file("weather_icons", "wi-night-clear")
 
         self._ui.forecast_background.setPixmap(QtGui.QPixmap(
             str(waqd.assets_path / "gui_bgrs" / settings.get_string(FORECAST_BG))))

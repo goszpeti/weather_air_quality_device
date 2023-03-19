@@ -120,8 +120,8 @@
      </property>
      <property name="font">
       <font>
+       <family>Franzo</family>
        <pointsize>32</pointsize>
-       <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
       </font>
@@ -310,7 +310,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>21</pointsize>
-          <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
          </font>
@@ -371,7 +370,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>21</pointsize>
-          <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
          </font>
@@ -450,7 +448,6 @@
       <font>
        <family>Franzo</family>
        <pointsize>82</pointsize>
-       <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
       </font>
@@ -563,7 +560,6 @@
       <font>
        <family>Franzo</family>
        <pointsize>38</pointsize>
-       <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
       </font>
@@ -749,7 +745,6 @@
       <font>
        <family>Franzo</family>
        <pointsize>82</pointsize>
-       <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
       </font>
@@ -849,7 +844,7 @@
        <number>0</number>
       </property>
       <property name="rightMargin">
-       <number>4</number>
+       <number>5</number>
       </property>
       <property name="bottomMargin">
        <number>0</number>
@@ -875,7 +870,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>17</pointsize>
-          <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
          </font>
@@ -930,7 +924,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>17</pointsize>
-          <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
          </font>
@@ -1043,7 +1036,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>15</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
           <kerning>true</kerning>
          </font>
@@ -1193,7 +1185,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>17</pointsize>
-          <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
          </font>
@@ -1297,7 +1288,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>17</pointsize>
-          <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
          </font>
@@ -1511,7 +1501,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>15</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
           <kerning>true</kerning>
          </font>
@@ -1549,7 +1538,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>38</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
           <kerning>true</kerning>
@@ -1636,7 +1624,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>15</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
           <kerning>true</kerning>
          </font>
@@ -1679,7 +1666,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>17</pointsize>
-          <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
          </font>
@@ -1734,7 +1720,6 @@
          <font>
           <family>Franzo</family>
           <pointsize>17</pointsize>
-          <weight>50</weight>
           <bold>false</bold>
           <kerning>true</kerning>
          </font>
@@ -1904,7 +1889,6 @@
       <font>
        <family>Franzo</family>
        <pointsize>37</pointsize>
-       <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
       </font>
@@ -2221,7 +2205,6 @@
       <font>
        <family>Franzo</family>
        <pointsize>16</pointsize>
-       <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
       </font>
@@ -2556,7 +2539,6 @@
       <font>
        <family>Franzo</family>
        <pointsize>16</pointsize>
-       <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
       </font>
@@ -2587,7 +2569,6 @@
       <font>
        <family>Franzo</family>
        <pointsize>42</pointsize>
-       <weight>50</weight>
        <bold>false</bold>
        <kerning>true</kerning>
       </font>
@@ -2645,6 +2626,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Franzo</family>
       <pointsize>18</pointsize>
      </font>
     </property>
@@ -2666,6 +2648,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Franzo</family>
       <pointsize>18</pointsize>
      </font>
     </property>
@@ -2687,6 +2670,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Franzo</family>
       <pointsize>18</pointsize>
      </font>
     </property>
@@ -2708,8 +2692,8 @@
     </property>
     <property name="font">
      <font>
+      <family>Franzo</family>
       <pointsize>17</pointsize>
-      <weight>75</weight>
       <bold>true</bold>
       <underline>false</underline>
      </font>
