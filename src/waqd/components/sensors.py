@@ -130,7 +130,7 @@ class SensorImpl():
                 else:
                     try:
                         last_date = log_values[0][0]
-                    except:
+                    except Exception:
                         return
                     if (last_date - datetime.datetime.now(LOCAL_TIMEZONE)) < datetime.timedelta(hours=3):
                         self._values.append(log_values[0][1])

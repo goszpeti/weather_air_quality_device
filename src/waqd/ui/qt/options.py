@@ -50,7 +50,7 @@ from .qt.options_ui import Ui_Dialog
 Qt = QtCore.Qt
 
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
 
 
 class OptionMainUi(QDialog):

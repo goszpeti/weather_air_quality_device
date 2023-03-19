@@ -38,4 +38,4 @@ if waqd.DEBUG_LEVEL > 0:
         except Exception as e:
             Logger().warning(f"Can't convert {str(py_ui_file)}: {str(e)}")
 # only import after uis where compiled
-from . import common, main_ui, options, qt, widgets
+from . import common, main_window, options, qt, widgets

@@ -33,7 +33,7 @@ from waqd.ui import get_localized_date
 from waqd.ui.qt.weather_detail_view import WeatherDetailView
 
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
     from waqd.settings import Settings
 
 

@@ -52,7 +52,7 @@ from waqd.settings import (DISP_TYPE_RPI,
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_ui import QtBackChannel
+    from waqd.ui.qt.main_window import QtBackChannel
     from waqd.base.component_ctrl import ComponentController
     from PyQt5 import QtCore, QtWidgets
     Qt = QtCore.Qt
@@ -123,7 +123,7 @@ def main(settings_path: Optional[Path] = None):
             qt_app.exec()
         elif display_type == DISP_TYPE_WAVESHARE_EPAPER_2_9:
             pass
-    except:  # pylint:disable=bare-except
+    except Exception:
         trace_back = traceback.format_exc()
         Logger().error("Application crashed: \n%s", trace_back)
 
@@ -229,7 +229,7 @@ def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
 
     # start init for all components
     from PyQt5 import QtCore, QtWidgets
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
     from waqd.ui.qt.widgets.fader_widget import FaderWidget
     from waqd.ui.qt.widgets.splashscreen import SplashScreen
     # show splash screen
@@ -271,6 +271,6 @@ def crash_hook(exctype, excvalue, tb):
         tb_formatted = "\n".join(traceback.format_tb(tb, limit=10))
         error_text = f"Application crashed: {str(exctype)} {excvalue}\n{tb_formatted}"
         Logger().fatal(error_text)
-    except:  # just in case, otherwise we get an endless exception loop
+    except Exception:  # just in case, otherwise we get an endless exception loop
         sys.exit(2)
     sys.exit(1)

@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING
 
 from  . import sub_ui
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
     from waqd.settings import Settings
 
 class InfoPane(sub_ui.SubUi):

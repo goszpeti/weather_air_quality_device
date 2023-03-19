@@ -84,11 +84,11 @@ class SplashScreen(QtWidgets.QSplashScreen):
                                      self._spinner.width(),
                                      self._spinner.height())
         else:
-            self._spinner.setColor(Qt.white)
-            self._spinner.setInnerRadius(40)
-            self._spinner.setLineLength(40)
-            self._spinner.setLineWidth(8)
-            self._spinner.setTrailFadePercentage(90)
+            self._spinner.color = Qt.white
+            self._spinner.inner_radius = 40
+            self._spinner.line_length = 40
+            self._spinner.line_width = 8
+            self._spinner.trail_fade_percentage = 90
             self._spinner.setGeometry(int(self.width()/2 - self._spinner.width()/2),
                                       int(self.height()/2 - self._spinner.height()/2),
                                      self._spinner.width(),

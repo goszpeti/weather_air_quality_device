@@ -32,7 +32,7 @@ from . import sub_ui
 
 if TYPE_CHECKING:
     from waqd.settings import Settings
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
 
 class Interior(sub_ui.SubUi):
     """ Interior segment of the main ui. Displays the interior sensor data. """
@@ -145,7 +145,7 @@ class Interior(sub_ui.SubUi):
             try:
                 if co2_value.m_as(unit_reg.ppm) >= 1000:
                     label_color = "red"
-            except:
+            except Exception:
                 pass # no handling
             self._co2_bar.set_value_label(format_unit_disp_value(co2_value, precision=0), color=label_color)
 

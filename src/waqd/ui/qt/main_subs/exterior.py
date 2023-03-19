@@ -29,7 +29,7 @@ from . import sub_ui
 from ..weather_detail_view import WeatherDetailView
 
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
 
 
 Qt = QtCore.Qt

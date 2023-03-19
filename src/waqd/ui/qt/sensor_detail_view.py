@@ -33,7 +33,7 @@ from waqd.settings import LANG
 from waqd.base.db_logger import InfluxSensorLogger
 Qt = QtCore.Qt
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
 
 class SensorDetailView(QtWidgets.QDialog):
     """ A popup window plotting the sensor values. """

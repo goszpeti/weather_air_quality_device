@@ -158,7 +158,7 @@ class SensorFileLogger(logging.Logger):
                     if (current_time - timestamp) > timedelta(minutes=minutes_to_read):
                         break
                     time_value_pairs.append((timestamp, float(time_value_pair[1].strip())))
-        except:
+        except Exception:
             # try to delete when file is corrupted
             delete_log_file(log_file_path)
         return time_value_pairs

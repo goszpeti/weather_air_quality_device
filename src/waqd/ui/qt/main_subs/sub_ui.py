@@ -25,7 +25,7 @@ from PyQt5 import QtCore
 from waqd.base.file_logger import Logger
 
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
     from waqd.settings import Settings
     from waqd.ui.qt.qt.weather_ui import Ui_MainWindow
 
