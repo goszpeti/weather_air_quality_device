@@ -31,7 +31,7 @@ from typing import Dict, List, Optional, Any
 from waqd.base.component import Component
 from waqd.base.network import Network
 
-from .base_types import Location, Weather, DailyWeather, is_daytime
+from .base_types import Location, Weather, DailyWeather, WeatherQuality, is_daytime
 
 from .icon_mapping import om_condition_map, om_day_code_to_ico, om_night_code_to_ico
 
@@ -47,8 +47,8 @@ class OpenMeteo(Component):
         self._current_weather: Optional[Weather] = None
         self._five_day_forecast: List[DailyWeather] = []
         self._ready = True
-        self.daytime_forecast_points = []
-        self.nighttime_forecast_points = []
+        self.daytime_forecast_points: List[List[Weather]] = []
+        self.nighttime_forecast_point: List[List[Weather]] = []
 
     def find_location_candidates(self, query: str, lang="en") -> List[Location]:
         """ TODO currently unused """
@@ -88,6 +88,14 @@ class OpenMeteo(Component):
         self._fetch_hourly_weather()
         # add pressure, humidty and clouds to cw
         self._complete_daily_weather()
+        for i, day_points in enumerate(self.daytime_forecast_points):
+            if not day_points:
+                continue
+            daily_weather = self._determine_daily_overall_weather(day_points)
+            if not daily_weather:
+                continue
+            self._five_day_forecast[i].main = daily_weather.main
+            self._five_day_forecast[i].icon = self._get_icon_name(daily_weather.wid, True)
 
     def _fetch_daily_weather(self):
         response = self._call_api(
@@ -106,9 +114,9 @@ class OpenMeteo(Component):
             sunset = datetime.fromisoformat(daily.get("sunset", [])[i]).time()
             is_day = is_daytime(sunrise, sunset)
             daily_weather = DailyWeather(
-                "",
                 self._get_main_category(daily.get("weathercode", [])[i]),
-                "",
+                daily.get("weathercode", [])[i],
+                # "",
                 datetime.fromisoformat(daily.get("time", [])[i]),
                 # always show daytime for forecast
                 self._get_icon_name(daily.get("weathercode", [])[i], True),
@@ -132,9 +140,10 @@ class OpenMeteo(Component):
         sunset = self._five_day_forecast[0].sunset
         is_day = is_daytime(sunrise, sunset)
         self._current_weather = Weather(
-            "",
+            # "",
             self._get_main_category(current_weather.get("weathercode", 0)),
-            "",
+            current_weather.get("weathercode", 0),
+            # "",
             # current_weather.get("description"), # TODO detail
             datetime.now(),
             self._get_icon_name(current_weather.get("weathercode", ""), is_day),
@@ -192,9 +201,9 @@ class OpenMeteo(Component):
                 continue
             is_day = is_daytime(current_weather.sunrise, current_weather.sunset, entry_date_time)
             weather_point = Weather(
-                "",  # no name necessary
-                hourly.get("weathercode", "")[i],
-                "",
+                # "",  # no name necessary
+                self._get_main_category(hourly.get("weathercode", [i])[i]),
+                hourly.get("weathercode", [i])[i],
                 entry_date_time,
                 self._get_icon_name(hourly.get("weathercode", [])[i], is_day),
                 hourly.get("windspeed_10m", [])[i],
@@ -255,6 +264,74 @@ class OpenMeteo(Component):
             min_temp = min([point.temp for point in forecast_points])
             self._five_day_forecast[day_idx].temp_night_min = min_temp
 
+    @staticmethod
+    def _determine_daily_overall_weather(measurement_points: Optional[List[Weather]]) -> Optional[Weather]:
+        """
+        Get the weather to be shown on the forecast icon.
+        The strategy is to first sort after the main category, e.g. rain, snow.
+        All the categories are listed in the WeatherQuality class and are ordered from bad to good.
+        In case there are multiple categories, first try determine the most numerous one.
+        If there are equal in count, take the one with the most bad.
+
+        return : the measurement point (Weather) representing the daily weather(main and description)
+        """
+
+        if not measurement_points:
+            return None
+
+        # first try look in main categories and get enumerate all of them
+        main_count_dict: Dict[str, int] = {}
+        for measurement_point in measurement_points:
+            if measurement_point.main not in main_count_dict:  # filter empty
+                main_count_dict.update({measurement_point.main: 1})
+                continue
+            main_count_dict[measurement_point.main] += 1
+
+        if not main_count_dict:  # something went wrong, no categories were found
+            return None
+
+        # dominant_categories can be a list or a single element
+        max_count = max(main_count_dict.values())
+        max_indices = [i for i, x in enumerate(main_count_dict.values()) if x == max_count]
+        dominant_categories = [list(main_count_dict)[i] for i in max_indices]
+
+        # there are multiple candidates
+        # if isinstance(dominant_categories, list):
+        # get the worst case - we want to know, if it snows in the middle of the day
+        # init with max value
+        worst_idx = max(list(map(lambda c: c.value, WeatherQuality)))
+        for category in dominant_categories:
+            # enum is uppercase
+            category_quality = WeatherQuality[category.upper()]
+            worst_idx = min(worst_idx, category_quality.value)
+        result_category = WeatherQuality(worst_idx)
+        # else:  # one element
+        #     result_category = dominant_categories
+
+        # get the most prevalent detailed description
+        wid = OpenMeteo._find_dominant_detailed_weather(measurement_points, result_category)
+
+        # only need one
+        return [point for point in measurement_points if point.wid == wid][0]
+
+    @staticmethod
+    def _find_dominant_detailed_weather(measurement_points: List[Weather], category: WeatherQuality):
+        """ Tries to find the best matching detailed weather for the day """
+
+        # count all detailed conditions with the selected main category
+        detail_count_dict = {}
+        for point in measurement_points:
+            if category.name in point.main.upper():  # and point.description:
+                if not point.wid in detail_count_dict:
+                    detail_count_dict[point.wid] = 1
+                    continue
+                detail_count_dict[point.wid] += 1
+        max_count = max(detail_count_dict.values())
+        max_indices = [i for i, x in enumerate(detail_count_dict.values()) if x == max_count]
+        dominant_categories = [list(detail_count_dict)[i]for i in max_indices]
+        return dominant_categories[0]
+
+
     def _call_api(self, command: str, **kwargs) -> Dict[str, Any]:
         """ Call the REST like API of OpenWeatherMap. Return response. """
         if self._disabled:
@@ -284,4 +361,4 @@ class OpenMeteo(Component):
         return icon_name
 
     def _get_main_category(self, ident: int) -> str:
-        return om_condition_map.get(ident, "")
+        return om_condition_map.get(ident, "unknown")

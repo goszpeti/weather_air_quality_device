@@ -12,7 +12,7 @@ from waqd.components.events import (EventHandler, get_time_of_day,
                                     parse_event_file, write_events_file)
 from waqd.settings import (NIGHT_MODE_BEGIN, NIGHT_MODE_END, SOUND_ENABLED,
                            Settings)
-from waqd.ui.qt.main_ui import WeatherMainUi
+from waqd.ui.qt.main_window import WeatherMainUi
 
 
 def test_parser(base_fixture, target_mockup_fixture):

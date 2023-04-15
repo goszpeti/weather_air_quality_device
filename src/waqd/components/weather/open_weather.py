@@ -89,9 +89,8 @@ class OpenWeatherMap(Component):
         coord = current_info.get("coord", {})
 
         self._current_weather = Weather(
-            current_info.get("name", ""),
             weather_info.get("main"),
-            weather_info.get("description"),
+            weather_info.get("id"),
             datetime.now(),
             self._get_icon_name(weather_info.get("id"), is_day),
             current_info.get("wind", {}).get("speed", 0.0),
@@ -154,9 +153,8 @@ class OpenWeatherMap(Component):
             if not weather_info:
                 continue
             weather_point = Weather(
-                "",  # no name necessary
                 weather_info.get("main", ""),
-                weather_info.get("description", ""),
+                weather_info.get("id", ""),
                 entry_date_time,
                 self._get_icon_name(weather_info.get("id", ""), is_day),
                 measurement_point.get("wind").get("speed"),
@@ -228,9 +226,8 @@ class OpenWeatherMap(Component):
 
             # init DailyWeather
             daily_weather = DailyWeather(
-                current_weather.name,
                 overall_weather.main,
-                overall_weather.description,
+                overall_weather.wid,
                 overall_weather.date_time,
                 overall_weather.icon,
                 max_wind_speed,
@@ -319,7 +316,7 @@ class OpenWeatherMap(Component):
             measurement_points, result_category)
 
         # only need one
-        return [point for point in measurement_points if point.description == description][0]
+        return [point for point in measurement_points if point.wid == description][0]
 
     @staticmethod
     def _find_dominant_detailed_weather(measurement_points: List[Weather], category: WeatherQuality):
@@ -329,10 +326,10 @@ class OpenWeatherMap(Component):
         detail_count_dict = {}
         for point in measurement_points:
             if category.name in point.main.upper():  # and point.description:
-                if not point.description in detail_count_dict:
-                    detail_count_dict[point.description] = 1
+                if not point.wid in detail_count_dict:
+                    detail_count_dict[point.wid] = 1
                     continue
-                detail_count_dict[point.description] += 1
+                detail_count_dict[point.wid] += 1
         max_count = max(detail_count_dict.values())
         max_indices = [i for i, x in enumerate(detail_count_dict.values()) if x == max_count]
         dominant_categories = [list(detail_count_dict)[i]

@@ -6,7 +6,6 @@ from time import sleep
 from typing import TYPE_CHECKING, TypedDict
 from typing_extensions import NotRequired
 import os
-import PyQt5
 import plotly.graph_objects as go
 import waqd
 from bottle import (Jinja2Template, default_app, redirect, jinja2_template,

@@ -57,9 +57,9 @@ class Weather():
     This class is used to abstract from weather hosting types.
     Relies heavily on OpenWeather data structure
     """
-    name: str  # city name TODO deprecate
-    main: str  # condition  TODO deprecate or use WQ
-    description: str  # condition detail TODO deprecate
+    main: str  # condition name
+    wid: int # provider specific weather id 
+    # description: str  # condition detail TODO deprecate
     date_time: datetime  # time of the point or day
     fetch_time: datetime = field(init=False)
     icon: str  # icon name

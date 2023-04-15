@@ -24,7 +24,7 @@ def test_open_meteo_geocoder(base_fixture, mocker):
     om = OpenMeteo()
     mock_call = mocker.Mock()
     mock_call.return_value = json.loads(test_json.read_text())
-    mocker.patch("waqd.components.online_weather.OpenMeteo._call_api", mock_call)
+    mocker.patch("waqd.components.weather.OpenMeteo._call_api", mock_call)
     ret = om.find_location_candidates("Berlin", "de")
     assert len(ret) == 10
     assert ret[0].name == "Berlin"
@@ -40,16 +40,16 @@ def test_open_meteo_geocoder(base_fixture, mocker):
 def test_open_meteo(base_fixture, mocker):
     daily_test_json: Path = base_fixture.testdata_path / "online_weather/om_current_weather.json"
     hourly_test_json: Path = base_fixture.testdata_path / "online_weather/om_hourly_weather.json"
-
-    om = MockOpenMeteo(13.41053, 52.52437)
-    om.daily_test_json = daily_test_json
-    om.hourly_test_json = hourly_test_json
-    ret = om.get_current_weather()
-    assert ret
-    ret = om.get_5_day_forecast()
-    assert ret
-    assert om.nighttime_forecast_points
-    assert om.daytime_forecast_points
+    with freeze_time("2023-01-02 22:00:00"):
+        om = MockOpenMeteo(13.41053, 52.52437)
+        om.daily_test_json = daily_test_json
+        om.hourly_test_json = hourly_test_json
+        ret = om.get_current_weather()
+        assert ret
+        ret = om.get_5_day_forecast()
+        assert ret
+        assert om.nighttime_forecast_points
+        assert om.daytime_forecast_points
 
 
 class MockOpenWeatherMap(OpenWeatherMap):
@@ -92,8 +92,7 @@ def test_open_weather_forecast_api_call(base_fixture):
 
 
 def test_open_weather_new_day_forecast(base_fixture):
-    MockOpenWeatherMap.fc_json_file = str(
-        base_fixture.testdata_path / "online_weather/ow_new_day_forecast.json")
+    MockOpenWeatherMap.fc_json_file = str(base_fixture.testdata_path / "online_weather/ow_new_day_forecast.json")
     MockOpenWeatherMap.cw_json_file = str(base_fixture.testdata_path / "online_weather/ow_new_day_cw.json")
     weather = MockOpenWeatherMap("city_id", "no_api_key_needed")
 
@@ -108,13 +107,12 @@ def test_open_weather_new_day_forecast(base_fixture):
         assert forecast[0].temp_max == 23.71
         assert forecast[0].temp_night_min == 11.25
         assert forecast[0].temp_night_max == 13.03
-        assert forecast[0].description == "broken clouds"
+        assert forecast[0].wid == 803
 
 
 def test_open_weather_get3_day_forecast(base_fixture):
     MockOpenWeatherMap.fc_json_file = str(base_fixture.testdata_path / "online_weather/ow_forecast.json")
-    MockOpenWeatherMap.cw_json_file = str(
-        base_fixture.testdata_path / "online_weather/ow_current_weather.json")
+    MockOpenWeatherMap.cw_json_file = str(base_fixture.testdata_path / "online_weather/ow_current_weather.json")
 
     weather = MockOpenWeatherMap("city_id", "no_api_key_needed")
 
@@ -129,22 +127,22 @@ def test_open_weather_get3_day_forecast(base_fixture):
         assert forecast[0].temp_max == float("inf")
         assert forecast[0].temp_night_min == 19.77
         assert forecast[0].temp_night_max == 23.87
-        assert forecast[0].description == "broken clouds"
+        assert forecast[0].wid == 803
 
         assert forecast[1].temp_min == 21.65
         assert forecast[1].temp_max == 30.15
         assert forecast[1].temp_night_min == 17.86
         assert forecast[1].temp_night_max == 19.65
-        assert forecast[1].description == "light rain"
+        assert forecast[1].wid == 500
 
         assert forecast[2].temp_min == 21.15
         assert forecast[2].temp_max == 26.85
         assert forecast[2].temp_night_min == 15.65
         assert forecast[2].temp_night_max == 19.16
-        assert forecast[2].description == "overcast clouds"
+        assert forecast[2].wid == 804
 
         assert forecast[3].temp_min == 19.76
         assert forecast[3].temp_max == 26.69
         assert forecast[3].temp_night_min == 16.16
         assert forecast[3].temp_night_max == 18.81
-        assert forecast[3].description == "broken clouds"
+        assert forecast[3].wid == 803

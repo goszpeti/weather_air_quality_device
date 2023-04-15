@@ -109,9 +109,8 @@ class Exterior(sub_ui.SubUi):
             self._online_info_date_time = current_weather.fetch_time
             temp_value = unit_reg.Quantity(current_weather.temp, "degC")
             hum_value = unit_reg.Quantity(current_weather.humidity, "hPa")
-            online_weather_desc = current_weather.description
-            self._logger.debug("ExteriorGui: Current weather condition is %s",
-                               online_weather_desc)
+            online_weather_desc = current_weather.main
+            self._logger.debug("ExteriorGui: Current weather condition is %s", online_weather_desc)
             weather_icon = current_weather.get_background_image()
             self._ui.exterior_background.set_image(str(weather_icon))
 
