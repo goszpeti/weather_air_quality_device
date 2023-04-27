@@ -6,5 +6,9 @@ sudo ufw allow ssh
 sudo ufw allow 5900
 sudo ufw allow http
 sudo ufw allow https
+# dhcpd
+sudo ufw allow bootps
+sudo ufw allow 53
+
 sudo ufw enable
 # sudo ufw status verbose

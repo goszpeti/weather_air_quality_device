@@ -20,7 +20,6 @@
 import datetime
 
 from PyQt5 import QtCore
-from pint import Quantity
 from typing import TYPE_CHECKING
 from waqd.assets import get_asset_file
 from waqd.base.network import Network
@@ -30,7 +29,7 @@ from . import sub_ui
 from ..weather_detail_view import WeatherDetailView
 
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
 
 
 Qt = QtCore.Qt
@@ -58,11 +57,9 @@ class Exterior(sub_ui.SubUi):
         self._ui.exterior_forecast_hum_value.setText(common.format_int_meas_text(self._default_hum_text,
                                                                                  None,
                                                                                  tag_id=1))
-        self.det = None
-        na_icon = get_asset_file("weather_icons", "N/A")
-        # common.draw_svg(self._ui.exterior_forecast_icon, na_icon, scale=3)
+        self.detail_view = None
         common.draw_svg(self._ui.exterior_temp_icon, common.get_temperature_icon(
-            Quantity(22, unit_reg.degC)))
+            unit_reg.Quantity(22, "degC")))
 
         self._ui.exterior_forecast_icon.clicked.connect(self.show_detail)
 
@@ -76,8 +73,8 @@ class Exterior(sub_ui.SubUi):
 
     def stop(self):
         super().stop()
-        if self.det:
-            del self.det
+        if self.detail_view:
+            del self.detail_view
 
     def show_detail(self):
         """ Daily detail view popup """
@@ -86,8 +83,8 @@ class Exterior(sub_ui.SubUi):
         if not (nighttime_points or daytime_points):
             return
         # after midnight nighttime_points[0] has points of both today and next day
-        self.det = WeatherDetailView(daytime_points[0] + nighttime_points[0], self._settings, self._main_ui)
-        self.det.show()
+        self.detail_view = WeatherDetailView(daytime_points[0] + nighttime_points[0], self._settings, self._main_ui)
+        self.detail_view.show()
 
     def _cyclic_update(self):
         self._logger.debug("ExteriorGui: update")
@@ -110,18 +107,17 @@ class Exterior(sub_ui.SubUi):
                     return  # forecast still valid, don't change displayed value
         else:
             self._online_info_date_time = current_weather.fetch_time
-            temp_value = Quantity(current_weather.temp, unit_reg.degC)  # for later use
-            hum_value = current_weather.humidity
-            online_weather_desc = current_weather.description
-            self._logger.debug("ExteriorGui: Current weather condition is %s",
-                               online_weather_desc)
+            temp_value = unit_reg.Quantity(current_weather.temp, "degC")
+            hum_value = unit_reg.Quantity(current_weather.humidity, "hPa")
+            online_weather_desc = current_weather.main
+            self._logger.debug("ExteriorGui: Current weather condition is %s", online_weather_desc)
             weather_icon = current_weather.get_background_image()
             self._ui.exterior_background.set_image(str(weather_icon))
 
             # set todays forecast
             if not forecast[0]:
                 return
-            common.draw_svg(self._ui.exterior_forecast_icon, forecast[0].icon, scale=3)
+            common.draw_svg(self._ui.exterior_forecast_icon, forecast[0].get_icon(), scale=3)
 
             if not current_weather.is_daytime():
                 temp_min = forecast[0].temp_night_min
@@ -144,7 +140,7 @@ class Exterior(sub_ui.SubUi):
         if self._comps.remote_exterior_sensor and not self._comps.remote_exterior_sensor.is_disabled:
             temp_value = self._comps.remote_exterior_sensor.get_temperature()
             sensor_hum_value = self._comps.remote_exterior_sensor.get_humidity()
-            if sensor_hum_value:
+            if sensor_hum_value is not None:
                 hum_value = sensor_hum_value
 
         # format and set values to temperature display
@@ -152,9 +148,8 @@ class Exterior(sub_ui.SubUi):
         self._ui.exterior_temp_value.setText(temp_val_text)
 
         # format and set values to humidity display
-        self._ui.exterior_forecast_hum_value.setText(common.format_int_meas_text(self._default_hum_text,
-                                                                                 hum_value,
-                                                                                 tag_id=1))
+        self._ui.exterior_forecast_hum_value.setText(
+            common.format_int_meas_text(self._default_hum_text, hum_value, tag_id=1, unit=unit_reg.hPa))
 
         # set temperature icon
         common.draw_svg(self._ui.exterior_temp_icon, common.get_temperature_icon(temp_value))

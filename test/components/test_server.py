@@ -10,7 +10,14 @@ from waqd.settings.settings import Settings
 from waqd.base.authentification import DEFAULT_USERNAME, UserAuth, validate_username, validate_password
 
 
-def testValidateUsername():
+def test_location_parser():
+    name, lon, lat = Server.parse_location("London - England, United Kingdom(51.51ÂºE -0.13ÂºN 25m asl)")
+    assert name == "London - England"
+    assert lat == "51.51"
+    assert lon == "-0.13"
+
+
+def test_validate_username():
     assert validate_username(DEFAULT_USERNAME)
     assert validate_username("My_Name-With.123456")
     assert validate_username("12345")
@@ -22,15 +29,15 @@ def testValidateUsername():
     assert not validate_username("John Smith")
 
 
-def testValidatePassword():
+def test_validate_password():
     assert validate_password("MyPassword1!")
-    assert not validate_password("1234") # Too short
-    assert not validate_password("mypassword1!") # no uppercase
-    assert not validate_password("MyPassword!") # no number
+    assert not validate_password("1234")  # Too short
+    assert not validate_password("mypassword1!")  # no uppercase
+    assert not validate_password("MyPassword!")  # no number
     assert not validate_password("MyPassword1")  # no special char
 
 
-def testServer(base_fixture):
+def test_server(base_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(SERVER_ENABLED, True)
     comps = ComponentRegistry(settings)
@@ -42,6 +49,7 @@ def testServer(base_fixture):
     print(x)
     pass
 
+
 def test_user_file_db(base_fixture):
     pw_db = UserAuth()
     pw_db.write_entry("goszpeti", "MyTestPw123$")
@@ -52,7 +60,7 @@ def test_user_file_db(base_fixture):
 
 
 @pytest.mark.skipif(is_ci_job(), reason="Only for local debug")
-def testRunServer(base_fixture):
+def test_run_server(base_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(SERVER_ENABLED, True)
     comps = ComponentRegistry(settings)

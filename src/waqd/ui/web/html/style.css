@@ -72,9 +72,11 @@ body {
 h1 {
     font-size: 2.5em;
 }
+
 h2 {
     font-size: 2em;
 }
+
 h3 {
     font-size: 1.6em;
 }
@@ -83,6 +85,7 @@ p {
     font-size: 1.5em;
     padding-bottom: 10px;
 }
+
 hr {
     display: block;
     margin-top: 0.5em;
@@ -127,14 +130,16 @@ input[type="button"] {
     color: #fff;
     background: #1479A7;
 }
+
 .btn-secondary {
     justify-content: center;
     color: #fff;
     background: #1479A7;
-     /* #1ea336; */
+    /* #1ea336; */
     padding: 0.2em 0.8em;
     border-radius: 0px;
 }
+
 .btn-third {
     justify-content: center;
     color: #fff;
@@ -145,22 +150,26 @@ input[type="button"] {
 
 .row {
     font-size: 3.5em;
-    width: auto;
+    width: fit-content;
     margin: 0 auto;
     display: flex;
     justify-content: center;
     align-content: stretch;
     text-align: center;
+    line-height: 100px;
+    height: 100px;
 }
+
 .small_row {
     font-size: 1em;
-    width: auto;
+    width: 95%;
     margin: 0 auto;
     display: flex;
     justify-content: center;
     align-content: stretch;
     text-align: center;
 }
+
 .block {
     width: 95%;
     border-style: solid;

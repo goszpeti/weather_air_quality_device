@@ -13,11 +13,13 @@ doc/users_manual_DE.html
 doc/users_manual_DE.pdf
 script/installer/waqd.log
 v1.4.4
+nonexistant
 
 src/config.ini
 waqd.log
 src/events.json
 src/sensor_logs/*
 src/waqd/assets/weather_icons/*_white.svg
+user_db.json
 *.mp3
 crash.log

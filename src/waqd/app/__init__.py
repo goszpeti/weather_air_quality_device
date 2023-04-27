@@ -23,7 +23,7 @@ Entry module of WAQD
 Sets up cmd arguments, settings and starts the gui
 """
 
- 
+
 from typing import TYPE_CHECKING
 import argparse
 import logging
@@ -37,7 +37,7 @@ from typing import Optional
 from pint import UnitRegistry
 
 import waqd
-from waqd import PROG_NAME
+from waqd import INTRO_JINGLE, PROG_NAME
 from waqd import __version__ as WAQD_VERSION
 from waqd import base_path
 from waqd.assets import get_asset_file
@@ -52,6 +52,7 @@ from waqd.settings import (DISP_TYPE_RPI,
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
+    from waqd.ui.qt.main_window import QtBackChannel
     from waqd.base.component_ctrl import ComponentController
     from PyQt5 import QtCore, QtWidgets
     Qt = QtCore.Qt
@@ -63,7 +64,13 @@ if TYPE_CHECKING:
 comp_ctrl: Optional["ComponentController"] = None
 # translator for qt app translation singleton
 translator: Optional["QtCore.QTranslator"] = None
+# for built-in Qt strings
+base_translator: Optional["QtCore.QTranslator"] = None
+# for global access to units
 unit_reg = UnitRegistry()
+# to send back data form backend to gui, if the gui loaded
+qt_backchannel: Optional["QtBackChannel"] = None
+
 
 def main(settings_path: Optional[Path] = None):
     """
@@ -86,7 +93,8 @@ def main(settings_path: Optional[Path] = None):
         settings_path = waqd.user_config_dir
     settings = Settings(ini_folder=settings_path)
 
-    parse_cmd_args(settings)  # cmd args set Debug level for logger
+    parse_cmd_args()  # cmd args set Debug level for logger
+    setup_unit_reg()
 
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
@@ -100,8 +108,8 @@ def main(settings_path: Optional[Path] = None):
         return
     global comp_ctrl
     comp_ctrl = ComponentController(settings)
-    if waqd.DEBUG_LEVEL > 1: # disable startup sound
-       comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
+    if waqd.DEBUG_LEVEL > 1:  # disable startup sound
+        comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
     comp_ctrl.init_all()
     # Load the selected GUI mode
     display_type = settings.get(DISPLAY_TYPE)
@@ -115,12 +123,11 @@ def main(settings_path: Optional[Path] = None):
             qt_app.exec()
         elif display_type == DISP_TYPE_WAVESHARE_EPAPER_2_9:
             pass
-    except:  # pylint:disable=bare-except
-            trace_back = traceback.format_exc()
-            Logger().error("Application crashed: \n%s", trace_back)
+    except Exception:
+        trace_back = traceback.format_exc()
+        Logger().error("Application crashed: \n%s", trace_back)
 
     # unload modules - wait for every thread to quit
-    # if runtime_system.is_target_system:
     Logger().info("Prepare to exit...")
     if comp_ctrl:
         comp_ctrl.unload_all()
@@ -128,7 +135,7 @@ def main(settings_path: Optional[Path] = None):
             time.sleep(.1)
 
 
-def parse_cmd_args(settings):
+def parse_cmd_args():
     """
     All CLI related functions.
     """
@@ -149,6 +156,7 @@ def parse_cmd_args(settings):
         waqd.HEADLESS_MODE = True
     if args.migrate_sensor_logs:
         waqd.MIGRATE_SENSOR_LOGS = True
+
 
 def start_remote_debug():
     """ Start remote debugging from level 2 and wait on it from level 3"""
@@ -171,6 +179,14 @@ def setup_on_non_target_system():
     logging.getLogger("root").info("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
 
 
+def setup_unit_reg():
+    """ Setup custom units """
+    unit_reg.define('fraction = [] = frac')
+    unit_reg.define('percent = 1e-2 frac = %')
+    unit_reg.define('ppm = 1e-6 fraction')
+    unit_reg.define('ppb = 1e-9 fraction')
+
+
 def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
     """
     Set up all Qt application specific attributes, which can't be changed later on
@@ -184,7 +200,6 @@ def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
         from PyQt5.QtWinExtras import QtWin
         MY_APP_ID = 'ConanAppLauncher.' + WAQD_VERSION
         QtWin.setCurrentProcessExplicitAppUserModelID(MY_APP_ID)
-
 
     # apply Qt attributes (only at init possible)
     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -214,7 +229,7 @@ def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
 
     # start init for all components
     from PyQt5 import QtCore, QtWidgets
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
     from waqd.ui.qt.widgets.fader_widget import FaderWidget
     from waqd.ui.qt.widgets.splashscreen import SplashScreen
     # show splash screen
@@ -224,6 +239,8 @@ def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
     # wait for finishing loading - processEvents is needed for animations to work (loader)
     loading_minimum_time_s = 5
     start = time.time()
+    if INTRO_JINGLE:
+        comp_ctrl.components.sound.play(get_asset_file("sounds", "pera__introgui.wav"))
     while not comp_ctrl.all_ready:
         QtWidgets.QApplication.processEvents()
 
@@ -240,7 +257,6 @@ def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
             and waqd.DEBUG_LEVEL <= 3:
         QtWidgets.QApplication.processEvents()
 
-
     # splash screen can be disabled - with fader
     app_main_ui.show()
     fade_length = 1  # second
@@ -255,6 +271,6 @@ def crash_hook(exctype, excvalue, tb):
         tb_formatted = "\n".join(traceback.format_tb(tb, limit=10))
         error_text = f"Application crashed: {str(exctype)} {excvalue}\n{tb_formatted}"
         Logger().fatal(error_text)
-    except:  # just in case, otherwise we get an endless exception loop
+    except Exception:  # just in case, otherwise we get an endless exception loop
         sys.exit(2)
     sys.exit(1)

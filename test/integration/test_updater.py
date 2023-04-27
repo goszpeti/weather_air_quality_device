@@ -16,7 +16,7 @@ RASPI_BASE_IMAGE = "goszpeti/raspi-base:latest"
 WAQD_IMAGE = "goszpeti/waqd:latest"
 #RUNAS_CMD = "runuser -u " + USERNAME
 
-def testInstallInDockerWithoutGUI(base_fixture):
+def test_install_in_docker_without_gui(base_fixture):
     """ Start an installation with the installer running without the updater ui. """
     client = DockerClient()
 

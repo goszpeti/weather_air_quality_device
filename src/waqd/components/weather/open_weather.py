@@ -23,159 +23,17 @@ Currently OpenWeatherMap is supported.
 An own abstraction class was created to generalize the weather data.
 """
 
-from datetime import datetime, time
-import json
-import urllib.request
+from datetime import datetime
 import requests
 
-from dataclasses import dataclass, field
-from enum import Enum
-from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 
-from waqd.assets import get_asset_file
 from waqd.base.component import Component
 from waqd.base.network import Network
-from waqd.base.file_logger import Logger
 
-
-def is_daytime(sunrise, sunset, date_time=None):
-    """
-    Helper function to determine if specified time is day or night
-    """
-    if date_time is None:
-        date_time = datetime.now()
-    return sunrise < date_time.time() < sunset
-
-
-@dataclass
-class Weather():
-    """
-    This class is used to abstract from weather hosting types.
-    Relies heavily on OpenWeather data structure
-    """
-    main: str  # condition group
-    description: str  # condition detail
-    date_time: datetime
-    fetch_time: datetime = field(init=False)
-    icon: Path
-    wind_speed: float
-    wind_deg: float
-    sunrise: time
-    sunset: time
-    pressure: float
-    pressure_sea_level: float  # = 1013 # default
-    humidity: float
-    clouds: float
-    temp: float
-    altitude: float
-
-    def __post_init__(self):
-        if self.main:  # only set fetch_time if it is non-empty initiallized
-            self.fetch_time = datetime.now()
-
-    def is_daytime(self):
-        """
-        Helper function to determine if specified time is day or night
-        """
-        return is_daytime(self.sunrise, self.sunset, self.date_time)
-
-
-    def get_background_image(self):
-        # set weather description specific background image
-        online_weather_category = self.main.lower()
-        cloudiness = self.clouds
-
-        if cloudiness > 65 and online_weather_category == "clouds":
-            online_weather_category = "heavy_clouds"
-
-        if self.is_daytime():
-            bg_name = "bg_day_" + online_weather_category
-        else:
-            bg_name = "bg_night_" + online_weather_category
-        return get_asset_file("weather_bgrs", bg_name)
-
-@dataclass
-class DailyWeather(Weather):
-    temp_min: float = field(init=False)
-    temp_max: float = field(init=False)
-    temp_night_min: float = field(init=False)
-    temp_night_max: float = field(init=False)
-
-
-class BeaufortScale(Enum):
-    """ Wind severity mapping to max m/s """
-    CALM = 0.5
-    LIGHT_AIR = 1.5
-    LIGHT_BREEZE = 3.3
-    GENTLE_BREEZE = 5.5
-    MODERATE_BREEZE = 7.9  # light wind
-    FRESH_BREEZE = 10.7
-    STRONG_BREEZE = 13.8  # strong wind
-    HIGH_WIND = 17.1
-    GALE = 20.7
-    SEVERE_GALE = 24.4
-    STORM = 28.4
-    VIOLENT_STORM = 32.6
-    HURRICANE = 32.7
-
-
-class WeatherQuality(Enum):
-    """
-    Describes goodness of weather conditions.
-    Higher is better (the numbers don't mean anything specific)
-    """
-    TORNADO = 0
-    SQUALL = 1
-    ASH = 2
-    THUNDERSTORM = 3
-    SNOW = 4
-    RAIN = 5
-    DRIZZLE = 6
-    HAZE = 7
-    FOG = 8
-    DUST = 9
-    MIST = 10
-    SAND = 11
-    SMOKE = 12
-    CLOUDS = 13
-    CLEAR = 14
-
-
-class OpenTopoData():
-    QUERY = "https://api.opentopodata.org/v1/eudem25m?locations={lat},{long}"
-
-    def __init__(self):
-        super().__init__()
-        self._altitude_info = {}
-
-    def get_altitude(self, latitude: float, longitude: float) -> float:
-        location_data = self._altitude_info.get("location")
-        if location_data and location_data.get("lat") == latitude and location_data.get("lng") == longitude:
-            return self._altitude_info.get("elevation", 0.0)
-
-        # wait a little bit for connection
-        is_connected = Network().wait_for_internet()
-        if not is_connected:
-            # TODO error message
-            return 0
-        response_file = None
-        try:
-            response_file = urllib.request.urlretrieve(
-                self.QUERY.format(lat=latitude, long=longitude))
-        except Exception as error:
-            Logger().error(f"Can't get altitude for {latitude} {longitude} : {str(error)}")
-
-        if not response_file:
-            return 0
-
-        with open(response_file[0], encoding="utf-8") as response_json:
-            response = json.load(response_json)
-            if response.get("status", "") != "OK":
-                return 0
-            self._altitude_info = response.get("results")[0]  # TODO guard
-            return self._altitude_info.get("elevation")
-
+from .base_types import Weather, DailyWeather, WeatherQuality, is_daytime, BeaufortScale
+from .open_topo import OpenTopoData
+from .icon_mapping import owm_icon_mapping
 
 class OpenWeatherMap(Component):
     """
@@ -184,9 +42,9 @@ class OpenWeatherMap(Component):
     """
 
     CURRENT_WEATHER_BY_CITY_ID_API_CMD = \
-        "http://api.openweathermap.org/data/2.5/weather?id={cid}"
+        "https://api.openweathermap.org/data/2.5/weather?id={cid}"
     FORECAST_BY_CITY_ID_API_CMD = \
-        "http://api.openweathermap.org/data/2.5/forecast?id={cid}"
+        "https://api.openweathermap.org/data/2.5/forecast?id={cid}"
     API_POSTFIX = "&units=metric&APPID={apikey}"
 
     def __init__(self, city_id, api_key):
@@ -196,17 +54,14 @@ class OpenWeatherMap(Component):
         self._topo_data = OpenTopoData()
 
         if not self._city_id:
-            self._logger.error(f"{str(city_id)} - City Id for forecast is not available.")
+            self._logger.error(f"OpenWeatherMap: {str(city_id)} - City Id for forecast is not available.")
             self._disabled = True
         if not api_key:
-            self._logger.error(f"{str(city_id)} - City Id for forecast is not available.")
+            self._logger.error("OpenWeatherMap: API Key for forecast is not available.")
             self._disabled = True
 
         self._current_weather: Optional[Weather] = None
         self._five_day_forecast: List[DailyWeather] = []
-        # TODO this should be done with a mock
-        self._cw_json_file: str = ""  # for testing access
-        self._fc_json_file: str = ""  # for testing access
         self.daytime_forecast_points = []
         self.nighttime_forecast_points = []
         # query data ini init, so it doesn't run in the GUI thread
@@ -223,7 +78,7 @@ class OpenWeatherMap(Component):
                 if time_delta.seconds < 60 * 5:  # 5 minutes
                     return self._current_weather
 
-        current_info = self._call_ow_api(self.CURRENT_WEATHER_BY_CITY_ID_API_CMD)
+        current_info = self._call_api(self.CURRENT_WEATHER_BY_CITY_ID_API_CMD)
         if not current_info:
             return None
 
@@ -235,9 +90,9 @@ class OpenWeatherMap(Component):
 
         self._current_weather = Weather(
             weather_info.get("main"),
-            weather_info.get("description"),
+            weather_info.get("id"),
             datetime.now(),
-            self.get_condition_icon(weather_info.get("id"), is_day),
+            self._get_icon_name(weather_info.get("id"), is_day),
             current_info.get("wind", {}).get("speed", 0.0),
             current_info.get("wind", {}).get("deg", 0.0),
             sunrise, sunset,
@@ -247,7 +102,7 @@ class OpenWeatherMap(Component):
             current_info.get("clouds", {}).get("all", 0.0),
             current_info.get("main", {}).get("temp", 0.0),
             self._topo_data.get_altitude(coord.get("lat", 0.0), coord.get("lon", 0.0))
-            )
+        )
         return self._current_weather
 
     def get_5_day_forecast(self) -> List[DailyWeather]:
@@ -256,11 +111,11 @@ class OpenWeatherMap(Component):
         current_date_time = datetime.now()
         if len(self._five_day_forecast) > 1:
             if self._five_day_forecast[1].fetch_time:
-                time_delta = current_date_time -self._five_day_forecast[1].fetch_time
+                time_delta = current_date_time - self._five_day_forecast[1].fetch_time
                 if time_delta.seconds < 1800:  # 0.5 h
                     return self._five_day_forecast
 
-        [self.daytime_forecast_points, self.nighttime_forecast_points] = self.get_forecast_points()
+        [self.daytime_forecast_points, self.nighttime_forecast_points] = self._get_forecast_points()
         if not self.daytime_forecast_points:  # error from url call, nothing to do
             return []
         current_weather = self.get_current_weather()
@@ -271,9 +126,9 @@ class OpenWeatherMap(Component):
 
         return self._five_day_forecast
 
-    def get_forecast_points(self) -> Tuple[List[List[Weather]], List[List[Weather]]]:
+    def _get_forecast_points(self) -> Tuple[List[List[Weather]], List[List[Weather]]]:
         """ Get all forecast points, separated into day and nighttime """
-        forecast = self._call_ow_api(self.FORECAST_BY_CITY_ID_API_CMD)
+        forecast = self._call_api(self.FORECAST_BY_CITY_ID_API_CMD)
         if not forecast:  # error from call, nothing to do
             return ([], [])
 
@@ -299,9 +154,9 @@ class OpenWeatherMap(Component):
                 continue
             weather_point = Weather(
                 weather_info.get("main", ""),
-                weather_info.get("description", ""),
+                weather_info.get("id", ""),
                 entry_date_time,
-                self.get_condition_icon(weather_info.get("id"), is_day),
+                self._get_icon_name(weather_info.get("id", ""), is_day),
                 measurement_point.get("wind").get("speed"),
                 measurement_point.get("wind").get("deg"),
                 current_weather.sunrise, current_weather.sunset,
@@ -361,18 +216,18 @@ class OpenWeatherMap(Component):
             # as an extra condition
             if max_wind_speed > BeaufortScale.FRESH_BREEZE.value:
                 if overall_weather.main == "Clear":
-                    overall_weather.icon = self.get_condition_icon("windy", True)
+                    overall_weather.icon = self._get_icon_name("windy", True)
                 if overall_weather.main == "Clouds":
-                    overall_weather.icon = self.get_condition_icon("cloudy-windy", True)
+                    overall_weather.icon = self._get_icon_name("cloudy-windy", True)
                 if overall_weather.main == "Rain":
-                    overall_weather.icon = self.get_condition_icon("rain-windy", True)
+                    overall_weather.icon = self._get_icon_name("rain-windy", True)
                 if overall_weather.main == "Snow":
-                    overall_weather.icon = self.get_condition_icon("snow-windy", True)
+                    overall_weather.icon = self._get_icon_name("snow-windy", True)
 
             # init DailyWeather
             daily_weather = DailyWeather(
                 overall_weather.main,
-                overall_weather.description,
+                overall_weather.wid,
                 overall_weather.date_time,
                 overall_weather.icon,
                 max_wind_speed,
@@ -461,7 +316,7 @@ class OpenWeatherMap(Component):
             measurement_points, result_category)
 
         # only need one
-        return [point for point in measurement_points if point.description == description][0]
+        return [point for point in measurement_points if point.wid == description][0]
 
     @staticmethod
     def _find_dominant_detailed_weather(measurement_points: List[Weather], category: WeatherQuality):
@@ -471,10 +326,10 @@ class OpenWeatherMap(Component):
         detail_count_dict = {}
         for point in measurement_points:
             if category.name in point.main.upper():  # and point.description:
-                if not point.description in detail_count_dict:
-                    detail_count_dict[point.description] = 1
+                if not point.wid in detail_count_dict:
+                    detail_count_dict[point.wid] = 1
                     continue
-                detail_count_dict[point.description] += 1
+                detail_count_dict[point.wid] += 1
         max_count = max(detail_count_dict.values())
         max_indices = [i for i, x in enumerate(detail_count_dict.values()) if x == max_count]
         dominant_categories = [list(detail_count_dict)[i]
@@ -488,41 +343,33 @@ class OpenWeatherMap(Component):
             # return measurement_points[-1].description  # get last element
         return dominant_categories
 
-    def _call_ow_api(self, command: str) -> Dict[str, Any]:
+    def _call_api(self, command: str) -> Dict[str, Any]:
         """ Call the REST like API of OpenWeatherMap. Return response. """
         if self._disabled:
             return {}
         # wait a little bit for connection
         is_connected = Network().wait_for_internet()
         if not is_connected:
-            # TODO error message
+            self._logger.error("OpenWeatherMap: Timeout while wating for network connection")
             return {}
-        if self._cw_json_file and command == self.CURRENT_WEATHER_BY_CITY_ID_API_CMD:
-            with open(self._cw_json_file) as fp:
-                return json.load(fp)
-        elif self._fc_json_file and command == self.FORECAST_BY_CITY_ID_API_CMD:
-            with open(self._fc_json_file) as fp:
-                return json.load(fp)
-        else:
-            try:
-                response = requests.get(command.format(cid=self._city_id) +
-                             self.API_POSTFIX.format(apikey=self._api_key), timeout=5)
-                if response.ok:
-                    return response.json()
-            except Exception as error:
-                self._logger.error(f"Can't get current weather for {self._city_id} : {str(error)}")
+        try:
+            response = requests.get(command.format(cid=self._city_id) +
+                                    self.API_POSTFIX.format(apikey=self._api_key), timeout=5)
+            if response.ok:
+                return response.json()
+        except Exception as error:
+            self._logger.error(
+                f"OpenWeatherMap: Can't get current weather for {self._city_id} : {str(error)}")
         return {}
 
     @staticmethod
-    def get_condition_icon(ident, is_day) -> Path:
+    def _get_icon_name(ident="", is_day=False) -> str:
+        """
+        Helper function to get icon from condition.
+        If ident is empty, it uses it's own id to determine the condition.
+        """
         if is_day:
             ident = "day-" + str(ident)
         else:
             ident = "night-" + str(ident)
-
-        file_path = get_asset_file("weather_icons", ident)
-
-        # normalize to lower case
-        if not file_path:
-            file_path = get_asset_file("gui_base", "dummy.png")
-        return file_path
+        return owm_icon_mapping.get(ident, "")

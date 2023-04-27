@@ -2,16 +2,25 @@
     "en": {
         "motion_reg": "Motion registered",
         "no_motion_reg": "No Motion registered",
-        "cant_disp_sensor_logs": "There are not enough logged values yet!"
+        "cant_disp_sensor_logs": "There are not enough logged values yet!",
+        "wlan_portal_help": "Connect to WLAN network '{ssid_name}' on your phone or pc, where you can select your network and enter your password. Press OK to start.",
+        "wlan_error_text": "Cannot start WLAN connection portal:",
+        "new_pw_text": "Username: {user_name} Password: \"{pw}\""
     },
     "de": {
         "motion_reg": "Bewegung registriert",
         "no_motion_reg": "Keine Bewegung registriert",
-        "cant_disp_sensor_logs": "Nicht genug Daten aufgezeichnet!"
+        "cant_disp_sensor_logs": "Nicht genug Daten aufgezeichnet!",
+        "wlan_portal_help": "Mit WLAN '{ssid_name}' an einem PC oder Handy verbinden, um Nutzername und Passwort einzugeben. Zum Starten bitte OK drücken.",
+        "wlan_error_text": "WLAN Verbindungsportal kann nicht gestartet werden: ",
+        "new_pw_text": "Benutzername: {user_name} Passwort: \"{pw}\""
     },
     "hu": {
         "motion_reg": "Mozgás felismerve",
         "no_motion_reg": "Nincs mozgás",
-        "cant_disp_sensor_logs": "Nincs elég adat!"
+        "cant_disp_sensor_logs": "Nincs elég adat!",
+        "wlan_portal_help": "Az OK gomb megnyomás után a WLAN felhasználónév és jelszó megadásához csatlakozzon a '{ssid_name}' hálózathoz telefonon vagy számítógépen!",
+        "wlan_error_text": "Hiba a WLAN portál indítása közben:",
+        "new_pw_text": "Felhasználónév: {user_name} Jelszó: \"{pw}\""
     }
 }

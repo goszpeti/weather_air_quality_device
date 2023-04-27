@@ -18,19 +18,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 import time
-import os
-from subprocess import check_call
+from subprocess import check_output
 from typing import TYPE_CHECKING
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5 import QtCore, QtGui
 
 from waqd import __version__ as WAQD_VERSION
 import waqd
-from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.network import Network
-from waqd.base.authentification import UserAuth
 from waqd.base.system import RuntimeSystem
 from waqd.base.translation import Translation
 from waqd.components.sensors import MH_Z19
@@ -41,23 +37,23 @@ from waqd.settings import (BME_280_ENABLED, BMP_280_ENABLED, BRIGHTNESS, CCS811_
                            LANG, LOCATION, MOTION_SENSOR_ENABLED, MH_Z19_ENABLED,
                            NIGHT_MODE_BEGIN, NIGHT_MODE_END, INTERIOR_BG, FORECAST_BG,
                            NIGHT_STANDBY_TIMEOUT, OW_CITY_IDS, LOG_SENSOR_DATA,
-                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, MH_Z19_VALUE_OFFSET, USER_DEFAULT_PW, Settings)
+                           SOUND_ENABLED, UPDATER_USER_BETA_CHANNEL, MH_Z19_VALUE_OFFSET, Settings)
 from . import common
 from waqd.ui.qt.theming import activate_theme
 from waqd.ui.qt.main_subs import sub_ui
 from waqd.ui.qt.widgets.fader_widget import FaderWidget
 from waqd.ui.qt.widgets.splashscreen import SplashScreen
-from PyQt5.QtWidgets import QScroller, QApplication, QPushButton
+from PyQt5.QtWidgets import QScroller, QApplication, QPushButton, QMessageBox, QDialog, QDialogButtonBox, QWidget
 from .qt.options_ui import Ui_Dialog
 
 # define Qt so we can use it like the namespace in C++
 Qt = QtCore.Qt
 
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
 
 
-class OptionMainUi(QtWidgets.QDialog):
+class OptionMainUi(QDialog):
     """ Base class of the options qt ui. Holds the option SubUi element. """
     EXTRA_SCALING = 1.15  # make items bigger in this menu
     # matches strings to seconds in dropdown of timeouts
@@ -79,7 +75,7 @@ class OptionMainUi(QtWidgets.QDialog):
 
         self._ui = Ui_Dialog()
         self._ui.setupUi(self)
-        activate_theme(self._settings.get_float(FONT_SCALING),self._settings.get_string(FONT_NAME) )
+        activate_theme(self._settings.get_float(FONT_SCALING), self._settings.get_string(FONT_NAME))
         self.setGeometry(main_ui.geometry())
 
         # start fader - variable must be held otherwise gc will claim it
@@ -88,7 +84,6 @@ class OptionMainUi(QtWidgets.QDialog):
         # set version label
         self._ui.version_label.setText(WAQD_VERSION)
 
-        # TODO: connect tab toggling
         self._ui.general_button.clicked.connect(self._switch_pages)
         self._ui.display_button.clicked.connect(self._switch_pages)
         self._ui.theme_button.clicked.connect(self._switch_pages)
@@ -135,9 +130,11 @@ class OptionMainUi(QtWidgets.QDialog):
             self._update_motion_sensor_enabled)
 
         # set starting tab to first tab
-        #self._ui.options_tabs.setCurrentIndex(0)
+        # self._ui.options_tabs.setCurrentIndex(0)
         QScroller.grabGesture(self._ui.hw_scroll_area, QScroller.LeftMouseButtonGesture)
         # set to normal brightness
+        while not comp_ctrl.all_unloaded:
+            time.sleep(0.1)
         self._comps.display.set_brightness(self._settings.get_int(BRIGHTNESS))
 
         # initialize splash screen for the closing of the UI and make a screenshot
@@ -145,7 +142,7 @@ class OptionMainUi(QtWidgets.QDialog):
         # minimal wait to show the button feedback
         time.sleep(0.3)
         self.show()
-        
+
     def _switch_pages(self):
         sender_button = self.sender()
         assert isinstance(sender_button, QPushButton), "Switch page can only be triggered from a button!"
@@ -163,26 +160,36 @@ class OptionMainUi(QtWidgets.QDialog):
         elif obj_name == "about_button":
             self._ui.page_stacked_widget.setCurrentWidget(self._ui.about_page)
 
-
     def _calibrate_mh_z19(self):
         from .widgets.calibration_ui import Ui_Dialog
-        self._calib_dialog = QtWidgets.QDialog(self)
+        self._calib_dialog = QDialog(self)
         self._calib_dialog_ui = Ui_Dialog()
         self._calib_dialog_ui.setupUi(self._calib_dialog)
-        self._calib_dialog.adjustSize()
-        # TODO check if it is he correct one
+        self._calib_dialog.setModal(True)
+        # check if it is the correct one
         if not isinstance(self._comps.co2_sensor, MH_Z19):
+            msg = QMessageBox(parent=self)
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("MH-Z19 is currently not available.")
+            msg.setModal(True)
+            msg.adjustSize()
+            msg.show()
+            msg.move(int((self.geometry().width() - msg.width()) / 2),
+                     int((self.geometry().height() - msg.height()) / 2))
+            msg.exec_()
             return
         offset = self._settings.get_int(MH_Z19_VALUE_OFFSET)
         self._calib_dialog.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
+        self._calib_dialog.adjustSize()
         self._calib_dialog.move(int((self.geometry().width() - self._calib_dialog.width()) / 2),
-                                   int((self.geometry().height() - self._calib_dialog.height()) / 2))
+                                int((self.geometry().height() - self._calib_dialog.height()) / 2))
         self._calib_dialog_ui.calib_spin_box.setValue(offset)
         self._calib_dialog_ui.calib_spin_box.valueChanged.connect(self._update_calib_value)
         self._calib_dialog_ui.zero_button.clicked.connect(self._comps.co2_sensor.zero_calibraton)
-        self._calib_dialog.setModal(True)
         self._calib_dialog_ui.button_box.button(
-            QtWidgets.QDialogButtonBox.Save).clicked.connect(self._save_mh_z19_calib)
+            QDialogButtonBox.Save).clicked.connect(self._save_mh_z19_calib)
         self._update_calib_value()
         self._calib_dialog.exec_()
 
@@ -193,7 +200,6 @@ class OptionMainUi(QtWidgets.QDialog):
         if meas_value:
             self._calib_dialog_ui.display_value_label.setText(str(meas_value + offset))
 
-
     def _save_mh_z19_calib(self):
         if self._calib_dialog_ui:
             offset = self._calib_dialog_ui.calib_spin_box.value()
@@ -202,25 +208,27 @@ class OptionMainUi(QtWidgets.QDialog):
 
     def _test_motion_sensor(self):
         class MotionSensorTestDialog(sub_ui.SubUi):
-            def __init__(self, parent: QtWidgets.QWidget, comps, settings) -> None:
+            def __init__(self, parent: QWidget, comps, settings) -> None:
                 from .widgets.value_test_ui import Ui_Dialog
                 self._comps = comps
-                self._dialog = QtWidgets.QDialog(parent)
+                self._dialog = QDialog(parent)
                 self._dialog.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
                 self._ui = Ui_Dialog()
                 self._ui.setupUi(self._dialog)
                 sub_ui.SubUi.__init__(self, self._dialog, self._ui, settings)
+                # self._dialog.adjustSize()
                 self._dialog.move(int((parent.geometry().width() - self._dialog.width()) / 2),
-                                  int((parent.geometry().height() - self._dialog.height()) / 2))
-                                   
+                                  int((parent.geometry().height() - self._dialog.height()) / 2)
+                                  )
+
             def _cyclic_update(self):
                 if self._comps.motion_detection_sensor.motion_detected:
                     disp_str = Translation().get_localized_string(
-                        "base", "ui_dict", "motion_reg", self._settings.get_string(LANG))
+                        "ui_dict", "motion_reg", self._settings.get_string(LANG))
                     self._ui.text_browser.append(disp_str)
                 else:
                     disp_str = Translation().get_localized_string(
-                        "base", "ui_dict", "no_motion_reg", self._settings.get_string(LANG))
+                        "ui_dict", "no_motion_reg", self._settings.get_string(LANG))
                     self._ui.text_browser.append(disp_str)
 
             def exec_(self):
@@ -228,7 +236,6 @@ class OptionMainUi(QtWidgets.QDialog):
 
         dialog = MotionSensorTestDialog(self, self._comps, self._settings)
         dialog.exec_()
-
 
     def display_options(self):
         """ Set all elements to the display the current values and set up sliders """
@@ -318,15 +325,13 @@ class OptionMainUi(QtWidgets.QDialog):
 
         # populate location dropdown- only ow for now
         self._ui.location_combo_box.clear()
-        for city in settings.get_dict(OW_CITY_IDS).keys():
-            self._ui.location_combo_box.addItem(city)
-
+        self._ui.location_combo_box.addItem("-".join(settings.get_string(LOCATION).split("-")[:-1]))
+        if waqd.DEBUG_LEVEL < 1:
+            self._ui.location_combo_box.setDisabled(True)  # one location for now
         # set info labels
         self._ui.system_value.setText(self._runtime_system.platform.replace("_", " "))
         [ipv4, _] = Network().get_ip()
         self._ui.ip_address_value.setText(ipv4)
-
-        self._ui.location_combo_box.setCurrentText(settings.get_string(LOCATION))
         self._ui.lang_cbox.setCurrentText(settings.get_string(LANG))
 
         # set to normal brightness - again, in case it was modified
@@ -350,17 +355,17 @@ class OptionMainUi(QtWidgets.QDialog):
         loading_minimum_time = 3  # seconds
         start = time.time()
         while not self._comp_ctrl.all_unloaded or (time.time() < start + loading_minimum_time):
-            QtWidgets.QApplication.processEvents()
+            QApplication.processEvents()
 
         self._comp_ctrl.init_all()
 
         while not self._comp_ctrl.all_ready:
-            QtWidgets.QApplication.processEvents()
+            QApplication.processEvents()
 
         self._main_ui.init_gui()
         start = time.time()
         while not self._main_ui.ready or (time.time() < start + loading_minimum_time):
-            QtWidgets.QApplication.processEvents()
+            QApplication.processEvents()
 
         self._splash_screen.finish(self._main_ui)
 
@@ -463,47 +468,64 @@ class OptionMainUi(QtWidgets.QDialog):
         self._runtime_system.restart()
         self.close_ui()
 
-    def show_updater_ui(self):
-        if self._runtime_system.is_target_system:
-            # this is the default updater on RaspberryPi OS
-            os.system("sudo apt update")  # TODO this takes a while, but is necessary
-            os.system("pi-gpk-update-viewer&")
-
     def _reset_pw(self):
-        msg = QtWidgets.QMessageBox(parent=self)
-        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg = QMessageBox(parent=self)
+        msg.setStandardButtons(QMessageBox.Ok)
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
-        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Reset Password")
         from waqd.base.authentification import DEFAULT_USERNAME, bcrypt
 
         new_pw = bcrypt.gensalt(4).decode("utf-8")[18:]
-        self._settings.set(USER_DEFAULT_PW, new_pw)
+        # self._settings.set(USER_DEFAULT_PW, new_pw) TODO unsafe
         self._comps.server.user_auth.set_password(DEFAULT_USERNAME, new_pw)
-        msg.setText(f"Username: {DEFAULT_USERNAME} Password: \"{new_pw}\"")
-        msg.move(int((self._main_ui.geometry().width() - self.height()) / 2),
-                 int((self._main_ui.geometry().height() - msg.height()) / 2))
+        disp_str = Translation().get_localized_string(
+            "ui_dict", "new_pw_text", self._settings.get_string(LANG))
+        msg.setText(disp_str.format(user_name=DEFAULT_USERNAME, pw=new_pw))
+        msg.adjustSize()
+        msg.show()
+        msg.move(int((self.geometry().width() - msg.width()) / 2),
+                 int((self.geometry().height() - msg.height()) / 2))
         msg.exec_()
+        msg.width()
 
     def _connect_wlan(self):
         ssid_name = "Connect_WAQD"
-        msg = QtWidgets.QMessageBox(parent=self)
-        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        msg = QMessageBox(parent=self)
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
-        try:
-            # TODO shutdown server
-            msg.setIcon(QtWidgets.QMessageBox.Information)
-            msg.setWindowTitle("Connect to WLAN")
-            msg.setText(f"Connect to WLAN '{ssid_name}' on your phone or pc, where you can select your network and enter your password!")
-            os.system(f'sudo wifi-connect -s "{ssid_name}" &')
-        except Exception as e:
-            msg.setIcon(QtWidgets.QMessageBox.Warning)
-            msg.setWindowTitle("Error while opening connection to WLAN")
-            msg.setText(f"Cannot start WLAN connection portal: {str(e)}")
+        # shutdown server, so port 80 is free for captive portal
+        self._comps.stop_component_instance(self._comps.server)  # should start autom. after options closes
+        msg.setIcon(QMessageBox.Information)
+        disp_str = Translation().get_localized_string(
+            "ui_dict", "wlan_portal_help", self._settings.get_string(LANG))
+        msg.setText(disp_str.format(ssid_name=ssid_name))
         # needed because of CustomizeWindowHint
-        msg.move(int((self._main_ui.geometry().width() - self.height()) / 2),
-                 int((self._main_ui.geometry().height() - msg.height()) / 2))
+        msg.adjustSize()
+        msg.show()
+        msg.move(int((self.geometry().width() - msg.width()) / 2),
+                 int((self.geometry().height() - msg.height()) / 2))
+        msg.accepted.connect(self._run_wlan_portal)
         msg.exec_()
+
+    def _run_wlan_portal(self):
+        ssid_name = "Connect_WAQD"
+        try:
+            check_output(["sudo", "wifi-connect", "-s", f'"{ssid_name}"'])
+        except Exception as e:
+            msg = QMessageBox(parent=self)
+            msg.setStandardButtons(QMessageBox.Ok, )
+            msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
+            msg.setIcon(QMessageBox.Warning)
+            disp_str = Translation().get_localized_string("ui_dict",
+                                                          "wlan_error_text", self._settings.get_string(LANG))
+            msg.setText(f"{disp_str} {str(e)}")
+            # needed because of CustomizeWindowHint
+            msg.adjustSize()
+            msg.show()
+            msg.move(int((self.geometry().width() - msg.width()) / 2),
+                     int((self.geometry().height() - msg.height()) / 2))
+            msg.exec_()
 
     def _cyclic_update(self):
         pass

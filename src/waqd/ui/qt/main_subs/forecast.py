@@ -29,26 +29,27 @@ from waqd.settings import FORECAST_ENABLED, FORECAST_BG
 from .. import common
 from . import sub_ui
 from waqd.base.network import Network
-
+from waqd.ui import get_localized_date
 from waqd.ui.qt.weather_detail_view import WeatherDetailView
 
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_ui import WeatherMainUi
+    from waqd.ui.qt.main_window import WeatherMainUi
     from waqd.settings import Settings
+
 
 class Forecast(sub_ui.SubUi):
     """  Forecast segment of the main ui. Displays the forecast for 3 days. """
     UPDATE_TIME = 600 * 1000  # 10 minutes in microseconds
 
-    def __init__(self, main_ui: "WeatherMainUi", settings: "Settings"): 
+    def __init__(self, main_ui: "WeatherMainUi", settings: "Settings"):
         super().__init__(main_ui, main_ui.ui, settings)
         self._default_min_max_text = self._ui.forecast_d1_day_temps_value.text()
         self._comps = main_ui._comps
-        self.det = None
+        self.detail_view = None
         # set default day night icons - sunny clear
-        day_icon = get_asset_file("weather_icons", "day-800")
+        day_icon = get_asset_file("weather_icons", "wi-day-sunny")
         # night-clear
-        night_icon = get_asset_file("weather_icons", "night-800")
+        night_icon = get_asset_file("weather_icons", "wi-night-clear")
 
         self._ui.forecast_background.setPixmap(QtGui.QPixmap(
             str(waqd.assets_path / "gui_bgrs" / settings.get_string(FORECAST_BG))))
@@ -100,16 +101,17 @@ class Forecast(sub_ui.SubUi):
 
     def stop(self):
         super().stop()
-        if self.det:
-            del self.det
+        if self.detail_view:
+            del self.detail_view
 
     def show_detail(self, day):
         """ Detail view day 1 """
         daytime_points = self._comps.weather_info.daytime_forecast_points
         if not len(daytime_points)+1 > day:
             return
-        self.det = WeatherDetailView(daytime_points[day], self._settings, self._main_ui)
-        self.det.show()
+        self.detail_view = WeatherDetailView(
+            daytime_points[day] + self._comps.weather_info.nighttime_forecast_points[day][:4], self._settings, self._main_ui)
+        self.detail_view.show()
 
     def _cyclic_update(self):
         self._logger.debug("ForecastGui: update")
@@ -121,15 +123,15 @@ class Forecast(sub_ui.SubUi):
         # set up titles
         current_date_time = datetime.datetime.now()
 
-        disp_date = common.get_localized_date(
+        disp_date = get_localized_date(
             current_date_time + datetime.timedelta(days=1), self._settings)
         self._ui.forecast_d1_title.setText(disp_date)
 
-        disp_date = common.get_localized_date(
+        disp_date = get_localized_date(
             current_date_time + datetime.timedelta(days=2), self._settings)
         self._ui.forecast_d2_title.setText(disp_date)
 
-        disp_date = common.get_localized_date(
+        disp_date = get_localized_date(
             current_date_time + datetime.timedelta(days=3), self._settings)
         self._ui.forecast_d3_title.setText(disp_date)
 
@@ -148,9 +150,9 @@ class Forecast(sub_ui.SubUi):
             return
 
         # set icons
-        common.draw_svg(self._ui.forecast_d1_icon, forecast[1].icon, scale=3.5)
-        common.draw_svg(self._ui.forecast_d2_icon, forecast[2].icon, scale=3.5)
-        common.draw_svg(self._ui.forecast_d3_icon, forecast[3].icon, scale=3.5)
+        common.draw_svg(self._ui.forecast_d1_icon, forecast[1].get_icon(), scale=3.5)
+        common.draw_svg(self._ui.forecast_d2_icon, forecast[2].get_icon(), scale=3.5)
+        common.draw_svg(self._ui.forecast_d3_icon, forecast[3].get_icon(), scale=3.5)
 
         # set day temps
         self._ui.forecast_d1_day_temps_value.setText(

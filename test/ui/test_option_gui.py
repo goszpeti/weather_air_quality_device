@@ -4,7 +4,7 @@ Test the Option UI.
 
 import time
 from waqd.ui.qt.options import OptionMainUi
-from waqd.ui.qt.main_ui import WeatherMainUi
+from waqd.ui.qt.main_window import WeatherMainUi
 from PyQt5 import QtCore
 from waqd.settings import Settings
 from waqd.base.component_ctrl import ComponentController
@@ -15,7 +15,7 @@ from test.conftest import mock_run_on_target
 # while True:
 #     _qapp_instance.processEvents()
 
-def testOptions(base_fixture, qtbot, mocker):  # target_mockup_fixture
+def test_options(base_fixture, qtbot, mocker):  # target_mockup_fixture
     """
     Test the option gui.
     """

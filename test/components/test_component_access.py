@@ -2,11 +2,11 @@ import time
 
 from freezegun import freeze_time
 from waqd.base.component_reg import (Component, ComponentRegistry,
-                                       CyclicComponent)
+                                     CyclicComponent)
 from waqd.settings import (BME_280_ENABLED, DHT_22_PIN, MOTION_SENSOR_ENABLED, Settings)
 
 
-def testDefaultComponentCreation(base_fixture, target_mockup_fixture):
+def test_default_component_creation(base_fixture, target_mockup_fixture):
     # test, that all components can be instantiated
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(MOTION_SENSOR_ENABLED, True)
@@ -14,7 +14,7 @@ def testDefaultComponentCreation(base_fixture, target_mockup_fixture):
     settings.set(BME_280_ENABLED, True)
 
     comps = ComponentRegistry(settings)
-   
+
     disp = comps.display
     assert disp
     temp = comps.temp_sensor
@@ -44,7 +44,8 @@ def testDefaultComponentCreation(base_fixture, target_mockup_fixture):
 
 # TODO Add stop component test
 
-def testComponentRestartWatchdog(base_fixture, target_mockup_fixture):
+
+def test_component_restart_watchdog(base_fixture, target_mockup_fixture):
     # test, that a sensor revives after stopping it
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(DHT_22_PIN, 15)
@@ -64,7 +65,8 @@ def testComponentRestartWatchdog(base_fixture, target_mockup_fixture):
     assert comps.humidity_sensor
     assert comps._components["DHT22"]
 
-def testComponentRegistry(base_fixture):
+
+def test_component_registry(base_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     cr = ComponentRegistry(settings)
     assert not cr._unload_in_progress
@@ -81,7 +83,7 @@ def testComponentRegistry(base_fixture):
     assert cr._components["CyclicComponent"] == cyc_comp
 
 
-def testComponentRegistryDefaultSensors(base_fixture):
+def test_component_registry_default_sensors(base_fixture):
 
     # disable every hw sensor
     settings = Settings(base_fixture.testdata_path / "integration")
@@ -91,7 +93,7 @@ def testComponentRegistryDefaultSensors(base_fixture):
     cr = ComponentRegistry(settings)
 
 
-def testComponentRegistryDefaultComps(base_fixture):
+def test_component_registry_default_comps(base_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     TestComponent = Component(settings=settings)
     cr = ComponentRegistry(settings)

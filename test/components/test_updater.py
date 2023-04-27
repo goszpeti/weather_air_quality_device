@@ -9,7 +9,7 @@ from waqd.base.component_reg import ComponentRegistry
 RASPI_BASE_IMAGE = "raspi/raspbian_py:1"
 WAQD_IMAGE = "raspi/waqd_install:1"
 
-def testRepoIsReachable(base_fixture):
+def test_repo_is_reachable(base_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     comps = ComponentRegistry(settings)
     online_updater = OnlineUpdater(comps, enabled=True, use_beta_channel=True)
@@ -17,7 +17,7 @@ def testRepoIsReachable(base_fixture):
     assert online_updater._repository # only check if object exists
 
 
-def testCheckShouldUpdate(base_fixture):
+def test_check_should_update(base_fixture):
     import waqd.components.updater as updater # import the module here, so we can access the loaded global var of WAQD version
     settings = Settings(base_fixture.testdata_path / "integration")
     comps = ComponentRegistry(settings)

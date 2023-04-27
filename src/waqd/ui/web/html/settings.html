@@ -8,13 +8,14 @@
         font-size: 0.8em;
     }
 </style>
+
 <div id="settings" class="block">
     <div class="small_row">
         <h2>Profile</h2>
     </div>
     <hr style="width:50%;height:2px;border-width:0;">
     <form id="user_form" action="/change_name" method="post">
-        <label for="username" >Username</label>
+        <label for="username">Username</label>
         <div style="padding-top: 20px;" class="small_row">
             <input type="text" id="username" name="username" value={{username}}>
         </div>
@@ -25,7 +26,7 @@
     <form id="pw_form" action="/change_pw" method="post">
         <label for="password">Password</label><br>
         <div class="small_row"><label for="password" style="font-size: 0.8em;padding-top: 20px;">
-            Old Password</label></div>
+                Old Password</label></div>
         <div class="small_row">
             <input id="old_password" name="old_password" type="password" required />
         </div>
@@ -37,11 +38,9 @@
             <input value="Change Password" type="submit" class="btn btn-secondary" />
         </div>
     </form>
-    <div class="small_row" style="margin-inline: 16px;">
-        <h2>Online Weather</h2>
-    </div>
+    <h2>Online Weather</h2>
     <hr style="width:50%;height:2px;border-width:0;">
-    <form id="ow_form" action="/set_ow_api_key" method="post">
+    <!-- <form id="ow_form" action="/set_ow_api_key" method="post">
         <label for="ow_api">OpenWeather API key</label><br>
         <div class="small_row" style="padding-top: 20px;">
             <input id="ow_api" name="ow_api" type="text" value="{{ow_api_key}}" required />
@@ -49,22 +48,70 @@
         <div class="small_row">
             <input value="Save" type="submit" class="btn btn-secondary" />
         </div>
+    </form> -->
+
+
+    <form id="location_form" action="/set_location" method="post" style="margin-bottom: 20px">
+        <label for="location">Location</label>
+        <p style="font-size: 0.7em; padding-top: 20px;" ;>Select the location for online weather data.</p>
+        <div class="small_row">
+            <datalist id="location_results"></datalist>
+            <input type="text" id="location" name="location" list="location_results" autocomplete="off" required
+                placeholder="{{location}}">
+        </div>
+        <div class="small_row">
+            <input value="Set" type="submit" class="btn btn-secondary" />
+        </div>
     </form>
-    <h2>Locations</h3>
-        <div style="padding-inline: 16px;"></div>
-        <button style="margin-bottom: 30px" class="btn btn-third">Add new</button>
-        <div style="margin-bottom: 30px">
-            <label for="loc1">Location1</label><br>
-            <input name="loc1" type="text" required />
-            <br>
-            <button class="btn btn-third">Edit</button>
-            <button class="btn btn-third">Remove</button>
-        </div>
-        <div style="margin-bottom: 30px">
-            <label for="loc2">Location2</label><br>
-            <input name="loc2" type="text" required />
-            <br>
-            <button class="btn btn-third">Edit</button>
-            <button class="btn btn-third">Remove</button>
-        </div>
 </div>
+<script>
+    $("#location").change(onChangeSearch);
+    $("#location").keyup(onChangeSearch);
+    var last_search = null;
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    var render = (items) => {
+        var resultsDiv = $('#location_results');
+        resultsDiv.empty();
+        if (items.length == 0) {
+            resultsDiv.append($('<option value="No location_results found">'));
+        }
+        for (var i = 0, len = items.length; i < len; i++) {
+            let row = items[i];
+            var res = $(`<option value="${row.name} - ${row.admin1 || ''}, ${capitalizeFirstLetter(row.country)}` +
+                `(${row.latitude.toFixed(5)}&#186;E ${row.longitude.toFixed(5)}&#186;N">`
+            );
+            resultsDiv.append(res);
+        }
+        // $('#select_city').dropdown('show');
+    };
+    function onChangeSearch(e) {
+        console.log(e.target.value)
+        var query = e.target.value;
+        if (last_search == query) {
+            return
+        }
+        last_search = query;
+        var url = 'https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(query);
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: 'json',
+            success: function (data) {
+                console.log('Submission was successful.');
+                console.log(data);
+                if (query == last_search) {
+                    render(data.results || []);
+                }
+            },
+            error: function (data) {
+                console.log('An error occurred.');
+                console.log(data);
+                alert("API error: " + data.responseJSON.reason);
+            },
+        });
+    }
+</script>

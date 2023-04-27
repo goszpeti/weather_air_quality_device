@@ -6,7 +6,7 @@ import configparser
 from waqd.settings import *
 
 
-def testReadFromFile(base_fixture):
+def test_read_from_file(base_fixture):
     sets = Settings(ini_folder=base_fixture.testdata_path / "settings/read")
     assert sets.get(LANG) == "MyLanguage"
     assert sets.get(DISPLAY_TYPE) == "RPI_TD"
@@ -25,7 +25,7 @@ def testReadFromFile(base_fixture):
     assert sets.get(NIGHT_STANDBY_TIMEOUT) == 60
 
 
-def testSaveToFile(base_fixture):
+def test_save_to_file(base_fixture):
     # copy testdata to temp
     temp_dir = tempfile.gettempdir()
     temp_ini_path = os.path.join(temp_dir, "config.ini")
@@ -47,7 +47,6 @@ def testSaveToFile(base_fixture):
     sets.set(LANG, lang)
     sets.set(LOCATION, location)
     sets.set(FORECAST_ENABLED, forecast_enabled)
-    sets.set(PREFER_ACCU_WEATHER, accu_weather_prefered)
     sets.set(NIGHT_MODE_BEGIN, night_mode_begin)
     sets.set(NIGHT_MODE_END, night_mode_end)
     sets.set(BRIGHTNESS, brightness)
@@ -66,7 +65,6 @@ def testSaveToFile(base_fixture):
     assert parser.get(sets._GENERAL_SECTION_NAME, LANG) == lang
     assert parser.get(sets._FORECAST_SECTION_NAME, LOCATION) == location
     assert parser.get(sets._FORECAST_SECTION_NAME, FORECAST_ENABLED) == str(forecast_enabled)
-    assert parser.get(sets._FORECAST_SECTION_NAME, PREFER_ACCU_WEATHER) == str(accu_weather_prefered)
     assert parser.get(sets._ENERGY_SECTION_NAME, NIGHT_MODE_BEGIN) == str(night_mode_begin)
     assert parser.get(sets._ENERGY_SECTION_NAME, NIGHT_MODE_END) == str(night_mode_end)
     assert parser.get(sets._ENERGY_SECTION_NAME, MOTION_SENSOR_ENABLED) == str(motion_sensor_enabled)

@@ -19,15 +19,10 @@
 #
 """ Contains helper methods usually to display some text or image with formatting."""
 
-import locale
-import logging
-import platform
-import time
-import datetime
 import xml.dom.minidom as dom
 from pathlib import Path
 from typing import Optional, Union
-from pint import Quantity
+from pint import Quantity, Unit
 
 from PyQt5 import QtCore, QtSvg, QtGui, QtWidgets
 from PyQt5.QtGui import QFont, QFontDatabase
@@ -36,11 +31,11 @@ import waqd
 import waqd.app as app
 from waqd.assets import get_asset_file
 from waqd.settings import LANG, LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN, Settings
-from waqd.components.online_weather import Weather
-logger = logging.getLogger(waqd.PROG_NAME)
+from waqd.base.file_logger import Logger
 
 # define Qt so it can be used like the namespace in C++
 Qt = QtCore.Qt
+
 
 def get_font(font_name) -> QFont:
     # set up font
@@ -49,7 +44,7 @@ def get_font(font_name) -> QFont:
     qapp = QApplication.instance()
     if qapp is None:
         return QFont()
-    font = qapp.font()
+    font = qapp.font()  # type: ignore
     if font_id != -1:
         font_db = QFontDatabase()
         font_styles = font_db.styles(font_name)
@@ -57,39 +52,51 @@ def get_font(font_name) -> QFont:
         if font_families:
             font = font_db.font(font_families[0], font_styles[0], 13)
         else:
-            logger.warning("Can't apply selected font file.")
+            Logger().warning("Can't apply selected font file.")
     return font
+
 
 def apply_font(font_name: str):
     font = get_font(font_name)
     qapp = QApplication.instance()
     if qapp is None:
         return
-    qapp.setFont(font)
+    qapp.setFont(font)  # type: ignore
+
 
 def set_ui_language(qt_app: QApplication, settings: Settings):
     """ Set the ui language. Retranslate must be called afterwards."""
     if app.translator:
         qt_app.removeTranslator(app.translator)
+    if app.base_translator:
+        qt_app.removeTranslator(app.base_translator)
     if settings.get(LANG) == LANG_ENGLISH:  # default case, ui is written in english
         return
 
     if not app.translator:
         app.translator = QtCore.QTranslator(qt_app)
+    if not app.base_translator:
+        app.base_translator = QtCore.QTranslator(qt_app)
 
     tr_file = Path("NULL")
+    tr_base_file = None
     if settings.get(LANG) == LANG_GERMAN:
         tr_file = waqd.base_path / "ui/qt/qt/german.qm"
+        tr_base_file = Path(QtCore.__file__).parent / "Qt5/translations/qtbase_de.qm"
     if settings.get(LANG) == LANG_HUNGARIAN:
         tr_file = waqd.base_path / "ui/qt/qt/hungarian.qm"
+        tr_base_file = Path(QtCore.__file__).parent / "Qt5/translations/qtbase_hu.qm"
     if not tr_file.exists():
-        logger.error("Cannot find %s translation file.", str(tr_file))
+        Logger().error("Cannot find %s translation file.", str(tr_file))
 
     app.translator.load(str(tr_file))
     qt_app.installTranslator(app.translator)
+    if tr_base_file:
+        app.base_translator.load(str(tr_base_file))
+        qt_app.installTranslator(app.base_translator)
 
 
-def draw_svg(pyqt_obj: QLabel, svg_path: Path, color="white", shadow=False, scale: float=1.0):
+def draw_svg(pyqt_obj: QLabel, svg_path: Path, color="white", shadow=False, scale: float = 1.0):
     """
     Sets an svg in the desired color for a QtWidget.
     :param color: the disired color as a string in html compatible name
@@ -97,7 +104,7 @@ def draw_svg(pyqt_obj: QLabel, svg_path: Path, color="white", shadow=False, scal
     :param scale: multiplicator for scaling the image
     """
     if not svg_path or not svg_path.exists():
-        logger.error("Cannot draw invalid SVG file: %s", repr(svg_path))
+        Logger().error("Cannot draw invalid SVG file: %s", repr(svg_path))
         return
 
     # read svg as xml and get the drawing
@@ -146,7 +153,7 @@ def scale_gui_elements(qt_root_obj: QWidget, font_scaling: float,
     :param previous_scaling: old multiplicator
     :param extra_scaling: for platform specific font size
     """
-    if font_scaling > 1: # normalize to 0-1
+    if font_scaling > 1:  # normalize to 0-1
         font_scaling = 1
     # scale all fonts by font_scaling setting
     for qt_list in (
@@ -157,8 +164,9 @@ def scale_gui_elements(qt_root_obj: QWidget, font_scaling: float,
         for qt_obj in qt_list:
             font = qt_obj.font()
             font.setPointSize(round(qt_obj.fontInfo().pointSize() * font_scaling * extra_scaling /
-                                  previous_scaling))
+                                    previous_scaling))
             qt_obj.setFont(font)
+
 
 def apply_shadow_to_labels(qt_root_obj):
     for label in qt_root_obj.findChildren(QtWidgets.QLabel):
@@ -166,6 +174,7 @@ def apply_shadow_to_labels(qt_root_obj):
         effect.setBlurRadius(3)
         effect.setOffset(2, 2)
         label.setGraphicsEffect(effect)
+
 
 def get_temperature_icon(temp_value: Optional[Quantity]) -> Path:
     """
@@ -201,7 +210,7 @@ def get_temperature_icon(temp_value: Optional[Quantity]) -> Path:
 #### Formatting ####
 
 
-def format_int_meas_text(html_text: str, value: Optional[Union[int, float]], color="white", tag_id=0):
+def format_int_meas_text(html_text: str, value: Optional[Union[int, float, Quantity]], color="white", tag_id=0, unit: Optional[Unit] = None):
     """
     Returns a given html string by switching out the value with the given number.
     :param html_text: the html text containing the value. Can only contain one value.
@@ -211,7 +220,10 @@ def format_int_meas_text(html_text: str, value: Optional[Union[int, float]], col
     if value is None:
         temp_val = format_text(html_text, "N/A", "string", color=color, tag_id=tag_id)
     else:
-        temp_val = format_text(html_text, int(value), "int", color=color, tag_id=tag_id)
+        if unit and isinstance(value, Quantity):
+            temp_val = format_text(html_text, int(value.m_as(unit)), "int", color=color, tag_id=tag_id)
+        else:
+            temp_val = format_text(html_text, int(value), "int", color=color, tag_id=tag_id)
     return temp_val
 
 
@@ -246,7 +258,7 @@ def format_temp_text_minmax(html_text, min_val, max_val, color="white"):
             html_text = format_text(html_text, min_val, "int", tag_id=0, color=color)
             html_text = format_text(html_text, max_val, "int", tag_id=3, color=color)
         except Exception as e:
-            logger.error(f"Cannot format text: {str(e)}.")
+            Logger().error(f"Cannot format text: {str(e)}.")
     return html_text
 
 
@@ -294,37 +306,3 @@ def format_text(html_text: str, value: Union[str, int, float, None],
             tags[tag_id].firstChild.data = value
             return html_dom.toxml()
     return ""
-
-
-def get_localized_date(date_time: datetime.datetime, settings: Settings) -> str:
-    """
-    Returns a formatted date of a day conforming to the actual locale.
-    Contains weekday name, month and day.
-    """
-    # switch locale to selected language - needs reboot on linux
-    if settings.get(LANG) != LANG_ENGLISH:
-        locale_name = ""
-        try:
-            if platform.system() == "Windows":
-                if settings.get(LANG) == LANG_GERMAN:
-                    locale_name = "de_DE"
-                elif settings.get(LANG) == LANG_HUNGARIAN:
-                    locale_name = "hu-HU"
-            elif platform.system() == "Linux":
-                if settings.get(LANG) == LANG_GERMAN:
-                    locale_name = "de_DE.UTF8"
-                elif settings.get(LANG) == LANG_HUNGARIAN:
-                    locale_name = "hu_HU.UTF8"
-            locale.setlocale(locale.LC_ALL, locale_name)
-        except Exception as error:
-            logger.error("Cannot set language to %s: %s", settings.get(LANG), str(error))
-            # "sudo apt-get install language-pack-id" is needed...
-            # or sudo locale-gen
-    else:
-        locale.setlocale(locale.LC_ALL, 'C')
-
-    local_date = time.strftime("%a, %x", date_time.timetuple())
-    # remove year - twice once with following . and once for none
-    local_date = local_date.replace(str(date_time.year) + ".", "")
-    local_date = local_date.replace(str(date_time.year), "")
-    return local_date

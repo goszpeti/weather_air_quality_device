@@ -1,21 +1,30 @@
 <style>
     #login {
-        font-size: 0.5em;
+        font-size: 0.9em;
+        padding-bottom: 1cm;
         margin-bottom: 3cm;
+    }
+    input {
+        font-size: 0.5em;
+    }
+    #login_button_row{
+        font-size: 2.5em;
     }
 </style>
 
 <div id="login" class="block">
     <form id="login_form" action="/login" method="post">
-        <div id="username_row" class="row", style="margin-bottom: 30px;padding-inline: 16px;">
-            <span>Username: <input name="username" type="text", style="font-size: 0.8em;"/></span>
+        <h1>Username</h1>
+        <div id="username_row" class="row", style="margin-top:-20px;margin-bottom:30px;">
+            <span><input name="username" type="text" style="width: 95%;"/></span>
         </div>
-        <div id="password_row" class="row", style="padding-inline: 16px;">
-            <span>Password:  <input name="password" type="password" required, style="font-size: 0.8em;"/>
-        </span>
+        <h1>Password</h1>
+        <div id="password_row" class="row", style="margin-top:-20px;">
+            <span><input name="password" type="password" style="width: 95%;" required/>
+            </span>
         </div>
         <div id="login_button_row" class="row">
-            <span><input value="Login" type="submit" class="btn btn-primary"/></span>
+            <span><input value="Login" type="submit" class="btn btn-primary" /></span>
         </div>
     </form>
 </div>

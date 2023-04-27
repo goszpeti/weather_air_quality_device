@@ -53,10 +53,8 @@ USER_DEFAULT_PW = "user_default_pw"
 
 AUTO_UPDATER_ENABLED = "auto_updater_enabled"
 UPDATER_USER_BETA_CHANNEL = "updater_use_beta_channel"
-ALLOW_UNATTENDED_UPDATES = "unattended_updates" # TODO does nothing
 
-LAST_ALTITUDE_M_VALUE = "last_alitude_value"
-LAST_TEMP_C_OUTSIDE_VALUE  = "last_temp_outside_value"
+LAST_TEMP_C_OUTSIDE  = "last_temp_outside_value" # TODO write
 REMOTE_MODE_URL = "remote_mode_url"
 # gui
 FONT_SCALING = "font_scaling"
@@ -73,12 +71,15 @@ DAY_STANDBY_TIMEOUT = "day_standby_timeout"
 NIGHT_STANDBY_TIMEOUT = "night_standby_timeout"
 # forecast
 FORECAST_ENABLED = "forecast_enabled"
-PREFER_ACCU_WEATHER = "prefer_accu_weather"
-LOCATION = "location"
+LOCATION = "location" # only for display and search purposes
+LOCATION_LONGITUDE = "location_long"
+LOCATION_LATITUDE = "location_lat"
+LOCATION_ALTITUDE_M = "last_altitude_value"
+
 OW_API_KEY = "open_weather_api_key"
-OW_CITY_IDS = "ow_city_id"
+OW_CITY_IDS = "ow_city_id" # deprecate with generic geo conding
 AW_API_KEY = "accu_weather_api_key"
-AW_CITY_IDS = "aw_city_id"
+AW_CITY_IDS = "aw_city_id"  # deprecate with generic geo conding
 
 # import at the end, to avoid circular imports
 from waqd.settings.settings import Settings

@@ -46,7 +46,7 @@ class TextToSpeach(Component):
         self._ready = True
 
     def get_tts_string(self, key: str, lang="en") -> str:
-        return Translation().get_localized_string("base", "tts_dict", key, lang)
+        return Translation().get_localized_string("tts_dict", key, lang)
 
     def say_internal(self, key="", format_args=[]):
         """
@@ -82,7 +82,7 @@ class TextToSpeach(Component):
         """
         # remap, if given as setting
         if lang in LANGS_MAP:
-            lang = LANGS_MAP.get(lang)
+            lang = LANGS_MAP.get(lang, "")
         try:
             # remove most likeable pitfalls. Is not comprehensive!
             normalized_text = text.replace(' ', '_').replace(

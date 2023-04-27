@@ -2,10 +2,8 @@ from waqd.components.speech import TextToSpeach
 from waqd.settings import SOUND_ENABLED, Settings
 from waqd.base.component_reg import ComponentRegistry
 
-import time
 
-
-def testTTSParallel(base_fixture, capsys):
+def test_tts_parallel(base_fixture, capsys):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(SOUND_ENABLED, True)
     comps = ComponentRegistry(settings)
@@ -16,13 +14,14 @@ def testTTSParallel(base_fixture, capsys):
 
     tts.wait_for_tts()
     # we can implicitly check, if the Thread has been started by us
-    assert "TTS" in tts._tts_thread.getName() 
+    assert "TTS" in tts._tts_thread.getName()
     # test that no warning was thrown
     captured = capsys.readouterr()
     assert "WARNING" not in captured.out
     assert "Sound: Cannot play sound" not in captured.out
 
-def testOnSoundDisabled(base_fixture, capsys):
+
+def test_on_sound_disabled(base_fixture, capsys):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(SOUND_ENABLED, "en")
     comps = ComponentRegistry(settings)

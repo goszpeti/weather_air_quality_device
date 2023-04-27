@@ -327,7 +327,7 @@
               <enum>QFrame::NoFrame</enum>
              </property>
              <property name="verticalScrollBarPolicy">
-              <enum>Qt::ScrollBarAlwaysOn</enum>
+              <enum>Qt::ScrollBarAlwaysOff</enum>
              </property>
              <property name="horizontalScrollBarPolicy">
               <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -343,7 +343,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>638</width>
+                <width>655</width>
                 <height>415</height>
                </rect>
               </property>
@@ -662,7 +662,7 @@
                     </size>
                    </property>
                    <property name="text">
-                    <string>Reset Server Password</string>
+                    <string>Reset Web Password</string>
                    </property>
                   </widget>
                  </item>
@@ -1297,8 +1297,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>655</width>
-                <height>415</height>
+                <width>644</width>
+                <height>382</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1638,8 +1638,8 @@ to preview! </string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>655</width>
-                <height>415</height>
+                <width>245</width>
+                <height>404</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1767,8 +1767,8 @@ to preview! </string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>655</width>
-                <height>415</height>
+                <width>458</width>
+                <height>511</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -2165,8 +2165,8 @@ to preview! </string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>655</width>
-                <height>415</height>
+                <width>373</width>
+                <height>337</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_15">

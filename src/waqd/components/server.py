@@ -8,21 +8,22 @@ from typing_extensions import NotRequired
 import os
 import plotly.graph_objects as go
 import waqd
-import waqd.app as app
 from bottle import (Jinja2Template, default_app, redirect, jinja2_template,
                     request, response, route, static_file)
 from htmlmin.main import minify
 from pint import Quantity
 from plotly.graph_objs import Scattergl
 from plotly.io import to_html
+import waqd.app as app
 from waqd.base.component import Component
 from waqd.base.web_session import LoginPlugin
 from waqd.base.authentification import UserAuth, validate_password, validate_username
 from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import OW_API_KEY, Settings
-import waqd
-
+from waqd.settings import LOCATION, LOCATION_LATITUDE, LOCATION_LONGITUDE, OW_API_KEY, OW_CITY_IDS, Settings
+from waqd.components import OpenWeatherMap
+from waqd.ui import format_unit_disp_value
+from waqd import base_path
 
 extra_minify = partial(minify, remove_comments=True, remove_empty_space=True)
 
@@ -49,6 +50,7 @@ ROUTE_WAQD_HUM_HISTORY = "/waqd/humidity_history"
 ROUTE_WAQD_PRES_HISTORY = "/waqd/pressure_history"
 ROUTE_WAQD_CO2_HISTORY = "/waqd/co2_history"
 ROUTE_PLOTLY_JS = "/script/plotly.js"
+ROUTE_JQUERY_JS = "/script/jquery.min.js"
 
 ROUTE_CSS = "/style.css"
 ROUTE_ABOUT = "/about"
@@ -60,6 +62,7 @@ ROUTE_LOGIN_FAILED = "/login_failed"
 ROUTE_CHANGE_USER_NAME = "/change_name"
 ROUTE_CHANGE_PW = "/change_pw"
 ROUTE_SET_OW_API_KEY = "/set_ow_api_key"
+ROUTE_SET_LOCATION = "/set_location"
 
 # API endpoint constants
 ROUTE_API_REMOTE_EXT_SENSOR = "/api/remoteExtSensor"
@@ -88,6 +91,7 @@ class BottleServer(Component):
                  user_session_secret="SECRET", user_api_key="API_KEY", user_default_pw="TestPw"):
         super().__init__(components, settings, enabled)
         self._server = None
+        self._settings: Settings
         if self._disabled:
             return
         self._comps: "ComponentRegistry"
@@ -96,7 +100,7 @@ class BottleServer(Component):
         self._app.config['SECRET_KEY'] = user_session_secret
         self._run_thread = Thread(name="RunServer", target=self._run_server, daemon=True)
         self._run_thread.start()
-        self._html_path = app.base_path / "ui" / "web" / "html"
+        self._html_path = base_path / "ui" / "web" / "html"
         self._login: LoginPlugin = self._app.install(LoginPlugin())
         self.user_auth = UserAuth(user_default_pw)
 
@@ -111,6 +115,8 @@ class BottleServer(Component):
         route(ROUTE_LOGIN, "GET", self.index)
         route(ROUTE_LOGOUT, "GET", self.index)
         route(ROUTE_SETTINGS, "GET", self.index)
+        route(ROUTE_SET_LOCATION, "POST", self.index)
+        route(ROUTE_SET_OW_API_KEY, "POST", self.index)
         route(ROUTE_CHANGE_USER_NAME, "POST", self.index)
         route(ROUTE_CHANGE_PW, "POST", self.index)
         route(ROUTE_LOGIN, "POST", self.login)
@@ -122,6 +128,7 @@ class BottleServer(Component):
         route(ROUTE_WAQD_PRES_HISTORY, "GET", self.plot_graph)
         route(ROUTE_WAQD_CO2_HISTORY, "GET", self.plot_graph)
         route(ROUTE_PLOTLY_JS, "GET", self.get_plotlyjs)
+        route(ROUTE_JQUERY_JS, "GET", self.get_jqueryjs)
 
         # api endpoints
         route(ROUTE_API_REMOTE_EXT_SENSOR + "<args:re:.*>", "POST", self.post_sensor_values)
@@ -144,13 +151,18 @@ class BottleServer(Component):
 # HTML display endpoints
 
     def css(self):
+        # TODO do as static file
+        # 1 week
+        max_age = "604800"
+        if waqd.DEBUG_LEVEL > 0:
+            max_age = "0"
         response = static_file("style.css", root=self._html_path)
-        response.set_header("Cache-Control", "public, max-age=0")
+        response.set_header("Cache-Control", f"public, max-age={max_age}")
         return response
 
     def login(self):
         try:
-            username = request.forms.get('username') # type: ignore
+            username = request.forms.get('username')  # type: ignore
             password = request.forms.get('password')  # type: ignore
         except Exception:
             return redirect(ROUTE_LOGIN_FAILED)
@@ -161,7 +173,7 @@ class BottleServer(Component):
             return redirect(ROUTE_LOGIN_FAILED)
 
     def change_user_name(self):
-        new_username = request.forms.get('username', "") # type: ignore
+        new_username = request.forms.get('username', "")  # type: ignore
         old_username = self._login.get_user()
         # not changed
         if new_username == old_username:
@@ -182,6 +194,7 @@ class BottleServer(Component):
         username = self._login.get_user()
         old_pw = request.forms.get('old_password', "")  # type: ignore
         new_pw = request.forms.get('password', "")  # type: ignore
+        # TOOD use bottle html template helper
         # validate pw
         if not validate_password(new_pw):
             return """<p>Username does not fit the following criteria:</p>
@@ -194,6 +207,51 @@ class BottleServer(Component):
         if self.user_auth.check_login(username, old_pw):
             self.user_auth.set_password(username, new_pw)
         return "<p>Password changed successfully!</p>"
+
+    def set_location(self):
+
+        new_location_id: str = request.forms.get("location", "")  # type: ignore
+        if not new_location_id:
+            return "<p>Please enter a location!</p>"
+        try:
+            loc_name, longitude, latitude = self.parse_location(new_location_id)
+            self._settings.set(LOCATION, loc_name)
+            self._settings.set(LOCATION_LONGITUDE, longitude)
+            self._settings.set(LOCATION_LATITUDE, latitude)
+
+            self._comps.stop_component_instance(self._comps.weather_info)  # reset setting
+            if app.qt_backchannel:  # re_init gui to update all values
+                app.qt_backchannel.re_init_gui.emit()
+
+        except Exception as e:
+            self._settings.set(LOCATION, "Unknown")
+            return "<p>Location set, but does not seem to work!</p>"
+        finally:
+            self._settings.save()
+        return "<p>Location set successfully!</p>"
+
+    @staticmethod
+    def parse_location(location_input: str):
+        # comes in form of London - England, United Kingdom(51.51ÂºE -0.13ÂºN 25m asl)
+        # parse location string - optimistic way, not counting on malicious intent
+        # no error handling, caller has to catch errors
+        loc_name = location_input.split(",")[0].strip(" ")
+        latitude = location_input.split("(")[1].split(" ")[0].split("Â")[0]
+        longitude = location_input.split("(")[1].split(" ")[1].split("Â")[0]
+        return (loc_name, longitude, latitude)
+
+    def set_owa_api_key(self):
+        new_key = request.forms.get("ow_api", "")  # type: ignore
+        self._settings.set(OW_API_KEY, str(new_key))
+        try:
+            owm = OpenWeatherMap("2643743", str(new_key))
+            owm.get_current_weather()
+            self._comps.stop_component_instance(self._comps.weather_info)  # reset setting
+        except Exception as e:
+            return "<p>OpenWeatherMap API key set, but does not seem to work!</p>"
+        finally:
+            self._settings.save()
+        return "<p>OpenWeatherMap API key set successfully!</p>"
 
     def logout(self):
         self._login.logout_user()
@@ -220,8 +278,6 @@ class BottleServer(Component):
         # default entrypoint to waqd view
         if route == "/":
             redirect(ROUTE_WAQD)
-        # if waqd.DEBUG_LEVEL > 0:
-        #     self._main_page_tpl = .read_text()
 
         top_msg = ""
         page_content = ""
@@ -248,8 +304,14 @@ class BottleServer(Component):
             msg = self.change_password()
             page_content = self._get_settings_subpage()
             top_msg = f'<div class="login_msg" style="margin-bottom: 20px;">{msg}</div>'
-
-
+        elif route == ROUTE_SET_LOCATION:
+            msg = self.set_location()
+            page_content = self._get_settings_subpage()
+            top_msg = f'<div class="login_msg" style="margin-bottom: 20px;">{msg}</div>'
+        elif route == ROUTE_SET_OW_API_KEY:
+            msg = self.set_owa_api_key()
+            page_content = self._get_settings_subpage()
+            top_msg = f'<div class="login_msg" style="margin-bottom: 20px;">{msg}</div>'
         menu = self.generate_menu()
         tpl = jinja2_template(str(self._html_path / "index.html"), menu=menu,
                               content=page_content, top_msg=top_msg, bottom_msg=bottom_msg)
@@ -269,17 +331,6 @@ class BottleServer(Component):
         </ul>
         """
         return menu
-
-    def get_plotlyjs(self):
-        import plotly
-        path = os.path.join(plotly.__file__, "..", "package_data")
-        response = static_file("plotly.min.js", root=path)
-        # 1 week
-        max_age = "604800"
-        if waqd.DEBUG_LEVEL > 1:
-            max_age = "0"
-        response.set_header("Cache-Control", f"public, max-age={max_age}")
-        return response
 
     def plot_graph(self):
         time_m = 180
@@ -323,6 +374,7 @@ class BottleServer(Component):
 
 ###### Subpages ######
 
+
     def _get_about_subpage(self):
         page_content = (self._html_path / "about.html").read_text()
         tpl = Jinja2Template(page_content)
@@ -335,7 +387,7 @@ class BottleServer(Component):
         current_weather = self._comps.weather_info.get_current_weather()
         icon_rel_path = "weather_icons/wi-na.svg"  # default N/A
         if current_weather:
-            icon_rel_path = current_weather.icon.relative_to(waqd.assets_path)
+            icon_rel_path = current_weather.get_icon().relative_to(waqd.assets_path)
         # second pass
         tpl = Jinja2Template(page_content)
         return tpl.render(weather_icon=str(icon_rel_path),
@@ -357,12 +409,17 @@ class BottleServer(Component):
         # Implement login (you can check passwords here or etc)
         page_content = (self._html_path / "settings.html").read_text()
         tpl = Jinja2Template(page_content)
-        return tpl.render(username=self._login.get_user(), ow_api_key=self._settings.get_string(OW_API_KEY))
+        location = self._settings.get_string(LOCATION)
+        if not location or location.lower() == "unknown":
+            location = "Search for your location..."
+        return tpl.render(username=self._login.get_user(),  # ow_api_key=self._settings.get_string(OW_API_KEY)
+                          location=location)
 
 
 ###### API endpoints ######
 
 # args are given in the format ?Key=Value
+
 
     def trigger_event_remote_value(self):
         response.content_type = 'text/event-stream; charset=utf-8'
@@ -414,20 +471,24 @@ class BottleServer(Component):
         if not comp_ctrl:
             return
         data: SensorApi_0_1 = request.json  # type: ignore
-        temp = 0
-        hum = 0
+        temp = None
+        hum = None
+        baro = None
         try:
             api_ver = data["api_ver"]
             if api_ver == "0.1":
                 temp = float(data.get("temp", ""))
                 hum = float(data.get("hum", ""))
+                baro = float(data.get("baro", ""))
         except Exception:
             self._logger.debug(f"Server: Invalid response for /remoteSensor: {str(data)}")
 
         if "remoteExtSensor" in request.fullpath:
-            comp_ctrl.components.remote_exterior_sensor.read_callback(temp, hum)
+            comp_ctrl.components.remote_exterior_sensor.read_callback(temp, hum, baro)
         elif "remoteIntSensor" in request.fullpath:
-            comp_ctrl.components.remote_interior_sensor.read_callback(temp, hum)
+            comp_ctrl.components.remote_interior_sensor.read_callback(temp, hum, baro)
+
+        return response
 
     def _get_interior_sensor_values(self, units=False):
         temp = self._comps.temp_sensor.get_temperature()
@@ -457,7 +518,7 @@ class BottleServer(Component):
         if temp is None or hum is None:
             current_weather = self._comps.weather_info.get_current_weather()
             if current_weather:
-                temp = Quantity(current_weather.temp, app.unit_reg.degC)
+                temp = app.unit_reg.Quantity(current_weather.temp, "degC")
                 hum = current_weather.humidity
         if units:  # format non unit values
             temp = self._format_sensor_disp_value(temp, True)
@@ -471,17 +532,30 @@ class BottleServer(Component):
                                }
         return data
 
-    def _format_sensor_disp_value(self, quantity, unit=None, precision=1):
-        disp_value = "N/A"
-        if quantity is not None:
-            if isinstance(quantity, Quantity):
-                # .m_as(app.unit_reg.degC)
-                disp_value = f"{float(quantity.m):.{precision}f}"
-                if unit:
-                    disp_value += " " + app.unit_reg.get_symbol(str(quantity.u))
-            else:
-                disp_value = f"{float(quantity):.{precision}f}"
-                if unit:
-                    disp_value += " " + unit
-
+    def _format_sensor_disp_value(self, quantity: Quantity, unit=None, precision=1):
+        disp_value = format_unit_disp_value(quantity, unit, precision)
         return html.escape(disp_value)
+
+###### Script endpoints for offline access of js libs ######
+
+    def get_plotlyjs(self):
+        import plotly
+        path = os.path.join(plotly.__file__, "..", "package_data")
+        response = static_file("plotly.min.js", root=path)
+        # 1 week
+        max_age = "604800"
+        if waqd.DEBUG_LEVEL > 1:
+            max_age = "0"
+        response.set_header("Cache-Control", f"public, max-age={max_age}")
+        return response
+
+    def get_jqueryjs(self):
+        import js.jquery
+        res = js.jquery.jquery
+        response = static_file(js.jquery.jquery.minified, root=os.path.dirname(res.fullpath()))
+        # 1 week
+        max_age = "604800"
+        if waqd.DEBUG_LEVEL > 1:
+            max_age = "0"
+        response.set_header("Cache-Control", f"public, max-age={max_age}")
+        return response

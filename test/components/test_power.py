@@ -13,7 +13,7 @@ from waqd.settings import Settings
 from waqd.base.component_reg import ComponentRegistry
 
 
-def testNoStandbyIfSensorIsDisabled(base_fixture):
+def test_no_standby_if_sensor_is_disabled(base_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(MOTION_SENSOR_ENABLED, False)
     settings.set(NIGHT_MODE_BEGIN, 23)
@@ -35,7 +35,7 @@ def testNoStandbyIfSensorIsDisabled(base_fixture):
     energy_saver.stop()
 
 
-def testNightModeStartup(base_fixture, target_mockup_fixture):
+def test_night_mode_startup(base_fixture, target_mockup_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(MOTION_SENSOR_ENABLED, True)
     settings.set(NIGHT_MODE_BEGIN, 23)
@@ -68,7 +68,7 @@ def testNightModeStartup(base_fixture, target_mockup_fixture):
     energy_saver.stop()
 
 
-def testNightModeEnter(base_fixture, target_mockup_fixture):
+def test_night_mode_enter(base_fixture, target_mockup_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(MOTION_SENSOR_ENABLED, True)
     settings.set(NIGHT_MODE_BEGIN, 23)
@@ -102,7 +102,7 @@ def testNightModeEnter(base_fixture, target_mockup_fixture):
     energy_saver.stop()
 
 
-def testDayModeEnter(base_fixture, target_mockup_fixture):
+def test_day_mode_enter(base_fixture, target_mockup_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(MOTION_SENSOR_ENABLED, True)
     settings.set(NIGHT_MODE_BEGIN, 22)
@@ -135,7 +135,7 @@ def testDayModeEnter(base_fixture, target_mockup_fixture):
     energy_saver.stop()
 
 
-def testWakeUpFromNightMode(base_fixture, target_mockup_fixture):
+def test_wake_up_from_night_mode(base_fixture, target_mockup_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
 
     settings.set(MOTION_SENSOR_ENABLED, True)
@@ -168,7 +168,7 @@ def testWakeUpFromNightMode(base_fixture, target_mockup_fixture):
     energy_saver.stop()
 
 
-def testStandbyInDayMode(base_fixture, target_mockup_fixture):
+def test_standby_in_day_mode(base_fixture, target_mockup_fixture):
     settings = Settings(base_fixture.testdata_path / "integration")
     settings.set(MOTION_SENSOR_ENABLED, True)
     settings.set(NIGHT_MODE_BEGIN, 22)

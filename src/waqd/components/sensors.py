@@ -42,7 +42,7 @@ from waqd.base.component_reg import ComponentRegistry
 from waqd.base.file_logger import Logger, SensorFileLogger
 from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.network import Network
-from waqd.settings import (LAST_ALTITUDE_M_VALUE, LAST_TEMP_C_OUTSIDE_VALUE,
+from waqd.settings import (LOCATION_ALTITUDE_M, LAST_TEMP_C_OUTSIDE,
                            LOG_SENSOR_DATA, MH_Z19_VALUE_OFFSET, REMOTE_MODE_URL, USER_API_KEY, Settings)
 
 if TYPE_CHECKING:
@@ -55,6 +55,7 @@ if TYPE_CHECKING:
 SENSOR_INTERIOR_TYPE = "interior"
 SENSOR_EXTERIOR_TYPE = "exterior"
 DEFAULT_MAX_MEASURE_POINTS = 5
+DEFAULT_INVALIDATION_TIME_S = 60
 
 
 class SensorComponent(Component):
@@ -83,25 +84,31 @@ class SensorComponent(Component):
 
 class SensorImpl():
     """ Class for any sensor type to store measurements with a moving average.
-        Logs to file, if "log_to_file" is activated.
+        Logs to file/db, if "log_to_file" is activated.
         To be used with pimpl pattern and not as a base class!
     """
     LOGGING_INTERVAL = datetime.timedelta(minutes=1)
-    MAX_TIMES_DELTA_VIOLATED = 3
+    MAX_TIMES_DELTA_VIOLATED = 1
 
     def __init__(self, logging_enabled: bool, log_location_type: str, log_measure_type: str,
                  min_value: float, max_value: float, max_measure_points=DEFAULT_MAX_MEASURE_POINTS, 
-                 default_value=0, invalidation_time_s=30, max_delta=0):
+                 default_value=0, invalidation_time_s=30, max_delta=0, rounding_precision=2, rounding_base=1.0):
+        # logging
         self.log_values = False # Select this instance for global for logging 
+        # only check at init - options will reset this flag, with the exception of non-resettable sensors
+        self._logging_enabled = logging_enabled
         self._log_measure_type = log_measure_type  # like temp or hum
         self._log_location_type = log_location_type  # like interior or exterior
+        # value validation and rounding
+        self._rounding_base = rounding_base
+        self._rounding_prec = rounding_precision
         self._min_value = min_value  # for validation: outside this range invalid
         self._max_value = max_value  # same as min_value
         # maximum deviation for previous value - to detect errors (0 means disabled)
         self._max_delta = max_delta
         self._n_delta_violation = 0  # track violations - after MAX_TIMES_DELTA_VIOLATED times still take it
         self._first_value_written = False
-
+        # value storage
         self._values_capacity = max_measure_points  # number of elements of the moving average
         self._values = []
         # After invalidation_time_s has passed, the sensor value will be considered out of date and return None for value
@@ -109,26 +116,29 @@ class SensorImpl():
         self._last_value_rcv_time = datetime.datetime.now()
         self._value_invalidation_time_s = invalidation_time_s
         self._last_logging_time = datetime.datetime.now()
-        # only check at init - options will reset this flag, with the exception of non-resettable sensors
-        self._logging_enabled = logging_enabled
 
         # even if logging is disabled now we should attempt to restore the last recorded value
         # TODO does not work because of time limit - need find last value
         # use file logger when shuttings down and read back here
-        log_values = SensorFileLogger.get_sensor_values(self._log_location_type, self._log_measure_type)
-        if log_values:
-            if len(log_values[0]) < 2:
-                Logger().warning(
-                    f"Cant initialize {log_measure_type} sensor from log. Invalid log format.")
+        if logging_enabled:
+            # only enabled sensor returns values 
+            log_values = InfluxSensorLogger.get_sensor_values(self._log_location_type, self._log_measure_type)
+            if log_values:
+                if len(log_values[0]) < 2:
+                    Logger().warning(
+                        f"Cant initialize {log_measure_type} sensor from log. Invalid log format.")
+                else:
+                    try:
+                        last_date = log_values[0][0]
+                    except Exception:
+                        return
+                    if (last_date - datetime.datetime.now(LOCAL_TIMEZONE)) < datetime.timedelta(hours=3):
+                        self._values.append(log_values[0][1])
             else:
-                try:
-                    last_date = log_values[0][0]
-                except:
-                    return
-                if (last_date - datetime.datetime.now(LOCAL_TIMEZONE)) < datetime.timedelta(hours=3):
-                    self._values.append(log_values[0][1])
+                self._values.append(default_value)
         else:
             self._values.append(default_value)
+
 
     def stop(self):
         # save value to reread, when initializing
@@ -138,17 +148,25 @@ class SensorImpl():
         """ Return measurement value. """
         # invalidation guard
         if datetime.datetime.now() - self._last_value_rcv_time > datetime.timedelta(seconds=self._value_invalidation_time_s):
+            Logger().debug(f"Invalidated value of {self.__class__.__name__} {self._log_measure_type}")
             return None
         if self._values_capacity == 1:
             return self._values[0]
         else:
             return mean(self._values)
 
+    @staticmethod
+    def round(value: float, prec=2, base=.05):
+        return round(base * round(value/base), prec)
+
     def set_value(self, value: Optional[float]) -> bool:
         """ Generic method to write values into the measurement list and manage its length """
         # out of bounds check
-        if not value:
+        Logger().debug("%s: %s Attempting to write %f",
+                        self.__class__.__name__, self._log_measure_type, value)
+        if value is None:
             return False
+        value = self.round(value, self._rounding_prec, self._rounding_base)
         if not self._min_value <= value <= self._max_value:
             Logger().warning("%s: %s out of bounds %s", self.__class__.__name__,
                              self._log_measure_type, value)
@@ -159,12 +177,15 @@ class SensorImpl():
             if current_value := self._values[-1]:
                 current_delta = abs(value - current_value)
                 if  current_delta >= self._max_delta:
-                    if self._n_delta_violation <= self.MAX_TIMES_DELTA_VIOLATED:
+                    if self._n_delta_violation < self.MAX_TIMES_DELTA_VIOLATED:
+                        self._n_delta_violation += 1
                         Logger().warning("%s: %s max delta reached %s", self.__class__.__name__,
                                          self._log_measure_type, current_delta)
+                        return False
                     else:
+                        Logger().warning("%s: %s taking value after max delta reached.",
+                                self.__class__.__name__, self._log_measure_type)
                         self._n_delta_violation = 0
-                    return False
         self._values.append(value)
         self._last_value_rcv_time = datetime.datetime.now()
         self._first_value_written = True
@@ -183,15 +204,19 @@ class SensorImpl():
 
 class TempSensor(SensorComponent):
     """ Base class for all temperature sensors """
+    __MIN_VALUE = -30
+    __MAX_VALUE = 60
+    __DEFAULT_VALUE = 22
+    __MAX_DELTA = 3
 
     def __init__(self, logging_enabled: bool, max_measure_points=DEFAULT_MAX_MEASURE_POINTS, enabled=True,  # TODO add consts for "temp_degC"
-                log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="temp_degC", invalidation_time_s=15):  
+                 log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="temp_degC",
+                 invalidation_time_s=DEFAULT_INVALIDATION_TIME_S):
         """ is_disabled is for the case, when no sensor can be instantiated """
         SensorComponent.__init__(self, enabled=enabled)
-        min_value = -30
-        max_value = 60
-        self._temp_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, min_value, max_value,
-                                     max_measure_points, 22, invalidation_time_s, 3)
+        self._temp_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, self.__MIN_VALUE, self.__MAX_VALUE,
+                                     max_measure_points, self.__DEFAULT_VALUE, invalidation_time_s, self.__MAX_DELTA, 
+                                     rounding_base=.1, rounding_precision=1)
         self.get_temperature()  # init unit registry
 
     def select_for_temp_logging(self):
@@ -200,10 +225,9 @@ class TempSensor(SensorComponent):
     def get_temperature(self) -> Optional[Quantity]:
         """ Return temperature in degree Celsius """
         value = self.get_value_with_status(self._temp_impl)
-        if value:
-            return Quantity(value, unit_reg.degC)
-        else:
-            return None
+        if value is not None:
+            return unit_reg.Quantity(value, "degC")
+        return None
 
     def _set_temperature(self, value: Optional[float]) -> bool:
         return self._temp_impl.set_value(value)
@@ -214,26 +238,33 @@ class TempSensor(SensorComponent):
 
 class BarometricSensor(SensorComponent):
     """ Base class for all barometric sensors """
+    __MIN_VALUE = 800
+    __MAX_VALUE = 2000
+    __DEFAULT_VALUE = 1000
+    __MAX_DELTA = 3
 
     def __init__(self, logging_enabled: bool, max_measure_points=DEFAULT_MAX_MEASURE_POINTS, enabled=True, 
-                log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="pressure_hPa", invalidation_time_s=15):
+                 log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="pressure_hPa", 
+                 invalidation_time_s=DEFAULT_INVALIDATION_TIME_S):
         SensorComponent.__init__(self, enabled=enabled)
-        min_value = 800
-        max_value = 2000
-        self._pres_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, min_value, max_value,
-                                     max_measure_points, 1000, invalidation_time_s, 5)
+        self._pres_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, self.__MIN_VALUE, self.__MAX_VALUE,
+                                     max_measure_points, self.__DEFAULT_VALUE, invalidation_time_s,
+                                     max_delta=self.__MAX_DELTA, rounding_precision=1)
 
     def select_for_pres_logging(self):
         self._pres_impl.log_values = True
 
-    def get_pressure(self) -> Optional[float]:
+    def get_pressure(self) -> Optional[Quantity]:
         """ Return the pressure in hPa """
-        return self.get_value_with_status(self._pres_impl)
+        value =  self.get_value_with_status(self._pres_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "hPa")
+        return None
 
     def _set_pressure(self, value: Optional[float]):
         self._pres_impl.set_value(value)
 
-    def _convert_abs_pres_to_asl(self, pressure, height_asl, temp_outdoor):
+    def _convert_abs_pres_to_asl(self, pressure: float, height_asl: float, temp_outdoor: float):
         """ Converts raw absolute readings to above sea level relative readings, which are used in weather forecasts. """
         return pressure * pow(1 - (0.0065 * height_asl / (temp_outdoor + (0.0065 * height_asl) + 273.15)), -5.257)
 
@@ -243,22 +274,28 @@ class BarometricSensor(SensorComponent):
 
 class HumiditySensor(SensorComponent):
     """ Base class for all humidity sensors """
+    __MIN_VALUE = 10
+    __MAX_VALUE = 100
+    __DEFAULT_VALUE = 50
+    __MAX_DELTA = 10
 
     def __init__(self, logging_enabled: bool, max_measure_points=DEFAULT_MAX_MEASURE_POINTS, enabled=True,
-                log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="humidity_%", invalidation_time_s=15):
+                log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="humidity_%",
+                 invalidation_time_s=DEFAULT_INVALIDATION_TIME_S):
         SensorComponent.__init__(self, enabled=enabled)
-        min_value = 10
-        max_value = 100
-
-        self._hum_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, min_value, max_value,
-                                    max_measure_points, 50, invalidation_time_s, 10)
+        self._hum_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, self.__MIN_VALUE, self.__MAX_VALUE,
+                                    max_measure_points, self.__DEFAULT_VALUE, invalidation_time_s,
+                                    max_delta=self.__MAX_DELTA, rounding_precision=1)
 
     def select_for_hum_logging(self):
         self._hum_impl.log_values = True
 
-    def get_humidity(self) -> Optional[float]:
+    def get_humidity(self) -> Optional[Quantity]:
         """ Return the humidity in % """
-        return self.get_value_with_status(self._hum_impl)
+        value = self.get_value_with_status(self._hum_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "percent")
+        return None
 
     def _set_humidity(self, value: Optional[float]):
         self._hum_impl.set_value(value)
@@ -269,22 +306,28 @@ class HumiditySensor(SensorComponent):
 
 class TvocSensor(SensorComponent):
     """ Base class for all TVOC sensors """
+    __MIN_VALUE = 0
+    __MAX_VALUE = 500
+    __DEFAULT_VALUE = 0
+    __MAX_DELTA = 100
 
     def __init__(self, logging_enabled: bool, max_measure_points=DEFAULT_MAX_MEASURE_POINTS, enabled=True,
-                log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="TVOC", invalidation_time_s=15):
+                log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="TVOC",
+                 invalidation_time_s=DEFAULT_INVALIDATION_TIME_S):
         SensorComponent.__init__(self, enabled=enabled)
-        min_value = 0
-        max_value = 500
-        self._tvoc_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, min_value,
-                                     max_value, max_measure_points, 0, invalidation_time_s, 100)
+        self._tvoc_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, self.__MIN_VALUE,
+                                     self.__MAX_VALUE, max_measure_points, self.__DEFAULT_VALUE, invalidation_time_s,
+                                     max_delta=self.__MAX_DELTA, rounding_precision=0, rounding_base=5)
 
     def select_for_tvoc_logging(self):
         self._tvoc_impl.log_values = True
 
-    def get_tvoc(self) -> Optional[float]:
+    def get_tvoc(self) -> Optional[Quantity]:
         """ Returns TVOC in ppb """
-        return self.get_value_with_status(self._tvoc_impl)
-
+        value = self.get_value_with_status(self._tvoc_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "ppb")
+        return None
     def _set_tvoc(self, value: Optional[float]):
         self._tvoc_impl.set_value(value)
 
@@ -294,22 +337,28 @@ class TvocSensor(SensorComponent):
 
 class CO2Sensor(SensorComponent):
     """ Base class for all CO2 sensors """
+    __MIN_VALUE = 400
+    __MAX_VALUE = 5000
+    __DEFAULT_VALUE = 450
+    __MAX_DELTA = 50
 
     def __init__(self, logging_enabled: bool, max_measure_points=DEFAULT_MAX_MEASURE_POINTS, enabled=True, 
-                log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="CO2_ppm", invalidation_time_s=15):
+                 log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="CO2_ppm",
+                 invalidation_time_s=DEFAULT_INVALIDATION_TIME_S):
         SensorComponent.__init__(self, enabled=enabled)
-        min_value = 400
-        max_value = 5000
-        self._co2_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, min_value, max_value,
-                                    max_measure_points, 450, invalidation_time_s, 50)
+        self._co2_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, self.__MIN_VALUE, self.__MAX_VALUE,
+                                    max_measure_points, self.__DEFAULT_VALUE, invalidation_time_s,
+                                    max_delta=self.__MAX_DELTA, rounding_precision=1, rounding_base=5)
 
     def select_for_co2_logging(self):
         self._co2_impl.log_values = True
 
-    def get_co2(self) -> Optional[float]:
+    def get_co2(self) -> Optional[Quantity]:
         """ Returns equivalent CO2 in ppm """
-        return self.get_value_with_status(self._co2_impl)
-
+        value = self.get_value_with_status(self._co2_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "ppm")
+        return None
     def _set_co2(self, value: Optional[float]):
         self._co2_impl.set_value(value)
 
@@ -319,22 +368,28 @@ class CO2Sensor(SensorComponent):
 
 class DustSensor(SensorComponent):
     """ Base class for all dust sensors """
+    __MIN_VALUE = 0
+    __MAX_VALUE = 1000
+    __DEFAULT_VALUE = 100
+    __MAX_DELTA = 100
 
     def __init__(self, logging_enabled: bool, max_measure_points=DEFAULT_MAX_MEASURE_POINTS, enabled=True,
-                log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="dust_ug_per_m3", invalidation_time_s=15):
+                 log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="dust_ug_per_m3",
+                 invalidation_time_s=DEFAULT_INVALIDATION_TIME_S):
         SensorComponent.__init__(self, enabled=enabled)
-        min_value = 0
-        max_value = 1000
-        self._dust_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, min_value, max_value,
-                                     max_measure_points, 100, invalidation_time_s, 100)
+        self._dust_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, self.__MIN_VALUE, self.__MAX_VALUE,
+                                     max_measure_points, self.__DEFAULT_VALUE, invalidation_time_s, 
+                                     max_delta=self.__MAX_DELTA, rounding_precision=0)
 
     def select_for_dust_logging(self):
         self._dust_impl.log_values = True
 
-    def get_dust(self) -> Optional[float]:
+    def get_dust(self) -> Optional[Quantity]:
         """ Returns dust in ug/m^3 """
-        return self.get_value_with_status(self._dust_impl)
-
+        value = self.get_value_with_status(self._dust_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "ug / m ** 3")
+        return None
     def _set_dust(self, value: Optional[float]):
         self._dust_impl.set_value(value)
 
@@ -344,22 +399,27 @@ class DustSensor(SensorComponent):
 
 class LightSensor(SensorComponent):
     """ Base class for all light sensors """
+    __MIN_VALUE = 0  # dark
+    __MAX_VALUE = 100000 # direct sunlight
+    __DEFAULT_VALUE = 10000
+    __MAX_DELTA = 0 # infinity
 
     def __init__(self, logging_enabled, max_measure_points=DEFAULT_MAX_MEASURE_POINTS, enabled=True, 
                 log_location_type=SENSOR_INTERIOR_TYPE, log_measure_type="light_lux", invalidation_time_s=15):
         SensorComponent.__init__(self, enabled=enabled)
-        min_value = 0  # dark
-        max_value = 100000  # direct sunlight
-        self._light_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, min_value, max_value,
-                                      max_measure_points, 10000, invalidation_time_s)
+        self._light_impl = SensorImpl(logging_enabled, log_location_type, log_measure_type, self.__MIN_VALUE, self.__MAX_VALUE,
+                                      max_measure_points, self.__DEFAULT_VALUE, invalidation_time_s,
+                                      max_delta=self.__MAX_DELTA, rounding_precision=1)
 
     def select_for_light_logging(self):
         self._light_impl.log_values = True
 
-    def get_light(self) -> Optional[float]:
+    def get_light(self) -> Optional[Quantity]:
         """ Returns light in lux """
-        return self.get_value_with_status(self._light_impl)
-
+        value = self.get_value_with_status(self._light_impl)
+        if value is not None:
+            return unit_reg.Quantity(value, "lux")
+        return None
     def _set_light(self, value: Optional[float]):
         self._light_impl.set_value(value)
 
@@ -489,14 +549,14 @@ class BMP280(TempSensor, BarometricSensor, CyclicComponent):
             # errors happen fairly often, keep going
             self._logger.error("BMP280: Can't read sensor - %s", str(error))
             return
-        altitude = self._settings.get_float(LAST_ALTITUDE_M_VALUE)
-        temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE_VALUE)
+        altitude = self._settings.get_float(LOCATION_ALTITUDE_M)
+        temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE)
         weather = self._comps.weather_info.get_current_weather()
         if weather:
             altitude = weather.altitude
             temp_outside = weather.temp
 
-        self._set_pressure(self._convert_abs_pres_to_asl(pressure, altitude, temp_outside))
+        self._set_pressure(self._convert_abs_pres_to_asl(pressure, altitude, temp_outside)) # type: ignore
         self._set_temperature(temperature)
 
         self._logger.debug("BMP280: Temp={0:0.1f}*C  Pressure={1}hPa".format(
@@ -508,7 +568,7 @@ class BME280(TempSensor, BarometricSensor, HumiditySensor, CyclicComponent):
     Implements access to the BME280 temperature/humidity/pressure sensor.
     """
     UPDATE_TIME = 5  # in seconds
-    MEASURE_POINTS = 2
+    MEASURE_POINTS = 5
 
     def __init__(self, components: ComponentRegistry, settings: Settings):
         log_values = bool(settings.get(LOG_SENSOR_DATA))
@@ -548,8 +608,8 @@ class BME280(TempSensor, BarometricSensor, HumiditySensor, CyclicComponent):
             return
 
         # change this to match the location's pressure (hPa) at sea level
-        altitude = self._settings.get_float(LAST_ALTITUDE_M_VALUE)
-        temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE_VALUE)
+        altitude = self._settings.get_float(LOCATION_ALTITUDE_M)
+        temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE)
         if Network().internet_connected:
             weather = self._comps.weather_info.get_current_weather()
             if weather:
@@ -571,8 +631,8 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
     Does not measure temperature, because it is very imprecise.
     """
     UPDATE_TIME = 3  # in seconds
-    MEASURE_POINTS = 3
-    STABILIZE_TIME_MINUTES = 3  # in minutes
+    MEASURE_POINTS = 5
+    STABILIZE_TIME_MINUTES = 1  # in minutes
 
     def __init__(self, settings: Settings):
         log_values = bool(settings.get(LOG_SENSOR_DATA))
@@ -697,7 +757,7 @@ class CCS811(CO2Sensor, TvocSensor, CyclicComponent):  # pylint: disable=invalid
         # wait for values to stabilize
         if temperature is None or humidity is None:
             return
-        while not 15 < temperature < 50:
+        while not 15 < temperature.m_as(unit_reg.degC) < 50:
             time.sleep(2)
 
         self._sensor_driver.set_environmental_data(int(humidity), float(temperature))
@@ -893,12 +953,13 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
         self._motion_detected -= 1
 
 
-class WAQDRemoteSensor(TempSensor, HumiditySensor):
+class WAQDRemoteSensor(TempSensor, HumiditySensor, BarometricSensor):
     """ Remote sensor via WAQD HTTP service """
 
     MEASURE_POINTS = 3
     EXTERIOR_MODE = 0
     INTERIOR_MODE = 1
+
 
     def __init__(self, settings: Settings, mode=EXTERIOR_MODE):
         log_values = bool(settings.get(LOG_SENSOR_DATA))
@@ -906,15 +967,18 @@ class WAQDRemoteSensor(TempSensor, HumiditySensor):
                             log_location_type=SENSOR_EXTERIOR_TYPE, invalidation_time_s=60)
         HumiditySensor.__init__(self, log_values, self.MEASURE_POINTS,
                                 log_location_type=SENSOR_EXTERIOR_TYPE, invalidation_time_s=60)
+        BarometricSensor.__init__(self, log_values, self.MEASURE_POINTS,
+                                log_location_type=SENSOR_EXTERIOR_TYPE, invalidation_time_s=60)
         self._disabled = True  # don't know if connected at startup
 
-    def read_callback(self, temperature, humidity):
+    def read_callback(self, temperature=None, humidity=None, pressure=None):
         """
         """
         self._disabled = False
 
         self._set_temperature(temperature)
         self._set_humidity(humidity)
+        self._set_pressure(pressure)
         self._logger.debug("WAQDExtTempSensor: Temp={0:0.1f}*C Humidity={1:0.1f}%".format(
             temperature, humidity))
 
@@ -956,6 +1020,6 @@ class WAQDRemoteStation(TempSensor, HumiditySensor, BarometricSensor, CO2Sensor,
         if (val := content.get("hum", "N/A")) not in ["None", "N/A"]:
             self._set_humidity(float(val))
         if (val := content.get("baro", "N/A")) not in ["None", "N/A"]:
-            self._set_pressure(float(val))
+            self._set_pressure(int(val))
         if (val := content.get("co2", "N/A")) not in ["None", "N/A"]:
             self._set_co2(float(val))
