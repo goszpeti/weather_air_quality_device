@@ -28,7 +28,6 @@ from typing import TYPE_CHECKING
 import argparse
 import logging
 import os
-import platform
 import sys
 import time
 import traceback
@@ -37,24 +36,21 @@ from typing import Optional
 from pint import UnitRegistry
 
 import waqd
-from waqd import INTRO_JINGLE, PROG_NAME
+from waqd import PROG_NAME
 from waqd import __version__ as WAQD_VERSION
 from waqd import base_path
-from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
 from waqd.settings import (DISP_TYPE_RPI,
                            DISP_TYPE_WAVESHARE_5_LCD,
-                           DISP_TYPE_WAVESHARE_EPAPER_2_9, DISPLAY_TYPE, FONT_NAME,
-                           FONT_SCALING,
-                           Settings)
+                           DISPLAY_TYPE, Settings)
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
     from waqd.ui.qt.main_window import QtBackChannel
     from waqd.base.component_ctrl import ComponentController
-    from PyQt5 import QtCore, QtWidgets
+    from PyQt5 import QtCore
     Qt = QtCore.Qt
 
 
