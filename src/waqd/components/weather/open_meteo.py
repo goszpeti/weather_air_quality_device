@@ -122,9 +122,18 @@ class OpenMeteo(Component):
                 self._get_icon_name(daily.get("weathercode", [])[i], True),
                 daily.get("windspeed_10m_max", [])[i],
                 daily.get("winddirection_10m_dominant", [])[i],
-                sunrise, sunset,
-                0, 0, 0, 0,
-                0, response.get("elevation", [])
+                sunrise,
+                sunset,
+                0,
+                0,
+                0,
+                0,
+                0,
+                response.get(
+                    "elevation",
+                    [],
+                ),
+                current_weather.get("precipitation_sum"),
             )
             daily_weather.temp_min = daily.get("temperature_2m_min", [])[i]
             daily_weather.temp_max = daily.get("temperature_2m_max", [])[i]
@@ -149,13 +158,15 @@ class OpenMeteo(Component):
             self._get_icon_name(current_weather.get("weathercode", ""), is_day),
             current_weather.get("windspeed", 0.0) * 3.6,  # km/h -> m/s
             current_weather.get("winddirection", 0.0),
-            sunrise, sunset,
+            sunrise,
+            sunset,
             1000.0,  # no data
             1000.0,  # no data, TODO get from hourly forecast
             0,  # TODO get from hourly forecast
             0.0,
             current_weather.get("temperature", 0.0),
-            response.get("elevation", 0)
+            response.get("elevation", 0),
+            current_weather.get("precipitation_sum"),
         )
 
         return self._current_weather
@@ -208,13 +219,15 @@ class OpenMeteo(Component):
                 self._get_icon_name(hourly.get("weathercode", [])[i], is_day),
                 hourly.get("windspeed_10m", [])[i],
                 hourly.get("winddirection_10m", [])[i],
-                current_weather.sunrise, current_weather.sunset,  # TODO use day
+                current_weather.sunrise,
+                current_weather.sunset,  # TODO use day
                 hourly.get("surface_pressure", [])[i],
                 hourly.get("pressure_msl", [])[i],
                 hourly.get("relativehumidity_2m", [])[i],
                 hourly.get("cloudcover", [])[i],
                 hourly.get("temperature_2m", [])[i],
-                current_weather.altitude
+                current_weather.altitude,
+                hourly.get("precipitation", [])[i],
             )
 
             if is_day:

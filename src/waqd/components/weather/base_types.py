@@ -73,10 +73,13 @@ class Weather():
     clouds: float  # percent cloudiness TODO deprecate
     temp: float  # degC
     altitude: float  # elevation of location in meters, deprecated, use from location instead
+    precipitation: float # mm, optional
 
     def __post_init__(self):
         if self.main:  # only set fetch_time if it is non-empty initiallized
             self.fetch_time = datetime.now()
+        if self.clouds > 65 and self.main.lower() == "clouds":
+            self.main = "heavy_clouds"
 
     def is_daytime(self):
         """
@@ -87,11 +90,6 @@ class Weather():
     def get_background_image(self):
         # set weather description specific background image
         online_weather_category = self.main.lower()
-        cloudiness = self.clouds
-
-        if cloudiness > 65 and online_weather_category == "clouds":
-            online_weather_category = "heavy_clouds"
-
         if self.is_daytime():
             bg_name = "bg_day_" + online_weather_category
         else:
@@ -157,6 +155,7 @@ class WeatherQuality(Enum):
     MIST = 10
     SAND = 11
     SMOKE = 12
+    HEAVY_CLOUDS = 12.5
     CLOUDS = 13
     CLEAR = 14
 

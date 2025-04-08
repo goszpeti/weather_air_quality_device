@@ -125,6 +125,7 @@ class Forecast(sub_ui.SubUi):
 
         disp_date = get_localized_date(
             current_date_time + datetime.timedelta(days=1), self._settings)
+        # TODO App crash - was deleted option screen
         self._ui.forecast_d1_title.setText(disp_date)
 
         disp_date = get_localized_date(

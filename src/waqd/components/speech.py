@@ -57,7 +57,7 @@ class TextToSpeach(Component):
         text = self.get_tts_string(key, self._lang)
         self.say(text.format(*format_args), self._lang)
 
-    def say(self, text="", lang=LANG_ENGLISH):
+    def say(self, text="", lang=LANG_ENGLISH, filename=""):
         """
         User function for TTS.
         :param lang: switches between official GTTS languages.
@@ -66,7 +66,7 @@ class TextToSpeach(Component):
             return
 
         self._tts_thread = Thread(
-            name="google_TTS", target=self._call_tts, args=(text, lang,)
+            name="google_TTS", target=self._call_tts, args=(text, lang, filename,)
         )
         self._tts_thread.start()
 
@@ -76,7 +76,7 @@ class TextToSpeach(Component):
             while self._tts_thread.is_alive():
                 time.sleep(1)
 
-    def _call_tts(self, text, lang):
+    def _call_tts(self, text, lang, filename):
         """
         Download tts as mp3 and play with VLC. Blocks execution. To be used in a separate thread.
         """
@@ -84,16 +84,18 @@ class TextToSpeach(Component):
         if lang in LANGS_MAP:
             lang = LANGS_MAP.get(lang, "")
         try:
-            # remove most likeable pitfalls. Is not comprehensive!
-            normalized_text = text.replace(' ', '_').replace(
+            if not filename:
+                # remove most likeable pitfalls. Is not comprehensive!
+                normalized_text = text.replace(' ', '_').replace(
                 '.', '_').replace('/', '').replace(',', '_').strip()
-            audio_file = self._save_dir / f"{normalized_text}_{lang}.mp3"
+                filename = normalized_text[0:30]
+            audio_file = self._save_dir / f"{filename}_{lang}.mp3"
             # only download, if file does not exist
-            if not audio_file.is_file():
+            if filename or not audio_file.is_file():
                 Network().wait_for_internet()
                 gtts = gTTS(text, lang=lang)
                 gtts.save(audio_file)
-            if self._comps:
+            if self._comps: # Play sound
                 self._comps.sound.play(audio_file)
             self._logger.debug("Speech: Finished: %s", text)
         except Exception as error:

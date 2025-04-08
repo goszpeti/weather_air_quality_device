@@ -126,7 +126,7 @@ class ComponentRegistry():
             if reload_intended and component.reload_forbidden:
                 return
             self._components.pop(name)
-            self._logger.info("ComponentRegistry: Stopping" + name)
+            self._logger.info("ComponentRegistry: Stopping " + name)
             component.stop()
             # call destructors
             del component

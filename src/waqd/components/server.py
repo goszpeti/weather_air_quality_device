@@ -16,8 +16,8 @@ from plotly.graph_objs import Scattergl
 from plotly.io import to_html
 import waqd.app as app
 from waqd.base.component import Component
-from waqd.base.web_session import LoginPlugin
-from waqd.base.authentification import UserAuth, validate_password, validate_username
+from waqd.ui.web.web_session import LoginPlugin
+from waqd.ui.web.authentification import UserAuth, validate_password, validate_username
 from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.system import RuntimeSystem
 from waqd.settings import LOCATION, LOCATION_LATITUDE, LOCATION_LONGITUDE, OW_API_KEY, OW_CITY_IDS, Settings
@@ -141,12 +141,17 @@ class BottleServer(Component):
         from paste import httpserver
         self._ready = True
         self._server = httpserver.serve(self._app, host='0.0.0.0', port='80',
-                                        daemon_threads=True, start_loop=True, use_threadpool=True)
+                                        daemon_threads=True, start_loop=False, use_threadpool=True)
+        self._server.serve_forever()
 
     def stop(self):
         # must stop, because wlan captive portal would block port 80?
         if self._server:
             self._server.server_close()
+        try:
+            self._run_thread.join(0)
+        except:
+            pass
 
 # HTML display endpoints
 
@@ -215,7 +220,7 @@ class BottleServer(Component):
             return "<p>Please enter a location!</p>"
         try:
             loc_name, longitude, latitude = self.parse_location(new_location_id)
-            self._settings.set(LOCATION, loc_name)
+            self._settings.set(LOCATION, loc_name) # TODO Ingolstadt, Bavaria
             self._settings.set(LOCATION_LONGITUDE, longitude)
             self._settings.set(LOCATION_LATITUDE, latitude)
 

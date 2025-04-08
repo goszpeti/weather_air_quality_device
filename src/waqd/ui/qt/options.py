@@ -495,7 +495,7 @@ class OptionMainUi(QDialog):
         msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
         # shutdown server, so port 80 is free for captive portal
-        self._comps.stop_component_instance(self._comps.server)  # should start autom. after options closes
+        self._comps.stop_component_instance(self._comps.get("BottleServer"))  # should start autom. after options closes
         msg.setIcon(QMessageBox.Information)
         disp_str = Translation().get_localized_string(
             "ui_dict", "wlan_portal_help", self._settings.get_string(LANG))

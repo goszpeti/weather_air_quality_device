@@ -62,15 +62,14 @@ if TYPE_CHECKING:
 
 # singleton with access to all backend components
 comp_ctrl: Optional["ComponentController"] = None
-# translator for qt app translation singleton
-translator: Optional["QtCore.QTranslator"] = None
-# for built-in Qt strings
-base_translator: Optional["QtCore.QTranslator"] = None
 # for global access to units
 unit_reg = UnitRegistry()
 # to send back data form backend to gui, if the gui loaded
 qt_backchannel: Optional["QtBackChannel"] = None
-
+# translator for qt app translation singleton
+translator: Optional["QtCore.QTranslator"] = None
+# for built-in Qt strings
+base_translator: Optional["QtCore.QTranslator"] = None
 
 def main(settings_path: Optional[Path] = None):
     """
@@ -117,12 +116,11 @@ def main(settings_path: Optional[Path] = None):
         if waqd.HEADLESS_MODE:
             comp_ctrl._stop_event.wait()
         elif display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
+            from waqd.ui.qt.startup import qt_app_setup, qt_loading_sequence
             qt_app = qt_app_setup(settings)
             # main_ui must be held in this context, otherwise the gc will destroy the gui
             qt_loading_sequence(comp_ctrl, settings)
             qt_app.exec()
-        elif display_type == DISP_TYPE_WAVESHARE_EPAPER_2_9:
-            pass
     except Exception:
         trace_back = traceback.format_exc()
         Logger().error("Application crashed: \n%s", trace_back)
@@ -185,85 +183,6 @@ def setup_unit_reg():
     unit_reg.define('percent = 1e-2 frac = %')
     unit_reg.define('ppm = 1e-6 fraction')
     unit_reg.define('ppb = 1e-9 fraction')
-
-
-def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
-    """
-    Set up all Qt application specific attributes, which can't be changed later on
-    Returns qt_app object.
-    """
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    Qt = QtCore.Qt
-    if platform.system() == "Windows":
-        # Workaround for Windows, so that on the taskbar the
-        # correct icon will be shown (and not the default python icon).
-        from PyQt5.QtWinExtras import QtWin
-        MY_APP_ID = 'ConanAppLauncher.' + WAQD_VERSION
-        QtWin.setCurrentProcessExplicitAppUserModelID(MY_APP_ID)
-
-    # apply Qt attributes (only at init possible)
-    QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
-
-    # set up global Qt Application instance
-    qt_app = QtWidgets.QApplication([])
-    # set icon
-    icon_path = get_asset_file("gui_base", "icon")
-    qt_app.setWindowIcon(QtGui.QIcon(str(icon_path)))
-    from waqd.ui.qt.common import set_ui_language
-
-    # install translator
-    set_ui_language(qt_app, settings)
-    from waqd.ui.qt.theming import activate_theme
-    activate_theme(settings.get_float(FONT_SCALING), settings.get_string(FONT_NAME))
-
-    return qt_app
-
-
-def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
-    """
-    Load modules with watchdog and display Splashscreen until loading is finished.
-    """
-    # init speech module - this takes a while, so the output will be effectively heard,
-    # when the splash screen is already loading. It is a non-blocking call.
-
-    # start init for all components
-    from PyQt5 import QtCore, QtWidgets
-    from waqd.ui.qt.main_window import WeatherMainUi
-    from waqd.ui.qt.widgets.fader_widget import FaderWidget
-    from waqd.ui.qt.widgets.splashscreen import SplashScreen
-    # show splash screen
-    splash_screen = SplashScreen()
-    splash_screen.show()
-
-    # wait for finishing loading - processEvents is needed for animations to work (loader)
-    loading_minimum_time_s = 5
-    start = time.time()
-    if INTRO_JINGLE:
-        comp_ctrl.components.sound.play(get_asset_file("sounds", "pera__introgui.wav"))
-    while not comp_ctrl.all_ready:
-        QtWidgets.QApplication.processEvents()
-
-    # start gui init in separate qt thread
-    app_main_ui = WeatherMainUi(comp_ctrl, settings)
-
-    if RuntimeSystem().is_target_system:  # only remove titlebar on RPi
-        app_main_ui.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
-    thread = QtCore.QThread(app_main_ui)
-    thread.started.connect(app_main_ui.init_gui)
-    thread.start()
-    while (not app_main_ui.ready) \
-        or (time.time() < start + loading_minimum_time_s) \
-            and waqd.DEBUG_LEVEL <= 3:
-        QtWidgets.QApplication.processEvents()
-
-    # splash screen can be disabled - with fader
-    app_main_ui.show()
-    fade_length = 1  # second
-    fader_widget = FaderWidget(  # pylint: disable=unused-variable
-        splash_screen, app_main_ui, length=fade_length*1000)
-    splash_screen.finish(app_main_ui)
-    return app_main_ui
 
 
 def crash_hook(exctype, excvalue, tb):
