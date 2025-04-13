@@ -1,22 +1,4 @@
-#
-# Copyright (c) 2019-2021 Péter Gosztolya & Contributors.
-#
-# This file is part of WAQD
-# (see https://github.com/goszpeti/WeatherAirQualityDevice).
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
+
 """
 This module contains all high abstraction classes of sensors, which internally
 periodically call get a value (or use callbacks).
@@ -918,9 +900,9 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
         """ Cleanup GPIO """
         if self._disabled:
             return
-        self._sensor_driver.setmode(self._sensor_driver.BCM)
-        self._sensor_driver.remove_event_detect(self._pin)
-        self._sensor_driver.cleanup()
+        # self._sensor_driver.setmode(self._sensor_driver.BCM)
+        # self._sensor_driver.remove_event_detect(self._pin)
+        # self._sensor_driver.cleanup()
 
     @property
     def motion_detected(self) -> bool:
@@ -930,19 +912,24 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
     def _register_callback(self):
         """ Initializer function, register the wake-up function to the configured pin."""
         try:
-            import RPi.GPIO as GPIO  # type: ignore
-            self._sensor_driver = GPIO
-            self._sensor_driver.cleanup()
-            self._sensor_driver.setmode(self._sensor_driver.BCM)
-            self._sensor_driver.setup(self._pin, self._sensor_driver.IN)
-            self._sensor_driver.add_event_detect(self._pin, self._sensor_driver.RISING,
-                                                 callback=self._wake_up_from_sensor,
-                                                 bouncetime=self.BOUNCE_TIME * 1000)
+            from gpiozero import MotionSensor
+
+            self._sensor_driver = MotionSensor(self._pin)
+            self._sensor_driver.when_activated = self._wake_up_from_sensor
+
+            # import RPi.GPIO as GPIO  # type: ignore
+            # self._sensor_driver = GPIO
+            # self._sensor_driver.cleanup()
+            # self._sensor_driver.setmode(self._sensor_driver.BCM)
+            # self._sensor_driver.setup(self._pin, self._sensor_driver.IN)
+            # self._sensor_driver.add_event_detect(self._pin, self._sensor_driver.RISING,
+            #                                      callback=self._wake_up_from_sensor,
+            #                                      bouncetime=self.BOUNCE_TIME * 1000)
         except Exception as error:
             self._disabled = True
             self._logger.error("MotionDetector: sensor cannot be initialized: %s", str(error))
 
-    def _wake_up_from_sensor(self, callback):  # pylint: disable=unused-argument
+    def _wake_up_from_sensor(self):  # pylint: disable=unused-argument
         """
         Callback function, when pin is high.
         Counting up and waiting is used to smooth out detection.
