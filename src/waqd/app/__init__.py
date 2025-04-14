@@ -6,10 +6,10 @@ Sets up cmd arguments, settings and starts the gui
 """
 
 
+import os
 from typing import TYPE_CHECKING
 import argparse
 import logging
-import os
 import sys
 import time
 import traceback
@@ -49,7 +49,7 @@ translator: Optional["QtCore.QTranslator"] = None
 # for built-in Qt strings
 base_translator: Optional["QtCore.QTranslator"] = None
 
-def main(settings_path: Optional[Path] = None):
+def basic_setup(settings_path: Optional[Path] = None):
     """
     Main function, calling setup, loading components and safe shutdown.
     :param settings_path: Only used for testing to load a settings file.
@@ -82,28 +82,31 @@ def main(settings_path: Optional[Path] = None):
     if waqd.MIGRATE_SENSOR_LOGS:
         from waqd.base.file_logger import SensorFileLogger
         SensorFileLogger.migrate_txts_to_db()
-        return
+        return None, None
     global comp_ctrl
     comp_ctrl = ComponentController(settings)
     if waqd.DEBUG_LEVEL > 1:  # disable startup sound
         comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
-    comp_ctrl.init_all()
+    return comp_ctrl, settings
+
+
+def main(settings_path: Optional[Path] = None):
+    comp_ctrl, settings = basic_setup(settings_path)
+    if not comp_ctrl or not settings:
+        return
     # Load the selected GUI mode
     display_type = settings.get(DISPLAY_TYPE)
     try:
         if waqd.HEADLESS_MODE:
             if waqd.DEBUG_LEVEL >= 4:
-                import uvicorn
-                uvicorn.run(
-                    "waqd.ui.web2.src.main:app",
-                    #ludic_app,
-                    host="0.0.0.0",
-                    port=8080,
-                    reload=True,
-                )
+                from waqd.ui.web2 import start_web_ui, start_web_server
+                start_web_ui()
+                start_web_server(waqd.DEBUG_LEVEL>0)
+            comp_ctrl.init_all()
             comp_ctrl._stop_event.wait()
 
         elif display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
+            comp_ctrl.init_all()
             from waqd.ui.qt.startup import qt_app_setup, qt_loading_sequence
             qt_app = qt_app_setup(settings)
             # main_ui must be held in this context, otherwise the gc will destroy the gui

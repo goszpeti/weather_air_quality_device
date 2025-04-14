@@ -91,7 +91,6 @@ class ComponentController():
             if self._stop_event.is_set():
                 self._stop_event.clear()
                 return
-            # self._components.watch_all()
             self._watch_components()
 
     def _watch_components(self):
