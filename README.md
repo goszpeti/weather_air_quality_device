@@ -103,6 +103,10 @@ Use virtualenv:
 
     python3 -m venv python
 
+## Instal with dev mode
+
+  pip install -e .[dev,test]
+
 ## Performance Profiling
 
 https://github.com/dfeneyrou/palanteer/releases

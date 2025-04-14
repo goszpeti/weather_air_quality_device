@@ -23,3 +23,5 @@ src/waqd/assets/weather_icons/*_white.svg
 user_db.json
 *.mp3
 crash.log
+
+template/*

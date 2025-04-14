@@ -1,0 +1,160 @@
+[project]
+name = "waqd"
+authors = [{name = "Péter Gosztolya and Contributors"}]
+version = "3.0.0a0"
+requires-python = ">=3.11"
+description =  'Weather Air Quality Device - base package'
+license = {'file'="LICENSE"}
+classifiers = [
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Environment :: X11 Applications :: Qt",
+    "Environment :: Win32 (MS Windows)"
+]
+dependencies = [
+"wheel",  # for pep 517 legacy setup.py mode
+    # Backend
+    "htmlmin==0.1.12",  # BSD License - HTML minifier (removes comments and whitespace)
+    "js.jquery==3.6.1",  # BSD License - Offline jquery resource and helper
+    "plotly==5.10.0",  # MIT License - web graph plotting
+    "influxdb-client==1.30.0",  # MIT License - influxdb API
+    "bcrypt>=4.0.0, <5.0.0",  # Apache License, Version 2.0 - Password hashing
+    "DebugPy<=2.0.0",  # MS VSCode debugger for dynamic debugging
+    "JsonSchema==4.16.0",  # MIT License - for events json schema validation
+    "Bottle==0.12.23",  # MIT License - webserver for remote sensors
+    "Jinja2==3.1.2",
+    "paste==3.5.0",  # server backend for bottle
+    "pint==0.19.2",  # BSD 3-clause style license - physical units for sensors
+    "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
+    "APScheduler==3.9.1",  # MIT License - Scheduler for Events function
+    "PyGithub==1.55",  # LGPL - Access to GitHub in AutoUpdater
+    "File-Read-Backwards==2.0.0",  # MIT License - for performance in DetailView
+    # Sound
+    "gTTS==2.2.4",  # MIT License -Google TTS for speech
+    "Python-VLC==3.0.16120",  # LGPLv2+ - use VLC for playing sounds
+    # HW
+    "RPi-Backlight==2.4.1",  # MIT License
+    "Adafruit-Blinka==7.1.1",  # For all other Adafruit drivers
+    # "Adafruit-PlatformDetect==2.4.0",  # MIT License - target and model detection - up to 3.10 not working with BMP280
+    "Adafruit-CircuitPython-DHT==3.7.1",  # MIT License - temp/hum sensor
+    "Adafruit-CircuitPython-CCS811==1.3.4",  # MIT License - co2/tvoc sensor
+    "Adafruit-CircuitPython-BME280==2.6.10",  # MIT License - temp/hum/baro sensor
+    "Adafruit-CircuitPython-BMP280==3.2.15",  # MIT License - temp/baro sensor
+    "Adafruit-Circuitpython-BH1750==1.0.7",  # MIT License - light sensor
+    "Adafruit-Circuitpython-ADS1x15==2.2.8",  # MIT License - currently only this ADC is used for analog sensors
+    # QT Widgets
+    "QtWidgets==1.1",  # MIT License - for touch friendly Toggle Switch
+    "PyQtSpinner==2.0.0",  # MIT License - a loading Spinner
+    "QtPy==2.3.0",  # # MIT License - needed by QtWidgets
+    # UI
+    "PyQt5>=5.15.0; platform_system == 'Windows'",  # GPLv3 - Must be compiled on RPi (takes an eternity) - so use system libs
+    "PyQtChart>=5.15.0; platform_system == 'Windows'",  # GPLv3 - for DetailView
+    "MH-Z19==3.1.3; platform_machine=='x86_64'",  # MIT License
+
+    "python_fasthtml==0.12.12",
+
+]
+
+readme = "README.md"
+
+[project.urls]
+repository = "https://github.com/goszpeti/WeatherAirQualityDevice"
+issues = "https://github.com/goszpeti/WeatherAirQualityDevice/issues"
+
+# Build dependencies and configs
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
+include = ["waqd"]  # package names should match these glob patterns (["*"] by default)
+namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
+
+[tool.setuptools.package-data]
+"waqd" = ["**/*.pyi", "**/*.html", "**/*.ini", "**assets/**/*.*", "**/*.in", "ui/**/*.ui", "ui/**/*.in", "ui/web/**/*.*", "ui/qt/**/*.qm"]
+
+[project.gui-scripts]
+waqd = "waqd.__main__:main"
+
+# Test dependencies and configs
+
+[project.optional-dependencies]
+dev = [
+    "rope", # refactoring
+    "debugpy", # Qt thread debugging
+]
+test = [
+    "pytest==8.3.3",
+    "pytest-cov==5.0.0",
+    "pytest-mock==3.14.0",
+    "pytest-qt==4.4.0",
+    "psutil==6.1.1",
+    "pytest-check==2.4.1",
+]
+
+[tool.pytest.ini_options]
+minversion = "5.15"
+testpaths = [
+    "test",
+]
+qt_api="pyqt5"
+markers = [
+]
+
+# Development configs
+
+[tool.ruff]
+line-length=96
+target-version = "py38"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle
+    "F",  # pyflakes
+    "LOG", # flake8-logging
+    "G", # lake8-logging-format
+]
+
+# Coverage configs
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ["conan_explorer"]
+
+[tool.coverage.paths]
+source = [
+   "src", "*/site-packages"
+]
+
+[tool.coverage.report]
+precision = 2
+# Regexes for lines to exclude from consideration
+exclude_also = [
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+    ]
+
+ignore_errors = true
