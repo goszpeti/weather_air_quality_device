@@ -474,7 +474,7 @@ class OptionMainUi(QDialog):
         msg.setWindowFlags(Qt.WindowType(Qt.CustomizeWindowHint))
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Reset Password")
-        from waqd.base.authentification import DEFAULT_USERNAME, bcrypt
+        from waqd.ui.web.authentification import DEFAULT_USERNAME, bcrypt
 
         new_pw = bcrypt.gensalt(4).decode("utf-8")[18:]
         # self._settings.set(USER_DEFAULT_PW, new_pw) TODO unsafe

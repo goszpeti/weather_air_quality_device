@@ -96,6 +96,7 @@ test = [
     "pytest-qt==4.4.0",
     "psutil==6.1.1",
     "pytest-check==2.4.1",
+    "freezegun==1.5.1",
 ]
 
 [tool.pytest.ini_options]

@@ -1,0 +1,55 @@
+:root { --pico-font-size: 100%; 
+ --pico-typography-spacing-vertical: 1.5rem;
+    --pico-form-element-spacing-vertical: 1rem;
+    --pico-form-element-spacing-horizontal: 1.25rem;
+
+}
+.svg-white {
+    filter: invert(99%) sepia(99%) saturate(18%) hue-rotate(235deg) brightness(104%) contrast(100%);
+}
+
+
+@media (min-width: 1024px) {
+    body>header.is-fixed-above-lg {
+        z-index:2;
+        position: sticky;
+        top: 0;
+        -webkit-backdrop-filter: blur(1rem);
+        backdrop-filter: blur(1rem);
+        background-color: var(--pico-header-background);
+        transition: border-top-color .4s ease-in-out,box-shadow .4s ease-in-out
+    }
+
+    body>header.is-fixed-above-lg.is-fixed {
+        border-bottom-color: var(--pico-header-border-color);
+        box-shadow: var(--pico-card-box-shadow)
+    }
+}
+
+body>header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+/* The Modal (background) */
+.modal {
+    /* display: none; */
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}

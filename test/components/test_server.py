@@ -7,7 +7,7 @@ from waqd.components import Server
 from waqd.base.component_reg import ComponentRegistry
 from waqd.settings import SERVER_ENABLED
 from waqd.settings.settings import Settings
-from waqd.base.authentification import DEFAULT_USERNAME, UserAuth, validate_username, validate_password
+from waqd.ui.web.authentification import DEFAULT_USERNAME, UserAuth, validate_username, validate_password
 
 
 def test_location_parser():
