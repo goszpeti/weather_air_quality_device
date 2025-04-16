@@ -48,6 +48,7 @@ def get(request):
                         # ,Button("≣", href="#", style="display:none;")
                     )
                 ),
+                id="nav-container",
                 cls="container",
             ),
             cls="is-fixed-above-lg is-fixed",
@@ -71,7 +72,7 @@ def get(request):
                     hx_target="this",
                 ),
                 Card(
-                    H1("Forecast"),
+                    forecast_widget(),
                     id="weather_forecast",
                     # hx_trigger="every 5min",
                     # hx_swap="innerHTML",
@@ -83,48 +84,56 @@ def get(request):
         ),
         Footer(
             Div(
-                H1("Footer"),
-                P("This is the footer content."),
-                cls="bg-gray-800 text-white p-4",
+                H4("(c) 2025 Péter Gosztolya and contributors.", style="color: white"),
             ),
             cls="container",
         ),
+        style="background: linear-gradient(175deg, rgba(103, 154, 199, 1) 0%, rgba(232, 159, 166, 1) 100%);",
     )
 
 def exterior_widget():
     values = SensorRetrieval()._get_exterior_sensor_values(units=True)
     current_weather = SensorRetrieval()._comps.weather_info.get_current_weather()
-    icon_rel_path = "weather_icons/wi-na.svg"  # default N/A
+    icon_rel_path = Path("weather_icons/wi-na.svg")  # default N/A
     if current_weather:
         icon_rel_path = current_weather.get_icon().relative_to(waqd.assets_path)
+        img = current_weather.get_background_image().relative_to(waqd.assets_path)
     return (
         H1("Exterior"),
-        Div(
-            Img(cls="svg-white", src=f"{icon_rel_path}", style="height: 200px"),
-            id="weather_overall",
-        ),
         LongUnderline(),
-        Div(
-            Img(
-                cls="svg-white",
-                src="weather_icons/wi-thermometer_full.svg",
-                style="width: 100px",
+        Card(
+            Div(
+                Img(cls="svg-white", src=f"{icon_rel_path.as_posix()}", style="height: 180px"),
+                Span("5°/15°", cls="weather_card_text_big"),
+                id="weather_overall",
+                cls="row",
             ),
-            Span(values["temp"]),
-            Button(
-                "Details",
-                hx_get=dialog,
-                hx_target="body",
-                hx_swap="beforeend",
+            Div(
+                Img(
+                    cls="svg-white",
+                    src="weather_icons/wi-thermometer_full.svg",
+                    style="width: 100px",
+                ),
+                Span(values["temp"], cls="weather_card_text"),
+                # Button(
+                #     "Details",
+                #     hx_get=dialog,
+                #     hx_target="body",
+                #     hx_swap="beforeend",
+                #     style="margin: 10px",
+                #     cls="secondary",
+                # ),
+                id="temp_ext_value",
+                cls="row",
+                # style="",
             ),
-            id="temp_ext_value",
-            cls="row",
-        ),
-        Div(
-            Img(cls="svg-white", src="weather_icons/wi-humidity.svg", style="width: 100px"),
-            Span(values["hum"]),
-            id="humidity_ext_value",
-            cls="row",
+            Div(
+                Img(cls="svg-white", src="weather_icons/wi-humidity.svg", style="width: 100px"),
+                Span(values["hum"], cls="weather_card_text"),
+                id="humidity_ext_value",
+                cls="row",
+            ),
+            style=f"background-image: url({img.as_posix()})",
         ),
     )
 
@@ -139,20 +148,59 @@ def interior_widget():
                 src="weather_icons/wi-thermometer_full.svg",
                 style="width: 100px",
             ),
-            Span(values["temp"]),
+            Span(values["temp"], cls="weather_card_text"),
             id="temp_int_value",
             cls="row",
         ),
         Div(
             Img(cls="svg-white", src="weather_icons/wi-humidity.svg", style="width: 100px"),
-            Span(values["hum"]),
+            Span(values["hum"], cls="weather_card_text"),
             id="humidity_int_value",
             cls="row",
         ),
         Div(
             Img(src="general_icons/co2.svg", style="width: 100px"),
-            Span(values["co2"]),
+            Span(values["co2"], cls="weather_card_text"),
             id="humidity_int_value",
+            cls="row",
+        ),
+    )
+
+def forecast_widget():
+    return (
+        H1("Forecast"),
+        LongUnderline(),
+        Span("Sat 16.04"),
+        Div(
+            Img(
+                cls="svg-white",
+                src="weather_icons/wi-cloud.svg",
+                style="width: 100px",
+            ),
+            Span("5°/15°", cls="weather_card_text_small"),
+            id="forecast_value",
+            cls="row",
+        ),
+        Span("Sun 17.04"),
+        Div(
+            Img(
+                cls="svg-white",
+                src="weather_icons/wi-cloud.svg",
+                style="width: 100px",
+            ),
+            Span("5°/15°", cls="weather_card_text_small"),
+            id="forecast_value",
+            cls="row",
+        ),
+        Span("Mon 18.04"),
+        Div(
+            Img(
+                cls="svg-white",
+                src="weather_icons/wi-cloud.svg",
+                style="width: 100px",
+            ),
+            Span("5°/15°", cls="weather_card_text_small"),
+            id="forecast_value",
             cls="row",
         ),
     )

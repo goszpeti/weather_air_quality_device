@@ -5,7 +5,7 @@ def LongUnderline():
     return (
         Hr(
             style={
-                "width": "50%",
+                "width": "90%",
                 "height": "2px",
                 "border-width": "0",
                 "margin-bottom": "20px",
