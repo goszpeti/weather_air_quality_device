@@ -1,35 +1,42 @@
 
-from calendar import c
+from functools import partial
+from pathlib import Path
 import waqd.app as base_app
 import waqd
-from waqd.ui.web2.route_collector import add_routes
-from fasthtml.common import Link, Style, fast_app
 
-custom_theme_css = Link(rel="stylesheet", href="/css/custom_theme.css", type="text/css")
+from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 
-web_app, rt = fast_app(
-    static_path=str(waqd.assets_path),
-    pico=True,
-    hdrs=(
-        custom_theme_css,
-        Link(
-            rel="preload",
-            href="font/Franzo-E4GA.woff",
-            type="font/woff2",
-            crossorigin="anonymous",
-            _as="font",
-        ),
-        Style("""
-@font-face {
-font-family: MyFranzo;
-src: url('font/Franzo-E4GA.woff');}"""),
-    ),
+from fastapi.middleware.gzip import GZipMiddleware
 
-    bodykw={"data-theme": "dark"},
+from htmlmin.main import minify
+from .templates import simple_template
+
+extra_minify = partial(minify, remove_comments=True, remove_empty_space=True)
+current_path = Path(__file__).parent.resolve()
+
+web_app = FastAPI(
+    title="Waqd Web UI",
+    description="Web UI for Waqd",
+    version=waqd.__version__,
+    debug=waqd.DEBUG_LEVEL > 0,
+    # openapi_url=None,
 )
+web_app.mount("/static", StaticFiles(directory=str(waqd.assets_path)), name="static")
+web_app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
 
-# custom_theme_css,
-web_app = add_routes(web_app)
+@web_app.get("/",response_class=HTMLResponse)
+async def root(request: Request):
+    # tpl = (request, simple_template("waqd.html", {}))
+    content = simple_template("waqd.html", {})
+    tpl = simple_template("index.html", {"content": content})
+    return HTMLResponse(content=tpl, status_code=200)
+
+def render_spa(request, content: str):
+    tpl = simple_template("index.html", {"content": content})
+    return HTMLResponse(content=extra_minify(tpl), status_code=200)
+
 
 if base_app.comp_ctrl is None:
     base_app.basic_setup()

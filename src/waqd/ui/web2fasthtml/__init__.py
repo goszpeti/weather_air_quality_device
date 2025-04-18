@@ -9,9 +9,9 @@ def start_web_server(reload=False):
         host="localhost", # 0.0.0.0
         port=8080,
         reload=reload,
-        reload_excludes=[
-        "*.html",
-        "*.css",]
+        # reload_excludes=[
+        # "*.py",
+        # "*.pyc",]
     )
 
 def start_web_ui():

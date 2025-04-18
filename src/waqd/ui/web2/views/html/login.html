@@ -1,0 +1,84 @@
+<html><head>
+<!-- <script src="https://cdn.tailwindcss.com"></script> -->
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<!-- <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" /> -->
+<style>
+    /* Cannot be in stylesheet - set font here, so no pop-in happens*/
+    @font-face {
+        font-family: MyFranzo;
+        src: url('static/font/Franzo-E4GA.woff');
+    }
+:root:has(input.theme-controller[value=mytheme]:checked),[data-theme="mytheme"] { /* mytheme is the name of the custom theme */
+  color-scheme: "dark";
+  --color-base-100: oklch(54% 0.245 262.881);
+  --color-base-200: oklch(88% 0.059 254.128);
+  --color-base-300: oklch(48% 0.243 264.376);
+  --color-base-content: oklch(100% 0 0);
+  --color-primary: oklch(85.661% 0.144 198.645);
+  --color-primary-content: oklch(40.124% 0.068 197.603);
+  --color-secondary: oklch(60.682% 0.108 309.782);
+  --color-secondary-content: oklch(96% 0.016 293.756);
+  --color-accent: oklch(93.426% 0.102 94.555);
+  --color-accent-content: oklch(18.685% 0.02 94.555);
+  --color-neutral: oklch(27% 0.146 265.522);
+  --color-neutral-content: oklch(80% 0.146 265.522);
+  --color-info: oklch(54.615% 0.215 262.88);
+  --color-info-content: oklch(90.923% 0.043 262.88);
+  --color-success: oklch(62.705% 0.169 149.213);
+  --color-success-content: oklch(12.541% 0.033 149.213);
+  --color-warning: oklch(66.584% 0.157 58.318);
+  --color-warning-content: oklch(27% 0.077 45.635);
+  --color-error: oklch(73.95% 0.19 27.33);
+  --color-error-content: oklch(14.79% 0.038 27.33);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+</style>
+
+</head>
+<body><div id="login" class="block">
+    <div class="p-4">
+<div class="p-4">
+    <button class="btn btn-primary">primary</button>
+    <button class="btn btn-secondary">secondary</button>
+    <button class="btn btn-accent">accent</button>
+</div>
+
+<!-- same buttons with another theme! -->
+<div class="p-4" data-theme="abyss">
+    <button class="btn btn-primary">Primary</button>
+    <button class="btn btn-secondary">Secondary</button>
+    <button class="btn btn-accent">Accent</button>
+</div>
+<div class="p-4" data-theme="mytheme">
+    <button class="btn btn-primary">Primary</button>
+    <button class="btn btn-secondary">Secondary</button>
+    <button class="btn btn-accent">Accent</button>
+</div>
+    </div>
+    <form id="login_form" action="/login" method="post">
+        <h1>Username</h1>
+        <div id="username_row" class="row" ,="" style="margin-top:-20px;margin-bottom:30px;">
+            <span><input name="username" type="text" style="width: 95%;"></span>
+        </div>
+        <h1>Password</h1>
+        <div id="password_row" class="row" ,="" style="margin-top:-20px;">
+            <span><input name="password" type="password" style="width: 95%;" required="">
+            </span>
+        </div>
+        <div id="login_button_row" class="row">
+            <span><input value="Login" type="submit" class="btn btn-primary"></span>
+        </div>
+    </form>
+</div>
+<div class="card">Button</div>
+<button class="btn w-64 rounded-full">Button</button>
+
+</body></html>
