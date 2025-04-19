@@ -6,13 +6,14 @@
     <html lang="en">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" , charset="utf-8">
-    <!-- <script src="script/jquery.min.js"></script> -->
     <link rel="preload" href="static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
-    <script src="static/css/tailwindcss.js"></script>
-    <link href="static/css/daisyui5_full.css" rel="stylesheet" type="text/css" />
-    <link href="static/css/custom_theme.css" rel="stylesheet" type="text/css" />
+    <!-- <link href="static/css/daisyui5_full.css" rel="stylesheet" type="text/css" /> -->
+    <!-- <script src="static/css/tailwindcss.js"></script> -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+     -->
+    <link href="static/css/output.css" rel="stylesheet" type="text/css" />
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
     <style>
         /* Cannot be in stylesheet - set font here, so no pop-in happens*/
         @font-face {
@@ -40,88 +41,51 @@
         <div class="navbar bg-base-100 shadow-sm">
             <div class="navbar-start">
                 <div class="dropdown">
-                    <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
-                        </svg>
+                    <div tabindex="0" role="button" class="btn btn-ghost lg:hidden ">
+                        <img src="static/general_icons/menu.svg" class="h-8 w-8">
                     </div>
-                    <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                    <ul tabindex="0" 
+                        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
                         <li><a>Item 1</a></li>
                         <li>
-                            <a>Parent</a>
+                            <a>Account</a>
                             <ul class="p-2">
-                                <li><a>Submenu 1</a></li>
-                                <li><a>Submenu 2</a></li>
+                                <li><a>Profile</a></li>
+                                <li><a>Logout</a></li>
                             </ul>
                         </li>
                         <li><a>Item 3</a></li>
                     </ul>
                 </div>
-                <a class="btn btn-ghost text-xl">daisyUI</a>
+                <a class="btn btn-ghost text-3xl font-bold underline">WAQD</a>
             </div>
-            <div class="navbar-center hidden lg:flex">
+            <div class="navbar-center hidden md:flex">
+
+            </div>
+            <div class="navbar-end hidden md:flex">
                 <ul class="menu menu-horizontal px-1">
-                    <li><a>Item 1</a></li>
+                    <li><a>Settings</a></li>
                     <li>
                         <details>
-                            <summary>Parent</summary>
-                            <ul class="p-2">
-                                <li><a>Submenu 1</a></li>
-                                <li><a>Submenu 2</a></li>
+                            <summary>Account</summary>
+                            <ul class="bg-base-100 rounded-t-none p-2 z-40">
+                                <li><a>Profile</a></li>
+                                <li><a>Logout</a></li>
                             </ul>
                         </details>
                     </li>
-                    <li><a>Item 3</a></li>
-                </ul>
-            </div>
-            <div class="navbar-end">
-                <a class="btn">Button</a>
-            </div>
-        </div>
-        <div class="drawer z=9999 fixed" id="navbar">
-            <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
-            <div class="drawer-content flex flex-col">
-                <!-- Navbar -->
-                <div class="navbar bg-base-300 w-full shadow-sm">
-                    <div class="flex-none lg:hidden">
-                        <label for="my-drawer-3" aria-label="open sidebar" class="btn btn-square btn-ghost">
-                            <img src="static/general_icons/menu.svg" class="svg-white h-24 w-24">
-                        </label>
-                    </div>
-                    <div class="mx-2 flex-1 px-2 text-3xl font-bold underline">WAQD</div>
-                    <div id="sidebar" class="hidden flex-none lg:block">
-                        <ul class="menu menu-horizontal px-1">
-                            <li><a>Link</a></li>
-                            <li>
-                                <details>
-                                    <summary>Account</summary>
-                                    <ul class="bg-base-100 rounded-t-none p-2 z-40">
-                                        <li><a>Profile</a></li>
-                                        <li><a>Logout</a></li>
-                                    </ul>
-                                </details>
-                            </li>
-                            <li>
-                                <a>
-                                    <img src="static/general_icons/wifi-full.svg" class="h-5 w-5">
-                                </a>
-                            </li>
-                            <li><span id="clock"></span></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="drawer-side">
-                <label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
-                <ul class="menu bg-base-200 min-h-full w-80 p-4 z-40">
-                    <li><a>Sidebar Item 1</a></li>
-                    <li><a>Sidebar Item 2</a></li>
+                    <li>
+                        <a>
+                            <img src="static/general_icons/wifi-full.svg" class="h-5 w-5">
+                        </a>
+                    </li>
+                    <li><span id="clock"></span></li>
                 </ul>
             </div>
         </div>
     </header>
-    <main class="container md:mx-auto">
+    
+    <main class="py-6 px-2">
         {{content}}
     </main>
 </body>
