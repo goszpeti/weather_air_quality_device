@@ -1,0 +1,34 @@
+<!-- need raw for htmx json substitution to work -->
+{% raw %}
+<template id="Interior-template">
+    <div class="stat">
+        <div class="stat-title">Temperature</div>
+        <div class="stat-value" id="weather_int">{{temp}}</div>
+        <div class="stat-figure">
+            <svg viewBox="0 0 24 24" class="h-18 -mb-2 -mt-2">
+                <use href="static/weather_icons/wi-thermometer_full.svg#Layer_1" fill="white" />
+            </svg>
+        </div>
+    </div>
+    <div class="stat">
+        <div class="stat-title">Humidity</div>
+        <div class="stat-value">{{hum}}</div>
+        <div class="stat-desc"></div>
+        <div class="stat-figure">
+            <svg viewBox="0 0 24 24" class="h-18 -mb-2 -mt-2">
+                <use href="static/weather_icons/wi-humidity.svg#Layer_1" fill="white" />
+            </svg>
+        </div>
+    </div>
+    <div class="stat">
+        <div class="stat-title">CO2</div>
+        <div class="stat-value">{{co2}}</div>
+        <div class="stat-desc"></div>
+        <div class="stat-figure">
+            <svg viewBox="0 0 26 26" class="h-18 -mb-2 -mt-2">
+                <use href="static/general_icons/aq_indoor.svg#main" fill="white" />
+            </svg>
+        </div>
+    </div>
+</template>
+{% endraw %}

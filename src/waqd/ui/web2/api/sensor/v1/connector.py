@@ -8,7 +8,6 @@ from waqd.ui import format_unit_disp_value
 
 
 class SensorRetrieval:
-
     def __init__(self) -> None:
         self._comps = base_app.comp_ctrl.components
 
@@ -27,10 +26,13 @@ class SensorRetrieval:
         else:
             temp = self._format_sensor_disp_value(temp)
             hum = self._format_sensor_disp_value(hum, "")
-        data: SensorApi_0_1 = {"api_ver": "0.1",
-                                "temp": temp, "hum": hum,
-                                "baro": "N/A", "co2": "N/A"
-                                }
+        data: SensorApi_0_1 = {
+            "api_ver": "0.1",
+            "temp": temp,
+            "hum": hum,
+            "baro": "N/A",
+            "co2": "N/A",
+        }
         return data
 
     def _format_sensor_disp_value(self, quantity: Quantity, unit=None, precision=1):
@@ -52,8 +54,11 @@ class SensorRetrieval:
             hum = self._format_sensor_disp_value(hum, "", 0)
             pres = self._format_sensor_disp_value(pres, "", 0)
             co2 = self._format_sensor_disp_value(co2, "", 0)
-        data: SensorApi_0_1 = {"api_ver": "0.1",
-                            "temp": temp_disp, "hum": hum,
-                            "baro": pres, "co2": co2
-                            }
+        data: SensorApi_0_1 = {
+            "api_ver": "0.1",
+            "temp": temp_disp,
+            "hum": hum,
+            "baro": pres,
+            "co2": co2,
+        }
         return data

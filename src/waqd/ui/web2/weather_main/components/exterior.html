@@ -1,0 +1,38 @@
+<!-- need raw for htmx json substitution to work -->
+{% raw %}
+<template id="Exterior-template">
+    <!-- <article style="background-image: url(static/weather_bgrs/cloudy_night_bg.jpg)" -->
+    <!-- class="rounded-[2vw] object-contain"> -->
+    <div class="stat">
+        <div class="stat-title">Temperature</div>
+        <div class="stat-value" id="weather_int">{{temp}}</div>
+        <div class="stat-figure">
+            <svg viewBox="0 0 24 24" class="h-18 -mb-2 -mt-2">
+                <use href="static/weather_icons/wi-thermometer_full.svg#Layer_1" fill="white" />
+            </svg>
+        </div>
+
+    </div>
+    <div class="stat">
+        <div class="stat-title">Humidity</div>
+        <div class="stat-value">{{hum}}</div>
+        <div class="stat-desc"></div>
+        <div class="stat-figure">
+            <svg viewBox="0 0 24 24" class="h-18 -mb-2 -mt-2">
+                <use href="static/weather_icons/wi-humidity.svg#Layer_1" fill="white" />
+            </svg>
+        </div>
+    </div>
+    <div class="stat">
+        <div class="stat-title">Barometer</div>
+        <div class="stat-value">{{baro}}</div>
+        <div class="stat-desc"></div>
+        <div class="stat-figure">
+            <svg viewBox="0 0 24 24" class="h-18 -mb-2 -mt-2">
+                <use href="static/weather_icons/wi-barometer.svg#Layer_1" fill="white" />
+            </svg>
+        </div>
+    </div>
+    <!-- </article> -->
+</template>
+{% endraw %}

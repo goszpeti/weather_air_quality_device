@@ -1,5 +1,6 @@
-<!DOCTYPE html >
+<!DOCTYPE html>
 <html lang="en" data-theme="mytheme">
+
 <head>
   <title>WAQD</title>
   <html lang="en">
@@ -25,7 +26,8 @@
 <script> // clock
   window.onload = (function () {
     function updateClock(clock) {
-      clock.innerHTML = new Date().toLocaleTimeString();
+      const lang = navigator.language || navigator.languages[0];
+      clock.innerHTML = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' });
     }
     setInterval(function () {
       var clockElement = document.getElementById("clock");
@@ -40,12 +42,12 @@
     <div class="navbar bg-base-100 shadow-sm">
       <div class="navbar-start">
         <div class="dropdown">
-          <!-- btn-ghost does not work... -->
           <div tabindex="0" role="button" class="btn btn-ghost btn-ghost2 md:hidden ">
-            <img src="static/general_icons/menu.svg" class="h-8 w-8">
+            <svg viewBox="0 0 24 24" class="h-8">
+              <use href="static/general_icons/menu.svg#main" fill="white" />
+            </svg>
           </div>
-          <ul tabindex="0"
-            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+          <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
             <li><a>Item 1</a></li>
             <li>
               <a>Account</a>
@@ -77,21 +79,22 @@
           </li>
           <li>
             <a>
-              <img src="static/general_icons/wifi-full.svg" class="h-5 w-5">
+              <svg viewBox="0 0 24 24" class="h-5">
+                <use href="static/general_icons/wifi-full.svg#main" fill="white" />
+              </svg>
             </a>
           </li>
-          <li><span id="clock"></span></li>
         </ul>
+        <span id="clock" class="p-4"></span>
       </div>
     </div>
   </header>
 
-  <main class="py-6 px-2" hx-ext="client-side-templates">
+  <main class="py-2 px-2" hx-ext="client-side-templates">
     {{content}}
   </main>
 </body>
-<footer
-  class="footer sm:footer-horizontal footer-center bg-secondary text-base-content p-4 space-y-8">
+<footer class="footer sm:footer-horizontal footer-center bg-secondary text-base-content p-4 space-y-8">
   <aside>
     <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
   </aside>

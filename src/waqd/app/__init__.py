@@ -1,10 +1,7 @@
-
-
 """
 Entry module of WAQD
 Sets up cmd arguments, settings and starts the gui
 """
-
 
 import os
 from typing import TYPE_CHECKING
@@ -24,15 +21,14 @@ from waqd import base_path
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import (DISP_TYPE_RPI,
-                           DISP_TYPE_WAVESHARE_5_LCD,
-                           DISPLAY_TYPE, Settings)
+from waqd.settings import DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD, DISPLAY_TYPE, Settings
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
     from waqd.ui.qt.main_window import QtBackChannel
     from waqd.base.component_ctrl import ComponentController
     from PyQt5 import QtCore
+
     Qt = QtCore.Qt
 
 
@@ -48,6 +44,7 @@ qt_backchannel: Optional["QtBackChannel"] = None
 translator: Optional["QtCore.QTranslator"] = None
 # for built-in Qt strings
 base_translator: Optional["QtCore.QTranslator"] = None
+
 
 def basic_setup(settings_path: Optional[Path] = None):
     """
@@ -81,6 +78,7 @@ def basic_setup(settings_path: Optional[Path] = None):
 
     if waqd.MIGRATE_SENSOR_LOGS:
         from waqd.base.file_logger import SensorFileLogger
+
         SensorFileLogger.migrate_txts_to_db()
         return None, None
     global comp_ctrl
@@ -98,16 +96,18 @@ def main(settings_path: Optional[Path] = None):
     display_type = settings.get(DISPLAY_TYPE)
     try:
         if waqd.HEADLESS_MODE:
+            comp_ctrl.init_all()
             if waqd.DEBUG_LEVEL >= 4:
                 from waqd.ui.web2 import start_web_ui, start_web_server
+
                 start_web_ui()
-                start_web_server(waqd.DEBUG_LEVEL>0)
-            comp_ctrl.init_all()
+                start_web_server(waqd.DEBUG_LEVEL > 0)
             comp_ctrl._stop_event.wait()
 
         elif display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
             comp_ctrl.init_all()
             from waqd.ui.qt.startup import qt_app_setup, qt_loading_sequence
+
             qt_app = qt_app_setup(settings)
             # main_ui must be held in this context, otherwise the gc will destroy the gui
             qt_loading_sequence(comp_ctrl, settings)
@@ -121,7 +121,7 @@ def main(settings_path: Optional[Path] = None):
     if comp_ctrl:
         comp_ctrl.unload_all()
         while not comp_ctrl.all_unloaded:
-            time.sleep(.1)
+            time.sleep(0.1)
 
 
 def parse_cmd_args():
@@ -129,12 +129,12 @@ def parse_cmd_args():
     All CLI related functions.
     """
     parser = argparse.ArgumentParser(
-        prog=PROG_NAME, description=f"{PROG_NAME} command line interface")
-    parser.add_argument("-v", "--version", action="version",
-                        version=WAQD_VERSION)
-    parser.add_argument("-H", "--headless", action='store_true')
+        prog=PROG_NAME, description=f"{PROG_NAME} command line interface"
+    )
+    parser.add_argument("-v", "--version", action="version", version=WAQD_VERSION)
+    parser.add_argument("-H", "--headless", action="store_true")
     parser.add_argument("-D", "--debug_level", type=int, default=waqd.DEBUG_LEVEL)
-    parser.add_argument("-M", "--migrate_sensor_logs", action='store_true')
+    parser.add_argument("-M", "--migrate_sensor_logs", action="store_true")
 
     args = parser.parse_args()
     waqd.DEBUG_LEVEL = args.debug_level
@@ -148,10 +148,11 @@ def parse_cmd_args():
 
 
 def start_remote_debug():
-    """ Start remote debugging from level 2 and wait on it from level 3"""
+    """Start remote debugging from level 2 and wait on it from level 3"""
     runtime_system = RuntimeSystem()
     if waqd.DEBUG_LEVEL > 1 and runtime_system.is_target_system:
         import debugpy  # pylint: disable=import-outside-toplevel
+
         port = 3003
         debugpy.listen(("0.0.0.0", port))
         if waqd.DEBUG_LEVEL > 2:
@@ -160,20 +161,22 @@ def start_remote_debug():
 
 
 def setup_on_non_target_system():
-    """ Must be able to load on desktop systems """
+    """Must be able to load on desktop systems"""
     mockup_path = base_path.parent.parent / "test" / "mock"
     sys.path = [str(mockup_path)] + sys.path
     os.environ["PYTHONPATH"] = str(mockup_path)  # for mh-z19
     waqd.user_config_dir = base_path.parent
-    logging.getLogger("root").info("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
+    logging.getLogger("root").info(
+        "System: Using mockups from %s" % str(mockup_path)
+    )  # don't use logger yet
 
 
 def setup_unit_reg():
-    """ Setup custom units """
-    unit_reg.define('fraction = [] = frac')
-    unit_reg.define('percent = 1e-2 frac = %')
-    unit_reg.define('ppm = 1e-6 fraction')
-    unit_reg.define('ppb = 1e-9 fraction')
+    """Setup custom units"""
+    unit_reg.define("fraction = [] = frac")
+    unit_reg.define("percent = 1e-2 frac = %")
+    unit_reg.define("ppm = 1e-6 fraction")
+    unit_reg.define("ppb = 1e-9 fraction")
 
 
 def crash_hook(exctype, excvalue, tb):

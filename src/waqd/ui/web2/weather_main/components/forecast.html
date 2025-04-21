@@ -1,0 +1,51 @@
+<template id="Forecast-template">
+    {% for i in [0,1,2] %}
+    <div class="stat -m-2 -mt-4">
+        <div class="stat-title pt-2 pl-2 tracking-wide text-sm">Sat 16.04</span>
+            <div class="stat-value -mt-4 -mb-4">
+                <div class="grid grid-cols-[55%_20%_20%] grid-rows-2 items-center">
+                    <div class="row-span-2">
+                        <svg viewBox="0 0 24 24" class="-m-2 h-26">
+                            <use href="static/weather_icons/wi-cloud.svg#Layer_1" fill="white" />
+                        </svg>
+                    </div>
+                    <div class="col-start-2 row-start-1">
+                        <svg viewBox="0 0 24 24" class="-m-1 h-12">
+                            <use href="static/weather_icons/wi-day-sunny.svg#Layer_1" fill="white" />
+                        </svg>
+                    </div>
+                    <div class="col-start-3 row-start-1 text-xl ml-2 text-white">5°/15°
+                    </div>
+                    <div class="col-start-2 row-start-2">
+                        <svg viewBox="0 0 24 24" class="-m-1 h-12">
+                            <use href="static/weather_icons/wi-night-clear.svg#Layer_1" fill="white" />
+                        </svg>
+                    </div>
+                    <div class="col-start-3 row-start-2 text-xl ml-2  text-white">0°/1°</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <span class="pt-2 pl-2 tracking-wide">Sat 16.04</span>
+    <div
+        class="grid grid-cols-[55%_20%_20%] grid-rows-2 items-center -mt-2 -mb-2 border-dashed border-b-1 border-accent">
+        <div class="row-span-2">
+            <svg viewBox="0 0 24 24" class="-m-2 h-26 pl-4">
+                <use href="static/weather_icons/wi-cloud.svg#Layer_1" fill="white" />
+            </svg>
+        </div>
+        <div class="col-start-2 row-start-1">
+            <svg viewBox="0 0 24 24" class="-m-1 h-12">
+                <use href="static/weather_icons/wi-day-sunny.svg#Layer_1" fill="white" />
+            </svg>
+        </div>
+        <div class="col-start-3 row-start-1 text-xl ml-2">5°/15°
+        </div>
+        <div class="col-start-2 row-start-2">
+            <img class="object-fill invert -m-1" src="static/weather_icons/wi-night-clear.svg" />
+        </div>
+        <div class="col-start-3 row-start-2 text-xl ml-2">0°/1°</div>
+    </div> -->
+    {% endfor %}
+</template>

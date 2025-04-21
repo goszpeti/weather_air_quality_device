@@ -1,54 +1,27 @@
-<div class="@container grid grid-cols-1 sm:grid-cols-3 place-items-center">
-    <div class="card card-border bg-base-100 shadow-sm w-72">
-      {{interior_card}}
-    </div>
-    <div class="card-border card bg-base-100 shadow-sm w-72">
-      <div class="card-body">
-        <h2 class="text-3xl font-bold">Exterior</h2>
-        <div class="divider divider-accent"></div>
-        <article style="background-image: url(static/weather_bgrs/cloudy_night_bg.jpg)"
-          class="rounded-[2vw]">
-          <div id="temp_int_value" class="flex flex-row">
-            <img src="static/weather_icons/wi-night-alt-cloudy.svg" class="svg-white"
-              style="width: 100px">
-            <span class="content-center text-xl">25.6 °C</span>
-          </div>
-          <div id="humidity_int_value" class="flex flex-row">
-            <img src="static/weather_icons/wi-thermometer_full.svg" class="svg-white"
-              style="width: 100px">
-            <span class="content-center text-xl">17.2 °C</span>
-          </div>
-          <div id="humidity_int_value" class="flex flex-row">
-            <img src="static/general_icons/co2.svg" style="width: 100px">
-            <span class="content-center text-xl">71 %</span>
-          </div>
-        </article>
-        <div class="card-actions justify-end">
-        </div>
-      </div>
-    </div>
-    <div class="card-border card bg-base-100 shadow-sm w-72">
-      <div class="card-body">
-        <h2 class="text-3xl font-bold">Forecast</h2>
-        <div class="divider divider-accent"></div>
-
-        <div id="temp_int_value" class="flex flex-row">
-          <img src="static/weather_icons/wi-thermometer_full.svg" class="svg-white"
-            style="width: 100px">
-          <span class="content-center text-xl">25.6 °C</span>
-        </div>
-        <div id="static/humidity_int_value" class="flex flex-row">
-          <img src="static/weather_icons/wi-humidity.svg" class="svg-white" style="width: 100px">
-          <span class="content-center text-xl">43%</span>
-        </div>
-        <div id="humidity_int_value" class="flex flex-row">
-          <img src="static/general_icons/co2.svg" style="width: 100px">
-          <span class="content-center text-xl">900 ppm</span>
+<div class="grid grid-cols-1 sm:grid-cols-3 place-items-center items-start gap-2 ">
+  {% for card in cards %}
+  <div class="card card-border bg-base-100 image-full shadow-sm min-h-0.5 -space-y-2">
+    <figure class="object-cover">
+      <img src="{{card.background}}" />
+    </figure>
+    <div class="card-body">
+      <div class="flex space-x-4 justify-between items-center-safe">
+        <h2 class="text-3xl font-bold">{{card.name}}</h2>
+        <div class="tooltip " data-tip="Toggle updating values">
+          <button name="refresh" hx-trigger="load, click" hx-get="{{card.endpoint}}" hx-swap="innerHTML"
+            nunjucks-template="{{card.name}}-template" hx-target="#{{card.name}}-stats">
+            <svg viewBox="0 0 24 24" class="btn swap-on w-14 glass">
+              <use href="static/general_icons/refresh.svg#main" fill="white" />
+            </svg>
+          </button>
         </div>
 
-        <div class="card-actions justify-end">
-        </div>
+      </div>
+      <div class="divider divider-accent m-0"></div>
+      <div class="stats stats-vertical shadow p-0 m-0 overflow-hidden -mt-2 glass" id="{{card.name}}-stats">
       </div>
     </div>
+  </div>
+  {{card.content}}
+  {% endfor %}
 </div>
-

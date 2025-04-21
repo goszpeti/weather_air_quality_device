@@ -11,7 +11,6 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import RedirectResponse
 
 
-from .templates import simple_template
 from .api.sensor.v1.routes import rt as sensor_v1_router
 from .weather_main.routes import rt as weather_router
 
