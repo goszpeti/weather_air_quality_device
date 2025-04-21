@@ -21,6 +21,10 @@ html {
     --text-xl--line-height: calc(1.75 / 1.25);
     --text-3xl: 1.875rem;
     --text-3xl--line-height: calc(2.25 / 1.875);
+    --text-4xl: 2.25rem;
+    --text-4xl--line-height: calc(2.5 / 2.25);
+    --text-5xl: 3rem;
+    --text-5xl--line-height: 1;
     --font-weight-bold: 700;
     --tracking-wide: 0.025em;
     --default-font-family: var(--font-sans);
@@ -1133,6 +1137,9 @@ html {
   .mt-3 {
     margin-top: calc(var(--spacing) * 3);
   }
+  .mt-auto {
+    margin-top: auto;
+  }
   .-mb-2 {
     margin-bottom: calc(var(--spacing) * -2);
   }
@@ -1245,6 +1252,9 @@ html {
   .h-26 {
     height: calc(var(--spacing) * 26);
   }
+  .h-max {
+    height: max-content;
+  }
   .min-h-0\.5 {
     min-height: calc(var(--spacing) * 0.5);
   }
@@ -1338,6 +1348,15 @@ html {
       margin-inline-start: calc(calc(var(--spacing) * 4) * var(--tw-space-x-reverse));
       margin-inline-end: calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-x-reverse)));
     }
+  }
+  .self-stretch {
+    align-self: stretch;
+  }
+  .justify-self-center {
+    justify-self: center;
+  }
+  .justify-self-stretch {
+    justify-self: stretch;
   }
   .overflow-hidden {
     overflow: hidden;
@@ -1440,6 +1459,14 @@ html {
   .text-3xl {
     font-size: var(--text-3xl);
     line-height: var(--tw-leading, var(--text-3xl--line-height));
+  }
+  .text-4xl {
+    font-size: var(--text-4xl);
+    line-height: var(--tw-leading, var(--text-4xl--line-height));
+  }
+  .text-5xl {
+    font-size: var(--text-5xl);
+    line-height: var(--tw-leading, var(--text-5xl--line-height));
   }
   .text-sm {
     font-size: var(--text-sm);

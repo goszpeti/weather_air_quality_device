@@ -1,9 +1,9 @@
-<div class="grid grid-cols-1 sm:grid-cols-3 place-items-center items-start gap-2 ">
+<div class="grid grid-cols-1 sm:grid-cols-3 place-items-center items-start gap-2">
   {% for card in cards %}
-  <div class="card card-border bg-base-100 image-full shadow-sm min-h-0.5 -space-y-2">
-    <figure class="object-cover">
+  <div class="card card-border bg-base-100 image-full shadow-sm self-stretch -space-y-2">
+    <!-- <figure class="object-cover">
       <img src="{{card.background}}" />
-    </figure>
+    </figure> -->
     <div class="card-body">
       <div class="flex space-x-4 justify-between items-center-safe">
         <h2 class="text-3xl font-bold">{{card.name}}</h2>

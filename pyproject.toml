@@ -55,7 +55,7 @@ dependencies = [
     "PyQtChart>=5.15.0; platform_system == 'Windows'",  # GPLv3 - for DetailView
     "MH-Z19==3.1.3; platform_machine=='x86_64'",  # MIT License
 
-    "python_fasthtml==0.12.12",
+    "fastapi[standard]",
 
 ]
 
@@ -88,6 +88,7 @@ waqd = "waqd.__main__:main"
 dev = [
     "rope", # refactoring
     "debugpy", # Qt thread debugging
+    "pytailwindcss", # for tailwindcss support
 ]
 test = [
     "pytest==8.3.3",
