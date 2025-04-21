@@ -7,27 +7,24 @@ html {
   filter: invert(99%) sepia(99%) saturate(18%) hue-rotate(235deg) brightness(104%) contrast(100%);
 }
 
-@import "tailwindcss";
-@source "./src/**/*.{html}";
-@plugin "daisyui" {
+@import "tailwindcss" source(none);
+@source "../../**/*.{html}";
+@plugin "./daisyui.js" {
   themes: light --default, dark --prefersdark;
   root: ":root";
-  include: ;
-  exclude: ;
-  prefix: ;
-  logs: true;
+
 }
-@plugin "daisyui/theme" {
+@plugin "./daisyui-theme.js" {
   name: "mytheme";
   color-scheme: "dark";
   font-family: MyFranzo;
   --color-base-100: oklch(0.53 0.1254 242.05);
   --color-base-200: oklch(0.65 0.0805 248.58);
-  --color-base-300: oklch(0.77 0.084 11.67);
+  --color-base-300: oklch(90% 0.043 272.88);
   --color-base-content: oklch(100% 0 0);
   --color-primary: oklch(85.661% 0.144 198.645);
   --color-primary-content: oklch(40.124% 0.068 197.603);
-  --color-secondary: oklch(60.682% 0.108 309.782);
+  --color-secondary: oklch(0.77 0.084 11.67);
   --color-secondary-content: oklch(96% 0.016 293.756);
   --color-accent: oklch(96% 0.016 293.756);
   --color-accent-content: oklch(18.685% 0.02 94.555);

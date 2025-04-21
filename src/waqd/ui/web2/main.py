@@ -1,4 +1,3 @@
-
 from functools import partial
 from pathlib import Path
 import waqd.app as base_app
@@ -9,11 +8,13 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import RedirectResponse
 
-from htmlmin.main import minify
+
 from .templates import simple_template
+from .api.sensor.v1.routes import rt as sensor_v1_router
+from .weather_main.routes import rt as weather_router
 
-extra_minify = partial(minify, remove_comments=True, remove_empty_space=True)
 current_path = Path(__file__).parent.resolve()
 
 web_app = FastAPI(
@@ -25,19 +26,13 @@ web_app = FastAPI(
 )
 web_app.mount("/static", StaticFiles(directory=str(waqd.assets_path)), name="static")
 web_app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
+web_app.include_router(sensor_v1_router)
+web_app.include_router(weather_router)
 
-@web_app.get("/",response_class=HTMLResponse)
+
+@web_app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-    # tpl = (request, simple_template("waqd.html", {}))
-    content = simple_template("waqd.html", {})
-    tpl = simple_template("index.html", {"content": content})
-    return HTMLResponse(content=tpl, status_code=200)
-
-def render_spa(request, content: str):
-    tpl = simple_template("index.html", {"content": content})
-    return HTMLResponse(content=extra_minify(tpl), status_code=200)
-
+    return RedirectResponse(url="/weather")
 
 if base_app.comp_ctrl is None:
     base_app.basic_setup()
-

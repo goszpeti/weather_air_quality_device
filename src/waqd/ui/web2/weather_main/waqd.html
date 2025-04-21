@@ -1,0 +1,54 @@
+<div class="@container grid grid-cols-1 sm:grid-cols-3 place-items-center">
+    <div class="card card-border bg-base-100 shadow-sm w-72">
+      {{interior_card}}
+    </div>
+    <div class="card-border card bg-base-100 shadow-sm w-72">
+      <div class="card-body">
+        <h2 class="text-3xl font-bold">Exterior</h2>
+        <div class="divider divider-accent"></div>
+        <article style="background-image: url(static/weather_bgrs/cloudy_night_bg.jpg)"
+          class="rounded-[2vw]">
+          <div id="temp_int_value" class="flex flex-row">
+            <img src="static/weather_icons/wi-night-alt-cloudy.svg" class="svg-white"
+              style="width: 100px">
+            <span class="content-center text-xl">25.6 °C</span>
+          </div>
+          <div id="humidity_int_value" class="flex flex-row">
+            <img src="static/weather_icons/wi-thermometer_full.svg" class="svg-white"
+              style="width: 100px">
+            <span class="content-center text-xl">17.2 °C</span>
+          </div>
+          <div id="humidity_int_value" class="flex flex-row">
+            <img src="static/general_icons/co2.svg" style="width: 100px">
+            <span class="content-center text-xl">71 %</span>
+          </div>
+        </article>
+        <div class="card-actions justify-end">
+        </div>
+      </div>
+    </div>
+    <div class="card-border card bg-base-100 shadow-sm w-72">
+      <div class="card-body">
+        <h2 class="text-3xl font-bold">Forecast</h2>
+        <div class="divider divider-accent"></div>
+
+        <div id="temp_int_value" class="flex flex-row">
+          <img src="static/weather_icons/wi-thermometer_full.svg" class="svg-white"
+            style="width: 100px">
+          <span class="content-center text-xl">25.6 °C</span>
+        </div>
+        <div id="static/humidity_int_value" class="flex flex-row">
+          <img src="static/weather_icons/wi-humidity.svg" class="svg-white" style="width: 100px">
+          <span class="content-center text-xl">43%</span>
+        </div>
+        <div id="humidity_int_value" class="flex flex-row">
+          <img src="static/general_icons/co2.svg" style="width: 100px">
+          <span class="content-center text-xl">900 ppm</span>
+        </div>
+
+        <div class="card-actions justify-end">
+        </div>
+      </div>
+    </div>
+</div>
+
