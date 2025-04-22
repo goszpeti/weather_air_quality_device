@@ -5,7 +5,7 @@
   <title>WAQD</title>
   <html lang="en">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" , charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.9" , charset="utf-8">
   <link rel="preload" href="static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
   <link href="static/css/output.css" rel="stylesheet" type="text/css" />
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
@@ -37,9 +37,9 @@
   }());
 </script>
 
-<body>
+<body class="overflow-hidden">
   <header>
-    <div class="navbar bg-base-100 shadow-sm">
+    <div class="navbar bg-base-100 shadow-sm rounded-b p-0 text-3xl">
       <div class="navbar-start">
         <div class="dropdown">
           <div tabindex="0" role="button" class="btn btn-ghost btn-ghost2 md:hidden ">
@@ -66,7 +66,7 @@
 
       </div>
       <div class="navbar-end hidden md:flex">
-        <ul class="menu menu-horizontal px-1">
+        <ul class="menu menu-horizontal px-1 text-xl">
           <li><a>Settings</a></li>
           <li>
             <details>
@@ -79,7 +79,7 @@
           </li>
           <li>
             <a>
-              <svg viewBox="0 0 24 24" class="h-5">
+              <svg viewBox="0 0 24 24" class="h-8">
                 <use href="static/general_icons/wifi-full.svg#main" fill="white" />
               </svg>
             </a>
@@ -90,14 +90,13 @@
     </div>
   </header>
 
-  <main class="py-2 px-2" hx-ext="client-side-templates">
+  <main class="py-2 px-2 md:px-0 md:py-0 lg:px-2 lg:py-2" hx-ext="client-side-templates">
     {{content}}
   </main>
+
 </body>
-<footer class="footer sm:footer-horizontal footer-center bg-secondary text-base-content p-4 space-y-8">
-  <aside>
-    <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
-  </aside>
+<footer class="footer sm:invisible lg:visible footer-center bg-secondary text-base-content p-4 space-y-8">
+  <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
 </footer>
 
 </html>

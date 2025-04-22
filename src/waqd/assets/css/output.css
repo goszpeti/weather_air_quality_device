@@ -25,8 +25,12 @@ html {
     --text-4xl--line-height: calc(2.5 / 2.25);
     --text-5xl: 3rem;
     --text-5xl--line-height: 1;
+    --text-6xl: 3.75rem;
+    --text-6xl--line-height: 1;
     --font-weight-bold: 700;
     --tracking-wide: 0.025em;
+    --tracking-wider: 0.05em;
+    --tracking-widest: 0.1em;
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
   }
@@ -1122,6 +1126,9 @@ html {
   .-m-2 {
     margin: calc(var(--spacing) * -2);
   }
+  .-m-4 {
+    margin: calc(var(--spacing) * -4);
+  }
   .m-0 {
     margin: calc(var(--spacing) * 0);
   }
@@ -1136,9 +1143,6 @@ html {
   }
   .mt-3 {
     margin-top: calc(var(--spacing) * 3);
-  }
-  .mt-auto {
-    margin-top: auto;
   }
   .-mb-2 {
     margin-bottom: calc(var(--spacing) * -2);
@@ -1246,23 +1250,8 @@ html {
   .h-18 {
     height: calc(var(--spacing) * 18);
   }
-  .h-20 {
-    height: calc(var(--spacing) * 20);
-  }
   .h-26 {
     height: calc(var(--spacing) * 26);
-  }
-  .h-max {
-    height: max-content;
-  }
-  .min-h-0\.5 {
-    min-height: calc(var(--spacing) * 0.5);
-  }
-  .w-8 {
-    width: calc(var(--spacing) * 8);
-  }
-  .w-10 {
-    width: calc(var(--spacing) * 10);
   }
   .w-14 {
     width: calc(var(--spacing) * 14);
@@ -1325,9 +1314,6 @@ html {
   .justify-between {
     justify-content: space-between;
   }
-  .gap-2 {
-    gap: calc(var(--spacing) * 2);
-  }
   .-space-y-2 {
     :where(& > :not(:last-child)) {
       --tw-space-y-reverse: 0;
@@ -1351,12 +1337,6 @@ html {
   }
   .self-stretch {
     align-self: stretch;
-  }
-  .justify-self-center {
-    justify-self: center;
-  }
-  .justify-self-stretch {
-    justify-self: stretch;
   }
   .overflow-hidden {
     overflow: hidden;
@@ -1385,6 +1365,10 @@ html {
   .rounded-t-none {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+  }
+  .rounded-b {
+    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
   }
   .border {
     border-style: var(--tw-border-style);
@@ -1422,9 +1406,6 @@ html {
   }
   .object-contain {
     object-fit: contain;
-  }
-  .object-cover {
-    object-fit: cover;
   }
   .object-fill {
     object-fit: fill;
@@ -1468,6 +1449,10 @@ html {
     font-size: var(--text-5xl);
     line-height: var(--tw-leading, var(--text-5xl--line-height));
   }
+  .text-6xl {
+    font-size: var(--text-6xl);
+    line-height: var(--tw-leading, var(--text-6xl--line-height));
+  }
   .text-sm {
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
@@ -1483,6 +1468,14 @@ html {
   .tracking-wide {
     --tw-tracking: var(--tracking-wide);
     letter-spacing: var(--tracking-wide);
+  }
+  .tracking-wider {
+    --tw-tracking: var(--tracking-wider);
+    letter-spacing: var(--tracking-wider);
+  }
+  .tracking-widest {
+    --tw-tracking: var(--tracking-widest);
+    letter-spacing: var(--tracking-widest);
   }
   .text-base-content {
     color: var(--color-base-content);
@@ -1522,17 +1515,19 @@ html {
     --btn-color: var(--color-secondary);
     --btn-fg: var(--color-secondary-content);
   }
-  .sm\:footer-horizontal {
+  .sm\:invisible {
     @media (width >= 40rem) {
-      grid-auto-flow: column;
-      &.footer-center {
-        grid-auto-flow: row dense;
-      }
+      visibility: hidden;
     }
   }
   .sm\:grid-cols-3 {
     @media (width >= 40rem) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .md\:invisible {
+    @media (width >= 48rem) {
+      visibility: hidden;
     }
   }
   .md\:flex {
@@ -1543,6 +1538,41 @@ html {
   .md\:hidden {
     @media (width >= 48rem) {
       display: none;
+    }
+  }
+  .md\:px-0 {
+    @media (width >= 48rem) {
+      padding-inline: calc(var(--spacing) * 0);
+    }
+  }
+  .md\:py-0 {
+    @media (width >= 48rem) {
+      padding-block: calc(var(--spacing) * 0);
+    }
+  }
+  .lg\:visible {
+    @media (width >= 64rem) {
+      visibility: visible;
+    }
+  }
+  .lg\:place-items-center {
+    @media (width >= 64rem) {
+      place-items: center;
+    }
+  }
+  .lg\:gap-2 {
+    @media (width >= 64rem) {
+      gap: calc(var(--spacing) * 2);
+    }
+  }
+  .lg\:px-2 {
+    @media (width >= 64rem) {
+      padding-inline: calc(var(--spacing) * 2);
+    }
+  }
+  .lg\:py-2 {
+    @media (width >= 64rem) {
+      padding-block: calc(var(--spacing) * 2);
     }
   }
 }

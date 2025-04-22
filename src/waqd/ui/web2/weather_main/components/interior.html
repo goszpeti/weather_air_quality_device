@@ -3,35 +3,33 @@
 <template id="Interior-template">
     <div class="stat">
         <div class="stat-title">Temperature</div>
-        <div class="stat-value text-4xl">{{temp}}</div>
+        <div class="stat-value text-6xl">{{temp}}</div>
         <div class="stat-figure">
-            <svg viewBox="0 0 24 24" class="h-18 -mb-2 -mt-2">
+            <!-- <svg viewBox="0 0 24 24" class="h-18 -m-4">
                 <use href="static/weather_icons/wi-thermometer_full.svg#Layer_1" fill="white" />
-            </svg>
+            </svg> -->
         </div>
     </div>
     <div class="stat">
         <div class="stat-title">Humidity</div>
-        <div class="stat-value text-4xl">{{hum}}</div>
+        <div class="stat-value text-5xl">{{hum}}</div>
         <div class="stat-desc"></div>
         <div class="stat-figure">
-            <svg viewBox="0 0 24 24" class="h-18 -mb-2 -mt-2">
+            <!-- <svg viewBox="0 0 24 24" class="h-18 -m-2">
                 <use href="static/weather_icons/wi-humidity.svg#Layer_1" fill="white" />
-            </svg>
+            </svg> -->
         </div>
     </div>
     <div class="stat">
         <div class="stat-title">CO2</div>
         <div class="stat-value text-4xl">
-            <p>1260</p>
-            <p>ppm</p>
+            <p>1260 ppm</p>
         </div>
-        <!-- {{co2}} -->
         <div class="stat-desc"></div>
         <div class="stat-figure">
-            <svg viewBox="0 0 26 26" class="h-18 -mb-2 -mt-2">
+            <!-- <svg viewBox="0 0 26 26" class="h-18 -m-2">
                 <use href="static/general_icons/aq_indoor.svg#main" fill="white" />
-            </svg>
+            </svg> -->
         </div>
     </div>
 </template>

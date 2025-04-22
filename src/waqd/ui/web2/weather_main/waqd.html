@@ -1,15 +1,15 @@
-<div class="grid grid-cols-1 sm:grid-cols-3 place-items-center items-start gap-2">
+<div class="grid grid-cols-1 sm:grid-cols-3  lg:place-items-center lg:gap-2 ">
   {% for card in cards %}
   <div class="card card-border bg-base-100 image-full shadow-sm self-stretch -space-y-2">
-    <!-- <figure class="object-cover">
+    <figure>
       <img src="{{card.background}}" />
-    </figure> -->
-    <div class="card-body">
+    </figure>
+    <div class="card-body p-2">
       <div class="flex space-x-4 justify-between items-center-safe">
-        <h2 class="text-3xl font-bold">{{card.name}}</h2>
+        <h2 class="text-3xl font-bold tracking-wider">{{card.name}}</h2>
         <div class="tooltip " data-tip="Toggle updating values">
-          <button name="refresh" hx-trigger="load, click" hx-get="{{card.endpoint}}" hx-swap="innerHTML"
-            nunjucks-template="{{card.name}}-template" hx-target="#{{card.name}}-stats">
+          <button name="refresh" class="md:invisible lg:visible" hx-trigger="load, click" hx-get="{{card.endpoint}}"
+            hx-swap="innerHTML" nunjucks-template="{{card.name}}-template" hx-target="#{{card.name}}-stats">
             <svg viewBox="0 0 24 24" class="btn swap-on w-14 glass">
               <use href="static/general_icons/refresh.svg#main" fill="white" />
             </svg>
@@ -21,7 +21,8 @@
       <div class="stats stats-vertical shadow p-0 m-0 overflow-hidden -mt-2 glass" id="{{card.name}}-stats">
       </div>
     </div>
+    {{card.content}}
   </div>
-  {{card.content}}
+
   {% endfor %}
 </div>
