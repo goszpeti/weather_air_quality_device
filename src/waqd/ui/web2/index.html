@@ -5,7 +5,7 @@
   <title>WAQD</title>
   <html lang="en">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.9" , charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" , charset="utf-8">
   <link rel="preload" href="static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
   <link href="static/css/output.css" rel="stylesheet" type="text/css" />
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
@@ -37,9 +37,9 @@
   }());
 </script>
 
-<body class="overflow-hidden">
+<body class="md:overflow-hidden">
   <header>
-    <div class="navbar bg-base-100 shadow-sm rounded-b p-0 text-3xl">
+    <div class="navbar bg-base-100 shadow-sm rounded-b text-3xl p-0">
       <div class="navbar-start">
         <div class="dropdown">
           <div tabindex="0" role="button" class="btn btn-ghost btn-ghost2 md:hidden ">
@@ -47,16 +47,15 @@
               <use href="static/general_icons/menu.svg#main" fill="white" />
             </svg>
           </div>
-          <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-            <li><a>Item 1</a></li>
+          <ul tabindex="0" class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+            <li><a>Settings</a></li>
             <li>
               <a>Account</a>
-              <ul class="p-2">
+              <ul class="">
                 <li><a>Profile</a></li>
                 <li><a>Logout</a></li>
               </ul>
             </li>
-            <li><a>Item 3</a></li>
           </ul>
         </div>
         <a class="btn btn-ghost btn-ghost2 text-3xl font-bold mx-4">WAQD</a>
@@ -90,7 +89,7 @@
     </div>
   </header>
 
-  <main class="py-2 px-2 md:px-0 md:py-0 lg:px-2 lg:py-2" hx-ext="client-side-templates">
+  <main class="py-2 px-2" hx-ext="client-side-templates">
     {{content}}
   </main>
 

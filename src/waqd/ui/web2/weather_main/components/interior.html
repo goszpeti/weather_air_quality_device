@@ -3,7 +3,7 @@
 <template id="Interior-template">
     <div class="stat">
         <div class="stat-title">Temperature</div>
-        <div class="stat-value text-6xl">{{temp}}</div>
+        <div class="stat-value text-7xl tracking-tighter">{{temp}}</div>
         <div class="stat-figure">
             <!-- <svg viewBox="0 0 24 24" class="h-18 -m-4">
                 <use href="static/weather_icons/wi-thermometer_full.svg#Layer_1" fill="white" />
@@ -22,8 +22,8 @@
     </div>
     <div class="stat">
         <div class="stat-title">CO2</div>
-        <div class="stat-value text-4xl">
-            <p>1260 ppm</p>
+        <div class="stat-value text-5xl text-error">
+            <p>{{co2}}</p>
         </div>
         <div class="stat-desc"></div>
         <div class="stat-figure">

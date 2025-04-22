@@ -48,3 +48,14 @@ html {
   --glass-blur: 1px;
   --glass-text-shadow-opacity: 0.5;
 }
+@layer utilities {
+
+.stat {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.stat-title {
+    font-size: 1rem;
+}
+}
