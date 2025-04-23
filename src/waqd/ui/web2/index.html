@@ -9,7 +9,8 @@
   <link rel="preload" href="static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
   <link href="static/css/output.css" rel="stylesheet" type="text/css" />
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-  <script src="https://unpkg.com/htmx-ext-client-side-templates@2.0.0/client-side-templates.js"></script>
+  <script
+    src="https://unpkg.com/htmx-ext-client-side-templates@2.0.0/client-side-templates.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/nunjucks/3.2.4/nunjucks.min.js"></script>
 
   <!-- <script src="static/css/tailwindcss.js"></script> -->
@@ -37,9 +38,9 @@
   }());
 </script>
 
-<body class="md:overflow-hidden">
+<body class="overflow-scroll md:overflow-hidden lg:overflow-scroll">
   <header>
-    <div class="navbar bg-base-100 shadow-sm rounded-b text-3xl p-0">
+    <div class="navbar bg-base-100 shadow-sm rounded-b text-3xl">
       <div class="navbar-start">
         <div class="dropdown">
           <div tabindex="0" role="button" class="btn btn-ghost btn-ghost2 md:hidden ">
@@ -47,7 +48,8 @@
               <use href="static/general_icons/menu.svg#main" fill="white" />
             </svg>
           </div>
-          <ul tabindex="0" class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+          <ul tabindex="0"
+            class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
             <li><a>Settings</a></li>
             <li>
               <a>Account</a>
@@ -66,13 +68,29 @@
       </div>
       <div class="navbar-end hidden md:flex">
         <ul class="menu menu-horizontal px-1 text-xl">
-          <li><a>Settings</a></li>
+          <li><a href="/settings"><svg viewBox="0 0 24 24" class="h-8">
+                <title>Settings</title>
+                <use href="static/general_icons/settings.svg#main" fill="white" />
+              </svg></a>
+          </li>
           <li>
             <details>
-              <summary>Account</summary>
-              <ul class="bg-base-100 rounded-t-none p-2 z-40">
-                <li><a>Profile</a></li>
-                <li><a>Logout</a></li>
+              <summary>
+                <svg viewBox="0 0 24 24" class="h-8">
+                  <use href="static/general_icons/account_circle.svg#main" fill="white" />
+                </svg>
+              </summary>
+              <ul class="bg-base-100 rounded-t-none mt-2 z-40">
+                <li>
+                  <a><svg viewBox="0 0 24 24" class="h-4 w-4">
+                      <use href="static/general_icons/manage_accounts.svg#main" fill="white" />
+                    </svg>Admin</a>
+                </li>
+                <li><a>
+                    <svg viewBox="0 0 24 24" class="h-4 w-4">
+                      <use href="static/general_icons/logout.svg#main" fill="white" />
+                    </svg>Logout</a>
+                </li>
               </ul>
             </details>
           </li>
@@ -89,13 +107,22 @@
     </div>
   </header>
 
-  <main class="py-2 px-2" hx-ext="client-side-templates">
+  <main class="py-2 px-2 min-h-svh" hx-ext="client-side-templates">
     {{content}}
+    <footer
+      class="footer md:invisible lg:visible footer-center bg-secondary text-base-content p-4 space-y-8">
+      <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
+    </footer>
   </main>
+  <div class="toast toast-end">
+    <!-- <div class="alert alert-info">
+      <span>New mail arrived.</span>
+    </div> -->
+    <div class="alert alert-success">
+      <span>Logged in successfully.</span>
+    </div>
+  </div>
 
 </body>
-<footer class="footer sm:invisible lg:visible footer-center bg-secondary text-base-content p-4 space-y-8">
-  <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
-</footer>
 
 </html>

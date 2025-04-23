@@ -13,6 +13,8 @@ from fastapi.responses import RedirectResponse
 
 from .api.sensor.v1.routes import rt as sensor_v1_router
 from .weather_main.routes import rt as weather_router
+from .settings.routes import rt as settings_router
+from .public.routes import rt as public_router
 
 current_path = Path(__file__).parent.resolve()
 
@@ -27,11 +29,14 @@ web_app.mount("/static", StaticFiles(directory=str(waqd.assets_path)), name="sta
 web_app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
 web_app.include_router(sensor_v1_router)
 web_app.include_router(weather_router)
+web_app.include_router(settings_router)
+web_app.include_router(public_router)
 
 
 @web_app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     return RedirectResponse(url="/weather")
+
 
 if base_app.comp_ctrl is None:
     base_app.basic_setup()

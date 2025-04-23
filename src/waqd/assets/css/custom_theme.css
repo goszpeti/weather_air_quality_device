@@ -2,17 +2,20 @@
 html {
   background: linear-gradient(175deg, rgba(103, 154, 199, 1) 0%, rgba(232, 159, 166, 1) 100%);
 }
+
 .invert-color {
   filter: invert(99%) sepia(99%) saturate(18%) hue-rotate(235deg) brightness(104%) contrast(100%);
 }
 
 @import "tailwindcss" source(none);
 @source "../../**/*.{html}";
+
 @plugin "./daisyui.js" {
   themes: light --default, dark --prefersdark;
   root: ":root";
 
 }
+
 @plugin "./daisyui-theme.js" {
   name: "mytheme";
   color-scheme: "dark";
@@ -20,17 +23,17 @@ html {
   --color-base-100: oklch(0.53 0.1254 242.05);
   --color-base-200: oklch(0.65 0.0805 248.58);
   --color-base-300: oklch(90% 0.043 272.88);
-  --color-base-content: oklch(100% 0 0);
+  --color-base-content: oklch(96% 0 0);
   --color-primary: oklch(85.661% 0.144 198.645);
   --color-primary-content: oklch(40.124% 0.068 197.603);
   --color-secondary: oklch(0.77 0.084 11.67);
-  --color-secondary-content: oklch(96% 0.016 293.756);
-  --color-accent: oklch(96% 0.016 293.756);
+  --color-secondary-content: oklch(96% 0 0);
+  --color-accent: oklch(96% 0 0);
   --color-accent-content: oklch(18.685% 0.02 94.555);
-  --color-neutral: oklch(0.65 0.0805 248.58);
-  --color-neutral-content: oklch(96% 0.016 293.756);
+  --color-neutral: oklch(0.7 0.0805 248.58);
+  --color-neutral-content: oklch(96% 0 0);
   --color-info: oklch(54.615% 0.215 262.88);
-  --color-info-content: oklch(90.923% 0.043 262.88);
+  --color-info-content: oklch(96% 0 0);
   --color-success: oklch(62.705% 0.169 149.213);
   --color-success-content: oklch(12.541% 0.033 149.213);
   --color-warning: oklch(66.584% 0.157 58.318);
@@ -48,14 +51,15 @@ html {
   --glass-blur: 1px;
   --glass-text-shadow-opacity: 0.5;
 }
+
 @layer utilities {
 
-.stat {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
+  .stat {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
 
-.stat-title {
+  .stat-title {
     font-size: 1rem;
-}
+  }
 }

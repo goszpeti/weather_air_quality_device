@@ -142,6 +142,10 @@ https://github.com/dfeneyrou/palanteer/releases
   * https://unsplash.com/photos/_SnPaOUxO2k from Annie Niemaszyk
   * https://unsplash.com/photos/06qZZZNfzD8 from Scott Webb
   * https://unsplash.com/photos/n2poVQijgzo from Zuzana Ruttkay
+  * https://unsplash.com/photos/a-turtle-swimming-in-water-ZcMUiZuOirY
+  * https://unsplash.com/photos/the-sun-is-shining-through-the-clouds-in-the-sky-Ozlzi3DXuGg
+  * https://unsplash.com/photos/rain-moving-into-western-loudoun-county-virginia-s-S3J8wDAoM
+  * https://unsplash.com/photos/low-angle-photography-of-clouds-KOnl4LFvwHE
 
 ## Used software
 
