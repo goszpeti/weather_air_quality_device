@@ -9,8 +9,7 @@
   <link rel="preload" href="static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
   <link href="static/css/output.css" rel="stylesheet" type="text/css" />
   <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-  <script
-    src="https://unpkg.com/htmx-ext-client-side-templates@2.0.0/client-side-templates.js"></script>
+  <script src="https://unpkg.com/htmx-ext-client-side-templates@2.0.0/client-side-templates.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/nunjucks/3.2.4/nunjucks.min.js"></script>
 
   <!-- <script src="static/css/tailwindcss.js"></script> -->
@@ -48,8 +47,7 @@
               <use href="static/general_icons/menu.svg#main" fill="white" />
             </svg>
           </div>
-          <ul tabindex="0"
-            class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+          <ul tabindex="0" class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
             <li><a>Settings</a></li>
             <li>
               <a>Account</a>
@@ -61,7 +59,6 @@
           </ul>
         </div>
         <a class="btn btn-ghost btn-ghost2 text-3xl font-bold mx-4">WAQD</a>
-        <!-- style="border: 0;" -->
       </div>
       <div class="navbar-center hidden md:flex">
 
@@ -107,10 +104,9 @@
     </div>
   </header>
 
-  <main class="py-2 px-2 min-h-svh" hx-ext="client-side-templates">
+  <main class="py-2 px-2 md:px-0 md:py-0" hx-ext="client-side-templates">
     {{content}}
-    <footer
-      class="footer md:invisible lg:visible footer-center bg-secondary text-base-content p-4 space-y-8">
+    <footer class="footer md:invisible lg:visible footer-center bg-secondary text-base-content p-4 space-y-8">
       <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
     </footer>
   </main>
