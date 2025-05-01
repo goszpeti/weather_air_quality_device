@@ -1,5 +1,3 @@
-
-
 from waqd.base.file_logger import Logger
 import locale
 import platform
@@ -36,7 +34,7 @@ def get_localized_date(date_time: datetime.datetime, settings: Settings) -> str:
             # "sudo apt-get install language-pack-id" is needed...
             # or sudo locale-gen
     else:
-        locale.setlocale(locale.LC_ALL, 'C')
+        locale.setlocale(locale.LC_ALL, "C")
 
     local_date = time.strftime("%a, %x", date_time.timetuple())
     # remove year - twice once with following . and once for none
@@ -45,8 +43,10 @@ def get_localized_date(date_time: datetime.datetime, settings: Settings) -> str:
     return local_date
 
 
-def format_unit_disp_value(quantity: Optional[Quantity], unit="True", precision=1) -> str:
-    """ Format sensor value for display by appending the unit symbol (if unit is True) and float precision """
+def format_unit_disp_value(
+    quantity: Optional[Quantity], unit: bool = True, precision=int(1)
+) -> str:
+    """Format sensor value for display by appending the unit symbol (if unit is True) and float precision"""
     disp_value = "N/A"
     if quantity is not None:
         if isinstance(quantity, Quantity):

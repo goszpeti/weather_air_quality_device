@@ -146,6 +146,9 @@ https://github.com/dfeneyrou/palanteer/releases
   * https://unsplash.com/photos/the-sun-is-shining-through-the-clouds-in-the-sky-Ozlzi3DXuGg
   * https://unsplash.com/photos/rain-moving-into-western-loudoun-county-virginia-s-S3J8wDAoM
   * https://unsplash.com/photos/low-angle-photography-of-clouds-KOnl4LFvwHE
+  * https://unsplash.com/photos/a-purple-sky-filled-with-lots-of-clouds-ZbGwGW_u8zI
+  * https://unsplash.com/photos/gray-road-between-green-grass-field-near-mountain-under-white-clouds-during-daytime-UjyUlxr1Yjo
+  * https://unsplash.com/photos/blue-sky-and-white-clouds-over-lake-bR_-gllg7Bs
 
 ## Used software
 
@@ -175,3 +178,6 @@ https://github.com/dfeneyrou/palanteer/releases
 ## Author:
 
 Copyright (c) 2022 Péter Gosztolya and contributors.
+
+Setup port 80 binding:
+sudo setcap 'cap_net_bind_service=+ep' /usr/bin/python3.9
