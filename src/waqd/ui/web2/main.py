@@ -1,9 +1,11 @@
-from functools import partial
 from pathlib import Path
+
+
+from fastapi import FastAPI
 import waqd.app as base_app
 import waqd
 
-from fastapi import FastAPI, Request
+from fastapi import Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 

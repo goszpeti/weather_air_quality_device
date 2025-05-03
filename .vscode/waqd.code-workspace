@@ -47,6 +47,7 @@
         "python.analysis.extraPaths": [
             "${workspaceFolder}/src"
         ],
+        "html.format.wrapLineLength": 100
     },
     "launch": {
         "configurations": [
