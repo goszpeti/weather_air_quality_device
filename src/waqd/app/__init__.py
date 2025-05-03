@@ -21,7 +21,12 @@ from waqd import base_path
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD, DISPLAY_TYPE, Settings
+from waqd.settings import (
+    UI_TYPE,
+    UI_TYPE_QT,
+    UI_TYPE_WEB,
+    Settings,
+)
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
@@ -93,18 +98,13 @@ def main(settings_path: Optional[Path] = None):
     if not comp_ctrl or not settings:
         return
     # Load the selected GUI mode
-    display_type = settings.get(DISPLAY_TYPE)
+    display_type = settings.get(UI_TYPE)
     try:
+        comp_ctrl.init_all()
         if waqd.HEADLESS_MODE:
-            comp_ctrl.init_all()
-            if waqd.DEBUG_LEVEL >= 4:
-                from waqd.ui.web2 import start_web_ui, start_web_server
-
-                start_web_ui()
-                start_web_server(waqd.DEBUG_LEVEL > 0)
             comp_ctrl._stop_event.wait()
 
-        elif display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
+        elif display_type == UI_TYPE_QT:
             comp_ctrl.init_all()
             from waqd.ui.qt.startup import qt_app_setup, qt_loading_sequence
 
@@ -112,6 +112,21 @@ def main(settings_path: Optional[Path] = None):
             # main_ui must be held in this context, otherwise the gc will destroy the gui
             qt_loading_sequence(comp_ctrl, settings)
             qt_app.exec()
+        elif display_type == UI_TYPE_WEB:
+            from waqd.ui.web2 import (
+                start_web_browser,
+                start_web_server,
+                start_web_ui_chromium_kiosk_mode,
+            )
+
+            runtime_system = RuntimeSystem()
+            if runtime_system.is_target_system:
+                start_web_ui_chromium_kiosk_mode()
+            else:
+                start_web_browser()
+            start_web_server(waqd.DEBUG_LEVEL > 0)
+            comp_ctrl._stop_event.wait()
+
     except Exception:
         trace_back = traceback.format_exc()
         Logger().error("Application crashed: \n%s", trace_back)
