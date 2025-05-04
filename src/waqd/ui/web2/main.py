@@ -14,6 +14,7 @@ from fastapi.responses import RedirectResponse
 
 
 from .api.sensor.v1.routes import rt as sensor_v1_router
+from .api.weather.v1.routes import rt as weather_v1_router
 from .weather_main.routes import rt as weather_router
 from .settings.routes import rt as settings_router
 from .public.routes import rt as public_router
@@ -33,6 +34,7 @@ web_app.include_router(sensor_v1_router)
 web_app.include_router(weather_router)
 web_app.include_router(settings_router)
 web_app.include_router(public_router)
+web_app.include_router(weather_v1_router)
 
 
 @web_app.get("/", response_class=HTMLResponse)
