@@ -1,8 +1,8 @@
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-3 md:gap-0 lg:place-items-center lg:gap-2 ">
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-3  md:gap-0  lg:gap-2 lg:place-items-center ">
   <!-- <div class="carousel carousel-center bg-neutral rounded-box max-w-full space-x-4 p-4"> -->
   {% for card in cards %}
   <div
-    class="card card-border bg-base-100 image-full shadow-sm self-stretch md:-space-y-2 carousel-item">
+    class="card card-border bg-base-100 image-full shadow-sm self-stretch md:-space-y-2 rounded-box md:rounded-none lg:rounded-box carousel-item">
     <figure>
       <img src="{{card.background}}" />
     </figure>
