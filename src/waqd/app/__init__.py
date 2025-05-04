@@ -106,8 +106,7 @@ def main():
             runtime_system = RuntimeSystem()
             if runtime_system.is_target_system:
                 start_web_ui_chromium_kiosk_mode()
-            else:
-                start_web_browser()
+
             start_web_server(waqd.DEBUG_LEVEL > 0)
             comp_ctrl._stop_event.wait()
 

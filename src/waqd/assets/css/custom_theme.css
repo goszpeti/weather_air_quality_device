@@ -23,7 +23,7 @@ html {
   --color-base-100: oklch(0.17 0.0718 295.71);
   --color-base-200: oklch(0.24 0.1403 286.92);
   --color-base-300: oklch(0.42 0.2119 286.68);
-  --color-base-content: oklch(96% 0 0);
+  --color-base-content: oklch(100% 0 0);
   --color-primary: oklch(0.4 0.2099 294.94);
   --color-primary-content: oklch(96% 0 0);
   --color-secondary: oklch(0.42 0.2119 286.68);
@@ -61,5 +61,9 @@ html {
 
   .stat-title {
     font-size: 1rem;
+
+    @supports (color: color-mix(in lab, red, red)) {
+      color: color-mix(in oklab, var(--color-base-content) 90%, transparent);
+    }
   }
 }
