@@ -30,9 +30,9 @@ html {
   --color-secondary-content: oklch(96% 0 0);
   --color-accent: oklch(96% 0 0);
   --color-accent-content: oklch(18.685% 0.02 94.555);
-  --color-neutral: oklch(0.7 0.0805 248.58);
+  --color-neutral: oklch(0.42 0.2119 286.68);
   --color-neutral-content: oklch(96% 0 0);
-  --color-info: oklch(54.615% 0.215 262.88);
+  --color-info: oklch(0.42 0.2119 286.68);
   --color-info-content: oklch(96% 0 0);
   --color-success: oklch(62.705% 0.169 149.213);
   --color-success-content: oklch(12.541% 0.033 149.213);
