@@ -1,7 +1,7 @@
 /*! tailwindcss v4.1.4 | MIT License | https://tailwindcss.com */
 @layer properties;
 html {
-  background: linear-gradient(175deg, rgba(103, 154, 199, 1) 0%, rgba(232, 159, 166, 1) 100%);
+  background: no-repeat linear-gradient(180deg, oklch(0.24 0.1403 286.92) 0%, oklch(0.42 0.2119 286.68) 100%);
 }
 .invert-color {
   filter: invert(99%) sepia(99%) saturate(18%) hue-rotate(235deg) brightness(104%) contrast(100%);
@@ -1981,8 +1981,11 @@ html {
   .h-18 {
     height: calc(var(--spacing) * 18);
   }
-  .h-26 {
-    height: calc(var(--spacing) * 26);
+  .h-20 {
+    height: calc(var(--spacing) * 20);
+  }
+  .h-28 {
+    height: calc(var(--spacing) * 28);
   }
   .min-h-screen {
     min-height: 100vh;
@@ -2063,6 +2066,9 @@ html {
   }
   .items-center-safe {
     align-items: safe center;
+  }
+  .items-stretch {
+    align-items: stretch;
   }
   .justify-evenly {
     justify-content: space-evenly;
@@ -2314,6 +2320,11 @@ html {
   .md\:invisible {
     @media (width >= 48rem) {
       visibility: hidden;
+    }
+  }
+  .md\:-mb-4 {
+    @media (width >= 48rem) {
+      margin-bottom: calc(var(--spacing) * -4);
     }
   }
   .md\:flex {
@@ -2617,13 +2628,13 @@ html {
   :root:has(input.theme-controller[value=mytheme]:checked),[data-theme="mytheme"] {
     color-scheme: dark;
     font-family: MyFranzo;
-    --color-base-100: oklch(0.53 0.1254 242.05);
-    --color-base-200: oklch(0.65 0.0805 248.58);
-    --color-base-300: oklch(90% 0.043 272.88);
+    --color-base-100: oklch(0.17 0.0718 295.71);
+    --color-base-200: oklch(0.24 0.1403 286.92);
+    --color-base-300: oklch(0.42 0.2119 286.68);
     --color-base-content: oklch(96% 0 0);
-    --color-primary: oklch(85.661% 0.144 198.645);
-    --color-primary-content: oklch(40.124% 0.068 197.603);
-    --color-secondary: oklch(0.77 0.084 11.67);
+    --color-primary: oklch(0.4 0.2099 294.94);
+    --color-primary-content: oklch(96% 0 0);
+    --color-secondary: oklch(0.42 0.2119 286.68);
     --color-secondary-content: oklch(96% 0 0);
     --color-accent: oklch(96% 0 0);
     --color-accent-content: oklch(18.685% 0.02 94.555);

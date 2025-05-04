@@ -1,6 +1,6 @@
 /* tailwindcss -i src\waqd\assets\css\custom_theme.css -o src\waqd\assets\css\output.css */
 html {
-  background: linear-gradient(175deg, rgba(103, 154, 199, 1) 0%, rgba(232, 159, 166, 1) 100%);
+  background: no-repeat linear-gradient(180deg, oklch(0.24 0.1403 286.92) 0%, oklch(0.42 0.2119 286.68) 100%);
 }
 
 .invert-color {
@@ -20,13 +20,13 @@ html {
   name: "mytheme";
   color-scheme: "dark";
   font-family: MyFranzo;
-  --color-base-100: oklch(0.53 0.1254 242.05);
-  --color-base-200: oklch(0.65 0.0805 248.58);
-  --color-base-300: oklch(90% 0.043 272.88);
+  --color-base-100: oklch(0.17 0.0718 295.71);
+  --color-base-200: oklch(0.24 0.1403 286.92);
+  --color-base-300: oklch(0.42 0.2119 286.68);
   --color-base-content: oklch(96% 0 0);
-  --color-primary: oklch(85.661% 0.144 198.645);
-  --color-primary-content: oklch(40.124% 0.068 197.603);
-  --color-secondary: oklch(0.77 0.084 11.67);
+  --color-primary: oklch(0.4 0.2099 294.94);
+  --color-primary-content: oklch(96% 0 0);
+  --color-secondary: oklch(0.42 0.2119 286.68);
   --color-secondary-content: oklch(96% 0 0);
   --color-accent: oklch(96% 0 0);
   --color-accent-content: oklch(18.685% 0.02 94.555);
