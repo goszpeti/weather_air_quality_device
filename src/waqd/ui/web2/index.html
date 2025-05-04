@@ -38,6 +38,7 @@
   <header>
     <div class="navbar bg-base-100 shadow-sm rounded-b text-3xl p-2 md:p-0 lg:p-2">
       <div class="navbar-start">
+        <!-- Mobile Menu -->
         <div class="dropdown">
           <div tabindex="0" role="button" class="btn btn-ghost btn-ghost2 md:hidden ">
             <svg viewBox="0 0 24 24" class="h-8">
@@ -76,7 +77,8 @@
       </div>
       <div class="navbar-center hidden md:flex"></div>
       <div class="navbar-end hidden md:flex">
-        <ul class="menu menu-horizontal px-1 text-xl">
+        <!-- Desktop Menu -->
+        <ul class="menu menu-horizontal px-2 md:text-3xl lg:text-xl">
           <li><a href="/settings"><svg viewBox="0 0 24 24" class="h-8">
                 <title>Settings</title>
                 <use href="static/general_icons/settings.svg#main" fill="white" />
@@ -91,12 +93,12 @@
               </summary>
               <ul class="bg-base-100 rounded-t-none mt-2 z-40">
                 <li>
-                  <a><svg viewBox="0 0 24 24" class="h-4 w-4">
+                  <a class=""><svg viewBox="0 0 24 24" class="h-6 mr-8">
                       <use href="static/general_icons/manage_accounts.svg#main" fill="white" />
                     </svg>Admin</a>
                 </li>
                 <li><a>
-                    <svg viewBox="0 0 24 24" class="h-4 w-4">
+                    <svg viewBox="0 0 24 24" class="h-6 mr-8">
                       <use href="static/general_icons/logout.svg#main" fill="white" />
                     </svg>Logout</a>
                 </li>
@@ -116,9 +118,9 @@
     </div>
   </header>
 
-  <main class="py-2 px-2 md:px-0 md:py-0" style="max-width: 100%;" hx-ext="client-side-templates">
+  <main class="py-2 px-2 md:px-0 md:py-0 lg:p-4" style="max-width: 100%;" hx-ext="client-side-templates">
     {{content}}
-    <footer class="footer md:invisible lg:visible footer-center bg-secondary text-base-content p-4 space-y-8">
+    <footer class="footer footer-center bg-secondary text-base-content text-xl p-4 space-y-8">
       <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
     </footer>
   </main>

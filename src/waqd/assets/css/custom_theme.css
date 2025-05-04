@@ -1,14 +1,12 @@
 /* tailwindcss -i src\waqd\assets\css\custom_theme.css -o src\waqd\assets\css\output.css */
 html {
-  background: no-repeat linear-gradient(180deg, oklch(0.24 0.1403 286.92) 0%, oklch(0.42 0.2119 286.68) 100%);
-}
-
-.invert-color {
-  filter: invert(99%) sepia(99%) saturate(18%) hue-rotate(235deg) brightness(104%) contrast(100%);
+  background: no-repeat linear-gradient(180deg, oklch(0.24 0.1403 286.92) 0%,
+      oklch(0.42 0.2119 286.68) 100%);
 }
 
 @import "tailwindcss" source(none);
 @source "../../**/*.{html}";
+@source "../../**/templates.py";
 
 @plugin "./daisyui.js" {
   themes: light --default, dark --prefersdark;
@@ -30,7 +28,7 @@ html {
   --color-secondary-content: oklch(96% 0 0);
   --color-accent: oklch(96% 0 0);
   --color-accent-content: oklch(18.685% 0.02 94.555);
-  --color-neutral: oklch(0.42 0.2119 286.68);
+  --color-neutral: oklch(50% 0 0);
   --color-neutral-content: oklch(96% 0 0);
   --color-info: oklch(0.42 0.2119 286.68);
   --color-info-content: oklch(96% 0 0);
