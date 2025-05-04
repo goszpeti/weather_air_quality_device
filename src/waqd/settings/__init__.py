@@ -68,3 +68,5 @@ AW_CITY_IDS = "aw_city_id"  # deprecate with generic geo conding
 
 # import at the end, to avoid circular imports
 from waqd.settings.settings import Settings
+
+__all__ = ["Settings"]

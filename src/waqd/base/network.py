@@ -1,11 +1,8 @@
-
-
-
 # Stop
 # TODO add configuration
 # https://github.com/balena-os/wifi-connect/blob/master/scripts/raspbian-install.sh
 
-#sudo pkill wifi-connect
+# sudo pkill wifi-connect
 
 # # sudo systemctl start comitup
 
@@ -22,10 +19,11 @@ from waqd.base.system import RuntimeSystem
 from waqd.base.signal import QtSignalRegistry
 
 
-class Network():
+class Network:
     """
     Singleton that abstracts information about the network.
     """
+
     NW_READY_SIG_NAME = "network_ready_sig"
     _instance = None
     _internet_reconnect_try = 0  # internal counter for wlan restart
@@ -54,7 +52,7 @@ class Network():
         except OSError:
             pass
         return False
-    
+
     @property
     def network_connected(self) -> bool:
         [ipv4, ipv6] = self.get_ip()
@@ -63,7 +61,7 @@ class Network():
         return True
 
     def get_ip(self) -> Tuple[str, str]:  # "ipv4", "ipv6"
-        """ Gets IP 4 and 6 addresses on target system """
+        """Gets IP 4 and 6 addresses on target system"""
         ipv4 = ""
         ipv6 = ""
         if self._runtime_system.is_target_system:
@@ -88,9 +86,6 @@ class Network():
 
     def register_network_notification(self, sig, cbk: Callable):
         QtSignalRegistry().register_callback(self.NW_READY_SIG_NAME, sig, cbk)
-        
-    # def deregister_network_notifications(self):
-    #     self._network_cbks.clear()
 
     def check_internet_connection(self):
         """
@@ -132,7 +127,7 @@ class Network():
         if self._wait_for_network_counter == max_error:
             return False
         return True
-    
+
     def wait_for_internet(self) -> bool:
         self.wait_for_network()
         max_error = 5

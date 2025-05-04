@@ -1,4 +1,3 @@
-
 import waqd.app as app
 import threading
 import time
@@ -7,7 +6,7 @@ from typing import Optional
 from PyQt5 import QtCore, QtGui, QtWidgets
 from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
-from waqd.settings import FONT_NAME, FONT_SCALING, Settings
+from waqd.settings import FONT_NAME, FONT_SCALING
 from waqd.ui.qt.theming import activate_theme
 
 from . import common, options
@@ -23,7 +22,7 @@ class QtBackChannel(QtCore.QObject):
 
 
 class WeatherMainUi(QtWidgets.QMainWindow):
-    """ Base class of the main qt ui. Holds all the SubUi elements. """
+    """Base class of the main qt ui. Holds all the SubUi elements."""
 
     UPDATE_TIME = 1000  # microseconds
     OBJ_NAME = "WeatherMainUi"
@@ -31,7 +30,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
     change_background_sig = QtCore.pyqtSignal(str)  # str arg is the message
     network_available_sig = QtCore.pyqtSignal()
 
-    def __init__(self, comp_ctrl: ComponentController, settings: Settings):
+    def __init__(self, comp_ctrl: ComponentController):
         super().__init__()
 
         self.setObjectName(self.OBJ_NAME)
@@ -41,7 +40,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._comps = comp_ctrl.components
         self._option_ui = None
         self._init_thread: Optional[threading.Thread] = None
-        self._settings = settings
+        self._settings = app.settings
 
         self._exterior_ui: Optional[exterior.Exterior] = None
         self._interior_ui: Optional[interior.Interior] = None
@@ -52,11 +51,11 @@ class WeatherMainUi(QtWidgets.QMainWindow):
 
     @property
     def ui(self) -> Ui_MainWindow:
-        """ Contains all gui objects defined in Qt .ui file. Subclasses need access to this. """
+        """Contains all gui objects defined in Qt .ui file. Subclasses need access to this."""
         return self._ui
 
     def eventFilter(self, source, event):  # pylint: disable=invalid-name
-        """ Callback, to turn on the display on touch. """
+        """Callback, to turn on the display on touch."""
         if event.type() == QtCore.QEvent.MouseButtonPress:
             # works currently with overriding the motion sensor
             self._comps.energy_saver.wake_up(10)
@@ -68,11 +67,13 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self.init_gui()
 
     def init_gui(self):
-        """ Retranslates, then loads all SubUi elements. """
+        """Retranslates, then loads all SubUi elements."""
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        activate_theme(self._settings.get_float(FONT_SCALING), self._settings.get_string(FONT_NAME))
+        activate_theme(
+            self._settings.get_float(FONT_SCALING), self._settings.get_string(FONT_NAME)
+        )
         common.apply_shadow_to_labels(self)
         if self._option_ui is not None:
             self._option_ui.deleteLater()
@@ -109,7 +110,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         return super().closeEvent(a0)
 
     def unload_gui(self):
-        """ Deletes all SubUi elements """
+        """Deletes all SubUi elements"""
         if self._exterior_ui:
             self._exterior_ui.stop()
         if self._interior_ui:
@@ -132,7 +133,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._ui = None
 
     def _change_background(self, file_id: str):
-        """ Slot for change background signal """
+        """Slot for change background signal"""
         background = get_asset_file("gui_base", file_id)
         if background and background.is_file():
             while not self.ready:
@@ -142,7 +143,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
             self._ui.interior_background.setPixmap(QtGui.QPixmap(str(background)))
 
     def show_options_window(self):
-        """ Callback for Options button. Unloads this gui and starts the Options Gui."""
+        """Callback for Options button. Unloads this gui and starts the Options Gui."""
         self.ready = False
         self.unload_gui()
 
@@ -151,10 +152,12 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._option_ui = options.OptionMainUi(self, self._comp_ctrl, self._settings)
 
     def show_info_screen(self):
-        """ Shows the user help overlay (opaque)."""
+        """Shows the user help overlay (opaque)."""
         if not self._ui:
             return
-        self._ui.overlay_background.setPixmap(QtGui.QPixmap(str(get_asset_file("gui_base", "info_overlay"))))
+        self._ui.overlay_background.setPixmap(
+            QtGui.QPixmap(str(get_asset_file("gui_base", "info_overlay")))
+        )
         self._ui.overlay_background.raise_()
         self._ui.overlay_background.show()
 
@@ -168,7 +171,7 @@ class WeatherMainUi(QtWidgets.QMainWindow):
         self._ui.ol_title_label.show()
 
     def hide_info_screen(self):
-        """ Hides the user infro screen."""
+        """Hides the user infro screen."""
         if not self._ui:
             return
         self._ui.overlay_background.hide()

@@ -1,9 +1,15 @@
+import datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
+import waqd.app as base_app
+from waqd.assets.assets import get_asset_file_relative
+from waqd.ui import get_localized_date
+from waqd.ui.web2.api.sensor.v1.connector import SensorRetrieval
 from waqd.ui.web2.api.sensor.v1.model import SensorApi_v1
+from waqd.ui.web2.api.weather.v1.connector import WeatherRetrieval
 from waqd.ui.web2.weather_main.model import ExteriorView, ForecastView
 
 from ..templates import render_spa, sub_template
@@ -49,28 +55,47 @@ async def root(request: Request):
 
 @rt.get("/weather/interior", response_class=JSONResponse)
 async def interior(request: Request):
-    return RedirectResponse(url="/api/sensor/interior?units=True")
+    return RedirectResponse(url="/api/sensor/v1/interior?units=True")
 
 
 @rt.get("/weather/exterior", response_class=JSONResponse)
 async def exterior(request: Request) -> ExteriorView:
+    ext_values = SensorRetrieval().get_exterior_sensor_values(units=True)
+    current_weather = WeatherRetrieval().get_current_weather()
+    forecast = WeatherRetrieval().get_5_day_forecast()
+    weather_bgr = get_asset_file_relative(current_weather.get_background_image())
     return ExteriorView(
-        temp="N/A",
-        hum="N/A",
-        baro="N/A",
-        weather_icon="static/weather_icons/wi-cloud.svg",
-        weather_day_min_max="N/A",
-        weather_night_min_max="N/A",
+        temp=ext_values.temp,
+        hum=ext_values.hum,
+        baro=ext_values.baro,
+        weather_icon=get_asset_file_relative(current_weather.get_icon()),
+        weather_day_min_max=f"{forecast[0].temp_min}°/{forecast[0].temp_max}°",
+        weather_night_min_max=f"{forecast[0].temp_night_min}°/{forecast[0].temp_night_max}°",
     )
 
 
 @rt.get("/weather/forecast", response_class=JSONResponse)
 async def forecast(request: Request) -> ForecastView:
+    forecast = WeatherRetrieval().get_5_day_forecast()
+    current_date_time = datetime.datetime.now()
+
     return ForecastView(
-        temp="N/A",
-        hum="N/A",
-        baro="N/A",
-        weather_icon="static/weather_icons/wi-cloud.svg",
-        weather_day_min_max="N/A",
-        weather_night_min_max="N/A",
+        day_1_label=get_localized_date(
+            current_date_time + datetime.timedelta(days=1), base_app.settings
+        ),
+        day_1_weather_icon=get_asset_file_relative(forecast[0].get_icon()),
+        day_1_weather_day_min_max=f"{forecast[0].temp_min}°/{forecast[0].temp_max}°",
+        day_1_weather_night_min_max=f"{forecast[0].temp_night_min}°/{forecast[0].temp_night_max}°",
+        day_2_label=get_localized_date(
+            current_date_time + datetime.timedelta(days=2), base_app.settings
+        ),
+        day_2_weather_icon=get_asset_file_relative(forecast[1].get_icon()),
+        day_2_weather_day_min_max=f"{forecast[1].temp_min}°/{forecast[1].temp_max}°",
+        day_2_weather_night_min_max=f"{forecast[1].temp_night_min}°/{forecast[1].temp_night_max}°",
+        day_3_label=get_localized_date(
+            current_date_time + datetime.timedelta(days=3), base_app.settings
+        ),
+        day_3_weather_icon=get_asset_file_relative(forecast[2].get_icon()),
+        day_3_weather_day_min_max=f"{forecast[2].temp_min}°/{forecast[2].temp_max}°",
+        day_3_weather_night_min_max=f"{forecast[2].temp_night_min}°/{forecast[2].temp_night_max}°",
     )

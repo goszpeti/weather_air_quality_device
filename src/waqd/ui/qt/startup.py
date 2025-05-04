@@ -1,42 +1,40 @@
-
-
 """
 Entry module of WAQD
 Sets up cmd arguments, settings and starts the gui
 """
 
-
 import platform
 import time
 
+import waqd.app as base_app
 import waqd
-from waqd import INTRO_JINGLE
+from waqd import INTRO_JINGLE, PROG_NAME
 from waqd import __version__ as WAQD_VERSION
 from waqd.assets import get_asset_file
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.system import RuntimeSystem
-from waqd.settings import (FONT_NAME,
-                           FONT_SCALING,
-                           Settings)
+from waqd.settings import FONT_NAME, FONT_SCALING
 
 
-def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
+def qt_app_setup() -> "QtWidgets.QApplication":
     """
     Set up all Qt application specific attributes, which can't be changed later on
     Returns qt_app object.
     """
     from PyQt5 import QtCore, QtGui, QtWidgets
+
     Qt = QtCore.Qt
     if platform.system() == "Windows":
         # Workaround for Windows, so that on the taskbar the
         # correct icon will be shown (and not the default python icon).
         from PyQt5.QtWinExtras import QtWin
-        MY_APP_ID = 'ConanAppLauncher.' + WAQD_VERSION
+
+        MY_APP_ID = PROG_NAME + WAQD_VERSION
         QtWin.setCurrentProcessExplicitAppUserModelID(MY_APP_ID)
 
     # apply Qt attributes (only at init possible)
-    QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    QtWidgets.QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
+    QtWidgets.QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
 
     # set up global Qt Application instance
     qt_app = QtWidgets.QApplication([])
@@ -46,14 +44,17 @@ def qt_app_setup(settings: Settings) -> "QtWidgets.QApplication":
     from waqd.ui.qt.common import set_ui_language
 
     # install translator
-    set_ui_language(qt_app, settings)
+    set_ui_language(qt_app, base_app.settings)
     from waqd.ui.qt.theming import activate_theme
-    activate_theme(settings.get_float(FONT_SCALING), settings.get_string(FONT_NAME))
+
+    activate_theme(
+        base_app.settings.get_float(FONT_SCALING), base_app.settings.get_string(FONT_NAME)
+    )
 
     return qt_app
 
 
-def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
+def qt_loading_sequence(comp_ctrl: ComponentController):
     """
     Load modules with watchdog and display Splashscreen until loading is finished.
     """
@@ -65,6 +66,7 @@ def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
     from waqd.ui.qt.main_window import WeatherMainUi
     from waqd.ui.qt.widgets.fader_widget import FaderWidget
     from waqd.ui.qt.widgets.splashscreen import SplashScreen
+
     # show splash screen
     splash_screen = SplashScreen()
     splash_screen.show()
@@ -78,23 +80,25 @@ def qt_loading_sequence(comp_ctrl: ComponentController, settings: Settings):
         QtWidgets.QApplication.processEvents()
 
     # start gui init in separate qt thread
-    app_main_ui = WeatherMainUi(comp_ctrl, settings)
+    app_main_ui = WeatherMainUi(comp_ctrl)
 
     if RuntimeSystem().is_target_system:  # only remove titlebar on RPi
-        app_main_ui.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+        app_main_ui.setWindowFlags(QtCore.Qt.WindowType.CustomizeWindowHint)
     thread = QtCore.QThread(app_main_ui)
     thread.started.connect(app_main_ui.init_gui)
     thread.start()
-    while (not app_main_ui.ready) \
-        or (time.time() < start + loading_minimum_time_s) \
-            and waqd.DEBUG_LEVEL <= 3:
+    while (
+        (not app_main_ui.ready)
+        or (time.time() < start + loading_minimum_time_s)
+        and waqd.DEBUG_LEVEL <= 3
+    ):
         QtWidgets.QApplication.processEvents()
 
     # splash screen can be disabled - with fader
     app_main_ui.show()
     fade_length = 1  # second
     fader_widget = FaderWidget(  # pylint: disable=unused-variable
-        splash_screen, app_main_ui, length=fade_length*1000)
+        splash_screen, app_main_ui, length=fade_length * 1000
+    )
     splash_screen.finish(app_main_ui)
     return app_main_ui
-

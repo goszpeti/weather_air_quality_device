@@ -13,7 +13,7 @@ class SensorRetrieval:
         assert base_app.comp_ctrl
         self._comps = base_app.comp_ctrl.components
 
-    def _get_exterior_sensor_values(self, units=False):
+    def get_exterior_sensor_values(self, units=False):
         temp = self._comps.remote_exterior_sensor.get_temperature()
         hum = self._comps.remote_exterior_sensor.get_humidity()
 
@@ -35,7 +35,7 @@ class SensorRetrieval:
         disp_value = format_unit_disp_value(quantity, unit, precision)
         return html.escape(disp_value)
 
-    def _get_interior_sensor_values(self, units=False):
+    def get_interior_sensor_values(self, units=False):
         temp = self._comps.temp_sensor.get_temperature()
         hum = self._comps.humidity_sensor.get_humidity()
         pres = self._comps.pressure_sensor.get_pressure()
