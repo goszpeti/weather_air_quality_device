@@ -60,7 +60,7 @@ html {
   }
 
   .stat-title {
-    font-size: 1rem;
+    font-size: 1.5rem;
 
     @supports (color: color-mix(in lab, red, red)) {
       color: color-mix(in oklab, var(--color-base-content) 90%, transparent);

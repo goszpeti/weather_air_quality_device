@@ -1,47 +1,48 @@
 <!-- need raw for htmx json substitution to work -->
 {% raw %}
 <template id="Exterior-template">
-    <div class="stat">
+    <div class="stat md:p-2">
         <div class="stat-title">Temperature</div>
         <div class="stat-value text-7xl tracking-tighter">{{temp}}</div>
         <div class="stat-figure">
-            <svg viewBox="0 0 24 24" class="h-18 -m-4 mt-2">
+            <svg viewBox="0 0 24 24" class="h-18">
                 <use href="static/weather_icons/wi-thermometer_full.svg#Layer_1" fill="white" />
             </svg>
         </div>
     </div>
-    <div class="stat">
+    <div class="stat md:p-2">
         <div class="stat-title">Humidity</div>
         <div class="stat-value text-5xl">{{hum}}</div>
         <div class="stat-desc"></div>
         <div class="stat-figure">
-            <svg viewBox="0 0 24 24" class="h-18 -m-2 mt-2">
+            <svg viewBox="0 0 24 24" class="h-18">
                 <use href="static/weather_icons/wi-humidity.svg#Layer_1" fill="white" />
             </svg>
         </div>
     </div>
-    <div class="stat">
+    <div class="stat md:p-2">
         <div class="stat-title">Weather today</div>
-        <div class="stat-value md:-mb-4">
+        <div class="stat-value md:-mb-2">
             <div class="grid grid-cols-[55%_20%_20%] grid-rows-2 items-stretch">
                 <div class="row-span-2">
                     <svg viewBox="0 0 48 48" class="h-28">
                         <use href="static/{{weather_icon}}#Layer_1" fill="white" />
                     </svg>
                 </div>
-                <div class="col-start-2 row-start-1">
+                <div class="col-start-2 row-start-1 flex items-center">
                     <svg viewBox="0 0 24 24" class="-m-1 h-12">
                         <use href="static/weather_icons/wi-day-sunny.svg#Layer_1" fill="white" />
                     </svg>
                 </div>
-                <div class="col-start-3 row-start-1 text-xl ml-2 text-white">{{weather_day_min_max}}
+                <div class="col-start-3 row-start-1 text-xl flex items-center text-white">
+                    {{weather_day_min_max}}
                 </div>
-                <div class="col-start-2 row-start-2">
+                <div class="col-start-2 row-start-2 flex items-center">
                     <svg viewBox="0 0 24 24" class="-m-1 h-12">
                         <use href="static/weather_icons/wi-night-clear.svg#Layer_1" fill="white" />
                     </svg>
                 </div>
-                <div class="col-start-3 row-start-2 text-xl ml-2  text-white">
+                <div class="col-start-3 row-start-2 text-xl flex  items-center text-white">
                     {{weather_night_min_max}}</div>
             </div>
         </div>

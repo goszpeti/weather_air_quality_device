@@ -1,7 +1,7 @@
 <!-- need raw for htmx json substitution to work -->
 {% raw %}
 <template id="Interior-template">
-    <div class="stat">
+    <div class="stat md:p-2">
         <div class="stat-title">Temperature</div>
         <div class="stat-value text-7xl tracking-tighter">{{temp}}</div>
         <div class="stat-figure">
@@ -10,7 +10,7 @@
             </svg>
         </div>
     </div>
-    <div class="stat">
+    <div class="stat md:p-2">
         <div class="stat-title">Humidity</div>
         <div class="stat-value text-5xl">{{hum}}</div>
         <div class="stat-desc"></div>
@@ -20,7 +20,7 @@
             </svg>
         </div>
     </div>
-    <div class="stat">
+    <div class="stat md:p-2">
         <div class="stat-title">CO2</div>
         <div id=co2_value class="stat-value text-5xl">
             <p>{{co2}}</p>
@@ -32,7 +32,7 @@
             </svg>
         </div>
     </div>
-    <div class="stat">
+    <div class="stat md:p-2">
         <div class="stat-title">Pressure</div>
         <div id=baro_value class="stat-value text-5xl">
             <p>{{baro}}</p>

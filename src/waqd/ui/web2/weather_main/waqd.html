@@ -38,21 +38,20 @@
 
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3  md:gap-0  lg:gap-2 lg:place-items-center ">
   {% for card in cards %}
-  <div class="card card-border bg-base-100 image-full shadow-sm self-stretch 
-       md:-space-y-2 rounded-box md:rounded-none 
-       lg:rounded-box">
+  <div
+       class="card card-border bg-base-100 image-full shadow-sm self-stretch rounded-box md:rounded-none lg:rounded-box">
     <figure>
       <img id="{{card.name}}-figure" src="{{card.background}}" />
     </figure>
-    <div class="card-body p-2">
+    <div class="card-body md:p-2">
+      <div hx-trigger="load, every 10s" hx-get="{{card.endpoint}}" hx-swap="innerHTML"
+           nunjucks-template="{{card.name}}-template" hx-target="#{{card.name}}-stats">
+      </div>
       <div class="flex space-x-4 justify-evenly items-center-safe">
-        <h2 class="text-3xl font-bold tracking-wider">{{card.name}}</h2>
-        <div hx-trigger="load, every 10s" hx-get="{{card.endpoint}}" hx-swap="innerHTML"
-             nunjucks-template="{{card.name}}-template" hx-target="#{{card.name}}-stats">
-        </div>
+        <h2 class="text-5xl font-bold tracking-wider">{{card.name}}</h2>
       </div>
       <div class="divider divider-accent m-0"></div>
-      <div class="stats stats-vertical shadow p-0 m-0 overflow-hidden -mt-2 glass" id="{{card.name}}-stats">
+      <div class="stats stats-vertical shadow overflow-hidden glass" id="{{card.name}}-stats">
       </div>
     </div>
     {{card.content}}
