@@ -47,7 +47,7 @@
         "python.analysis.extraPaths": [
             "${workspaceFolder}/src"
         ],
-        "html.format.wrapLineLength": 100
+        "html.format.wrapLineLength": 120
     },
     "launch": {
         "configurations": [
@@ -55,7 +55,7 @@
                 "name": "Main",
                 "type": "python",
                 "request": "launch",
-                "program": "${workspaceFolder}/src/waqd/__main__.py",
+                "module": "waqd",
                 "args": [
                     "-D=1",
                     // "-H"

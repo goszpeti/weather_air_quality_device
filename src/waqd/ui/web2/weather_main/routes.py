@@ -49,7 +49,7 @@ async def root(request: Request):
         },
         current_path,
     )
-    return render_spa(request, content)
+    return render_spa(request, content, overflow=False)
 
 
 @rt.get("/weather/interior", response_class=JSONResponse)

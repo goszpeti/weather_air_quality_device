@@ -34,7 +34,7 @@
   }());
 </script>
 
-<body class="overflow-scroll md:overflow-hidden lg:overflow-scroll">
+<body class="{{overflow_config}}">
   <header>
     <div class="navbar bg-base-100 shadow-sm rounded-b text-3xl p-2 md:p-0 lg:p-2">
       <div class="navbar-start">
@@ -116,14 +116,14 @@
     </div>
   </header>
 
-  <main class="py-2 px-2 md:px-0 md:py-0 overflow-scroll md:overflow-hidden lg:overflow-scroll" style="max-width: 100%;"
-        hx-ext="client-side-templates">
+  <main class="py-2 px-2 md:px-0 md:py-0" style="max-width: 100%;" hx-ext="client-side-templates">
     {{content}}
     <footer class="footer md:invisible lg:visible footer-center bg-secondary text-base-content p-4 space-y-8">
       <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
     </footer>
   </main>
   <div id="toasts" class="toast toast-end">
+
     <!-- <div class="alert alert-info">
       <span>New mail arrived.</span>
     </div> -->
