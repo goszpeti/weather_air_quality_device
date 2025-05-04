@@ -11,3 +11,8 @@ class SensorApi_v1(BaseModel):
     tvoc: Optional[str] = Field(description="TVOC in ppb", default="N/A")
     dust: Optional[str] = Field(description="Dust in µg/m³", default="N/A")
     light: Optional[str] = Field(description="Light in lux", default="N/A")
+
+
+class TempHumSensorApi_v1(SensorApi_v1):
+    temp: str = Field(description="Temperature in Celsius", default="N/A")
+    hum: str = Field(description="Humidity in %", default="N/A")

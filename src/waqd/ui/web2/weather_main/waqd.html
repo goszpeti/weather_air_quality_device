@@ -1,49 +1,58 @@
 <script>
   document.addEventListener('htmx:afterSettle', function (details) {
-    if (details.target.id !== 'Interior-stats') return; // Ensure we only run this for the correct target
-    const co2Element = document.querySelector('#co2_value p');
-    if (!co2Element) return; // Ensure the element exists before proceeding
-    const co2Value = parseInt(co2Element.textContent, 10);
-    const co2Container = document.querySelector('#co2_value');
+    // Dynamic CO2 coloring
+    if (details.target.id == 'Interior-stats') {
+      const co2Element = document.querySelector('#co2_value p');
+      if (!co2Element) return; // Ensure the element exists before proceeding
+      const co2Value = parseInt(co2Element.textContent, 10);
+      const co2Container = document.querySelector('#co2_value');
 
-    if (!isNaN(co2Value)) {
-      co2Container.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500');
-      if (co2Value < 800) {
-        co2Container.classList.add('text-green-500');
-      } else if (co2Value < 1200) {
-        co2Container.classList.add('text-yellow-500');
-      } else {
-        co2Container.classList.add('text-red-500');
+      if (!isNaN(co2Value)) {
+        co2Container.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500');
+        if (co2Value < 800) {
+          co2Container.classList.add('text-green-500');
+        } else if (co2Value < 1200) {
+          co2Container.classList.add('text-yellow-500');
+        } else {
+          co2Container.classList.add('text-red-500');
+        }
+      }
+      // Dynamic Background setting
+    } else if (details.target.id == 'Exterior-stats') {
+      const figureElement = document.querySelector('#Exterior-figure');
+
+      if (figureElement) {
+        try {
+          const responseData = JSON.parse(details.detail.xhr.response);
+          if (responseData.background) {
+            figureElement.src = 'static/' + responseData.background;
+          }
+        } catch (e) {
+          console.error('Failed to parse JSON response:', e);
+        }
       }
     }
   });
+
 </script>
 
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3  md:gap-0  lg:gap-2 lg:place-items-center ">
-  <!-- <div class="carousel carousel-center bg-neutral rounded-box max-w-full space-x-4 p-4"> -->
   {% for card in cards %}
-  <div
-    class="card card-border bg-base-100 image-full shadow-sm self-stretch md:-space-y-2 rounded-box md:rounded-none lg:rounded-box carousel-item">
+  <div class="card card-border bg-base-100 image-full shadow-sm self-stretch 
+       md:-space-y-2 rounded-box md:rounded-none 
+       lg:rounded-box">
     <figure>
-      <img src="{{card.background}}" />
+      <img id="{{card.name}}-figure" src="{{card.background}}" />
     </figure>
     <div class="card-body p-2">
       <div class="flex space-x-4 justify-evenly items-center-safe">
         <h2 class="text-3xl font-bold tracking-wider">{{card.name}}</h2>
-        <!-- <div class="tooltip tooltip-bottom" data-tip="Toggle updating values"> -->
-        <div id="auto-refresh" hx-trigger="load, every 10s" hx-get="{{card.endpoint}}"
-          hx-swap="innerHTML" nunjucks-template="{{card.name}}-template"
-          hx-target="#{{card.name}}-stats">
-          <!-- <svg viewBox="0 0 24 24" class="btn swap-on w-14 glass">
-              <use href="static/general_icons/refresh.svg#main" fill="white" />
-            </svg> -->
+        <div hx-trigger="load, every 10s" hx-get="{{card.endpoint}}" hx-swap="innerHTML"
+             nunjucks-template="{{card.name}}-template" hx-target="#{{card.name}}-stats">
         </div>
-        <!-- </div> -->
-
       </div>
       <div class="divider divider-accent m-0"></div>
-      <div class="stats stats-vertical shadow p-0 m-0 overflow-hidden -mt-2 glass"
-        id="{{card.name}}-stats">
+      <div class="stats stats-vertical shadow p-0 m-0 overflow-hidden -mt-2 glass" id="{{card.name}}-stats">
       </div>
     </div>
     {{card.content}}

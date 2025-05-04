@@ -2,13 +2,12 @@ import datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, PlainTextResponse
 
 import waqd.app as base_app
 from waqd.assets.assets import get_asset_file_relative
 from waqd.ui import get_localized_date
 from waqd.ui.web2.api.sensor.v1.connector import SensorRetrieval
-from waqd.ui.web2.api.sensor.v1.model import SensorApi_v1
 from waqd.ui.web2.api.weather.v1.connector import WeatherRetrieval
 from waqd.ui.web2.weather_main.model import ExteriorView, ForecastView
 
@@ -36,7 +35,7 @@ async def root(request: Request):
                 },
                 {
                     "name": "Exterior",
-                    "background": "static/weather_bgrs/cloudy_night_bg.jpg",
+                    "background": "",
                     "content": exterior,
                     "endpoint": "/weather/exterior",
                 },
@@ -62,12 +61,13 @@ async def interior(request: Request):
 async def exterior(request: Request) -> ExteriorView:
     ext_values = SensorRetrieval().get_exterior_sensor_values(units=True)
     current_weather = WeatherRetrieval().get_current_weather()
+    # TODO: add None handling
     forecast = WeatherRetrieval().get_5_day_forecast()
     weather_bgr = get_asset_file_relative(current_weather.get_background_image())
     return ExteriorView(
+        background=weather_bgr,
         temp=ext_values.temp,
         hum=ext_values.hum,
-        baro=ext_values.baro,
         weather_icon=get_asset_file_relative(current_weather.get_icon()),
         weather_day_min_max=f"{forecast[0].temp_min}°/{forecast[0].temp_max}°",
         weather_night_min_max=f"{forecast[0].temp_night_min}°/{forecast[0].temp_night_max}°",

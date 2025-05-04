@@ -3,7 +3,7 @@ from typing import Optional
 
 from pint import Quantity
 import waqd.app as base_app
-from .model import SensorApi_v1
+from .model import SensorApi_v1, TempHumSensorApi_v1
 import waqd.app as app
 from waqd.ui import format_unit_disp_value
 
@@ -25,7 +25,7 @@ class SensorRetrieval:
         temp = self._format_sensor_disp_value(temp, units)
         hum = self._format_sensor_disp_value(hum, units, 0)
 
-        data = SensorApi_v1(
+        data = TempHumSensorApi_v1(
             temp=temp,
             hum=hum,
         )
