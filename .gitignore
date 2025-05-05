@@ -15,6 +15,9 @@ doc/users_manual_DE.pdf
 script/installer/waqd.log
 v1.4.4
 nonexistant
+.sesskey
+node_modules
+
 
 src/config.ini
 waqd.log

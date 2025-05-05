@@ -1,3 +1,5 @@
+from pathlib import Path
+from ..assets.assets import get_asset_file
 from waqd.base.file_logger import Logger
 import locale
 import platform
@@ -58,3 +60,33 @@ def format_unit_disp_value(
             if unit:
                 disp_value += " " + unit
     return disp_value
+
+
+def get_temperature_icon(temp_value: Optional[Quantity]) -> Path:
+    """
+    Return the path of the image resource for the appropriate temperature input.
+    t < 0: empty
+    t < 10: low
+    t < 22: half
+    t < 30 high
+    t > 30: full
+    """
+    assets_subfolder = "weather_icons"
+    # set dummy as default
+    icon_path = get_asset_file(assets_subfolder, "thermometer_empty")
+    # return dummy for invalid value
+    if temp_value is None:
+        return icon_path
+    temp_deg_c = temp_value.m_as(app.unit_reg.degC)
+    # set up ranges for the 5 icons
+    if temp_deg_c <= 0:
+        icon_path = get_asset_file(assets_subfolder, "thermometer_empty")
+    elif temp_deg_c < 10:
+        icon_path = get_asset_file(assets_subfolder, "thermometer_almost_empty")
+    elif temp_deg_c < 22:
+        icon_path = get_asset_file(assets_subfolder, "thermometer_half")
+    elif temp_deg_c < 30:
+        icon_path = get_asset_file(assets_subfolder, "thermometer_almost_full")
+    else:
+        icon_path = get_asset_file(assets_subfolder, "thermometer_full")
+    return icon_path

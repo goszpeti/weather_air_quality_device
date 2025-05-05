@@ -12,11 +12,10 @@
 
 import socket
 import subprocess
-from typing import Callable, Tuple
+from typing import Tuple
 from time import sleep
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
-from waqd.base.signal import QtSignalRegistry
 
 
 class Network:
@@ -84,9 +83,6 @@ class Network:
             ipv4 = ""
         return (ipv4, ipv6)
 
-    def register_network_notification(self, sig, cbk: Callable):
-        QtSignalRegistry().register_callback(self.NW_READY_SIG_NAME, sig, cbk)
-
     def check_internet_connection(self):
         """
         RPi fails often when WLAN conncetion is unstable.
@@ -113,7 +109,7 @@ class Network:
         else:
             if self._internet_reconnect_try != 0:
                 self._internet_reconnect_try = 0
-                QtSignalRegistry().emit_sig_callback(self.NW_READY_SIG_NAME)
+                # TODO emit signal
 
     def wait_for_network(self) -> bool:
         max_error = 5

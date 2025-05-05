@@ -39,13 +39,13 @@
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3  md:gap-0  lg:gap-2 lg:place-items-center">
   {% for card in cards %}
   <div
-       class="card card-border bg-base-100 image-full shadow-sm self-stretch rounded-box md:rounded-none lg:rounded-box">
+    class="card card-border bg-base-100 image-full shadow-sm self-stretch rounded-box md:rounded-none lg:rounded-box">
     <figure>
       <img id="{{card.name}}-figure" src="{{card.background}}" />
     </figure>
     <div class="card-body md:p-2">
       <div hx-trigger="load, every 10s" hx-get="{{card.endpoint}}" hx-swap="innerHTML"
-           nunjucks-template="{{card.name}}-template" hx-target="#{{card.name}}-stats">
+        nunjucks-template="{{card.name}}-template" hx-target="#{{card.name}}-stats">
       </div>
       <div class="flex space-x-4 justify-evenly items-center-safe">
         <h2 class="text-5xl font-bold tracking-wider">{{card.name}}</h2>

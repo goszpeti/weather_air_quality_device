@@ -4,7 +4,7 @@ SRC_DIR=${CURRENT_DIR}/../../src
 echo "##### Start updater process #####" 
 
 # additional args to not fail on wrong clock time and enable update to newer distro releases
-sudo apt-get -o Acquire::Check-Valid-Until=false -o Acquire::Check-Date=false update  --allow-releaseinfo-change
+sudo apt-get -o Acquire::Check-Valid-Until=false -o Acquire::Check-Date=false update
 echo "##### Install feh and zenity #####" 
 # zenity for dialog and feh background screen - xdotool and wmctrl for x-window manipulation
 sudo apt-get install feh zenity xdotool wmctrl -y
@@ -26,7 +26,8 @@ function waqd_install() {
     echo "# Install needed system libraries... (Step 1/6)"
     # python dependencies
     # sudo apt -y install python3-apt # TODO: if apt via python is used
-    sudo apt-get -y install python3-libgpiod python3-venv python3-pyrsistent python3-pyqt5 python3-pyqt5.qtmultimedia python3-pyqt5.qtsvg python3-pyqt5.qtchart
+    sudo apt-get -y install python3-venv 
+	#  python3-libgpiod python3-pyrsistent python3-pyqt5 python3-pyqt5.qtmultimedia python3-pyqt5.qtsvg python3-pyqt5.qtchart
     # install pipx for venv based app creation
     python3 -m pip install --user pipx==1.1.0
     python3 -m pipx ensurepath
@@ -52,12 +53,6 @@ function waqd_install() {
     export PYTHONPATH=${SRC_DIR}
     python3 -m installer --set_wallpaper
     
-    echo "# Install Wifi Connector... (Step 6/6)"
-    # TODO can'T do this in the middle of an update, only after it?
-	# resets network 1st time installed
-    cd $CURRENT_DIR
-    chmod +x ./install_wifi-connect.sh
-    ./install_wifi-connect.sh -y
     echo "# Waiting for restart..."
     sudo reboot
 }

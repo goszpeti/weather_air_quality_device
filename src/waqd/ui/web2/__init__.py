@@ -38,5 +38,6 @@ def start_web_ui_chromium_kiosk_mode():
             "--disable-pinch",
             "--disable-features=TranslateUI",
             "http://localhost:8080",
+            # "--force-device-scale-factor=0.8",
         ]
     )

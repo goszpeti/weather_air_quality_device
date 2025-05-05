@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 import sys
 import time
 import traceback
-from typing import Optional
 from pint import UnitRegistry
 
 import waqd
@@ -15,16 +14,10 @@ from waqd import __version__ as WAQD_VERSION
 from waqd.base.component_ctrl import ComponentController
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import (
-    UI_TYPE,
-    UI_TYPE_QT,
-    UI_TYPE_WEB,
-    Settings,
-)
+from waqd.settings import Settings
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_window import QtBackChannel
     from waqd.base.component_ctrl import ComponentController
     from PyQt5 import QtCore
 
@@ -39,14 +32,6 @@ comp_ctrl: ComponentController
 unit_reg = UnitRegistry()
 # for global access to settings
 settings: Settings
-
-# Qt Stuff
-# to send back data form backend to gui, if the gui loaded
-qt_backchannel: Optional["QtBackChannel"] = None
-# translator for qt app translation singleton
-translator: Optional["QtCore.QTranslator"] = None
-# for built-in Qt strings
-base_translator: Optional["QtCore.QTranslator"] = None
 
 
 def basic_setup():
@@ -82,33 +67,19 @@ def main():
     if not comp_ctrl or not settings:
         return
     # Load the selected GUI mode
-    display_type = settings.get(UI_TYPE)
     try:
         comp_ctrl.init_all()
-        if waqd.HEADLESS_MODE:
-            comp_ctrl._stop_event.wait()
+        from waqd.ui.web2 import (
+            start_web_server,
+            start_web_ui_chromium_kiosk_mode,
+        )
 
-        elif display_type == UI_TYPE_QT:
-            comp_ctrl.init_all()
-            from waqd.ui.qt.startup import qt_app_setup, qt_loading_sequence
+        runtime_system = RuntimeSystem()
+        if runtime_system.is_target_system and not waqd.HEADLESS_MODE:
+            start_web_ui_chromium_kiosk_mode()
 
-            qt_app = qt_app_setup()
-            # main_ui must be held in this context, otherwise the gc will destroy the gui
-            qt_loading_sequence(comp_ctrl)
-            qt_app.exec()
-        elif display_type == UI_TYPE_WEB:
-            from waqd.ui.web2 import (
-                start_web_browser,
-                start_web_server,
-                start_web_ui_chromium_kiosk_mode,
-            )
-
-            runtime_system = RuntimeSystem()
-            if runtime_system.is_target_system:
-                start_web_ui_chromium_kiosk_mode()
-
-            start_web_server(waqd.DEBUG_LEVEL > 0)
-            comp_ctrl._stop_event.wait()
+        start_web_server(waqd.DEBUG_LEVEL > 0)
+        comp_ctrl._stop_event.wait()
 
     except Exception:
         trace_back = traceback.format_exc()

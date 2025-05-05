@@ -11,7 +11,8 @@ with the use of commonly used sensors and a touch display.
 
 It also focuses on an easy system setup and assembly with a suited case. 
 
-The project will be written with the usage of Qt in Python.
+The project will switch with version 3.0 to merge the Mobile web view with the 
+native desktop mode in a new merged Web Ui. The device will start the ui in a kiosk mode broswer.
 
 ## Features
 
@@ -155,19 +156,18 @@ https://github.com/dfeneyrou/palanteer/releases
 * For all natively installed Python libs see setup.py
 * pipx from PyPi [MIT License](<http://opensource.org/licenses/mit-license.php>)
 * Python packages installed via system package manager
-  * PyQt5 (including python3-pyqt5.qtsvg python3-pyqt5.qtchart) by Riverbank Computing Limited, [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
   * python3-libgpiod
   * python3-venv
-* wifi-connect under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) from https://github.com/balena-os/wifi-connect
+
 ## Needed Operating System and builtin dependencies
 
-* Raspberry Pi OS - 64 bit (Bullseye) - 32 bit no longer supported
+* Raspberry Pi OS - 64 bit (Bookworm)
   * APT
   * LightDM desktop manager
   * XFCE desktop environment with pcmanfm
   * Plymouth for boot screen customization
   * raspi-config
-  * Python 3.9
+  * Python 3.11
   * Installed official apt packages
     * feh
     * zenity

@@ -8,7 +8,6 @@ LANG_HUNGARIAN = "Magyar"
 
 SOUND_ENABLED = "sound_enabled"
 EVENTS_ENABLED = "events_enabled"
-SERVER_ENABLED = "server_enabled"
 # general hw
 DISPLAY_TYPE = "display_type"
 DISP_TYPE_RPI = "RPI_TD"  # original 7" rpi touch display
@@ -34,14 +33,7 @@ UPDATER_USER_BETA_CHANNEL = "updater_use_beta_channel"
 LAST_TEMP_C_OUTSIDE = "last_temp_outside_value"  # TODO write
 REMOTE_MODE_URL = "remote_mode_url"
 
-# ui
-UI_TYPE = "ui_type"
-UI_TYPE_WEB = "web_chromium"
-UI_TYPE_QT = "qt"
-
-# legacy gui
-FONT_SCALING = "font_scaling"
-FONT_NAME = "font_name"
+# gui
 FORECAST_BG = "forecast_background"
 INTERIOR_BG = "interior_background"
 
@@ -55,7 +47,6 @@ MOTION_SENSOR_ENABLED = (
 DAY_STANDBY_TIMEOUT = "day_standby_timeout"
 NIGHT_STANDBY_TIMEOUT = "night_standby_timeout"
 # forecast
-FORECAST_ENABLED = "forecast_enabled"
 LOCATION = "location"  # only for display and search purposes
 LOCATION_LONGITUDE = "location_long"
 LOCATION_LATITUDE = "location_lat"

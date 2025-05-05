@@ -12,22 +12,15 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: CPython",
-    "Environment :: X11 Applications :: Qt",
     "Environment :: Win32 (MS Windows)",
 ]
 dependencies = [
     "wheel", # for pep 517 legacy setup.py mode
     # Backend
-    "htmlmin==0.1.12",            # BSD License - HTML minifier (removes comments and whitespace)
-    "js.jquery==3.6.1",           # BSD License - Offline jquery resource and helper
-    "plotly==5.10.0",             # MIT License - web graph plotting
-    "influxdb-client==1.30.0",    # MIT License - influxdb API
-    "bcrypt>=4.0.0, <5.0.0",      # Apache License, Version 2.0 - Password hashing
     "DebugPy<=2.0.0",             # MS VSCode debugger for dynamic debugging
+    "influxdb-client==1.30.0",    # MIT License - influxdb API
     "JsonSchema==4.16.0",         # MIT License - for events json schema validation
-    "Bottle==0.12.23",            # MIT License - webserver for remote sensors
     "Jinja2==3.1.2",
-    "paste==3.5.0",               # server backend for bottle
     "pint==0.19.2",               # BSD 3-clause style license - physical units for sensors
     "Python-DateUtil==2.8.2",     # Apache License - for date parse and relative delta
     "APScheduler==3.9.1",         # MIT License - Scheduler for Events function
@@ -39,25 +32,20 @@ dependencies = [
     # HW
     "RPi-Backlight==2.4.1",   # MIT License
     "Adafruit-Blinka==7.1.1", # For all other Adafruit drivers
-    # "Adafruit-PlatformDetect==2.4.0",  # MIT License - target and model detection - up to 3.10 not working with BMP280
     "Adafruit-CircuitPython-DHT==3.7.1",     # MIT License - temp/hum sensor
     "Adafruit-CircuitPython-CCS811==1.3.4",  # MIT License - co2/tvoc sensor
     "Adafruit-CircuitPython-BME280==2.6.10", # MIT License - temp/hum/baro sensor
     "Adafruit-CircuitPython-BMP280==3.2.15", # MIT License - temp/baro sensor
     "Adafruit-Circuitpython-BH1750==1.0.7",  # MIT License - light sensor
     "Adafruit-Circuitpython-ADS1x15==2.2.8", # MIT License - currently only this ADC is used for analog sensors
-    # QT Widgets
-    "QtWidgets==1.1",     # MIT License - for touch friendly Toggle Switch
-    "PyQtSpinner==2.0.0", # MIT License - a loading Spinner
-    "QtPy==2.3.0",        # # MIT License - needed by QtWidgets
-    # UI
-    "PyQt5>=5.15.0; platform_system == 'Windows'",     # GPLv3 - Must be compiled on RPi (takes an eternity) - so use system libs
-    "PyQtChart>=5.15.0; platform_system == 'Windows'", # GPLv3 - for DetailView
     "MH-Z19==3.1.3; platform_machine=='x86_64'",       # MIT License
+    # Web & UI
     "fastapi[standard]",
     "PyJWT",
     "passlib",
-
+    "htmlmin==0.1.12",            # BSD License - HTML minifier
+    "plotly==5.10.0",             # MIT License - web graph plotting
+    "bcrypt>=4.0.0, <5.0.0",      # Apache License, Version 2.0 - Password hashing
 ]
 
 readme = "README.md"
@@ -123,7 +111,7 @@ markers = []
 
 [tool.ruff]
 line-length = 96
-target-version = "py38"
+target-version = "py311"
 
 [tool.ruff.format]
 quote-style = "double"
