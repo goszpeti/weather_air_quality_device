@@ -10,6 +10,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+
 from fastapi.responses import RedirectResponse
 
 
@@ -30,6 +32,18 @@ web_app = FastAPI(
 )
 web_app.mount("/static", StaticFiles(directory=str(waqd.assets_path)), name="static")
 web_app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
+web_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:8000",
+        "http://localhost",
+        "http://localhost:8000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 web_app.include_router(sensor_v1_router)
 web_app.include_router(weather_router)
 web_app.include_router(settings_router)

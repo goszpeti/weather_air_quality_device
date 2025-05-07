@@ -1,14 +1,19 @@
 import datetime
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, PlainTextResponse
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
 import waqd.app as base_app
 from waqd.assets.assets import get_asset_file_relative
 from waqd.ui import get_localized_date
 from waqd.ui.web2.api.sensor.v1.connector import SensorRetrieval
 from waqd.ui.web2.api.weather.v1.connector import WeatherRetrieval
+from ..public.authentication import (
+    User,
+    get_current_user_redirect,
+)
 from waqd.ui.web2.weather_main.model import ExteriorView, ForecastView
 
 from ..templates import render_spa, sub_template
@@ -18,8 +23,17 @@ rt = APIRouter()
 current_path = Path(__file__).parent.resolve()
 
 
+# admin: bool = Depends(
+#     PermissionChecker(
+#         required_permissions=[
+#             "users:admin",
+#         ]
+#     )
+# ),
 @rt.get("/weather", response_class=HTMLResponse)
-async def root(request: Request):
+async def root(
+    request: Request, current_user: Annotated[User, Depends(get_current_user_redirect)]
+):
     interior = sub_template("interior.html", {}, current_path, True)
     exterior = sub_template("exterior.html", {}, current_path, True)
     forecast = sub_template("forecast.html", {}, current_path, True)
@@ -49,7 +63,7 @@ async def root(request: Request):
         },
         current_path,
     )
-    return render_spa(request, content, overflow=False)
+    return render_spa(content, overflow=False)
 
 
 @rt.get("/weather/interior", response_class=JSONResponse)

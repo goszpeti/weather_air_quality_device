@@ -77,7 +77,7 @@ def get_temperature_icon(temp_value: Optional[Quantity]) -> Path:
     # return dummy for invalid value
     if temp_value is None:
         return icon_path
-    temp_deg_c = temp_value.m_as(app.unit_reg.degC)
+    temp_deg_c = temp_value.m_as(unit_reg.degC)
     # set up ranges for the 5 icons
     if temp_deg_c <= 0:
         icon_path = get_asset_file(assets_subfolder, "thermometer_empty")

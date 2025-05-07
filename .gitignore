@@ -29,3 +29,4 @@ user_db.json
 crash.log
 
 template/*
+src/waqd/ui/web2/local/output.css

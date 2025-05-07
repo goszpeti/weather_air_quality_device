@@ -20,4 +20,4 @@ async def settings(request: Request):
         {},
         current_path,
     )
-    return render_spa(request, content)
+    return render_spa(content)
