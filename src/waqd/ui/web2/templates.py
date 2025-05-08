@@ -25,7 +25,9 @@ def base_template(file_name: str, context: dict[str, Any], root_path=current_pat
     return minify(template.render(context), remove_comments=True, remove_empty_space=True)
 
 
-def render_spa(content: str, overflow=True, local=False, menu=True) -> HTMLResponse:
+def render_spa(
+    content: str, user_name: str | None, overflow=True, local=False, menu=True, toast=""
+) -> HTMLResponse:
     """if overflow is false, on the RPI itself it will not scroll"""
     overflow_config = ""
     if not overflow:
@@ -36,6 +38,7 @@ def render_spa(content: str, overflow=True, local=False, menu=True) -> HTMLRespo
             "menu.html",
             {
                 "local": local,
+                "logged_in": bool(user_name),
             },
             current_path,
         )
@@ -45,6 +48,7 @@ def render_spa(content: str, overflow=True, local=False, menu=True) -> HTMLRespo
             "content": content,
             "overflow_config": overflow_config,
             "menu": menu_content,
+            "toast": toast,
         },
         current_path,
     )

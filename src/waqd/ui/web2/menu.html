@@ -1,33 +1,48 @@
+{% if local %}
+<script> // clock
+  window.onload = (function () {
+    function updateClock(clock) {
+      const lang = navigator.language || navigator.languages[0];
+      clock.innerHTML = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' });
+    }
+    setInterval(function () {
+      var clockElement = document.getElementById("clock");
+      updateClock(clockElement);
+    }, 1000);
+
+  }());
+</script>
+{% endif %}
 <div class="navbar bg-base-100 shadow-sm rounded-b text-3xl p-2 md:p-0 lg:p-2">
   <div class="navbar-start">
     <!-- Mobile Menu -->
     <div class="dropdown">
       <div tabindex="0" role="button" class="btn btn-ghost btn-ghost2 md:hidden ">
         <svg viewBox="0 0 24 24" class="h-8">
-          <use href="static/general_icons/menu.svg#main" fill="white" />
+          <use href="/static/general_icons/menu.svg#main" fill="white" />
         </svg>
       </div>
       <ul tabindex="0" class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
         <li>
           <a href="/settings"><svg viewBox="0 0 24 24" class="h-4">
-              <use href="static/general_icons/settings.svg#main" fill="white" />
+              <use href="/static/general_icons/settings.svg#main" fill="white" />
             </svg>Settings</a>
         </li>
         <li>
           <details open>
             <summary><svg viewBox="0 0 24 24" class="h-4">
-                <use href="static/general_icons/account_circle.svg#main" fill="white" />
+                <use href="/static/general_icons/account_circle.svg#main" fill="white" />
               </svg> Account</summary>
             <ul class="">
               <li><a>
                   <svg viewBox="0 0 24 24" class="h-4 w-4">
-                    <use href="static/general_icons/manage_accounts.svg#main" fill="white" />
+                    <use href="/static/general_icons/manage_accounts.svg#main" fill="white" />
                   </svg>
                   Profile
                 </a></li>
               <li><a>
                   <svg viewBox="0 0 24 24" class="h-4 w-4">
-                    <use href="static/general_icons/logout.svg#main" fill="white" />
+                    <use href="/static/general_icons/logout.svg#main" fill="white" />
                   </svg>
                   Logout
                 </a></li>
@@ -40,18 +55,19 @@
   <div class="navbar-center hidden md:flex"></div>
   <div class="navbar-end hidden md:flex">
     <!-- Desktop Menu -->
+    {% if logged_in %}
     <ul class="menu menu-horizontal px-2 md:text-3xl lg:text-xl">
       <div class="dropdown dropdown-end ">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-field">
           <svg viewBox="0 0 24 24" class="h-8">
-            <use href="static/general_icons/account_circle.svg#main" fill="white" />
+            <use href="/static/general_icons/account_circle.svg#main" fill="white" />
           </svg>
         </div>
         <ul tabindex="0" class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
           <li>
             <a>
               <svg viewBox="0 0 24 24" class="h-6  mr-8">
-                <use href="static/general_icons/settings.svg#main" fill="white" />
+                <use href="/static/general_icons/settings.svg#main" fill="white" />
               </svg>Settings
             </a>
           </li>
@@ -59,13 +75,13 @@
             {% if local %}
             <a>
               <svg viewBox="0 0 24 24" class="h-6 mr-8">
-                <use href="static/general_icons/power.svg#main" fill="white" />
+                <use href="/static/general_icons/power.svg#main" fill="white" />
               </svg>Shutdown
             </a>
             {% else %}
-            <a>
+            <a href="/public/logout">
               <svg viewBox="0 0 24 24" class="h-6 mr-8">
-                <use href="static/general_icons/logout.svg#main" fill="white" />
+                <use href="/static/general_icons/logout.svg#main" fill="white" />
               </svg>Logout
             </a>
             {% endif %}
@@ -77,7 +93,7 @@
       <li>
         <a>
           <svg viewBox="0 0 24 24" class="h-8">
-            <use href="static/general_icons/wifi-full.svg#main" fill="white" />
+            <use href="/static/general_icons/wifi-full.svg#main" fill="white" />
           </svg>
         </a>
       </li>
@@ -85,6 +101,7 @@
     </ul>
     {% if local %}
     <span id="clock" class="p-4"></span>
+    {% endif %}
     {% endif %}
   </div>
 </div>

@@ -11,7 +11,8 @@ from .authentication import (
     authenticate_user,
     create_access_token,
     fake_users_db,
-    get_current_active_user,
+    get_current_user,
+    get_current_user_redirect,
 )
 from ....base.system import RuntimeSystem
 
@@ -28,34 +29,35 @@ rt = APIRouter()
 current_path = Path(__file__).parent.resolve()
 
 
-@rt.get("/about", response_class=HTMLResponse)
-async def about(request: Request):
-    content = sub_template(
-        "about.html",
-        {"version": waqd.__version__, "platform": RuntimeSystem().platform},
-        current_path,
-    )
-    return render_spa(content)
-
-
 @rt.get("/login", response_class=HTMLResponse)
-async def login(request: Request):
+async def login(current_user: Annotated[User, Depends(get_current_user_redirect)]):
     content = sub_template(
         "login.html",
         {},
         current_path,
     )
-    return render_spa(content, menu=False)
+    return render_spa(content, current_user, menu=False)
 
 
 @rt.get("/logout", response_class=HTMLResponse)
-async def logout(request: Request):
+async def logout():
     content = sub_template(
-        "logout.html",
+        "login.html",
         {},
         current_path,
     )
-    return render_spa(content)
+    toast = sub_template(
+        "toast.html",
+        {},
+        current_path / "components",
+    )
+    response = render_spa(content, None, toast=toast)
+    response.delete_cookie(
+        "Authorization",
+        samesite="none",
+        secure=True,
+    )
+    return response
 
 
 @rt.post("/token", response_model=Token)
@@ -90,15 +92,11 @@ async def login_for_access_token(
     return response
 
 
-@rt.get("/users/me/", response_model=User)
-async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-):
-    return current_user
-
-
-@rt.get("/users/me/items/")
-async def read_own_items(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-):
-    return [{"item_id": "Foo", "owner": current_user.username}]
+@rt.get("/about", response_class=HTMLResponse)
+async def about(current_user: Annotated[User, Depends(get_current_user_redirect)]):
+    content = sub_template(
+        "about.html",
+        {"version": waqd.__version__, "platform": RuntimeSystem().platform},
+        current_path,
+    )
+    return render_spa(content, current_user)

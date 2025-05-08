@@ -25,7 +25,7 @@
         try {
           const responseData = JSON.parse(details.detail.xhr.response);
           if (responseData.background) {
-            figureElement.src = 'static/' + responseData.background;
+            figureElement.src = '/static/' + responseData.background;
           }
         } catch (e) {
           console.error('Failed to parse JSON response:', e);

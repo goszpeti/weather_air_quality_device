@@ -1,5 +1,5 @@
 <div class="hero min-h-screen rounded-box"
-  style="background-image: url(static/gui_base/aimee-giles-ZcMUiZuOirY-unsplash.avif);">
+  style="background-image: url(/static/gui_base/aimee-giles-ZcMUiZuOirY-unsplash.avif);">
   <div class="hero-overlay"></div>
   <div class="hero-content flex-col lg:flex-row">
     <div class="text-center lg:text-left glass rounded-box p-4 bg-primary">
@@ -23,7 +23,7 @@
               const username = document.getElementById('username').value;
               const password = document.getElementById('password').value;
 
-              fetch('/token', {
+              fetch('/public/token', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded',

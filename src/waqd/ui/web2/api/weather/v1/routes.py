@@ -7,7 +7,7 @@ from .connector import WeatherRetrieval
 rt = APIRouter()
 
 
-@rt.get("/api/weather/v1/current", response_class=JSONResponse)
+@rt.get("/current", response_class=JSONResponse)
 async def weather_current(request: Request) -> Weather:
     values = WeatherRetrieval().get_current_weather()
     if not values:
@@ -15,7 +15,7 @@ async def weather_current(request: Request) -> Weather:
     return values
 
 
-@rt.get("/api/weather/v1/5day-forecast", response_class=JSONResponse)
+@rt.get("/5day-forecast", response_class=JSONResponse)
 async def weather_forecast(request: Request) -> list[DailyWeather]:
     values = WeatherRetrieval().get_5_day_forecast()
     if not values:

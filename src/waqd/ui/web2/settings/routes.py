@@ -10,7 +10,7 @@ rt = APIRouter()
 current_path = Path(__file__).parent.resolve()
 
 
-@rt.get("/settings", response_class=HTMLResponse)
+@rt.get("/", response_class=HTMLResponse)
 async def settings(request: Request):
     # interior = sub_template("interior.html", {}, current_path, True)
     # exterior = sub_template("exterior.html", {}, current_path, True)

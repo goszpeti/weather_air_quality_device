@@ -83,15 +83,6 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
 
         if not authorization or scheme.lower() != "bearer":
             return None
-
-        # if self.auto_error:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_401_UNAUTHORIZED,
-        #         detail="Not authenticated",
-        #         headers={"WWW-Authenticate": "Bearer"},
-        #     )
-        # else:
-        #     return None
         return param
 
 
@@ -162,21 +153,19 @@ async def get_current_user_api(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
-async def get_current_user_redirect(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user_redirect(
+    request: Request, token: Annotated[str, Depends(oauth2_scheme)]
+):
+    for open_routes in ["/public/", "/static/"]:
+        if request.url.path.startswith(open_routes):
+            return None
     user = get_current_user(token)
     if user is None:
         raise HTTPException(
-            status_code=status.HTTP_307_TEMPORARY_REDIRECT, headers={"Location": "/login"}
+            status_code=status.HTTP_307_TEMPORARY_REDIRECT,
+            headers={"Location": "/public/login"},
         )
     return user
-
-
-async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)],
-):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
 
 
 fake_users_db = {

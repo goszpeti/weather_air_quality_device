@@ -6,33 +6,20 @@
   <html lang="en">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1.5" , charset="utf-8">
-  <link rel="preload" href="static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
-  <link href="static/css/output.css" rel="stylesheet" type="text/css" />
-  <script src="static/js/htmx_2_0_4.js"></script>
-  <script src="static/js/htmx_ext_client_side_temp_2_0_0.js"></script>
-  <script src="static/js/nunjucks_3_2_4.js"></script>
+  <link rel="preload" href="/static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
+  <link href="/static/css/output.css" rel="stylesheet" type="text/css" />
+  <script src="/static/js/htmx_2_0_4.js"></script>
+  <script src="/static/js/htmx_ext_client_side_temp_2_0_0.js"></script>
+  <script src="/static/js/nunjucks_3_2_4.js"></script>
   <style>
     /* Cannot be in stylesheet - set font here, so no pop-in happens*/
     @font-face {
       font-family: MyFranzo;
-      src: url('static/font/Franzo-E4GA.woff');
+      src: url('/static/font/Franzo-E4GA.woff');
     }
   </style>
-  <link rel="icon" href="static/gui_base/icon.avif" type="image/png">
+  <link rel="icon" href="/static/gui_base/icon.avif" type="image/png">
 </head>
-<script> // clock
-  window.onload = (function () {
-    function updateClock(clock) {
-      const lang = navigator.language || navigator.languages[0];
-      clock.innerHTML = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' });
-    }
-    setInterval(function () {
-      var clockElement = document.getElementById("clock");
-      updateClock(clockElement);
-    }, 1000);
-
-  }());
-</script>
 
 <body class="{{overflow_config}}">
   <header>
@@ -46,9 +33,16 @@
     </footer>
   </main>
   <div id="toasts" class="toast toast-end">
-    <!-- <div class="alert alert-info">
+    <script>
+      function hideToast(name) {
+        document.getElementById(name).classList.add('hidden');
+      }
+    </script>
+    {{toast}}
+    <!--   <div class="alert alert-info" id="new-mail-toast">
       <span>New mail arrived.</span>
-    </div> -->
+      <button class="btn btn-primary" onclick="hideToast('new-mail-toast')">Close</button>
+      </div> -->
     <!-- <div class="alert alert-success">
       <span>Logged in successfully.</span>
     </div> -->

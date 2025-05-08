@@ -30,10 +30,8 @@ current_path = Path(__file__).parent.resolve()
 #         ]
 #     )
 # ),
-@rt.get("/weather", response_class=HTMLResponse)
-async def root(
-    request: Request, current_user: Annotated[User, Depends(get_current_user_redirect)]
-):
+@rt.get("/", response_class=HTMLResponse)
+async def root(current_user: Annotated[User, Depends(get_current_user_redirect)]):
     interior = sub_template("interior.html", {}, current_path, True)
     exterior = sub_template("exterior.html", {}, current_path, True)
     forecast = sub_template("forecast.html", {}, current_path, True)
@@ -43,7 +41,7 @@ async def root(
             "cards": [
                 {
                     "name": "Interior",
-                    "background": "static/gui_bgrs/background_interior2.jpg",
+                    "background": "/static/gui_bgrs/background_interior2.jpg",
                     "content": interior,
                     "endpoint": "/weather/interior",
                 },
@@ -55,7 +53,7 @@ async def root(
                 },
                 {
                     "name": "Forecast",
-                    "background": "static/gui_bgrs/background_s7.jpg",
+                    "background": "/static/gui_bgrs/background_s7.jpg",
                     "content": forecast,
                     "endpoint": "/weather/forecast",
                 },
@@ -63,15 +61,15 @@ async def root(
         },
         current_path,
     )
-    return render_spa(content, overflow=False)
+    return render_spa(content, current_user.full_name, overflow=False)
 
 
-@rt.get("/weather/interior", response_class=JSONResponse)
+@rt.get("/interior", response_class=JSONResponse)
 async def interior(request: Request):
     return RedirectResponse(url="/api/sensor/v1/interior?units=True")
 
 
-@rt.get("/weather/exterior", response_class=JSONResponse)
+@rt.get("/exterior", response_class=JSONResponse)
 async def exterior(request: Request) -> ExteriorView:
     ext_values = SensorRetrieval().get_exterior_sensor_values(units=True)
     current_weather = WeatherRetrieval().get_current_weather()
@@ -88,7 +86,7 @@ async def exterior(request: Request) -> ExteriorView:
     )
 
 
-@rt.get("/weather/forecast", response_class=JSONResponse)
+@rt.get("/forecast", response_class=JSONResponse)
 async def forecast(request: Request) -> ForecastView:
     forecast = WeatherRetrieval().get_5_day_forecast()
     current_date_time = datetime.datetime.now()
