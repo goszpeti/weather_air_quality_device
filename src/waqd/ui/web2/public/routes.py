@@ -1,9 +1,15 @@
+from datetime import timedelta
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.security import OAuth2PasswordRequestForm
 
 import waqd
+
+from waqd.base.system import RuntimeSystem
+from ..templates import render_spa, sub_template
 from .authentication import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     Token,
@@ -14,15 +20,6 @@ from .authentication import (
     get_current_user,
     get_current_user_redirect,
 )
-from ....base.system import RuntimeSystem
-
-from ..templates import render_spa, sub_template
-from typing import Annotated
-
-from datetime import timedelta
-
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
 
 rt = APIRouter()
 

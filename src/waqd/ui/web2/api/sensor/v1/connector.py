@@ -2,10 +2,12 @@ import html
 from typing import Optional
 
 from pint import Quantity
+
 import waqd.app as base_app
-from .model import SensorApi_v1, TempHumSensorApi_v1
 import waqd.app as app
 from waqd.ui import format_unit_disp_value
+
+from .model import SensorApi_v1, TempHumSensorApi_v1
 
 
 class SensorRetrieval:

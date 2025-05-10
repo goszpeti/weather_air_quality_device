@@ -2,6 +2,9 @@ from pathlib import Path
 import shutil
 import subprocess
 import waqd
+from waqd.settings import USER_DEFAULT_PW
+from .templates import base_template
+import waqd.app as base_app
 
 browser_proc = None
 
@@ -9,9 +12,18 @@ browser_proc = None
 def start_web_server(reload=False):
     import uvicorn
 
+    current_path = Path(__file__).parent.resolve()
+
     local_server_path = Path(__file__).parent / "local"
     shutil.copy(waqd.assets_path / "css" / "output.css", local_server_path)
 
+    login_admin_file = "login_admin.html"
+    login_admin_content = base_template(
+        login_admin_file + ".in",
+        {"password": base_app.settings.get_string(USER_DEFAULT_PW)},
+        current_path / "local",
+    )
+    (current_path / "local" / login_admin_file).write_text(login_admin_content)
     subprocess.Popen(
         "python -m http.server -b 127.0.0.1 8000",
         shell=True,

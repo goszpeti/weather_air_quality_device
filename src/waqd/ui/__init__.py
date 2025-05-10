@@ -1,5 +1,5 @@
 from pathlib import Path
-from ..assets.assets import get_asset_file
+from waqd.assets.assets import get_asset_file
 from waqd.base.file_logger import Logger
 import locale
 import platform

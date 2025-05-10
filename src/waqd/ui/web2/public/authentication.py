@@ -1,19 +1,18 @@
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, Optional
 
-from datetime import datetime, timedelta, timezone
-
-from fastapi.responses import RedirectResponse
 import jwt
-from fastapi import Depends, FastAPI, HTTPException, Request, status
-from fastapi.security import OAuth2, OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
+from fastapi.security import OAuth2
+from fastapi.security.utils import get_authorization_scheme_param
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
-from fastapi.security.utils import get_authorization_scheme_param
 
 import waqd.app as base_app
-from ....settings import USER_DEFAULT_PW
+
+from waqd.settings import USER_DEFAULT_PW
 
 # to get a string like this run:
 # openssl rand -hex 32

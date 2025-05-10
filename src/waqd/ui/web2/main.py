@@ -5,13 +5,11 @@ from fastapi import Depends, FastAPI
 import waqd.app as base_app
 import waqd
 
-from fastapi import Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.authentication import AuthenticationMiddleware
 
 from fastapi.responses import RedirectResponse
 

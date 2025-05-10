@@ -1,7 +1,9 @@
 # ?field=tempunit=true
-from fastapi import HTTPException, Request, APIRouter
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
-from waqd.components.weather.base_types import Weather, DailyWeather
+
+from waqd.components.weather.base_types import DailyWeather, Weather
+
 from .connector import WeatherRetrieval
 
 rt = APIRouter()

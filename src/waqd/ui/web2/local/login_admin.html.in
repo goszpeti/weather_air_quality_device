@@ -10,7 +10,7 @@
 </head>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        fetch('http://localhost/token', {
+        fetch('http://localhost/public/token', {
             resolveWithFullResponse: true,
             method: 'POST',
             headers: {
@@ -18,7 +18,7 @@
             },
             body: new URLSearchParams({
                 username: 'local_admin',
-                password: 'fSdiGHvkm9.',
+                password: '{{password}}',
                 grant_type: 'password'
             }),
             credentials: 'include'
@@ -29,9 +29,6 @@
                 if (data.access_token) {
                     fetch('http://localhost/weather', {
                         method: 'GET',
-                        // headers: {
-                        //     'Authorization': `Bearer ${data.access_token}`
-                        // }
                         credentials: 'include'
                     })
                         .then(weatherResponse => {

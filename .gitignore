@@ -30,3 +30,4 @@ crash.log
 
 template/*
 src/waqd/ui/web2/local/output.css
+src/waqd/ui/web2/local/login_admin.html

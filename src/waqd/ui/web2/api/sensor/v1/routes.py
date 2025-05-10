@@ -1,6 +1,6 @@
-# ?field=tempunit=true
-from fastapi import Request, APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
+
 from .connector import SensorRetrieval
 from .model import SensorApi_v1
 
