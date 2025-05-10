@@ -1232,7 +1232,7 @@ class WAQDRemoteStation(
             Logger().warning(f"Cannot reach {url}")
             return
         if not response.ok:
-            Logger().warning(f"Cannot reach {url}")
+            Logger().warning(f"Cannot reach {url}: {response.text}")
             return ()
         content: "SensorApi_0_1" = response.json()
         if (val := content.get("temp", "N/A")) not in ["None", "N/A"]:

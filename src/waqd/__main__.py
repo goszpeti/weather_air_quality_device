@@ -21,7 +21,6 @@ def parse_cmd_args():
     """
     All CLI related functions.
     """
-    global DEBUG_LEVEL, HEADLESS_MODE, MIGRATE_SENSOR_LOGS
 
     parser = argparse.ArgumentParser(
         prog=waqd.PROG_NAME, description=f"{waqd.PROG_NAME} command line interface"
@@ -32,14 +31,14 @@ def parse_cmd_args():
     parser.add_argument("-M", "--migrate_sensor_logs", action="store_true")
 
     args = parser.parse_args()
-    DEBUG_LEVEL = args.debug_level
+    waqd.DEBUG_LEVEL = args.debug_level
     debug_env_var = os.getenv("WAQD_DEBUG")
     if debug_env_var:
-        DEBUG_LEVEL = int(debug_env_var)
+        waqd.DEBUG_LEVEL = int(debug_env_var)
     if args.headless:
-        HEADLESS_MODE = True
+        waqd.HEADLESS_MODE = True
     if args.migrate_sensor_logs:
-        MIGRATE_SENSOR_LOGS = True
+        waqd.MIGRATE_SENSOR_LOGS = True
 
 
 if __name__ == "__main__":
