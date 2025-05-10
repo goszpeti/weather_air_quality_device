@@ -15,7 +15,10 @@ from fastapi.responses import RedirectResponse
 
 from . import LOCAL_SERVER_PORT
 
-from .public.authentication import get_current_user_with_redirect
+from .public.authentication import (
+    get_current_user_with_exception,
+    get_current_user_with_redirect,
+)
 
 
 from .api.sensor.v1.routes import rt as sensor_v1_router
@@ -31,7 +34,6 @@ web_app = FastAPI(
     description="Web UI for Waqd",
     version=waqd.__version__,
     debug=waqd.DEBUG_LEVEL > 0,
-    dependencies=[Depends(get_current_user_with_redirect)],
 )
 
 web_app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
@@ -51,13 +53,29 @@ web_app.add_middleware(
 web_app.mount("/static", StaticFiles(directory=str(waqd.assets_path)), name="static")
 
 # HTML routers
-web_app.include_router(weather_router, prefix="/weather")
-web_app.include_router(settings_router, prefix="/settings")
+web_app.include_router(
+    weather_router,
+    prefix="/weather",
+    dependencies=[Depends(get_current_user_with_redirect)],
+)
+web_app.include_router(
+    settings_router,
+    prefix="/settings",
+    dependencies=[Depends(get_current_user_with_redirect)],
+)
 web_app.include_router(public_router, prefix="/public")
 
 # API routers
-web_app.include_router(weather_v1_router, prefix="/api/weather/v1")
-web_app.include_router(sensor_v1_router, prefix="/api/sensor/v1")
+web_app.include_router(
+    weather_v1_router,
+    prefix="/api/weather/v1",
+    dependencies=[Depends(get_current_user_with_exception)],
+)
+web_app.include_router(
+    sensor_v1_router,
+    prefix="/api/sensor/v1",
+    dependencies=[Depends(get_current_user_with_exception)],
+)
 
 
 @web_app.get("/", response_class=HTMLResponse)

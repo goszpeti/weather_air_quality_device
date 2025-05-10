@@ -100,15 +100,22 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user(db, token: TokenData):
+def get_user_from_token(db, token: TokenData):
     if token.username in db:
         user_dict = db[token.username]
         user_dict["token_expires"] = token.expires
         return User(**user_dict)
 
 
+def get_user_from_name(db, username: str):
+    if username in db:
+        user_dict = db[username]
+        user_dict["token_expires"] = datetime.now()
+        return User(**user_dict)
+
+
 def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
+    user = get_user_from_name(fake_db, username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -116,12 +123,14 @@ def authenticate_user(fake_db, username: str, password: str):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(
+    data: dict, expires_delta: timedelta | None = timedelta(ACCESS_TOKEN_EXPIRE_MINUTES)
+):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(days=30)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -138,7 +147,7 @@ def get_current_user(token):
         )
     except InvalidTokenError:
         return None
-    return get_user(fake_users_db, token_data)
+    return get_user_from_token(fake_users_db, token_data)
 
 
 async def get_current_user_with_exception(token: Annotated[str, Depends(oauth2_scheme)]):
