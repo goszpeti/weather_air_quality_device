@@ -1,7 +1,7 @@
 import configparser
 import logging
 import os
-import bcrypt
+import secrets
 from pathlib import Path
 from typing import Union, Dict
 
@@ -99,9 +99,9 @@ class Settings:
                 LOG_SENSOR_DATA: True,
                 LAST_TEMP_C_OUTSIDE: 23.5,
                 REMOTE_MODE_URL: "",
-                USER_SESSION_SECRET: bcrypt.gensalt(4).decode("utf-8"),
-                USER_API_KEY: bcrypt.gensalt(4).decode("utf-8")[3:],
-                USER_DEFAULT_PW: bcrypt.gensalt(4).decode("utf-8")[18:],
+                USER_SESSION_SECRET: secrets.token_hex(32),
+                USER_API_KEY: "",
+                USER_DEFAULT_PW: secrets.token_hex(32),
             },
             self._GUI_SECTION_NAME: {
                 INTERIOR_BG: "background_s8.jpg",

@@ -12,11 +12,8 @@ from pydantic import BaseModel
 
 import waqd.app as base_app
 
-from waqd.settings import USER_DEFAULT_PW
+from waqd.settings import USER_DEFAULT_PW, USER_SESSION_SECRET
 
-# to get a string like this run:
-# openssl rand -hex 32
-SECRET_KEY = "89c9b9a1d10f4dd9bf6edc95c4add1a7ddd0d198912ce2deffcce4f571cb319f"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -130,15 +127,19 @@ def create_access_token(
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(days=30)
+        expire = datetime.now(timezone.utc) + timedelta(days=100)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, base_app.settings.get_string(USER_SESSION_SECRET), algorithm=ALGORITHM
+    )
     return encoded_jwt
 
 
 def get_current_user(token):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token, base_app.settings.get_string(USER_SESSION_SECRET), algorithms=[ALGORITHM]
+        )
         username = payload.get("sub")
         if username is None:
             return None
