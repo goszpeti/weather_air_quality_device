@@ -19,6 +19,20 @@
     }
   </style>
   <link rel="icon" href="/static/gui_base/icon.avif" type="image/png">
+  {% if local %}
+  <script>
+    // Call a fetch every 10 minutes to keep the session alive
+    setInterval(function () {
+      fetch('/public/keepalive', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+    }, 600000); // 10 minutes in milliseconds 600000
+  </script>
+  {% endif %}
 </head>
 
 <body class="{{overflow_config}}">

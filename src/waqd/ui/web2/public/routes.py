@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from pathlib import Path
 from typing import Annotated
 
@@ -12,13 +12,16 @@ from waqd.base.system import RuntimeSystem
 from ..templates import render_spa, sub_template
 from .authentication import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
+    PermissionChecker,
     Token,
     User,
+    UserInDB,
     authenticate_user,
     create_access_token,
     fake_users_db,
     get_current_user,
-    get_current_user_redirect,
+    get_current_user_with_exception,
+    get_current_user_with_redirect,
 )
 
 rt = APIRouter()
@@ -27,7 +30,7 @@ current_path = Path(__file__).parent.resolve()
 
 
 @rt.get("/login", response_class=HTMLResponse)
-async def login(current_user: Annotated[User, Depends(get_current_user_redirect)]):
+async def login(current_user: Annotated[User, Depends(get_current_user_with_redirect)]):
     content = sub_template(
         "login.html",
         {},
@@ -76,13 +79,39 @@ async def login_for_access_token(
         {"access_token": access_token, "token_type": "bearer"},
         status_code=status.HTTP_200_OK,
     )
+    set_access_token_cookie(response, user.username, access_token)
+    return response
+
+
+@rt.get("/keepalive", response_class=JSONResponse)
+async def keepalive(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
+    if current_user.token_expires - datetime.now() > timedelta(minutes=11):
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": current_user.username}, expires_delta=access_token_expires
+        )
+        response = JSONResponse(
+            {"access_token": access_token, "token_type": "bearer"},
+            status_code=status.HTTP_200_OK,
+        )
+        set_access_token_cookie(response, current_user.username, access_token)
+        return response
+
+
+def set_access_token_cookie(
+    response: JSONResponse, username: str, access_token: str, expires_seconds=3600
+):
+    if not access_token:
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": username}, expires_delta=access_token_expires
+        )
     response.set_cookie(
         key="Authorization",
         value=f"Bearer {access_token}",
         httponly=True,
-        max_age=60 * 60,
-        expires=60 * 60,
-        # domain=".localhost",
+        max_age=expires_seconds,
+        expires=expires_seconds,
         samesite="none",
         secure=True,
     )
@@ -90,7 +119,7 @@ async def login_for_access_token(
 
 
 @rt.get("/about", response_class=HTMLResponse)
-async def about(current_user: Annotated[User, Depends(get_current_user_redirect)]):
+async def about(current_user: Annotated[User, Depends(get_current_user_with_redirect)]):
     content = sub_template(
         "about.html",
         {"version": waqd.__version__, "platform": RuntimeSystem().platform},

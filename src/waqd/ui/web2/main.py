@@ -13,7 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.responses import RedirectResponse
 
-from .public.authentication import get_current_user_redirect
+from . import LOCAL_SERVER_PORT
+
+from .public.authentication import get_current_user_with_redirect
 
 
 from .api.sensor.v1.routes import rt as sensor_v1_router
@@ -29,16 +31,16 @@ web_app = FastAPI(
     description="Web UI for Waqd",
     version=waqd.__version__,
     debug=waqd.DEBUG_LEVEL > 0,
-    dependencies=[Depends(get_current_user_redirect)],
+    dependencies=[Depends(get_current_user_with_redirect)],
 )
 
 web_app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
 web_app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://127.0.0.1:8000",
         "http://localhost",
-        "http://localhost:8000",
+        f"http://127.0.0.1:{LOCAL_SERVER_PORT}",
+        f"http://localhost:{LOCAL_SERVER_PORT}",
     ],
     allow_credentials=True,
     allow_methods=["*"],

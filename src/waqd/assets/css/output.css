@@ -2046,11 +2046,6 @@ html {
     border-style: var(--tw-border-style);
     border-width: 1px;
   }
-  .alert-info {
-    border-color: var(--color-info);
-    color: var(--color-info-content);
-    --alert-color: var(--color-info);
-  }
   .alert-success {
     border-color: var(--color-success);
     color: var(--color-success-content);
@@ -2268,33 +2263,6 @@ html {
         --btn-fg: currentColor;
       }
     }
-  }
-  .btn-soft {
-    &:not(.btn-active, :hover, :active:focus, :focus-visible, :disabled, [disabled], .btn-disabled) {
-      --btn-shadow: "";
-      --btn-fg: var(--btn-color, var(--color-base-content));
-      --btn-bg: var(--btn-color, var(--color-base-content));
-      @supports (color: color-mix(in lab, red, red)) {
-        --btn-bg: color-mix(
-      in oklab,
-      var(--btn-color, var(--color-base-content)) 8%,
-      var(--color-base-100)
-    );
-      }
-      --btn-border: var(--btn-color, var(--color-base-content));
-      @supports (color: color-mix(in lab, red, red)) {
-        --btn-border: color-mix(
-      in oklab,
-      var(--btn-color, var(--color-base-content)) 10%,
-      var(--color-base-100)
-    );
-      }
-      --btn-noise: none;
-    }
-  }
-  .btn-accent {
-    --btn-color: var(--color-accent);
-    --btn-fg: var(--color-accent-content);
   }
   .btn-primary {
     --btn-color: var(--color-primary);

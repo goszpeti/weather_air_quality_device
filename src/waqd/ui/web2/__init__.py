@@ -7,6 +7,8 @@ from .templates import base_template
 import waqd.app as base_app
 
 browser_proc = None
+local_server = None
+LOCAL_SERVER_PORT = "8080"
 
 
 def start_web_server(reload=False):
@@ -24,9 +26,10 @@ def start_web_server(reload=False):
         current_path / "local",
     )
     (current_path / "local" / login_admin_file).write_text(login_admin_content)
-    subprocess.Popen(
-        "python -m http.server -b 127.0.0.1 8000",
-        shell=True,
+
+    global local_server
+    local_server = subprocess.Popen(
+        ["python", "-m", "http.server", "-b", "127.0.0.1", LOCAL_SERVER_PORT],
         cwd=str(local_server_path),
     )
     uvicorn.run(
@@ -36,6 +39,9 @@ def start_web_server(reload=False):
         reload=reload,
         reload_excludes=["*.html", "*.css", ".log"],
     )
+    if browser_proc is not None:
+        browser_proc.terminate()
+    local_server.terminate()
 
 
 def start_web_ui_chromium_kiosk_mode():
@@ -52,7 +58,7 @@ def start_web_ui_chromium_kiosk_mode():
             "--disable-translate",
             "--disable-pinch",
             "--disable-features=TranslateUI",
-            "http://localhost:8000/login_admin.html",
+            f"http://localhost:{LOCAL_SERVER_PORT}/login_admin.html",
             # "--force-device-scale-factor=0.8",
         ]
     )

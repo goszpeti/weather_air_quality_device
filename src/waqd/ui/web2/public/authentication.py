@@ -28,22 +28,20 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+    expires: datetime | None = None
 
 
-class User(BaseModel):
+class UserInDB(BaseModel):
     username: str
     email: str | None = None
     full_name: str | None = None
     disabled: bool | None = None
-
-
-class PyUser(User):
-    id: int
+    hashed_password: str
     permissions: list[str] = []
 
 
-class UserInDB(User):
-    hashed_password: str
+class User(UserInDB):
+    token_expires: datetime
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -102,10 +100,11 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
+def get_user(db, token: TokenData):
+    if token.username in db:
+        user_dict = db[token.username]
+        user_dict["token_expires"] = token.expires
+        return User(**user_dict)
 
 
 def authenticate_user(fake_db, username: str, password: str):
@@ -134,13 +133,15 @@ def get_current_user(token):
         username = payload.get("sub")
         if username is None:
             return None
-        token_data = TokenData(username=username)
+        token_data = TokenData(
+            username=username, expires=datetime.fromtimestamp(payload.get("exp", 0))
+        )
     except InvalidTokenError:
         return None
-    return get_user(fake_users_db, username=token_data.username)
+    return get_user(fake_users_db, token_data)
 
 
-async def get_current_user_api(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user_with_exception(token: Annotated[str, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -152,7 +153,7 @@ async def get_current_user_api(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
-async def get_current_user_redirect(
+async def get_current_user_with_redirect(
     request: Request, token: Annotated[str, Depends(oauth2_scheme)]
 ):
     for open_routes in ["/public/", "/static/"]:
@@ -180,22 +181,39 @@ fake_users_db = {
     "local_admin": {
         "id": 1,
         "username": "local_admin",
-        "full_name": "Default Admin",
+        "full_name": "local_admin",
         "hashed_password": get_password_hash(base_app.settings.get_string(USER_DEFAULT_PW)),
         "disabled": False,
-        "permissions": ["users:admin"],
+        "permissions": ["users:admin", "users:local"],
     },
 }
+
+
+# admin: bool = Depends(
+#     PermissionChecker(
+#         required_permissions=[
+#             "users:admin",
+#         ]
+#     )
+# ),
 
 
 class PermissionChecker:
     def __init__(self, required_permissions: list[str]) -> None:
         self.required_permissions = required_permissions
 
-    def __call__(self, user: PyUser = Depends(get_current_user)) -> bool:
+    def __call__(self, user: User = Depends(get_current_user), exception=True) -> bool:
+        if self.check_permissions(user):
+            return True
+        if exception:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Permissions")
+        return False
+
+    def get_permissions(self, user: User) -> list[str]:
+        return user.permissions
+
+    def check_permissions(self, user: User) -> bool:
         for r_perm in self.required_permissions:
             if r_perm not in user.permissions:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED, detail="Permissions"
-                )
+                return False
         return True

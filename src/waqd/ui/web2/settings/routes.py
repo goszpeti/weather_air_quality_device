@@ -1,7 +1,10 @@
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
+
+from ..public.authentication import User, get_current_user_with_redirect
 
 from ..templates import render_spa, sub_template
 
@@ -11,13 +14,10 @@ current_path = Path(__file__).parent.resolve()
 
 
 @rt.get("/", response_class=HTMLResponse)
-async def settings(request: Request):
-    # interior = sub_template("interior.html", {}, current_path, True)
-    # exterior = sub_template("exterior.html", {}, current_path, True)
-    # forecast = sub_template("forecast.html", {}, current_path, True)
+async def settings(current_user: Annotated[User, Depends(get_current_user_with_redirect)]):
     content = sub_template(
         "settings.html",
         {},
         current_path,
     )
-    return render_spa(content)
+    return render_spa(content, current_user)

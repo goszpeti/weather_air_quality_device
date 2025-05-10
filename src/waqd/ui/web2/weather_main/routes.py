@@ -12,7 +12,7 @@ from waqd.ui.web2.api.sensor.v1.connector import SensorRetrieval
 from waqd.ui.web2.api.weather.v1.connector import WeatherRetrieval
 from ..public.authentication import (
     User,
-    get_current_user_redirect,
+    get_current_user_with_redirect,
 )
 from waqd.ui.web2.weather_main.model import ExteriorView, ForecastView
 
@@ -23,15 +23,8 @@ rt = APIRouter()
 current_path = Path(__file__).parent.resolve()
 
 
-# admin: bool = Depends(
-#     PermissionChecker(
-#         required_permissions=[
-#             "users:admin",
-#         ]
-#     )
-# ),
 @rt.get("/", response_class=HTMLResponse)
-async def root(current_user: Annotated[User, Depends(get_current_user_redirect)]):
+async def root(current_user: Annotated[User, Depends(get_current_user_with_redirect)]):
     interior = sub_template("interior.html", {}, current_path, True)
     exterior = sub_template("exterior.html", {}, current_path, True)
     forecast = sub_template("forecast.html", {}, current_path, True)
@@ -61,7 +54,7 @@ async def root(current_user: Annotated[User, Depends(get_current_user_redirect)]
         },
         current_path,
     )
-    return render_spa(content, current_user.full_name, overflow=False)
+    return render_spa(content, current_user, overflow=False)
 
 
 @rt.get("/interior", response_class=JSONResponse)
