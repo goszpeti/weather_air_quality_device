@@ -31,9 +31,6 @@ from waqd.settings import (
     REMOTE_MODE_URL,
     SOUND_ENABLED,
     UPDATER_USER_BETA_CHANNEL,
-    USER_API_KEY,
-    USER_DEFAULT_PW,
-    USER_SESSION_SECRET,
     WAVESHARE_DISP_BRIGHTNESS_PIN,
     Settings,
 )

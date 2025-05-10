@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 import waqd.app as base_app
 
-from waqd.settings import USER_DEFAULT_PW, USER_SESSION_SECRET
+from waqd.settings import USER_API_KEY, USER_DEFAULT_PW, USER_SESSION_SECRET
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -157,7 +157,10 @@ async def get_current_user_with_exception(token: Annotated[str, Depends(oauth2_s
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    user = get_current_user(token)
+    if token == base_app.settings.get_string(USER_API_KEY):
+        user = get_user_from_name(fake_users_db, "local_admin")
+    else:
+        user = get_current_user(token)
     if user is None:
         raise credentials_exception
     return user

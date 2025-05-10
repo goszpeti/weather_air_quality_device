@@ -24,6 +24,7 @@ from waqd.settings import (
     MH_Z19_VALUE_OFFSET,
     LOCATION_LONGITUDE,
     LOCATION_LATITUDE,
+    REMOTE_API_KEY,
     REMOTE_MODE_URL,
     UPDATER_USER_BETA_CHANNEL,
     LANG_GERMAN,
@@ -102,6 +103,7 @@ class Settings:
                 USER_SESSION_SECRET: secrets.token_hex(32),
                 USER_API_KEY: "",
                 USER_DEFAULT_PW: secrets.token_hex(32),
+                REMOTE_API_KEY: "",
             },
             self._GUI_SECTION_NAME: {
                 INTERIOR_BG: "background_s8.jpg",
