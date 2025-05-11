@@ -1,0 +1,13 @@
+<div class="alert alert-error" id="login-failed-toast-{{id}}">
+    <span>Login failed! Wrong username or password</span>
+    <script>
+        setTimeout(() => {
+            document.getElementById('login-failed-toast-{{id}}').classList.add('hidden');
+        }, 5000);
+    </script>
+    <button class="btn btn-square btn-error" onclick="hideToast('login-failed-toast-{{id}}')">
+        <svg viewBox="0 0 24 24" class="h-4">
+            <use href="/static/general_icons/cancel.svg#main" fill="black" />
+        </svg>
+    </button>
+</div>

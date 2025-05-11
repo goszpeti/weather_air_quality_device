@@ -3,13 +3,13 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 import waqd
 
 from waqd.base.system import RuntimeSystem
-from ..templates import render_spa, sub_template
+from ..templates import base_template, render_main, sub_template
 from .authentication import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     PermissionChecker,
@@ -19,9 +19,8 @@ from .authentication import (
     authenticate_user,
     create_access_token,
     get_db,
-    get_current_user,
     get_current_user_with_exception,
-    get_current_user_with_redirect,
+    get_current_user_plain,
 )
 
 rt = APIRouter()
@@ -30,13 +29,15 @@ current_path = Path(__file__).parent.resolve()
 
 
 @rt.get("/login", response_class=HTMLResponse)
-async def login(current_user: Annotated[User, Depends(get_current_user_with_redirect)]):
+async def login(current_user: Annotated[User, Depends(get_current_user_plain)]):
+    if current_user:
+        return RedirectResponse(url="/weather")
     content = sub_template(
         "login.html",
         {},
         current_path,
     )
-    return render_spa(content, current_user, menu=False)
+    return render_main(content, current_user, menu=False)
 
 
 @rt.get("/logout", response_class=HTMLResponse)
@@ -47,17 +48,26 @@ async def logout():
         current_path,
     )
     toast = sub_template(
-        "toast.html",
+        "toast_logout_success.html",
         {},
         current_path / "components",
     )
-    response = render_spa(content, None, toast=toast)
+    response = render_main(content, None, toast=toast)
     response.delete_cookie(
         "Authorization",
         samesite="none",
         secure=True,
     )
     return response
+
+
+@rt.get("/toast/login_failed", response_class=HTMLResponse)
+async def toast(id: str):
+    return sub_template(
+        "toast_login_failed.html",
+        {"id": id},
+        current_path / "components",
+    )
 
 
 @rt.post("/token", response_model=Token)
@@ -119,10 +129,10 @@ def set_access_token_cookie(
 
 
 @rt.get("/about", response_class=HTMLResponse)
-async def about(current_user: Annotated[User, Depends(get_current_user_with_redirect)]):
+async def about(current_user: Annotated[User, Depends(get_current_user_plain)]):
     content = sub_template(
         "about.html",
         {"version": waqd.__version__, "platform": RuntimeSystem().platform},
         current_path,
     )
-    return render_spa(content, current_user)
+    return render_main(content, current_user)

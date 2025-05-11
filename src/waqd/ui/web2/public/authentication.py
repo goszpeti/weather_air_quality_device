@@ -181,6 +181,11 @@ async def get_current_user_with_redirect(
     return user
 
 
+async def get_current_user_plain(token: Annotated[str, Depends(oauth2_scheme)]):
+    user = get_current_user(token)
+    return user
+
+
 def get_db():
     return {
         "johndoe": {

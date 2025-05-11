@@ -16,7 +16,7 @@ from ..public.authentication import (
 )
 from waqd.ui.web2.weather_main.model import ExteriorView, ForecastView
 
-from ..templates import render_spa, sub_template
+from ..templates import render_main, sub_template
 
 rt = APIRouter()
 
@@ -54,7 +54,7 @@ async def root(current_user: Annotated[User, Depends(get_current_user_with_redir
         },
         current_path,
     )
-    return render_spa(content, current_user, overflow=False)
+    return render_main(content, current_user, overflow=False)
 
 
 @rt.get("/interior", response_class=JSONResponse)

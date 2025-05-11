@@ -1,5 +1,5 @@
-<div class="hero min-h-screen rounded-box"
-  style="background-image: url(/static/gui_base/aimee-giles-ZcMUiZuOirY-unsplash.avif);">
+<div class="hero rounded-box min-h-[85vh]"
+  style=" background-image: url(/static/gui_base/aimee-giles-ZcMUiZuOirY-unsplash.avif);">
   <div class="hero-overlay"></div>
   <div class="hero-content flex-col lg:flex-row">
     <div class="text-center lg:text-left glass rounded-box p-4 bg-primary">
@@ -17,9 +17,14 @@
           <label class="label">Password</label>
           <input type="password" id="password" class="input" placeholder="Password" />
           <!-- <div><a class="link link-hover">Forgot password?</a></div> -->
-          <button class="btn btn-primary mt-4" onclick="login()">Login</button>
+          <button class="btn btn-primary mt-4 text-lg" onclick="login()">
+            Login
+            <span id="loading" class="hidden loading loading-spinner loading-md ml-4"></span>
+          </button>
           <script>
             function login() {
+              document.getElementById("loading").classList.remove('hidden');
+
               const username = document.getElementById('username').value;
               const password = document.getElementById('password').value;
 
@@ -34,15 +39,33 @@
                   password: password
                 })
               })
-                .then(response => response.json())
+                .then(response => {
+                  if (!response.ok) { // show error toast
+                    const toastsContainer = document.getElementById('toasts');
+                    const id = toastsContainer.children.length;
+                    const toastTemplate = fetch('toast/login_failed?id=' + id.toString()).then(response => {
+                      if (response.ok) {
+                        return response.text().then(html => {
+                          const tempDiv = document.createElement('div');
+                          tempDiv.innerHTML = html;
+                          toastsContainer.appendChild(tempDiv)
+                        });
+                      }
+                    })
+                    throw new Error('Login failed! Wrong username or password.');
+                  }
+
+                  return response.json();
+                })
                 .then(data => {
                   console.log('Success:', data);
-                  // Handle success (e.g., store token, redirect, etc.)
                   window.location.href = '/weather';
                 })
                 .catch(error => {
                   console.error('Error:', error);
-                  // Handle error
+                })
+                .finally(() => {
+                  document.getElementById("loading").classList.add('hidden');
                 });
             }
           </script>

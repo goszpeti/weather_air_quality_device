@@ -27,7 +27,7 @@ def base_template(file_name: str, context: dict[str, Any], root_path=current_pat
     return minify(template.render(context), remove_comments=True, remove_empty_space=True)
 
 
-def render_spa(
+def render_main(
     content: str, user: UserInDB | None, overflow=True, menu=True, toast=""
 ) -> HTMLResponse:
     """if overflow is false, on the RPI itself it will not scroll"""
