@@ -28,8 +28,8 @@ from waqd.settings import (
     LAST_TEMP_C_OUTSIDE,
     LOG_SENSOR_DATA,
     MH_Z19_VALUE_OFFSET,
+    REMOTE_API_KEY,
     REMOTE_MODE_URL,
-    USER_API_KEY,
     Settings,
 )
 
@@ -1225,7 +1225,9 @@ class WAQDRemoteStation(
         try:
             response = requests.get(
                 url,
-                headers={"Authorization": "Bearer " + self._settings.get_string(USER_API_KEY)},
+                headers={
+                    "Authorization": "Bearer " + self._settings.get_string(REMOTE_API_KEY)
+                },
                 timeout=5,
             )  # "http://"
         except Exception as e:

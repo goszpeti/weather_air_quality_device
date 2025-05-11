@@ -111,8 +111,8 @@ def get_user_from_name(db, username: str):
         return User(**user_dict)
 
 
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user_from_name(fake_db, username)
+def authenticate_user(db, username: str, password: str):
+    user = get_user_from_name(db, username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -148,7 +148,7 @@ def get_current_user(token):
         )
     except InvalidTokenError:
         return None
-    return get_user_from_token(fake_users_db, token_data)
+    return get_user_from_token(get_db(), token_data)
 
 
 async def get_current_user_with_exception(token: Annotated[str, Depends(oauth2_scheme)]):
@@ -158,7 +158,7 @@ async def get_current_user_with_exception(token: Annotated[str, Depends(oauth2_s
         headers={"WWW-Authenticate": "Bearer"},
     )
     if token == base_app.settings.get_string(USER_API_KEY):
-        user = get_user_from_name(fake_users_db, "local_admin")
+        user = get_user_from_name(get_db(), "local_admin")
     else:
         user = get_current_user(token)
     if user is None:
@@ -181,25 +181,26 @@ async def get_current_user_with_redirect(
     return user
 
 
-fake_users_db = {
-    "johndoe": {
-        "id": 0,
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-        "permissions": [],
-    },
-    "local_admin": {
-        "id": 1,
-        "username": "local_admin",
-        "full_name": "local_admin",
-        "hashed_password": get_password_hash(base_app.settings.get_string(USER_DEFAULT_PW)),
-        "disabled": False,
-        "permissions": ["users:admin", "users:local"],
-    },
-}
+def get_db():
+    return {
+        "johndoe": {
+            "id": 0,
+            "username": "johndoe",
+            "full_name": "John Doe",
+            "email": "johndoe@example.com",
+            "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+            "disabled": False,
+            "permissions": [],
+        },
+        "local_admin": {
+            "id": 1,
+            "username": "local_admin",
+            "full_name": "local_admin",
+            "hashed_password": get_password_hash(base_app.settings.get_string(USER_DEFAULT_PW)),
+            "disabled": False,
+            "permissions": ["users:admin", "users:local"],
+        },
+    }
 
 
 # admin: bool = Depends(

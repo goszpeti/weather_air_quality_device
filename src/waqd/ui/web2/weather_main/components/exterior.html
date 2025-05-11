@@ -1,3 +1,18 @@
+<script>
+    document.addEventListener('htmx:afterSettle', function (details) {
+        const figureElement = document.querySelector('#Exterior-figure');
+        if (figureElement) {
+            try {
+                const responseData = JSON.parse(details.detail.xhr.response);
+                if (responseData.background) {
+                    figureElement.src = '/static/' + responseData.background;
+                }
+            } catch (e) {
+                console.error('Failed to parse JSON response:', e);
+            }
+        }
+    });
+</script>
 <!-- need raw for htmx json substitution to work -->
 {% raw %}
 <template id="Exterior-template">
@@ -5,7 +20,7 @@
         <div class="stat-title">Temperature</div>
         <div class="stat-value text-7xl tracking-tighter">{{temp}}</div>
         <div class="stat-figure">
-            <svg viewBox="0 0 24 24" class="h-18">
+            <svg viewBox="0 0 24 24" class="h-18 -m-4 mt-2">
                 <use href="/static/weather_icons/wi-thermometer_full.svg#Layer_1" fill="white" />
             </svg>
         </div>

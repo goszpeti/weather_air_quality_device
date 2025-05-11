@@ -34,13 +34,13 @@
                 <use href="/static/general_icons/account_circle.svg#main" fill="white" />
               </svg> Account</summary>
             <ul class="">
-              <li><a>
+              <!-- <li><a>
                   <svg viewBox="0 0 24 24" class="h-4 w-4">
                     <use href="/static/general_icons/manage_accounts.svg#main" fill="white" />
                   </svg>
                   Profile
-                </a></li>
-              <li><a>
+                </a></li> -->
+              <li><a href="/public/logout">
                   <svg viewBox="0 0 24 24" class="h-4 w-4">
                     <use href="/static/general_icons/logout.svg#main" fill="white" />
                   </svg>
@@ -65,7 +65,7 @@
         </div>
         <ul tabindex="0" class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
           <li>
-            <a>
+            <a href="/settings">
               <svg viewBox="0 0 24 24" class="h-6  mr-8">
                 <use href="/static/general_icons/settings.svg#main" fill="white" />
               </svg>Settings
@@ -73,7 +73,7 @@
           </li>
           <li>
             {% if local %}
-            <a>
+            <a href="/local/power">
               <svg viewBox="0 0 24 24" class="h-6 mr-8">
                 <use href="/static/general_icons/power.svg#main" fill="white" />
               </svg>Shutdown
@@ -91,7 +91,7 @@
       </li>
       {% if local %}
       <li>
-        <a>
+        <a href="/local/wifi">
           <svg viewBox="0 0 24 24" class="h-8">
             <use href="/static/general_icons/wifi-full.svg#main" fill="white" />
           </svg>

@@ -78,7 +78,7 @@ def main():
         if runtime_system.is_target_system and not waqd.HEADLESS_MODE:
             start_web_ui_chromium_kiosk_mode()
 
-        start_web_server(waqd.DEBUG_LEVEL > 0)
+        start_web_server(reload=waqd.DEBUG_LEVEL > 3)
         comp_ctrl._stop_event.wait()
 
     except Exception:

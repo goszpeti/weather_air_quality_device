@@ -20,10 +20,13 @@ def start_web_server(reload=False):
 
     create_api_token()
     prepare_local_login()
-
+    if reload:
+        hostname = "localhost"
+    else:
+        hostname = "0.0.0.0"
     uvicorn.run(
         "waqd.ui.web2.main:web_app",
-        host="0.0.0.0",  # localhost
+        host=hostname,
         port=80,
         reload=reload,
         reload_excludes=["*.html", "*.css", ".log"],

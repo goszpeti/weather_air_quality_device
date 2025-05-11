@@ -1,45 +1,7 @@
-<script>
-  document.addEventListener('htmx:afterSettle', function (details) {
-    // Dynamic CO2 coloring
-    if (details.target.id == 'Interior-stats') {
-      const co2Element = document.querySelector('#co2_value p');
-      if (!co2Element) return; // Ensure the element exists before proceeding
-      const co2Value = parseInt(co2Element.textContent, 10);
-      const co2Container = document.querySelector('#co2_value');
-
-      if (!isNaN(co2Value)) {
-        co2Container.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500');
-        if (co2Value < 800) {
-          co2Container.classList.add('text-green-500');
-        } else if (co2Value < 1200) {
-          co2Container.classList.add('text-yellow-500');
-        } else {
-          co2Container.classList.add('text-red-500');
-        }
-      }
-      // Dynamic Background setting
-    } else if (details.target.id == 'Exterior-stats') {
-      const figureElement = document.querySelector('#Exterior-figure');
-
-      if (figureElement) {
-        try {
-          const responseData = JSON.parse(details.detail.xhr.response);
-          if (responseData.background) {
-            figureElement.src = '/static/' + responseData.background;
-          }
-        } catch (e) {
-          console.error('Failed to parse JSON response:', e);
-        }
-      }
-    }
-  });
-
-</script>
-
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-3  md:gap-0  lg:gap-2 lg:place-items-center">
+<div class="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-0 lg:gap-2 lg:place-items-center">
   {% for card in cards %}
-  <div
-    class="card card-border bg-base-100 image-full shadow-sm self-stretch rounded-box md:rounded-none lg:rounded-box">
+  <div class="card card-border shadow-sm bg-base-100 image-full min-w-full self-stretch 
+    rounded-box md:rounded-none lg:rounded-box">
     <figure>
       <img id="{{card.name}}-figure" src="{{card.background}}" />
     </figure>
@@ -52,6 +14,12 @@
       </div>
       <div class="divider divider-accent m-0"></div>
       <div class="stats stats-vertical shadow overflow-hidden glass" id="{{card.name}}-stats">
+        <div class="flex flex-col gap-8 w-full p-4">
+          <div class="skeleton h-32 w-full"></div>
+          <div class="skeleton h-4 w-1/2"></div>
+          <div class="skeleton h-4 w-full"></div>
+          <div class="skeleton h-4 w-full"></div>
+        </div>
       </div>
     </div>
     {{card.content}}

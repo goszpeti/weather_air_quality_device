@@ -18,7 +18,7 @@ from .authentication import (
     UserInDB,
     authenticate_user,
     create_access_token,
-    fake_users_db,
+    get_db,
     get_current_user,
     get_current_user_with_exception,
     get_current_user_with_redirect,
@@ -64,7 +64,7 @@ async def logout():
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()], request: Request
 ):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    user = authenticate_user(get_db(), form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
