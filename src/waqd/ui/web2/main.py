@@ -26,6 +26,7 @@ from .api.weather.v1.routes import rt as weather_v1_router
 from .weather_main.routes import rt as weather_router
 from .settings.routes import rt as settings_router
 from .public.routes import rt as public_router
+from .local.routes import rt as local_router
 
 current_path = Path(__file__).parent.resolve()
 
@@ -61,6 +62,11 @@ web_app.include_router(
 web_app.include_router(
     settings_router,
     prefix="/settings",
+    dependencies=[Depends(get_current_user_with_redirect)],
+)
+web_app.include_router(
+    local_router,
+    prefix="/local",
     dependencies=[Depends(get_current_user_with_redirect)],
 )
 web_app.include_router(public_router, prefix="/public")

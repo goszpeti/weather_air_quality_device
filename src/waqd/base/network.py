@@ -1,21 +1,13 @@
-# Stop
-# TODO add configuration
-# https://github.com/balena-os/wifi-connect/blob/master/scripts/raspbian-install.sh
-
-# sudo pkill wifi-connect
-
-# # sudo systemctl start comitup
-
-# /usr/local/share/wifi-connect/ui/static/media
-# sudo systemctl stop comitup
-# sudo systemctl stop NetworkManager
-
 import socket
 import subprocess
 from typing import Tuple
 from time import sleep
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
+from wifi import Cell, Scheme
+
+
+# Use nmcli
 
 
 class Network:
@@ -137,3 +129,16 @@ class Network:
             return False
         self._wait_for_internet_counter = 0
         return True
+
+    def get_wifi_ssid_list(self):
+        # Get all cells from the air
+        ssids = [cell.ssid for cell in Cell.all("wlan0")]
+
+        schemes = list(Scheme.all())
+
+        for scheme in schemes:
+            ssid = scheme.options.get("wpa-ssid", scheme.options.get("wireless-essid"))
+            if ssid in ssids:
+                print("Connecting to %s" % ssid)
+                scheme.activate()
+                break

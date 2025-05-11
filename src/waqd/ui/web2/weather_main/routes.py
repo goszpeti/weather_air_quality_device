@@ -12,6 +12,7 @@ from waqd.ui.web2.api.sensor.v1.connector import SensorRetrieval
 from waqd.ui.web2.api.weather.v1.connector import WeatherRetrieval
 from ..public.authentication import (
     User,
+    get_current_user_with_exception,
     get_current_user_with_redirect,
 )
 from waqd.ui.web2.weather_main.model import ExteriorView, ForecastView
@@ -58,12 +59,14 @@ async def root(current_user: Annotated[User, Depends(get_current_user_with_redir
 
 
 @rt.get("/interior", response_class=JSONResponse)
-async def interior(request: Request):
+async def interior(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
     return RedirectResponse(url="/api/sensor/v1/interior?units=True")
 
 
 @rt.get("/exterior", response_class=JSONResponse)
-async def exterior(request: Request) -> ExteriorView:
+async def exterior(
+    current_user: Annotated[User, Depends(get_current_user_with_exception)],
+) -> ExteriorView:
     ext_values = SensorRetrieval().get_exterior_sensor_values(units=True)
     current_weather = WeatherRetrieval().get_current_weather()
     # TODO: add None handling
@@ -80,7 +83,9 @@ async def exterior(request: Request) -> ExteriorView:
 
 
 @rt.get("/forecast", response_class=JSONResponse)
-async def forecast(request: Request) -> ForecastView:
+async def forecast(
+    current_user: Annotated[User, Depends(get_current_user_with_exception)],
+) -> ForecastView:
     forecast = WeatherRetrieval().get_5_day_forecast()
     current_date_time = datetime.datetime.now()
 
