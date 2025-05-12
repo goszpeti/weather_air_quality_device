@@ -15,6 +15,7 @@ html {
     --color-green-500: oklch(72.3% 0.219 149.579);
     --color-white: #fff;
     --spacing: 0.25rem;
+    --container-xs: 20rem;
     --container-sm: 24rem;
     --container-md: 28rem;
     --text-xs: 0.75rem;
@@ -1501,6 +1502,18 @@ html {
     gap: calc(0.25rem * 4);
     padding: calc(0.25rem * 4);
   }
+  .modal-backdrop {
+    grid-column-start: 1;
+    grid-row-start: 1;
+    display: grid;
+    align-self: stretch;
+    justify-self: stretch;
+    color: transparent;
+    z-index: -1;
+    button {
+      cursor: pointer;
+    }
+  }
   .z-1 {
     z-index: 1;
   }
@@ -1665,6 +1678,9 @@ html {
   .m-0 {
     margin: calc(var(--spacing) * 0);
   }
+  .m-4 {
+    margin: calc(var(--spacing) * 4);
+  }
   .mx-4 {
     margin-inline: calc(var(--spacing) * 4);
   }
@@ -1747,9 +1763,6 @@ html {
   }
   .ml-8 {
     margin-left: calc(var(--spacing) * 8);
-  }
-  .ml-12 {
-    margin-left: calc(var(--spacing) * 12);
   }
   .tabs {
     display: flex;
@@ -1980,6 +1993,9 @@ html {
   .max-w-sm {
     max-width: var(--container-sm);
   }
+  .max-w-xs {
+    max-width: var(--container-xs);
+  }
   .min-w-full {
     min-width: 100%;
   }
@@ -2061,12 +2077,6 @@ html {
   }
   .justify-evenly {
     justify-content: space-evenly;
-  }
-  .justify-items-center {
-    justify-items: center;
-  }
-  .justify-items-stretch {
-    justify-items: stretch;
   }
   .gap-4 {
     gap: calc(var(--spacing) * 4);
@@ -2291,9 +2301,6 @@ html {
   .text-red-500 {
     color: var(--color-red-500);
   }
-  .text-secondary {
-    color: var(--color-secondary);
-  }
   .text-white {
     color: var(--color-white);
   }
@@ -2354,6 +2361,11 @@ html {
         --btn-fg: currentColor;
       }
     }
+  }
+  .btn-md {
+    --fontsize: 0.875rem;
+    --btn-p: 1rem;
+    --size: calc(var(--size-field, 0.25rem) * 10);
   }
   .btn-sm {
     --fontsize: 0.75rem;

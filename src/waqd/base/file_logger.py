@@ -4,10 +4,11 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Optional, Tuple
-from waqd import LOCAL_TIMEZONE
 
 from file_read_backwards import FileReadBackwards
+
 import waqd
+from waqd import LOCAL_TIMEZONE
 
 
 # helper functions for logs

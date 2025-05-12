@@ -57,7 +57,6 @@ web_app.mount("/static", StaticFiles(directory=str(waqd.assets_path)), name="sta
 web_app.include_router(
     weather_router,
     prefix="/weather",
-    dependencies=[Depends(get_current_user_with_redirect)],
 )
 web_app.include_router(
     settings_router,
@@ -70,6 +69,18 @@ web_app.include_router(
     dependencies=[Depends(get_current_user_with_redirect)],
 )
 web_app.include_router(public_router, prefix="/public")
+
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+
+class RequiresLoginException(StarletteHTTPException):
+    pass
+
+
+@web_app.exception_handler(RequiresLoginException)
+async def exception_handler(request, exc):
+    return RedirectResponse(url="/public/login")
+
 
 # API routers
 web_app.include_router(

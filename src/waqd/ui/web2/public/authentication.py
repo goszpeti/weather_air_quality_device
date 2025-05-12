@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 from typing import Annotated, Optional
 
 import jwt
@@ -152,16 +153,16 @@ def get_current_user(token):
 
 
 async def get_current_user_with_exception(token: Annotated[str, Depends(oauth2_scheme)]):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     if token == base_app.settings.get_string(USER_API_KEY):
         user = get_user_from_name(get_db(), "local_admin")
     else:
         user = get_current_user(token)
     if user is None:
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
         raise credentials_exception
     return user
 
@@ -174,10 +175,12 @@ async def get_current_user_with_redirect(
             return None
     user = get_current_user(token)
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_307_TEMPORARY_REDIRECT,
-            headers={"Location": "/public/login"},
-        )
+        from ..main import RequiresLoginException
+
+        raise RequiresLoginException(status.HTTP_303_SEE_OTHER)  # HTTPException(
+        #     status_code=status.HTTP_303_SEE_OTHER,
+        #     headers={"Location": "/public/login"},
+        # )
     return user
 
 
@@ -186,6 +189,7 @@ async def get_current_user_plain(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
+@lru_cache(maxsize=None)
 def get_db():
     return {
         "johndoe": {

@@ -6,32 +6,26 @@ Sets up cmd arguments, settings and starts the gui
 from typing import TYPE_CHECKING
 import sys
 import time
-import traceback
-from pint import UnitRegistry
 
 import waqd
 from waqd import __version__ as WAQD_VERSION
-from waqd.base.component_ctrl import ComponentController
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import Settings
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
     from waqd.base.component_ctrl import ComponentController
-    from PyQt5 import QtCore
-
-    Qt = QtCore.Qt
-
+    from pint import UnitRegistry
+    from waqd.settings import Settings
 
 # GLOBAL VARIABLES
 
 # singleton with access to all backend components
-comp_ctrl: ComponentController
+comp_ctrl: "ComponentController"
 # for global access to units
-unit_reg = UnitRegistry()
+unit_reg: "UnitRegistry"
 # for global access to settings
-settings: Settings
+settings: "Settings"
 
 
 def basic_setup():
@@ -42,11 +36,15 @@ def basic_setup():
     global comp_ctrl, settings
 
     sys.excepthook = crash_hook
+
+    from waqd.settings import Settings
+
     settings = Settings(ini_folder=waqd.user_config_dir)
     setup_unit_reg()
 
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
+
     Logger(output_path=waqd.user_config_dir)  # singleton, no assigment needed
     if waqd.DEBUG_LEVEL > 0:
         Logger().info(f"DEBUG level set to {waqd.DEBUG_LEVEL}")
@@ -56,6 +54,8 @@ def basic_setup():
 
         SensorFileLogger.migrate_txts_to_db()
         return None, None
+    from waqd.base.component_ctrl import ComponentController
+
     comp_ctrl = ComponentController(settings)
     if waqd.DEBUG_LEVEL > 1:  # disable startup sound
         comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
@@ -82,6 +82,8 @@ def main():
         comp_ctrl._stop_event.wait()
 
     except Exception:
+        import traceback
+
         trace_back = traceback.format_exc()
         Logger().error("Application crashed: \n%s", trace_back)
 
@@ -108,6 +110,11 @@ def start_remote_debug():
 
 def setup_unit_reg():
     """Setup custom units"""
+    global unit_reg
+    from pint import UnitRegistry
+
+    unit_reg = UnitRegistry()
+
     unit_reg.define("fraction = [] = frac")
     unit_reg.define("percent = 1e-2 frac = %")
     unit_reg.define("ppm = 1e-6 fraction")

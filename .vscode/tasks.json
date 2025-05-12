@@ -83,13 +83,12 @@
             "type": "shell",
             "command": "python -m licenseheaders -t agpl-v3 -y 2019-2021 -o 'Péter Gosztolya & Contributors' -n WAQD -u https://github.com/goszpeti/WeatherAirQualityDevice -d ./src",
             "problemMatcher": [],
-        },{
+        },
+        {
             "label": "Run tailwindcss",
             "type": "shell",
-            "command": "tailwindcss -i src/waqd/assets/css/custom_theme.css -o src/waqd/assets/css/output.css -w",
-            "problemMatcher": [
-                "$pytest"
-            ]
+            "command": "${workspaceRoot}/.venv/Scripts/activate.bat && tailwindcss -i src/waqd/assets/css/custom_theme.css -o src/waqd/assets/css/output.css -w",
+            "problemMatcher": []
         },
     ]
 }
