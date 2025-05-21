@@ -109,3 +109,11 @@ async def forecast(
         day_3_weather_day_min_max=f"{forecast[2].temp_min}°/{forecast[2].temp_max}°",
         day_3_weather_night_min_max=f"{forecast[2].temp_night_min}°/{forecast[2].temp_night_max}°",
     )
+
+
+@rt.get("/forecast/1", response_class=HTMLResponse)
+async def forecast_1(
+    current_user: Annotated[User, Depends(get_current_user_with_exception)],
+):
+    content = sub_template("forecast_1.html", {}, current_path, True)
+    return content

@@ -179,5 +179,3 @@ https://github.com/dfeneyrou/palanteer/releases
 
 Copyright (c) 2022 Péter Gosztolya and contributors.
 
-Setup port 80 binding:
-sudo setcap 'cap_net_bind_service=+ep' /usr/bin/python3.9

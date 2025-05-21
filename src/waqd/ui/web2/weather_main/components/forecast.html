@@ -8,7 +8,8 @@
         <div class="stat-value -mb-2">
             <div class="grid grid-cols-[40%_20%_40%] grid-rows-2 items-stretch">
                 <div class="row-span-2">
-                    <svg viewBox="0 0 24 24" class="-mb-1 h-20">
+                    <svg viewBox="0 0 24 24" class="-mb-1 h-20" hx-get="forecast/{{ i+1 }}" hx-trigger="click"
+                        hx-target="#modal" hx-swap="innerHTML" onclick="modal.showModal()">
                         <use href="/static/{% raw %}{{{% endraw %}day_{{ i+1 }}_weather_icon{% raw %}}}{% endraw %}#Layer_1"
                             fill="white" />
                     </svg>
@@ -33,3 +34,5 @@
     </div>
     {% endfor %}
 </template>
+
+<dialog id="modal" class="modal"></dialog>

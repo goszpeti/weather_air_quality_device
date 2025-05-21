@@ -1,4 +1,5 @@
 <!-- name of each tab group should be unique -->
+
 <div class="tabs tabs-lift md:text-xl">
   <label class="tab md:text-xl">
     <input type="radio" name="my_tabs" checked="checked" />
@@ -16,29 +17,17 @@
             <path d="m21 21-4.3-4.3"></path>
           </g>
         </svg>
-        <input type="search" class="" placeholder="Search" />
+
+
+        <input type="search" class="" hx-trigger="input from:#search_loc_input delay:500ms" hx-target="#location_list"
+          hx-encoding="application/x-www-form-urlencoded" hx-swap="innerHTML" id="search_loc_input"
+          oninput="this.setAttribute('hx-vals', JSON.stringify({query: this.value}))" hx-get="location_search_result"
+          placeholder="Search" id="search_loc_input" />
       </label>
       <p class="label text-wrap md:text-nowrap">Please set this value for all location specific functionality to work!
       </p>
-      <button class="btn btn-primary mt-4">Search</button>
+      <div id="location_list"></div>
 
-      <ul class="list bg-base-100 rounded-box shadow-md pt-4">
-        <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Location results</li>
-
-        <li class="list-row ">
-          <div class="text-2xl font-thin opacity-30 tabular-nums hidden md:block ">DE</div>
-          <div><img class="size-8 rounded-box p-1"
-              src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/7.3.2/flags/1x1/de.svg" /></div>
-          <div class="list">
-            <div class="text-xs uppercase font-semibold opacity-60">Bavaria</div>
-            <div>48.80, 11.36</div>
-            <div class="text-2xl font-thin opacity-80 tabular-nums block md:hidden">Gaimersheim</div>
-          </div>
-          <div class="text-2xl font-thin opacity-80 tabular-nums hidden md:block text-center">Gaimersheim
-          </div>
-          <button class="btn btn-round">Set</button>
-        </li>
-      </ul>
 
     </fieldset>
 

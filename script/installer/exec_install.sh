@@ -23,6 +23,9 @@ function waqd_install() {
     pkill waqd || true
     pkill python3 || true
 
+    # Setup port 80 binding:
+    sudo setcap 'cap_net_bind_service=+ep' /usr/bin/python3.11
+
     echo "# Install needed system libraries... (Step 1/6)"
     # python dependencies
     # sudo apt -y install python3-apt # TODO: if apt via python is used
@@ -35,7 +38,7 @@ function waqd_install() {
     sudo apt-get -y install xscreensaver
 
     echo "# Full system update... (Step 2/6)"
-    sudo apt-get full-upgrade -y --force-yes
+    sudo apt-get upgrade -y --force-yes
     sudo apt-get autoremove -y
     # Install security updates daily - see https://wiki.debian.org/UnattendedUpgrades
     sudo apt-get install unattended-upgrades -y

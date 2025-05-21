@@ -55,8 +55,9 @@ async def logout():
     response = render_main(content, None, toast=toast)
     response.delete_cookie(
         "Authorization",
-        samesite="none",
-        secure=True,
+        samesite="lax",
+        # samesite="none",
+        # secure=True, # disable for the time being
     )
     return response
 
@@ -122,8 +123,9 @@ def set_access_token_cookie(
         httponly=True,
         max_age=expires_seconds,
         expires=expires_seconds,
-        samesite="none",
-        secure=True,
+        samesite="lax",  # disable for the time being
+        # samesite="none",
+        # secure=True,
     )
     return response
 

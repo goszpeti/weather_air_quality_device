@@ -17,13 +17,14 @@ classifiers = [
 dependencies = [
     "wheel", # for pep 517 legacy setup.py mode
     # Backend
-    "DebugPy<=2.0.0",             # MS VSCode debugger for dynamic debugging
+    "DebugPy<=2.0.0", # MS VSCode debugger for dynamic debugging
+    # 1.48.0
     "influxdb-client==1.30.0",    # MIT License - influxdb API
-    "JsonSchema==4.16.0",         # MIT License - for events json schema validation
-    "Jinja2==3.1.2",
-    "pint==0.19.2",               # BSD 3-clause style license - physical units for sensors
+    "JsonSchema==4.23.0",         # MIT License - for events json schema validation
+    "Jinja2==3.1.6",
+    "pint==0.24.4",               # BSD 3-clause style license - physical units for sensors
     "Python-DateUtil==2.8.2",     # Apache License - for date parse and relative delta
-    "APScheduler==3.9.1",         # MIT License - Scheduler for Events function
+    "APScheduler==3.10.4",        # MIT License - Scheduler for Events function
     "PyGithub==1.55",             # LGPL - Access to GitHub in AutoUpdater
     "File-Read-Backwards==2.0.0", # MIT License - for performance in DetailView
     # Sound
@@ -42,10 +43,12 @@ dependencies = [
     # Web & UI
     "fastapi[standard]",
     "PyJWT",
-    "passlib",
-    "htmlmin==0.1.12",       # BSD License - HTML minifier
-    "plotly==5.10.0",        # MIT License - web graph plotting
+    "passlib >=1.7.4, <2.0.0", # BSD License - password hashing
+    "htmlmin==0.1.12",         # BSD License - HTML minifier
+    # "plotly==5.10.0",          # MIT License - web graph plotting
     "bcrypt>=4.0.0, <5.0.0", # Apache License, Version 2.0 - Password hashing
+    # Deprecated
+    "bottle",
 ]
 
 readme = "README.md"

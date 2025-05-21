@@ -1229,7 +1229,7 @@ class WAQDRemoteStation(
                     "Authorization": "Bearer " + self._settings.get_string(REMOTE_API_KEY)
                 },
                 timeout=5,
-            )  # "http://"
+            )
         except Exception as e:
             Logger().warning(f"Cannot reach {url}")
             return

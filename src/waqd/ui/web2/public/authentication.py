@@ -192,19 +192,17 @@ async def get_current_user_plain(token: Annotated[str, Depends(oauth2_scheme)]):
 @lru_cache(maxsize=None)
 def get_db():
     return {
-        "johndoe": {
+        "remote_user": {
             "id": 0,
-            "username": "johndoe",
-            "full_name": "John Doe",
+            "username": "remote_user",
             "email": "johndoe@example.com",
-            "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+            "hashed_password": get_password_hash(base_app.settings.get_string(USER_DEFAULT_PW)),
             "disabled": False,
-            "permissions": [],
+            "permissions": ["users:local"],
         },
         "local_admin": {
             "id": 1,
             "username": "local_admin",
-            "full_name": "local_admin",
             "hashed_password": get_password_hash(base_app.settings.get_string(USER_DEFAULT_PW)),
             "disabled": False,
             "permissions": ["users:admin", "users:local"],
