@@ -6,7 +6,7 @@ import subprocess
 import jwt
 import waqd
 from waqd.settings import USER_API_KEY, USER_DEFAULT_PW, USER_SESSION_SECRET
-from .public.authentication import create_access_token
+from .authentication import create_access_token
 from .templates import base_template
 import waqd.app as base_app
 
@@ -33,7 +33,8 @@ def start_web_server(reload=False):
     )
     if browser_proc is not None:
         browser_proc.terminate()
-    local_server.terminate()
+    if local_server is not None:
+        local_server.terminate()
 
 
 def create_api_token():

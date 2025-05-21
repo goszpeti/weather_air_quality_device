@@ -2,22 +2,22 @@ import datetime
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from frozendict import frozendict
 
 import waqd.app as base_app
 from waqd.assets.assets import get_asset_file_relative
 from waqd.ui import get_localized_date
 from waqd.ui.web2.api.sensor.v1.connector import SensorRetrieval
 from waqd.ui.web2.api.weather.v1.connector import WeatherRetrieval
-from ..public.authentication import (
+from waqd.ui.web2.authentication import (
     User,
     get_current_user_with_exception,
     get_current_user_with_redirect,
 )
-from waqd.ui.web2.weather_main.model import ExteriorView, ForecastView
-
-from ..templates import render_main, sub_template
+from waqd.ui.web2.pages.weather_main.model import ExteriorView, ForecastView
+from waqd.ui.web2.templates import render_main, sub_template
 
 rt = APIRouter()
 
@@ -32,26 +32,34 @@ async def root(current_user: Annotated[User, Depends(get_current_user_with_redir
     content = sub_template(
         "waqd.html",
         {
-            "cards": [
-                {
-                    "name": "Interior",
-                    "background": "/static/gui_bgrs/background_interior2.jpg",
-                    "content": interior,
-                    "endpoint": "/weather/interior",
-                },
-                {
-                    "name": "Exterior",
-                    "background": "",
-                    "content": exterior,
-                    "endpoint": "/weather/exterior",
-                },
-                {
-                    "name": "Forecast",
-                    "background": "/static/gui_bgrs/background_s7.jpg",
-                    "content": forecast,
-                    "endpoint": "/weather/forecast",
-                },
-            ]
+            "cards": tuple(
+                [
+                    frozendict(
+                        {
+                            "name": "Interior",
+                            "background": "/static/gui_bgrs/background_interior2.jpg",
+                            "content": interior,
+                            "endpoint": "/weather/interior",
+                        }
+                    ),
+                    frozendict(
+                        {
+                            "name": "Exterior",
+                            "background": "",
+                            "content": exterior,
+                            "endpoint": "/weather/exterior",
+                        }
+                    ),
+                    frozendict(
+                        {
+                            "name": "Forecast",
+                            "background": "/static/gui_bgrs/background_s7.jpg",
+                            "content": forecast,
+                            "endpoint": "/weather/forecast",
+                        }
+                    ),
+                ]
+            )
         },
         current_path,
     )
@@ -69,8 +77,9 @@ async def exterior(
 ) -> ExteriorView:
     ext_values = SensorRetrieval().get_exterior_sensor_values(units=True)
     current_weather = WeatherRetrieval().get_current_weather()
-    # TODO: add None handling
     forecast = WeatherRetrieval().get_5_day_forecast()
+    if not current_weather:
+        return ExteriorView()
     weather_bgr = get_asset_file_relative(current_weather.get_background_image())
     return ExteriorView(
         background=weather_bgr,

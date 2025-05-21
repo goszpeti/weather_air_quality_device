@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse
 
-from ..public.authentication import User, get_current_user_with_redirect
+from ..authentication import User, get_current_user_with_redirect
 
 from ..templates import render_main, sub_template
 

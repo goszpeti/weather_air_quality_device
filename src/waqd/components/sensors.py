@@ -15,7 +15,7 @@ from subprocess import check_output
 import requests
 from typing import Optional, TYPE_CHECKING
 
-from pint import Quantity
+from pint.facets.plain import PlainQuantity as Quantity
 from waqd import LOCAL_TIMEZONE
 from waqd.app import unit_reg
 from waqd.base.component import Component, CyclicComponent

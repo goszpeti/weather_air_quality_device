@@ -15,7 +15,7 @@ from fastapi.responses import RedirectResponse
 
 from . import LOCAL_SERVER_PORT
 
-from .public.authentication import (
+from .authentication import (
     get_current_user_with_exception,
     get_current_user_with_redirect,
 )
@@ -23,9 +23,9 @@ from .public.authentication import (
 
 from .api.sensor.v1.routes import rt as sensor_v1_router
 from .api.weather.v1.routes import rt as weather_v1_router
-from .weather_main.routes import rt as weather_router
-from .settings.routes import rt as settings_router
-from .public.routes import rt as public_router
+from .pages.weather_main.routes import rt as weather_router
+from .pages.settings.routes import rt as settings_router
+from .pages.public.routes import rt as public_router
 from .local.routes import rt as local_router
 
 current_path = Path(__file__).parent.resolve()

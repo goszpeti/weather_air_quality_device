@@ -6,7 +6,7 @@ import platform
 import time
 import datetime
 from typing import Optional
-from pint import Quantity
+from pint.facets.plain import PlainQuantity as Quantity
 from waqd.settings import LANG, LANG_ENGLISH, LANG_GERMAN, LANG_HUNGARIAN, Settings
 from waqd.app import unit_reg
 

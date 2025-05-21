@@ -1,0 +1,43 @@
+<fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-fit border p-4">
+    <legend class="fieldset-legend">Weather Forecast</legend>
+
+    <label class="label">Location</label>
+    <label class="input">
+        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+            </g>
+        </svg>
+
+        <input type="search" class="" hx-trigger="input from:#search_loc_input delay:500ms" hx-target="#location_list"
+            hx-encoding="application/x-www-form-urlencoded" hx-swap="innerHTML" id="search_loc_input"
+            oninput="this.setAttribute('hx-vals', JSON.stringify({query: this.value}))" hx-get="location_search_result"
+            placeholder="Search" id="search_loc_input" />
+    </label>
+    <p class="label text-wrap md:text-nowrap">Please set this value for all location specific functionality to work!
+    </p>
+    <div id="location_list"></div>
+
+
+</fieldset>
+
+</ul>
+<fieldset class="fieldset">
+    <legend class="fieldset-legend">Pick a file</legend>
+    <input type="file" class="file-input" />
+    <label class="label">Max size 2MB</label>
+
+    <label class="label">Slug</label>
+    <input type="text" class="input" placeholder="my-awesome-page" />
+
+    <label class="label">Author</label>
+    <input type="text" class="input" placeholder="Name" />
+
+    <label class="label">On/Off?</label>
+    <legend class="fieldset-legend">Login options</legend>
+    <label class="label">
+        <input type="checkbox" checked="checked" class="toggle" />
+        Remember me
+    </label>
+</fieldset>

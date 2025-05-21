@@ -9,8 +9,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 import waqd
 
 from waqd.base.system import RuntimeSystem
-from ..templates import base_template, render_main, sub_template
-from .authentication import (
+from waqd.ui.web2.templates import base_template, render_main, sub_template
+from waqd.ui.web2.authentication import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     PermissionChecker,
     Token,
@@ -50,7 +50,8 @@ async def logout():
     toast = sub_template(
         "toast_logout_success.html",
         {},
-        current_path / "components",
+        current_path,
+        component=True,
     )
     response = render_main(content, None, toast=toast)
     response.delete_cookie(

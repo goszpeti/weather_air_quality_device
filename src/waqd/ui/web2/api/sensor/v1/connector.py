@@ -1,7 +1,7 @@
 import html
 from typing import Optional
 
-from pint import Quantity
+from pint.facets.plain import PlainQuantity as Quantity
 
 import waqd.app as base_app
 import waqd.app as app

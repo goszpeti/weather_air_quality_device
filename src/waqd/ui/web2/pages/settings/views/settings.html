@@ -1,0 +1,29 @@
+<!-- name of each tab group should be unique -->
+
+<div class="tabs tabs-lift md:text-xl">
+  <label class="tab md:text-xl">
+    <input type="radio" name="my_tabs" checked="checked" />
+    General
+  </label>
+  <div class="tab-content bg-base-100 border-base-300 p-1">
+    {% include "components/general.html" %}
+  </div>
+
+  <label class="tab md:text-xl">
+    <input type="radio" name="my_tabs" />
+    Display
+  </label>
+  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 2</div>
+
+  <label class="tab md:text-xl">
+    <input type="radio" name="my_tabs" />
+    Hardware
+  </label>
+  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 2</div>
+
+  <label class="tab md:text-xl">
+    <input type="radio" name="my_tabs" />
+    About
+  </label>
+  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 3</div>
+</div>

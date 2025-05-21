@@ -1,22 +1,48 @@
-from functools import partial
+from functools import lru_cache, partial
+import functools
 from pathlib import Path
 from typing import Any
 from fastapi.responses import HTMLResponse
+from frozendict import frozendict
 from htmlmin.main import minify
 
 from jinja2 import Environment, FileSystemLoader
 
-from .public.authentication import PermissionChecker, User, UserInDB
+from waqd import DEBUG_LEVEL
+
+from .authentication import PermissionChecker, UserInDB
 
 extra_minify = partial(minify, remove_comments=True, remove_empty_space=True)
 current_path = Path(__file__).parent.resolve()
 
 
+def conditional_lru_cache(func):
+    if DEBUG_LEVEL < 1:
+        return lru_cache()(func)
+    return func
+
+
+def freezeargs(func):
+    """Decorator to freeze mutable arguments (like dicts) to make them hashable for caching."""
+
+    @functools.wraps(func)
+    def wrapped(*args, **kwargs):
+        args = (frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
+        kwargs = {k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()}
+        return func(*args, **kwargs)
+
+    return wrapped
+
+
+@freezeargs
+@conditional_lru_cache
 def sub_template(
     file_name: str, context: dict[str, Any], root_path: Path, component=False
 ) -> str:
     if component:
         root_path = root_path / "components"
+    else:
+        root_path = root_path / "views"
     return base_template(file_name, context, root_path)
 
 
@@ -45,7 +71,7 @@ def render_main(
     menu_content = ""
     if menu:
         menu_content = base_template(
-            "menu.html",
+            "views/menu.html",
             {
                 "local": local,
                 "logged_in": bool(user),
@@ -53,7 +79,7 @@ def render_main(
             current_path,
         )
     tpl = base_template(
-        "index.html",
+        "views/index.html",
         {
             "content": content,
             "overflow_config": overflow_config,

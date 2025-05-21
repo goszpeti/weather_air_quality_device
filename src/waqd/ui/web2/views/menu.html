@@ -50,7 +50,7 @@
         </div>
         <ul tabindex="0" class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-fit p-2 shadow">
           <li>
-            <a href="/settings" class="text-3xl">
+            <a href="/settings" {% if local %} class="text-3xl" {% else %} class="text-xl" {% endif %}>
               <svg viewBox="0 0 24 24" class="h-6  mr-8">
                 <use href="/static/general_icons/settings.svg#main" fill="white" />
               </svg>Settings
@@ -64,7 +64,7 @@
               </svg>Shutdown
             </a>
             {% else %}
-            <a href="/public/logout">
+            <a href="/public/logout" class="text-xl">
               <svg viewBox="0 0 24 24" class="h-6 mr-8">
                 <use href="/static/general_icons/logout.svg#main" fill="white" />
               </svg>Logout

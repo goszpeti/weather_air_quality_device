@@ -1,14 +1,13 @@
 from pathlib import Path
 from typing import Annotated
 from urllib.parse import quote
-from requests import get
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse
+from requests import get
 
-from ..public.authentication import User, get_current_user_with_redirect
-
-from ..templates import render_main, sub_template
+from waqd.ui.web2.authentication import User, get_current_user_with_redirect
+from waqd.ui.web2.templates import render_main, sub_template
 
 rt = APIRouter()
 

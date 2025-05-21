@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 
 import jwt
 from fastapi import Depends, HTTPException, Request, status
-from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
+from fastapi.openapi.models import OAuthFlows, OAuthFlowPassword
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
 from jwt.exceptions import InvalidTokenError
@@ -16,7 +16,7 @@ import waqd.app as base_app
 from waqd.settings import USER_API_KEY, USER_DEFAULT_PW, USER_SESSION_SECRET
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 24 * 60
 
 
 class Token(BaseModel):
@@ -49,18 +49,16 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
     def __init__(
         self,
         tokenUrl: str,
-        scheme_name: str = None,
-        scopes: dict = None,
+        scheme_name: str | None = None,
+        scopes: dict | None = None,
         auto_error: bool = True,
     ):
-        if not scopes:
-            scopes = {}
-        flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl, "scopes": scopes})
+        flows = OAuthFlows(password=OAuthFlowPassword(tokenUrl=tokenUrl))
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
     async def __call__(self, request: Request) -> Optional[str]:
-        header_authorization: str = request.headers.get("Authorization")
-        cookie_authorization: str = request.cookies.get("Authorization")
+        header_authorization: str = request.headers.get("Authorization", "")
+        cookie_authorization: str = request.cookies.get("Authorization", "")
         header_scheme, header_param = get_authorization_scheme_param(header_authorization)
         cookie_scheme, cookie_param = get_authorization_scheme_param(cookie_authorization)
 
@@ -175,7 +173,7 @@ async def get_current_user_with_redirect(
             return None
     user = get_current_user(token)
     if user is None:
-        from ..main import RequiresLoginException
+        from .main import RequiresLoginException
 
         raise RequiresLoginException(status.HTTP_303_SEE_OTHER)  # HTTPException(
         #     status_code=status.HTTP_303_SEE_OTHER,
@@ -193,15 +191,13 @@ async def get_current_user_plain(token: Annotated[str, Depends(oauth2_scheme)]):
 def get_db():
     return {
         "remote_user": {
-            "id": 0,
             "username": "remote_user",
             "email": "johndoe@example.com",
             "hashed_password": get_password_hash(base_app.settings.get_string(USER_DEFAULT_PW)),
             "disabled": False,
-            "permissions": ["users:local"],
+            "permissions": [],
         },
         "local_admin": {
-            "id": 1,
             "username": "local_admin",
             "hashed_password": get_password_hash(base_app.settings.get_string(USER_DEFAULT_PW)),
             "disabled": False,
@@ -233,7 +229,7 @@ class PermissionChecker:
     def get_permissions(self, user: User) -> list[str]:
         return user.permissions
 
-    def check_permissions(self, user: User) -> bool:
+    def check_permissions(self, user: UserInDB) -> bool:
         for r_perm in self.required_permissions:
             if r_perm not in user.permissions:
                 return False
