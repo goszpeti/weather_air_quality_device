@@ -47,7 +47,8 @@ def sub_template(
 
 
 def base_template(file_name: str, context: dict[str, Any], root_path=current_path) -> str:
-    template_loader = FileSystemLoader(searchpath=str(root_path))
+    # also include the parent, so we can use the components from the main template
+    template_loader = FileSystemLoader(searchpath=[str(root_path), str(root_path.parent)])
     template_env = Environment(loader=template_loader)
     template = template_env.get_template(file_name)
     return minify(template.render(context), remove_comments=True, remove_empty_space=True)

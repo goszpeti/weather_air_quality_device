@@ -1,0 +1,38 @@
+<fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border p-4 gap-4">
+
+    <legend class="fieldset-legend">Auto updates</legend>
+
+
+    <legend class="fieldset-legend gap-4 justify-start">
+        <svg viewBox="0 0 24 24" class="-m-1 h-8">
+            <use href="/static/general_icons/auto_update.svg#main" fill="white" />
+        </svg>
+        Auto update
+    </legend>
+    <label class="label text-wrap md:text-nowrap">
+        The device will check every few hours and on finding a new release it will update it immeadiatly and
+        restart.
+    </label>
+    <label class="label gap-4">
+        <input type="checkbox" checked="checked" class="toggle"
+            onclick="this.nextSibling.textContent = this.checked ? ' On' : ' Off';" />
+        On
+    </label>
+
+    <legend class="fieldset-legend">Beta channel</legend>
+    <label class="label text-wrap md:text-nowrap">
+        Enable beta versions for updates.
+    </label>
+    <label class="label">
+        <input type="checkbox" checked="checked" class="toggle" />
+    </label>
+</fieldset>
+<fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border p-4 gap-4">
+
+    <legend class="fieldset-legend">Manual update</legend>
+    <button class="btn btn-primary max-w-96">Check for updates</button>
+    <label class="label text-wrap md:text-nowrap">Check manually auto updates.
+        You will be prompted for confirmation before the update.
+    </label>
+
+</fieldset>

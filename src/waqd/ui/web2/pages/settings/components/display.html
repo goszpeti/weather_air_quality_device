@@ -1,0 +1,34 @@
+<fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border gap-4">
+    <legend class="fieldset-legend"></legend>
+
+    <legend class="fieldset-legend">Brightness</legend>
+    <input type="range" min="0" max="100" value="40" class="range" />
+
+    <legend class="fieldset-legend">Night Mode Begin</legend>
+    <input type="time" class="input" value="22:00"></input>
+
+
+    <legend class="fieldset-legend">Night Mode End</legend>
+    <input type="time" class="input" value="07:00" />
+
+    <legend class="fieldset-legend">Motions sensing</legend>
+    <label class="label">These settings control after which time on sensing movement
+        the display brightness changes.</label>
+    <select class="select">
+        <option disabled selected>Night Turn-off timeout</option>
+        <option>5s</option>
+        <option>30s</option>
+        <option>120s</option>
+        <option>10 min</option>
+        <option>30 min</option>
+    </select>
+    <select class="select">
+        <option disabled selected>Day Standby timeout</option>
+        <option>5s</option>
+        <option>30s</option>
+        <option>120s</option>
+        <option>10 min</option>
+        <option>30 min</option>
+    </select>
+
+</fieldset>

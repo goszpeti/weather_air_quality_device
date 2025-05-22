@@ -5,7 +5,7 @@
     <input type="radio" name="my_tabs" checked="checked" />
     General
   </label>
-  <div class="tab-content bg-base-100 border-base-300 p-1">
+  <div class="tab-content bg-base-200 border-base-300 p-1">
     {% include "components/general.html" %}
   </div>
 
@@ -13,17 +13,32 @@
     <input type="radio" name="my_tabs" />
     Display
   </label>
-  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 2</div>
+  <div class="tab-content bg-base-200 border-base-300 p-6">
+    {% include "components/display.html" %}
+  </div>
+
+  <label class="tab md:text-xl">
+    <input type="radio" name="my_tabs" />
+    Theming
+  </label>
+  <div class="tab-content bg-base-200 border-base-300 p-6">
+    {% include "components/theming.html" %}
+  </div>
 
   <label class="tab md:text-xl">
     <input type="radio" name="my_tabs" />
     Hardware
   </label>
-  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 2</div>
+  <div class="tab-content bg-base-200 border-base-300 p-6">
+    {% include "components/hardware.html" %}
+  </div>
 
   <label class="tab md:text-xl">
     <input type="radio" name="my_tabs" />
-    About
+    Updates
   </label>
-  <div class="tab-content bg-base-100 border-base-300 p-6">Tab content 3</div>
+  <div class="tab-content bg-base-200 border-base-300 p-6">
+    {% include "components/updates.html" %}
+  </div>
+
 </div>

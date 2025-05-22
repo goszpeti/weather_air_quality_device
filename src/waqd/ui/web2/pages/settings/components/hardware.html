@@ -1,0 +1,65 @@
+<fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend">Temperature/Humidity/Pressure</legend>
+
+    <label class="label">Enable BME-280</label>
+    <label class="label p-2">
+        <input type="checkbox" checked="checked" class="toggle" />
+    </label>
+
+    <label class="label">Enable BMP-280</label>
+    <label class="label p-2">
+        <input type="checkbox" checked="checked" class="toggle" />
+    </label>
+
+    <label class="label">Enable DHT-11/22</label>
+    <label class="label p-2">
+        <input type="checkbox" checked="checked" class="toggle" />
+    </label>
+</fieldset>
+<fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend">Air Quality</legend>
+    <label class="label">Enable MH-Z19</label>
+    <!-- Add calibration -->
+    <label class="label p-2">
+        <input type="checkbox" checked="checked" class="toggle" />
+    </label>
+
+    <label class="label">Enable CS811</label>
+    <label class="label p-2">
+        <input type="checkbox" checked="checked" class="toggle" />
+    </label>
+    <!-- ["Disabled", "4", "8", "22"] -->
+</fieldset>
+
+<fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend">Other</legend>
+    <legend class="fieldset-legend">Enable Motion Sensor</legend>
+    <label class="label">
+        <input type="checkbox" checked="checked" class="toggle" />
+    </label>
+</fieldset>
+
+<fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend">Remote WAQD</legend>
+    <legend class="fieldset-legend">Remote URL</legend>
+    <label class="label">
+        <label class="input validator">
+            <svg viewBox="0 0 24 24" class="-m-1 h-8">
+                <use href="/static/general_icons/home_address.svg#main" fill="white" />
+            </svg>
+            <input type="url" placeholder="http://my-waqd-address" required />
+        </label>
+        <div class="validator-hint hidden">Enter valid URL</div>
+        <button class="btn btn-primary">Set</button>
+    </label>
+    <legend class="fieldset-legend">Remote API Key</legend>
+    <label class="label">
+        <label class="input">
+            <svg viewBox="0 0 24 24" class="-m-1 h-8">
+                <use href="/static/general_icons/key.svg#main" fill="white" />
+            </svg>
+            <input type="text" placeholder="" required />
+        </label>
+        <button class="btn btn-primary">Set and Check</button>
+    </label>
+</fieldset>

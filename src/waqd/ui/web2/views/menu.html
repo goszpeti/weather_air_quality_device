@@ -57,6 +57,13 @@
             </a>
           </li>
           <li>
+            <a href="/public/about" {% if local %} class="text-3xl" {% else %} class="text-xl" {% endif %}>
+              <svg viewBox="0 0 24 24" class="h-6  mr-8">
+                <use href="/static/general_icons/info.svg#main" fill="white" />
+              </svg>About
+            </a>
+          </li>
+          <li>
             {% if local %}
             <a href="/local/power" class="text-3xl">
               <svg viewBox="0 0 24 24" class="h-6 mr-8">

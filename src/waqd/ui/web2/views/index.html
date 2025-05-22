@@ -44,12 +44,13 @@
     {{menu}}
   </header>
 
-  <main class="py-2 px-2 md:px-0 md:py-0 lg:p-4" style="max-width: 100%;" hx-ext="client-side-templates">
+  <main class="py-2 px-2 md:px-0 md:py-0 lg:p-4" style="max-width: 100%; min-height: 80vh;"
+    hx-ext="client-side-templates">
     {{content}}
-    <footer class="footer footer-center bg-transparent text-base-content text-xl p-4 space-y-8">
-      <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
-    </footer>
   </main>
+  <footer class="footer footer-center bg-transparent text-base-content text-xl p-4 space-y-8">
+    <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
+  </footer>
   <div id="toasts" class="toast toast-end">
     <script>
       function hideToast(name) {
