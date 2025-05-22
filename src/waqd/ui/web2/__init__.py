@@ -1,4 +1,5 @@
 from datetime import timedelta
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -17,6 +18,8 @@ LOCAL_SERVER_PORT = "8080"
 
 def start_web_server(reload=False):
     import uvicorn
+
+    os.system("sudo setcap 'cap_net_bind_service=+ep' /usr/bin/python3.11")
 
     create_api_token()
     prepare_local_login()

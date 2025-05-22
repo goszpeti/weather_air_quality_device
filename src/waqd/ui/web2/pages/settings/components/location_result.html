@@ -9,12 +9,13 @@
         </div>
         <div class="list list-col-grow">
             <div class="text-xs uppercase font-semibold opacity-60">{{result["admin1"]}}</div>
-            <div>{{result["latitude"]}}, {{result["longitude"]}}</div>
+            <div>{{"{:.2f}".format(result["latitude"])}}, {{"{:.2f}".format(result["longitude"])}}</div>
             <div class="text-2xl font-thin opacity-80 tabular-nums block md:hidden">{{result["name"]}}</div>
         </div>
-        <div class="text-2xl font-thin opacity-80 tabular-nums hidden md:block text-center">{{result["name"]}}
+        <div class="text-2xl font-thin opacity-80 tabular-nums hidden md:block text-center">
+            {{result["name"]}}
         </div>
-        <button class="btn btn-round">Set</button>
+        <button class="btn btn-round w-24 place-self-end">Set</button>
     </li>
     {% endfor %}
 </ul>

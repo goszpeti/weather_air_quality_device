@@ -3,7 +3,7 @@ import functools
 from pathlib import Path
 from typing import Any
 from fastapi.responses import HTMLResponse
-from frozendict import frozendict
+from frozendict import frozendict, deepfreeze
 from htmlmin.main import minify
 
 from jinja2 import Environment, FileSystemLoader
@@ -27,8 +27,8 @@ def freezeargs(func):
 
     @functools.wraps(func)
     def wrapped(*args, **kwargs):
-        args = (frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
-        kwargs = {k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()}
+        args = (deepfreeze(arg) if isinstance(arg, dict) else arg for arg in args)
+        kwargs = {k: deepfreeze(v) if isinstance(v, dict) else v for k, v in kwargs.items()}
         return func(*args, **kwargs)
 
     return wrapped

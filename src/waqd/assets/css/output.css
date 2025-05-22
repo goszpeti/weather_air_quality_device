@@ -13,6 +13,8 @@ html {
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-yellow-500: oklch(79.5% 0.184 86.047);
     --color-green-500: oklch(72.3% 0.219 149.579);
+    --color-slate-600: oklch(44.6% 0.043 257.281);
+    --color-stone-600: oklch(44.4% 0.011 73.639);
     --color-white: #fff;
     --spacing: 0.25rem;
     --container-xs: 20rem;
@@ -20,6 +22,8 @@ html {
     --container-md: 28rem;
     --text-xs: 0.75rem;
     --text-xs--line-height: calc(1 / 0.75);
+    --text-base: 1rem;
+    --text-base--line-height: calc(1.5 / 1);
     --text-lg: 1.125rem;
     --text-lg--line-height: calc(1.75 / 1.125);
     --text-xl: 1.25rem;
@@ -2219,6 +2223,9 @@ html {
   .h-8 {
     height: calc(var(--spacing) * 8);
   }
+  .h-10 {
+    height: calc(var(--spacing) * 10);
+  }
   .h-12 {
     height: calc(var(--spacing) * 12);
   }
@@ -2236,6 +2243,12 @@ html {
   }
   .h-\[1em\] {
     height: 1em;
+  }
+  .max-h-20 {
+    max-height: calc(var(--spacing) * 20);
+  }
+  .max-h-28 {
+    max-height: calc(var(--spacing) * 28);
   }
   .min-h-\[85vh\] {
     min-height: 85vh;
@@ -2255,14 +2268,35 @@ html {
   .w-4 {
     width: calc(var(--spacing) * 4);
   }
+  .w-6 {
+    width: calc(var(--spacing) * 6);
+  }
+  .w-24 {
+    width: calc(var(--spacing) * 24);
+  }
+  .w-32 {
+    width: calc(var(--spacing) * 32);
+  }
   .w-52 {
     width: calc(var(--spacing) * 52);
+  }
+  .w-60 {
+    width: calc(var(--spacing) * 60);
   }
   .w-fit {
     width: fit-content;
   }
   .w-full {
     width: 100%;
+  }
+  .max-w-20 {
+    max-width: calc(var(--spacing) * 20);
+  }
+  .max-w-32 {
+    max-width: calc(var(--spacing) * 32);
+  }
+  .max-w-52 {
+    max-width: calc(var(--spacing) * 52);
   }
   .max-w-96 {
     max-width: calc(var(--spacing) * 96);
@@ -2281,6 +2315,9 @@ html {
   }
   .shrink-0 {
     flex-shrink: 0;
+  }
+  .flex-grow {
+    flex-grow: 1;
   }
   .skeleton {
     border-radius: var(--radius-box);
@@ -2349,11 +2386,17 @@ html {
   .items-center-safe {
     align-items: safe center;
   }
+  .items-end {
+    align-items: flex-end;
+  }
   .items-stretch {
     align-items: stretch;
   }
   .justify-center {
     justify-content: center;
+  }
+  .justify-end {
+    justify-content: flex-end;
   }
   .justify-evenly {
     justify-content: space-evenly;
@@ -2363,6 +2406,9 @@ html {
   }
   .gap-4 {
     gap: calc(var(--spacing) * 4);
+  }
+  .gap-6 {
+    gap: calc(var(--spacing) * 6);
   }
   .gap-8 {
     gap: calc(var(--spacing) * 8);
@@ -2381,6 +2427,9 @@ html {
       margin-inline-end: calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-x-reverse)));
     }
   }
+  .place-self-end {
+    place-self: end;
+  }
   .self-stretch {
     align-self: stretch;
   }
@@ -2396,6 +2445,18 @@ html {
       padding-inline: calc(0.25rem * 4);
       padding-block: calc(0.25rem * 1.5);
       font-size: 1.125rem;
+    }
+    .menu-title {
+      padding-inline: calc(0.25rem * 6);
+      padding-block: calc(0.25rem * 3);
+    }
+  }
+  .menu-xl {
+    :where(li:not(.menu-title) > *:not(ul, details, .menu-title)), :where(li:not(.menu-title) > details > summary:not(.menu-title)) {
+      border-radius: var(--radius-field);
+      padding-inline: calc(0.25rem * 5);
+      padding-block: calc(0.25rem * 1.5);
+      font-size: 1.375rem;
     }
     .menu-title {
       padding-inline: calc(0.25rem * 6);
@@ -2578,11 +2639,20 @@ html {
   .text-green-500 {
     color: var(--color-green-500);
   }
+  .text-neutral {
+    color: var(--color-neutral);
+  }
   .text-neutral-content {
     color: var(--color-neutral-content);
   }
   .text-red-500 {
     color: var(--color-red-500);
+  }
+  .text-slate-600 {
+    color: var(--color-slate-600);
+  }
+  .text-stone-600 {
+    color: var(--color-stone-600);
   }
   .text-white {
     color: var(--color-white);
@@ -2695,6 +2765,26 @@ html {
       display: none;
     }
   }
+  .md\:max-h-fit {
+    @media (width >= 48rem) {
+      max-height: fit-content;
+    }
+  }
+  .md\:w-auto {
+    @media (width >= 48rem) {
+      width: auto;
+    }
+  }
+  .md\:max-w-fit {
+    @media (width >= 48rem) {
+      max-width: fit-content;
+    }
+  }
+  .md\:max-w-none {
+    @media (width >= 48rem) {
+      max-width: none;
+    }
+  }
   .md\:grid-cols-3 {
     @media (width >= 48rem) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2795,6 +2885,12 @@ html {
   .lg\:text-left {
     @media (width >= 64rem) {
       text-align: left;
+    }
+  }
+  .lg\:text-base {
+    @media (width >= 64rem) {
+      font-size: var(--text-base);
+      line-height: var(--tw-leading, var(--text-base--line-height));
     }
   }
   .lg\:text-xl {

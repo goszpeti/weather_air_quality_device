@@ -1,21 +1,18 @@
-<fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border p-4 gap-4">
+<fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
     <legend class="fieldset-legend">Regional settings</legend>
 
     <legend class="fieldset-legend">Language</legend>
-    <select class="select">
+    <select class="select text-xl">
         <option selected>English</option>
         <option>Deutsch</option>
         <option>Magyar</option>
     </select>
 
     <legend class="fieldset-legend">Location</legend>
-    <label class="input">
+    <label class="input text-xl">
         <!-- search -->
-        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.3-4.3"></path>
-            </g>
+        <svg viewBox="0 0 24 24" class="-m-1 h-6">
+            <use href="/static/general_icons/search.svg#main" fill="#e3e3e3" />
         </svg>
 
         <input type="search" class="" hx-trigger="input from:#search_loc_input delay:500ms" hx-target="#location_list"
@@ -23,12 +20,13 @@
             oninput="this.setAttribute('hx-vals', JSON.stringify({query: this.value}))" hx-get="location_search_result"
             placeholder="Search" id="search_loc_input" />
     </label>
-    <p class="label text-wrap md:text-nowrap">Please set this value for all location specific functionality to work!
+    <p class="label text-wrap text-2xl md:text-nowrap">Please set this value for all location specific functionality to
+        work!
     </p>
     <div id="location_list"></div>
 </fieldset>
 
-<fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border p-4 gap-4">
+<fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
     <legend class="fieldset-legend">Sound</legend>
 
     <legend class="fieldset-legend">Enable Sound</legend>

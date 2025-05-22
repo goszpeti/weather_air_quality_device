@@ -14,14 +14,38 @@
           <label class="label">Username</label>
           <input type="text" id="username" name="username" autocomplete="username" placeholder="Username"
             class="input" />
+
           <label class="label">Password</label>
-          <input type="password" id="password" class="input" placeholder="Password" />
+
+          <div class="flex items-center">
+            <input type="password" id="password" class="input input-bordered flex-grow">
+            <button type="button" class="btn btn-square ml-2" onclick="togglePasswordVisibility()">
+              <svg id="togglePWVisibilityBtn" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </div>
           <!-- <div><a class="link link-hover">Forgot password?</a></div> -->
           <button class="btn btn-primary mt-4 text-lg" onclick="login()">
             Login
             <span id="loading" class="hidden loading loading-spinner loading-md ml-4"></span>
           </button>
           <script>
+            function togglePasswordVisibility() {
+              const passwordInput = document.getElementById('password');
+              const toggleButton = document.getElementById('togglePWVisibilityBtn');
+              if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleButton.style.opacity = '0.5'; // Grey out the button
+              } else {
+                passwordInput.type = 'password';
+                toggleButton.style.opacity = '1'; // Re-enable the button
+              }
+            }
             function login() {
               document.getElementById("loading").classList.remove('hidden');
 

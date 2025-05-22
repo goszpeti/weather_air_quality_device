@@ -30,6 +30,8 @@ async def location_search_result(query: str):
     location_data = get(
         "https://geocoding-api.open-meteo.com/v1/search?name=" + quote(query)
     ).json()
+    if not location_data.get("results"):
+        return HTMLResponse("No location found")
     return sub_template(
         "location_result.html",
         {"location_data": location_data},

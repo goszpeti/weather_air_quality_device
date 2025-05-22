@@ -1,13 +1,14 @@
-<div class="navbar bg-base-100 shadow-sm rounded-b text-3xl p-2 md:p-0 lg:p-2">
+<div class="navbar bg-base-100 shadow-sm rounded-b p-4 md:p-0 lg:p-2">
   <div class="navbar-start">
     <!-- Mobile Menu -->
     <div class="dropdown">
       <div tabindex="0" role="button" class="btn btn-ghost btn-ghost2 md:hidden ">
-        <svg viewBox="0 0 24 24" class="h-8">
+        <svg viewBox="0 0 24 24" class="h-10">
           <use href="/static/general_icons/menu.svg#main" fill="white" />
         </svg>
       </div>
-      <ul tabindex="0" class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+      <ul tabindex="0" class="menu menu-xl dropdown-content
+                                bg-base-100 rounded-box z-1 mt-3 w-60 p-4 gap-4 shadow">
         <li>
           <a href="/settings"><svg viewBox="0 0 24 24" class="h-4">
               <use href="/static/general_icons/settings.svg#main" fill="white" />
@@ -15,9 +16,12 @@
         </li>
         <li>
           <details open>
-            <summary><svg viewBox="0 0 24 24" class="h-4">
-                <use href="/static/general_icons/account_circle.svg#main" fill="white" />
-              </svg> Account</summary>
+            <summary class="text-neutral">
+              <svg viewBox="0 0 24 24" class="h-4">
+                <use href="/static/general_icons/account_circle.svg#main" fill="#57534d" />
+              </svg>
+              Account
+            </summary>
             <ul class="">
               <!-- <li><a>
                   <svg viewBox="0 0 24 24" class="h-4 w-4">
@@ -41,7 +45,7 @@
   <div class="navbar-end hidden md:flex">
     <!-- Desktop Menu -->
     {% if logged_in %}
-    <ul class="menu menu-horizontal px-2 md:text-3xl lg:text-xl">
+    <ul class="menu menu-horizontal menu-xl px-2">
       <div class="dropdown dropdown-end ">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-field">
           <svg viewBox="0 0 24 24" class="h-8">
@@ -50,14 +54,14 @@
         </div>
         <ul tabindex="0" class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-fit p-2 shadow">
           <li>
-            <a href="/settings" {% if local %} class="text-3xl" {% else %} class="text-xl" {% endif %}>
+            <a href="/settings">
               <svg viewBox="0 0 24 24" class="h-6  mr-8">
                 <use href="/static/general_icons/settings.svg#main" fill="white" />
               </svg>Settings
             </a>
           </li>
           <li>
-            <a href="/public/about" {% if local %} class="text-3xl" {% else %} class="text-xl" {% endif %}>
+            <a href="/public/about">
               <svg viewBox="0 0 24 24" class="h-6  mr-8">
                 <use href="/static/general_icons/info.svg#main" fill="white" />
               </svg>About
@@ -65,13 +69,13 @@
           </li>
           <li>
             {% if local %}
-            <a href="/local/power" class="text-3xl">
+            <a href="/local/power">
               <svg viewBox="0 0 24 24" class="h-6 mr-8">
                 <use href="/static/general_icons/power.svg#main" fill="white" />
               </svg>Shutdown
             </a>
             {% else %}
-            <a href="/public/logout" class="text-xl">
+            <a href="/public/logout">
               <svg viewBox="0 0 24 24" class="h-6 mr-8">
                 <use href="/static/general_icons/logout.svg#main" fill="white" />
               </svg>Logout

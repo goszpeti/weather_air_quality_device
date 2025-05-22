@@ -20,6 +20,7 @@ dependencies = [
     "DebugPy<=2.0.0", # MS VSCode debugger for dynamic debugging
     # 1.48.0
     "influxdb-client==1.30.0",    # MIT License - influxdb API
+    "frozendict==2.4.6",          # LGPLv3 - for frozen dicts
     "JsonSchema==4.23.0",         # MIT License - for events json schema validation
     "Jinja2==3.1.6",
     "pint==0.24.4",               # BSD 3-clause style license - physical units for sensors
