@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import List
+from pydantic import BaseModel
 
 from waqd.assets import get_asset_file
 
@@ -21,13 +22,12 @@ def is_daytime(sunrise, sunset, date_time=None):
     return sunrise < date_time.time() < sunset
 
 
-@dataclass
-class Location():
+class Location(BaseModel):
     name: str
     country: str
     state: str
     county: str
-    postcodes: List[str]
+    country_code: str
     altitude: float
     latitude: float
     longitude: float

@@ -24,9 +24,11 @@ class OpenWeatherMap(Component):
     """
 
     CURRENT_WEATHER_BY_CITY_ID_API_CMD = (
-        "https://api.openweathermap.org/data/2.5/weather?id={cid}"
+        "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}"
     )
-    FORECAST_BY_CITY_ID_API_CMD = "https://api.openweathermap.org/data/2.5/forecast?id={cid}"
+    FORECAST_BY_CITY_ID_API_CMD = (
+        "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}"
+    )
     API_POSTFIX = "&units=metric&APPID={apikey}"
 
     def __init__(self, city_id, api_key):

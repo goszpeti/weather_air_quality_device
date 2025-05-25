@@ -7,6 +7,7 @@ LANG_ENGLISH = "English"
 LANG_HUNGARIAN = "Magyar"
 
 SOUND_ENABLED = "sound_enabled"
+STARTUP_JINGLE = "startup_jingle"  # sound played on startup, if sound_enabled is True
 EVENTS_ENABLED = "events_enabled"
 # general hw
 DISPLAY_TYPE = "display_type"
@@ -48,15 +49,15 @@ MOTION_SENSOR_ENABLED = (
 DAY_STANDBY_TIMEOUT = "day_standby_timeout"
 NIGHT_STANDBY_TIMEOUT = "night_standby_timeout"
 # forecast
-LOCATION = "location"  # only for display and search purposes
+LOCATION_NAME = "location"  # only for display and search purposes
 LOCATION_LONGITUDE = "location_long"
 LOCATION_LATITUDE = "location_lat"
 LOCATION_ALTITUDE_M = "last_altitude_value"
+LOCATION_STATE = "location_state"  # e.g. state, province, region
+LOCATION_COUNTRY_CODE = "location_country_code"
 
 OW_API_KEY = "open_weather_api_key"
-OW_CITY_IDS = "ow_city_id"  # deprecate with generic geo conding
 AW_API_KEY = "accu_weather_api_key"
-AW_CITY_IDS = "aw_city_id"  # deprecate with generic geo conding
 
 # import at the end, to avoid circular imports
 from waqd.settings.settings import Settings

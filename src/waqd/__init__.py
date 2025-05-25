@@ -20,7 +20,6 @@ DEBUG_LEVEL = 0
 HEADLESS_MODE = False
 MIGRATE_SENSOR_LOGS = False
 LOCAL_TIMEZONE = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
-INTRO_JINGLE = True
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 480
 

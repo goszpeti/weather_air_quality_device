@@ -16,8 +16,7 @@ import waqd.app as base_app
 from waqd.settings import USER_API_KEY, USER_DEFAULT_PW, USER_SESSION_SECRET
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 24 * 60
-
+ACCESS_TOKEN_EXPIRE_DAYS = 30
 
 class Token(BaseModel):
     access_token: str
@@ -120,13 +119,12 @@ def authenticate_user(db, username: str, password: str):
 
 
 def create_access_token(
-    data: dict, expires_delta: timedelta | None = timedelta(ACCESS_TOKEN_EXPIRE_MINUTES)
+    data: dict, expires_delta: timedelta | None = None
 ):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(days=100)
+
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
         to_encode, base_app.settings.get_string(USER_SESSION_SECRET), algorithm=ALGORITHM
@@ -175,10 +173,7 @@ async def get_current_user_with_redirect(
     if user is None:
         from .main import RequiresLoginException
 
-        raise RequiresLoginException(status.HTTP_303_SEE_OTHER)  # HTTPException(
-        #     status_code=status.HTTP_303_SEE_OTHER,
-        #     headers={"Location": "/public/login"},
-        # )
+        raise RequiresLoginException(status.HTTP_303_SEE_OTHER)
     return user
 
 

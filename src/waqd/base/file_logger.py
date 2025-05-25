@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple
 from file_read_backwards import FileReadBackwards
 
 import waqd
-from waqd import LOCAL_TIMEZONE
+from waqd import LOCAL_TIMEZONE, PROG_NAME
 
 
 # helper functions for logs
@@ -59,7 +59,7 @@ class Logger(logging.Logger):
         root.setLevel(logging.ERROR)
 
         # set up file logger - log everything in file and stdout
-        logger = logging.getLogger("WAQD")
+        logger = logging.getLogger(PROG_NAME)
         logger.setLevel(logging.DEBUG)
         log_debug_level = logging.INFO
         if waqd.DEBUG_LEVEL > 0:

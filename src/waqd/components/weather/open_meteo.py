@@ -5,7 +5,9 @@ Currently OpenWeatherMap is supported.
 An own abstraction class was created to generalize the weather data.
 """
 
+
 from datetime import datetime, timedelta
+from urllib.parse import quote
 import requests
 
 from typing import Dict, List, Optional, Any
@@ -33,20 +35,19 @@ class OpenMeteo(Component):
         self.nighttime_forecast_point: List[List[Weather]] = []
 
     def find_location_candidates(self, query: str, lang="en") -> List[Location]:
-        """ TODO currently unused """
-        data = self._call_api(self.API_GEOCONDING_CMD, query=query, lang=lang)
+        data = self._call_api(self.API_GEOCONDING_CMD, query=quote(query), lang=lang)
         locations = []
         for result in data.get("results", []):
             locations.append(
                 Location(
-                    result.get("name", ""),
-                    result.get("country", ""),
-                    result.get("admin1", ""),
-                    result.get("admin2", ""),
-                    result.get("postcodes", []),
-                    result.get("elevation", 0),
-                    result.get("latitude", 0),
-                    result.get("longitude", 0),
+                    name=result.get("name", ""),
+                    country=result.get("country", ""),
+                    country_code=result.get("country_code", ""),
+                    state=result.get("admin1", ""),
+                    county=result.get("admin2", ""),
+                    altitude=result.get("elevation", 0),
+                    latitude=result.get("latitude", 0),
+                    longitude=result.get("longitude", 0),
                 ))
         return locations
 

@@ -18,7 +18,7 @@ from waqd.settings import (
     EVENTS_ENABLED,
     LANG,
     LAST_TEMP_C_OUTSIDE,
-    LOCATION,
+    LOCATION_NAME,
     LOCATION_ALTITUDE_M,
     LOCATION_LATITUDE,
     LOCATION_LONGITUDE,
@@ -27,7 +27,6 @@ from waqd.settings import (
     MOTION_SENSOR_PIN,
     NIGHT_MODE_END,
     OW_API_KEY,
-    OW_CITY_IDS,
     REMOTE_MODE_URL,
     SOUND_ENABLED,
     UPDATER_USER_BETA_CHANNEL,
@@ -242,12 +241,12 @@ class ComponentRegistry:
         """Access for OnlineWeather singleton"""
         from waqd.components import OpenWeatherMap, OpenMeteo
 
-        location = self._settings.get_string(LOCATION)
+        location = self._settings.get_string(LOCATION_NAME)
         if waqd.WEATHER_DATA_PROVIDER == waqd.WeatherDataProviders.OpenWeatherMap.value:
             return self._create_component_instance(
                 OpenWeatherMap,
                 [
-                    self._settings.get_dict(OW_CITY_IDS).get(location, ""),
+                    self._settings.get(LOCATION_NAME),
                     self._settings.get(OW_API_KEY),
                 ],
             )

@@ -3,22 +3,27 @@ Entry module of WAQD
 Sets up cmd arguments, settings and starts the gui
 """
 
-from typing import TYPE_CHECKING
 import sys
 import time
+from typing import TYPE_CHECKING
 
 import waqd
 from waqd import __version__ as WAQD_VERSION
+from waqd.assets.assets import get_asset_file
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
+from waqd.settings import STARTUP_JINGLE
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
-    from waqd.base.component_ctrl import ComponentController
     from pint import UnitRegistry
+
+    from waqd.base.component_ctrl import ComponentController
     from waqd.settings import Settings
 
 # GLOBAL VARIABLES
+
+Logger(output_path=waqd.user_config_dir)  # singleton, no assigment needed
 
 # singleton with access to all backend components
 comp_ctrl: "ComponentController"
@@ -45,7 +50,6 @@ def basic_setup():
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
 
-    Logger(output_path=waqd.user_config_dir)  # singleton, no assigment needed
     if waqd.DEBUG_LEVEL > 0:
         Logger().info(f"DEBUG level set to {waqd.DEBUG_LEVEL}")
 
@@ -57,8 +61,8 @@ def basic_setup():
     from waqd.base.component_ctrl import ComponentController
 
     comp_ctrl = ComponentController(settings)
-    if waqd.DEBUG_LEVEL > 1:  # disable startup sound
-        comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
+    # if waqd.DEBUG_LEVEL > 1:  # disable startup sound
+    #     comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
 
 
 def main():
@@ -69,16 +73,17 @@ def main():
     # Load the selected GUI mode
     try:
         comp_ctrl.init_all()
-        from waqd.ui.web2 import (
-            start_web_server,
-            start_web_ui_chromium_kiosk_mode,
-        )
+        from waqd.ui.web2 import (start_web_server,
+                                  start_web_ui_chromium_kiosk_mode)
 
         runtime_system = RuntimeSystem()
         if runtime_system.is_target_system and not waqd.HEADLESS_MODE:
             start_web_ui_chromium_kiosk_mode()
 
         start_web_server(reload=waqd.DEBUG_LEVEL > 3)
+        if settings.get(STARTUP_JINGLE):
+            comp_ctrl.components.sound.play(get_asset_file("sounds", "pera__introgui.wav"))
+
         comp_ctrl._stop_event.wait()
 
     except Exception:
@@ -123,6 +128,8 @@ def setup_unit_reg():
 
 def crash_hook(exctype, excvalue, tb):
     try:
+        import traceback
+
         tb_formatted = "\n".join(traceback.format_tb(tb, limit=10))
         error_text = f"Application crashed: {str(exctype)} {excvalue}\n{tb_formatted}"
         Logger().fatal(error_text)

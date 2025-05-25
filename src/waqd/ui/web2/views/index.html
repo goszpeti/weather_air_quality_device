@@ -9,8 +9,10 @@
   <link rel="preload" href="/static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
   <link href="/static/css/output.css" rel="stylesheet" type="text/css" />
   <script src="/static/js/htmx_2_0_4.js"></script>
+  <!-- Client side templates for weather view  -->
   <script src="/static/js/htmx_ext_client_side_temp_2_0_0.js"></script>
   <script src="/static/js/nunjucks_3_2_4.js"></script>
+  <script src="/static/js/json-enc_1.9.2.js"></script>
   <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"
     integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -45,7 +47,8 @@
   </header>
 
   <main class="py-2 px-2 md:px-0 md:py-0 lg:p-4" style="max-width: 100%; min-height: 80vh;"
-    hx-ext="client-side-templates">
+    hx-ext="client-side-templates"> 
+    <!-- Enable client side templates for all main content -->
     {{content}}
   </main>
   <footer class="footer footer-center bg-transparent text-base-content text-xl p-4 space-y-8">

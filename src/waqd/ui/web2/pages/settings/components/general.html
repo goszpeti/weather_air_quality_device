@@ -2,41 +2,77 @@
     <legend class="fieldset-legend">Regional settings</legend>
 
     <legend class="fieldset-legend">Language</legend>
-    <select class="select text-xl">
+    <select class="select text-xl" disabled> <!-- disabled for now -->
         <option selected>English</option>
         <option>Deutsch</option>
         <option>Magyar</option>
     </select>
 
     <legend class="fieldset-legend">Location</legend>
+    {% if location %}
+    <ul class="list bg-base-100 rounded-box shadow-md md:max-w-3/4">
+        <li class="list-row ">
+            <div class="text-2xl font-thin opacity-30 tabular-nums hidden md:block ">
+                {{location_country_code}}</div>
+            <div>
+                <img class="size-8 rounded-box p-1"
+                    src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/7.3.2/flags/1x1/{{location_country_code.lower()}}.svg" />
+            </div>
+            <div class="list list-col-grow">
+                <div class="text-xs uppercase font-semibold opacity-60">{{location_state}}</div>
+                <div>LAT: {{"{:.2f}".format(location_lat)}}, LONG: {{"{:.2f}".format(location_long)}}
+                </div>
+                <div class="text-2xl pt-4 font-thin opacity-80 tabular-nums block md:hidden">
+                    {{location}}</div>
+            </div>
+            <div class="text-2xl font-thin opacity-80 tabular-nums hidden md:block text-center">
+                {{location}}
+            </div>
+        </li>
+    </ul>
+    {% endif %}
+    <label class="label text-wrap text-2xl">Please set this value for all location specific
+        functionality to work!
+    </label>
+    <label class="label text-wrap text-2xl">This feature needs internet access to work.
+    </label>
     <label class="input text-xl">
         <!-- search -->
         <svg viewBox="0 0 24 24" class="-m-1 h-6">
             <use href="/static/general_icons/search.svg#main" fill="#e3e3e3" />
         </svg>
 
-        <input type="search" class="" hx-trigger="input from:#search_loc_input delay:500ms" hx-target="#location_list"
-            hx-encoding="application/x-www-form-urlencoded" hx-swap="innerHTML" id="search_loc_input"
-            oninput="this.setAttribute('hx-vals', JSON.stringify({query: this.value}))" hx-get="location_search_result"
-            placeholder="Search" id="search_loc_input" />
+        <input type="search" hx-trigger="input from:#search_loc_input delay:500ms"
+            hx-target="#location_list" hx-encoding="application/x-www-form-urlencoded"
+            hx-swap="innerHTML" id="search_loc_input"
+            oninput="this.setAttribute('hx-vals', JSON.stringify({query: this.value}))"
+            hx-get="location_search_result" placeholder="Search" id="search_loc_input" />
     </label>
-    <p class="label text-wrap text-2xl md:text-nowrap">Please set this value for all location specific functionality to
-        work!
-    </p>
+
     <div id="location_list"></div>
 </fieldset>
 
 <fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
     <legend class="fieldset-legend">Sound</legend>
+    {% with title="Sound Enabled", description="Global switch for all sounds",
+    icon="volume_up",
+    name="sound_enabled", value=sound_enabled %}
+    {% include "components/snippets/bool_setting.html" %}
+    {% endwith %}
 
-    <legend class="fieldset-legend">Enable Sound</legend>
-    <label class="label">Global switch for all sound</label>
-    <label class="label">
-        <input type="checkbox" checked="checked" class="toggle" />
-    </label>
-
-    <legend class="fieldset-legend">Startup Jingle</legend>
-    <label class="label">
-        <input type="checkbox" checked="checked" class="toggle" />
-    </label>
+    {% with title="Startup Jingle", description="Play a jingle on startup",
+    icon="notifications",
+    name="startup_jingle", value=startup_jingle %}
+    {% include "components/snippets/bool_setting.html" %}
+    {% endwith %}
 </fieldset>
+
+<!-- <fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend  text-error">Danger Zone</legend>
+
+    <legend class="fieldset-legend">Reset Password</legend>
+    <button class="btn btn-primary max-w-96">Reset admin password</button>
+
+    <legend class="fieldset-legend">Change Password</legend>
+
+</fieldset> -->

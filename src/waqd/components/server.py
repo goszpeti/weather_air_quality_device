@@ -20,7 +20,7 @@ from waqd.ui.web.web_session import LoginPlugin
 from waqd.ui.web.authentification import UserAuth, validate_password, validate_username
 from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import LOCATION, LOCATION_LATITUDE, LOCATION_LONGITUDE, OW_API_KEY, OW_CITY_IDS, Settings
+from waqd.settings import LOCATION_NAME, LOCATION_LATITUDE, LOCATION_LONGITUDE, OW_API_KEY, Settings
 from waqd.components import OpenWeatherMap
 from waqd.ui import format_unit_disp_value
 from waqd import base_path
@@ -220,7 +220,7 @@ class BottleServer(Component):
             return "<p>Please enter a location!</p>"
         try:
             loc_name, longitude, latitude = self.parse_location(new_location_id)
-            self._settings.set(LOCATION, loc_name) # TODO Ingolstadt, Bavaria
+            self._settings.set(LOCATION_NAME, loc_name) # TODO Ingolstadt, Bavaria
             self._settings.set(LOCATION_LONGITUDE, longitude)
             self._settings.set(LOCATION_LATITUDE, latitude)
 
@@ -229,7 +229,7 @@ class BottleServer(Component):
                 app.qt_backchannel.re_init_gui.emit()
 
         except Exception as e:
-            self._settings.set(LOCATION, "Unknown")
+            self._settings.set(LOCATION_NAME, "Unknown")
             return "<p>Location set, but does not seem to work!</p>"
         finally:
             self._settings.save()
@@ -414,7 +414,7 @@ class BottleServer(Component):
         # Implement login (you can check passwords here or etc)
         page_content = (self._html_path / "settings.html").read_text()
         tpl = Jinja2Template(page_content)
-        location = self._settings.get_string(LOCATION)
+        location = self._settings.get_string(LOCATION_NAME)
         if not location or location.lower() == "unknown":
             location = "Search for your location..."
         return tpl.render(username=self._login.get_user(),  # ow_api_key=self._settings.get_string(OW_API_KEY)

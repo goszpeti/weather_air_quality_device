@@ -1,0 +1,21 @@
+<legend class="fieldset-legend gap-4 justify-start">
+    {% if icon %}
+    <svg viewBox="0 0 24 24" class="-m-1 h-8">
+        <use href="/static/general_icons/{{icon}}.svg#main" fill="white" />
+    </svg>
+    {% endif %}
+    {{title}}
+</legend>
+<label class="label text-wrap">
+    {% if description %}
+    {{description}}
+    {% endif %}
+</label>
+<label class="label gap-4">
+    <input id="toggle_{{name}}" type="checkbox" class="toggle" 
+        {% if value %} checked {% endif %}
+        hx-trigger="click" hx-post="set"
+        hx-vals="js:{'name':'{{name}}', 'value': event.target.checked}"
+        onclick="this.nextSibling.textContent = this.checked ? ' On' : ' Off';" />
+    {% if value %} On {% else %} Off {% endif %}
+</label>

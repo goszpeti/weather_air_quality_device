@@ -4,7 +4,8 @@ import os
 import secrets
 from pathlib import Path
 from typing import Union, Dict
-
+from distutils.util import strtobool
+from .. import PROG_NAME
 from waqd.settings import (
     AUTO_UPDATER_ENABLED,
     CCS811_ENABLED,
@@ -12,10 +13,11 @@ from waqd.settings import (
     INTERIOR_BG,
     LOCATION_ALTITUDE_M,
     LAST_TEMP_C_OUTSIDE,
+    LOCATION_COUNTRY_CODE,
+    LOCATION_STATE,
     MH_Z19_ENABLED,
     AW_API_KEY,
     EVENTS_ENABLED,
-    AW_CITY_IDS,
     BRIGHTNESS,
     DAY_STANDBY_TIMEOUT,
     DISP_TYPE_RPI,
@@ -26,16 +28,16 @@ from waqd.settings import (
     LOCATION_LATITUDE,
     REMOTE_API_KEY,
     REMOTE_MODE_URL,
+    STARTUP_JINGLE,
     UPDATER_USER_BETA_CHANNEL,
     LANG_GERMAN,
-    LOCATION,
+    LOCATION_NAME,
     MOTION_SENSOR_ENABLED,
     MOTION_SENSOR_PIN,
     NIGHT_MODE_BEGIN,
     NIGHT_MODE_END,
     NIGHT_STANDBY_TIMEOUT,
     OW_API_KEY,
-    OW_CITY_IDS,
     SOUND_ENABLED,
     DHT_22_PIN,
     BME_280_ENABLED,
@@ -56,17 +58,20 @@ class Settings:
     """
 
     # internal constants
-    _GUI_SECTION_NAME = "GUI"
+    _THEMING_SECTION_NAME = "GUI"
     _GENERAL_SECTION_NAME = "General"
-    _FORECAST_SECTION_NAME = "Forecast"
     _ENERGY_SECTION_NAME = "Energy"
+    _LOCATION_SECTION_NAME = "Location"
+    _REMOTE_SECTION_NAME = "User"
+    _SENSOR_SECTION_NAME = "Sensors"
+    _SECRET_SECTION_NAME = "Secrets"
 
     def __init__(self, ini_folder=None, auto_save=True):
         """
         Read waqd.ini file to load settings.
         Verify waqd.ini existence, if folder is passed.
         """
-        self._logger = logging.getLogger("root")
+        self._logger = logging.getLogger(PROG_NAME)
         self._parser = configparser.ConfigParser()
         self._ini_file_path = Path()
         if ini_folder is not None:
@@ -87,25 +92,13 @@ class Settings:
                 SOUND_ENABLED: False,
                 EVENTS_ENABLED: True,
                 DISPLAY_TYPE: DISP_TYPE_RPI,
-                CCS811_ENABLED: False,
-                MH_Z19_ENABLED: False,
-                MH_Z19_VALUE_OFFSET: 0,
-                BME_280_ENABLED: False,
-                BMP_280_ENABLED: False,
-                DHT_22_PIN: DHT_22_DISABLED,
-                MOTION_SENSOR_PIN: 23,
                 WAVESHARE_DISP_BRIGHTNESS_PIN: 18,
                 AUTO_UPDATER_ENABLED: True,
                 UPDATER_USER_BETA_CHANNEL: False,
-                LOG_SENSOR_DATA: True,
                 LAST_TEMP_C_OUTSIDE: 23.5,
-                REMOTE_MODE_URL: "",
-                USER_SESSION_SECRET: secrets.token_hex(32),
-                USER_API_KEY: "",
-                USER_DEFAULT_PW: secrets.token_hex(32),
-                REMOTE_API_KEY: "",
+                STARTUP_JINGLE: True,
             },
-            self._GUI_SECTION_NAME: {
+            self._THEMING_SECTION_NAME: {
                 INTERIOR_BG: "background_s8.jpg",
                 FORECAST_BG: "background_s9.jpg",
             },
@@ -113,19 +106,38 @@ class Settings:
                 NIGHT_MODE_BEGIN: 22,
                 NIGHT_MODE_END: 7,
                 BRIGHTNESS: 90,
-                MOTION_SENSOR_ENABLED: True,
                 DAY_STANDBY_TIMEOUT: 600,
                 NIGHT_STANDBY_TIMEOUT: 600,
             },
-            self._FORECAST_SECTION_NAME: {
-                LOCATION: "None",
+            self._LOCATION_SECTION_NAME: {
+                LOCATION_NAME: "",
+                LOCATION_COUNTRY_CODE: "",
                 LOCATION_LATITUDE: 0.0,
                 LOCATION_LONGITUDE: 0.0,
                 LOCATION_ALTITUDE_M: 400.0,
+                LOCATION_STATE: "",
                 OW_API_KEY: "",
-                OW_CITY_IDS: {},
                 AW_API_KEY: "",
-                AW_CITY_IDS: {},
+            },
+            self._REMOTE_SECTION_NAME: {
+                REMOTE_MODE_URL: "",
+                REMOTE_API_KEY: "",
+            },
+            self._SENSOR_SECTION_NAME: {
+                DHT_22_PIN: DHT_22_DISABLED,  # if not disabled, the pin number is used
+                BME_280_ENABLED: False,
+                BMP_280_ENABLED: False,
+                CCS811_ENABLED: False,
+                MH_Z19_ENABLED: False,
+                MH_Z19_VALUE_OFFSET: 0,
+                MOTION_SENSOR_ENABLED: True,
+                MOTION_SENSOR_PIN: 23,
+                LOG_SENSOR_DATA: True,
+            },
+            self._SECRET_SECTION_NAME: {
+                USER_SESSION_SECRET: secrets.token_hex(32),
+                USER_API_KEY: "",
+                USER_DEFAULT_PW: secrets.token_hex(32),
             },
         }
 
@@ -154,19 +166,41 @@ class Settings:
     def get_bool(self, name: str) -> bool:
         return bool(self.get(name))
 
-    def get_dict(self, name: str) -> Dict[str, str]:
-        return self.get(name)  # type: ignore
-
-    def set(self, setting_name: str, value: Union[str, int, float, bool, Dict[str, str]]):
+    def set(self, setting_name: str, value: Union[str, int, float, bool]):
         """Set the value of a specific setting. Does not write to file, if value is already set."""
         for section in self._values.keys():
             if setting_name in self._values[section]:
                 if self._values[section][setting_name] == value:
                     return
+                # cast to current type
+                current_value = self._values[section][setting_name]
+                if isinstance(value, str):
+                    if isinstance(current_value, bool):
+                        # strtobool returns 1 or 0, so we convert it to bool
+                        value = bool(strtobool(value))
+                    elif isinstance(current_value, str):
+                        value = str(value)
+                    elif isinstance(current_value, float):
+                        value = float(value)
+                    elif isinstance(current_value, int):
+                        value = int(value)
+
                 self._values[section][setting_name] = value
+                # self._logger.debug("Settings: Set %s to %s", setting_name, value)
                 break
         if self._auto_save:
+            self._logger.debug("Settings: Auto-saving settings")
             self.save()
+
+    def get_all(self) -> Dict[str, Union[str, int, float, bool]]:
+        """Get all settings without sections and secrets as a dictionary."""
+        all_settings = {}
+        for section, options in self._values.items():
+            if section == self._SECRET_SECTION_NAME:
+                continue
+            for option, value in options.items():
+                all_settings[option] = value
+        return all_settings
 
     def save(self):
         """Save all user modifiable options to file."""
@@ -185,11 +219,8 @@ class Settings:
             for section in self._values.keys():
                 for setting in self._values[section]:
                     update_needed |= self._read_setting(setting, section)
-            self.read_city_ids()
         except Exception as e:
-            self._logger.error(
-                f"Settings: Can't read ini file: {str(e)}, trying to delete and create a new one..."
-            )
+            self._logger.error("Settings: Can't read ini file: %s, trying to delete...", str(e))
             os.remove(
                 str(self._ini_file_path)
             )  # let an exeception to the user, file can't be deleted
@@ -199,19 +230,6 @@ class Settings:
             return
         with self._ini_file_path.open("w", encoding="utf8") as ini_file:
             self._parser.write(ini_file)
-
-    def read_city_ids(self):
-        # automatically get city ids from array elements
-        forecast_section = self._get_section(self._FORECAST_SECTION_NAME)
-        for key in forecast_section:
-            if key.find(OW_CITY_IDS) == 0 or key.find(AW_CITY_IDS) == 0:
-                val = forecast_section.get(key)
-                val = val.split(",")
-                if len(val) == 2:
-                    if key.find(OW_CITY_IDS) == 0:
-                        self.get(OW_CITY_IDS).update({val[0]: val[1]})
-                    elif key.find(AW_CITY_IDS) == 0:
-                        self.get(AW_CITY_IDS).update({val[0]: val[1]})
 
     def _get_section(self, section_name):
         """Helper function to get a section from ini, or create it, if it does not exist."""
@@ -237,13 +255,11 @@ class Settings:
         elif isinstance(default_value, str):
             value = section.get(setting_name)
         elif isinstance(default_value, float):
-            value = float(section.get(setting_name))
+            value = float(section.get(setting_name, 0))
         elif isinstance(default_value, int):
-            value = int(section.get(setting_name))
+            value = int(section.get(setting_name, 0))
         if value is None:
-            self._logger.error(
-                f"Settings: Setting {setting_name} is unknown",
-            )
+            self._logger.error("Settings: Setting %s is unknown", setting_name)
             return False
         # autosave must be disabled, otherwise we overwrite the other settings in the file
         auto_save = self._auto_save

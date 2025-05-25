@@ -11,7 +11,7 @@ import waqd
 from waqd.base.system import RuntimeSystem
 from waqd.ui.web2.templates import base_template, render_main, sub_template
 from waqd.ui.web2.authentication import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
+    ACCESS_TOKEN_EXPIRE_DAYS,
     PermissionChecker,
     Token,
     User,
@@ -83,7 +83,7 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
@@ -98,7 +98,7 @@ async def login_for_access_token(
 @rt.get("/keepalive", response_class=JSONResponse)
 async def keepalive(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
     if current_user.token_expires - datetime.now() > timedelta(minutes=11):
-        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token_expires = timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
         access_token = create_access_token(
             data={"sub": current_user.username}, expires_delta=access_token_expires
         )
@@ -111,22 +111,25 @@ async def keepalive(current_user: Annotated[User, Depends(get_current_user_with_
 
 
 def set_access_token_cookie(
-    response: JSONResponse, username: str, access_token: str, expires_seconds=3600
+    response: JSONResponse, username: str, access_token: str
 ):
+    access_token_expires = timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
     if not access_token:
-        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
             data={"sub": username}, expires_delta=access_token_expires
         )
+    secure = True
+    if waqd.DEBUG_LEVEL > 0:
+        secure=False
     response.set_cookie(
         key="Authorization",
         value=f"Bearer {access_token}",
         httponly=True,
-        max_age=expires_seconds,
-        expires=expires_seconds,
+        max_age=int(access_token_expires.total_seconds()),
+        expires=int(access_token_expires.total_seconds()),
         samesite="lax",  # disable for the time being
         # samesite="none",
-        # secure=True,
+        secure=secure,
     )
     return response
 
