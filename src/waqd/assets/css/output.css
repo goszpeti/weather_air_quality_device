@@ -1933,6 +1933,12 @@ html {
       }
     }
   }
+  .modal-action {
+    margin-top: calc(0.25rem * 6);
+    display: flex;
+    justify-content: flex-end;
+    gap: calc(0.25rem * 2);
+  }
   .validator-hint {
     margin-top: calc(0.25rem * 2);
     font-size: var(--text-xs);
@@ -2168,6 +2174,12 @@ html {
   .h-20 {
     height: calc(var(--spacing) * 20);
   }
+  .h-24 {
+    height: calc(var(--spacing) * 24);
+  }
+  .h-26 {
+    height: calc(var(--spacing) * 26);
+  }
   .h-28 {
     height: calc(var(--spacing) * 28);
   }
@@ -2306,6 +2318,12 @@ html {
   }
   .grid-cols-\[40\%_20\%_40\%\] {
     grid-template-columns: 40% 20% 40%;
+  }
+  .grid-cols-\[50\%_20\%_20\%\] {
+    grid-template-columns: 50% 20% 20%;
+  }
+  .grid-cols-\[50\%_20\%_30\%\] {
+    grid-template-columns: 50% 20% 30%;
   }
   .grid-cols-\[55\%_20\%_20\%\] {
     grid-template-columns: 55% 20% 20%;
@@ -2478,6 +2496,9 @@ html {
   .py-2 {
     padding-block: calc(var(--spacing) * 2);
   }
+  .py-4 {
+    padding-block: calc(var(--spacing) * 4);
+  }
   .py-6 {
     padding-block: calc(var(--spacing) * 6);
   }
@@ -2645,6 +2666,11 @@ html {
       }
     }
   }
+  .btn-lg {
+    --fontsize: 1.125rem;
+    --btn-p: 1.25rem;
+    --size: calc(var(--size-field, 0.25rem) * 12);
+  }
   .btn-md {
     --fontsize: 0.875rem;
     --btn-p: 1rem;
@@ -2674,6 +2700,11 @@ html {
   .md\:-mb-2 {
     @media (width >= 48rem) {
       margin-bottom: calc(var(--spacing) * -2);
+    }
+  }
+  .md\:-ml-4 {
+    @media (width >= 48rem) {
+      margin-left: calc(var(--spacing) * -4);
     }
   }
   .md\:block {

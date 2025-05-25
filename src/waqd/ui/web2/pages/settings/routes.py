@@ -29,7 +29,7 @@ from waqd.settings import (
     SOUND_ENABLED,
     UPDATER_USER_BETA_CHANNEL,
 )
-from waqd.ui.web2.authentication import User, get_current_user_with_redirect
+from waqd.ui.web2.authentication import PermissionChecker, User, get_current_user_with_redirect
 from waqd.ui.web2.templates import render_main, sub_template
 
 rt = APIRouter()
@@ -39,68 +39,15 @@ current_path = Path(__file__).parent.resolve()
 
 @rt.get("/", response_class=HTMLResponse)
 async def settings(current_user: Annotated[User, Depends(get_current_user_with_redirect)]):
-    settings = app.settings.get_all()
-
+    context = app.settings.get_all()
+    context["local"] = PermissionChecker(
+        required_permissions=[
+            "users:local",
+        ]
+    ).check_permissions(current_user)
     content = sub_template(
         "settings.html",
-        settings,
-        #{
-            
-            # rework this with pydantic settings
-            # "location_name": app.settings.get(LOCATION_NAME),
-            # "location_longitude": app.settings.get(LOCATION_LONGITUDE),
-            # "location_latitude": app.settings.get(LOCATION_LATITUDE),
-            # "location_country_code": app.settings.get(LOCATION_COUNTRY_CODE),
-            # "location_state": app.settings.get(LOCATION_STATE),
-            # "sound": {
-            #     "name": SOUND_ENABLED,
-            #     "value": app.settings.get(SOUND_ENABLED),
-            # },
-            # "intro_jingle": {
-            #     "name": STARTUP_JINGLE,
-            #     "value": app.settings.get(STARTUP_JINGLE),
-            # },
-            # "auto_update": {
-            #     "name": AUTO_UPDATER_ENABLED,
-            #     "value": app.settings.get(AUTO_UPDATER_ENABLED),
-            # },
-            # "beta_update": {
-            #     "name": UPDATER_USER_BETA_CHANNEL,
-            #     "value": app.settings.get(UPDATER_USER_BETA_CHANNEL),
-            # },
-            # "bme_280": {
-            #     "name": BME_280_ENABLED,
-            #     "value": app.settings.get(BME_280_ENABLED),
-            # },
-            # "bmp_280": {
-            #     "name": BMP_280_ENABLED,
-            #     "value": app.settings.get(BMP_280_ENABLED),
-            # },
-            # "dht_22": {
-            #     "name": DHT_22_PIN,
-            #     "value": app.settings.get(DHT_22_PIN),
-            # },
-            # "mh_z19": {
-            #     "name": MH_Z19_ENABLED,
-            #     "value": app.settings.get(MH_Z19_ENABLED),
-            # },
-            # "ccs811": {
-            #     "name": CCS811_ENABLED,
-            #     "value": app.settings.get(CCS811_ENABLED),
-            # },
-            # "motion_sensor": {
-            #     "name": MOTION_SENSOR_ENABLED,
-            #     "value": app.settings.get(MOTION_SENSOR_ENABLED),
-            # },
-            # "motion_sensor_pin": {
-            #     "name": MOTION_SENSOR_PIN,
-            #     "value": app.settings.get(MOTION_SENSOR_PIN),
-            # },
-            # "brightness": {
-            #     "name": MOTION_SENSOR_PIN,
-            #     "value": app.settings.get(MOTION_SENSOR_PIN),
-            # },
-        #},
+        context,
         current_path,
     )
     return render_main(content, current_user)

@@ -67,12 +67,23 @@
     {% endwith %}
 </fieldset>
 
-<!-- <fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
+{% if local %}
+<fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
     <legend class="fieldset-legend  text-error">Danger Zone</legend>
 
     <legend class="fieldset-legend">Reset Password</legend>
-    <button class="btn btn-primary max-w-96">Reset admin password</button>
-
-    <legend class="fieldset-legend">Change Password</legend>
-
-</fieldset> -->
+    <button class="btn btn-primary max-w-96"  onclick="confirm_pw_reset.showModal()">Reset admin password</button>
+    <dialog id="confirm_pw_reset" class="modal">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">Hello!</h3>
+            <p class="py-4">Press ESC key or click the button below to close</p>
+            <div class="modal-action">
+                <form method="dialog">
+                    <!-- if there is a button in form, it will close the modal -->
+                    <button class="btn">Close</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
+</fieldset>
+{% endif %}
