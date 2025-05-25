@@ -4,8 +4,7 @@ import os
 import secrets
 from pathlib import Path
 from typing import Union, Dict
-from distutils.util import strtobool
-from .. import PROG_NAME
+from waqd import PROG_NAME
 from waqd.settings import (
     AUTO_UPDATER_ENABLED,
     CCS811_ENABLED,
@@ -50,6 +49,11 @@ from waqd.settings import (
     LOG_SENSOR_DATA,
 )
 
+def strtobool(value: str) -> bool:
+    value = value.lower()
+    if value in ("y", "yes", "on", "1", "true", "t"):
+        return True
+    return False
 
 class Settings:
     """

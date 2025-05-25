@@ -1,7 +1,6 @@
 import os
 import tarfile
 import platform
-from distutils.file_util import copy_file
 from docker.client import DockerClient
 import pytest
 import waqd

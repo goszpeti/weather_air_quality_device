@@ -42,11 +42,10 @@ dependencies = [
     "Adafruit-Circuitpython-ADS1x15==2.2.8",     # MIT License - currently only this ADC is used for analog sensors
     "MH-Z19==3.1.3; platform_machine=='x86_64'", # MIT License
     # Web & UI
-    "fastapi[standard]",
-    "PyJWT",
+    "fastapi[standard]==0.115.12",
+    "PyJWT==2.10.1",
     "passlib >=1.7.4, <2.0.0", # BSD License - password hashing
     "htmlmin==0.1.12",         # BSD License - HTML minifier
-    # "plotly==5.10.0",          # MIT License - web graph plotting
     "bcrypt>=4.0.0, <5.0.0", # Apache License, Version 2.0 - Password hashing
     # Deprecated
     "bottle",

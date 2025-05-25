@@ -4,7 +4,7 @@
 import logging
 import os
 import sys
-from distutils.file_util import copy_file
+import shutil
 from pathlib import Path
 from configparser import ConfigParser, DuplicateSectionError
 from subprocess import check_output
@@ -62,7 +62,7 @@ def customize_splash_screen():
     try:
         logging.info("Customizing splash screen")
         src_image = f"{str(installer_root_dir)}/src/waqd/assets/gui_base/splash_screen.png"
-        copy_file(src_image,  "/usr/share/plymouth/themes/pix/splash.png")
+        shutil.copy(src_image,  "/usr/share/plymouth/themes/pix/splash.png")
         # remove rainbow screen
         os.system("raspi-config nonint set_config_var disable_splash 1 /boot/config.txt")
     except Exception as e:

@@ -3,7 +3,7 @@
 from waqd.base.component import CyclicComponent
 
 import os
-from distutils.version import StrictVersion as Version
+from packaging.version import Version
 from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING
