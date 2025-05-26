@@ -26,6 +26,8 @@ current_path = Path(__file__).parent.resolve()
 
 @rt.get("/", response_class=HTMLResponse)
 async def root(current_user: Annotated[User, Depends(get_current_user_with_redirect)]):
+    base_app.comp_ctrl.init_all()
+
     interior = sub_template("interior.html", {}, current_path, True)
     exterior = sub_template("exterior.html", {}, current_path, True)
     forecast = sub_template("forecast.html", {}, current_path, True)

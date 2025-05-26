@@ -1,33 +1,19 @@
 from pathlib import Path
 from typing import Annotated
-from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, Form
 from fastapi.responses import HTMLResponse
-from requests import get
-from pydantic import BaseModel
 
 import waqd.app as app
-from .....components.weather.base_types import Location
-from .....components.weather.open_meteo import OpenMeteo
+from waqd.components.weather.base_types import Location
+from waqd.components.weather.open_meteo import OpenMeteo
 from waqd.settings import (
-    AUTO_UPDATER_ENABLED,
-    BME_280_ENABLED,
-    BMP_280_ENABLED,
-    CCS811_ENABLED,
-    DHT_22_PIN,
     LOCATION_ALTITUDE_M,
     LOCATION_COUNTRY_CODE,
     LOCATION_LATITUDE,
     LOCATION_LONGITUDE,
     LOCATION_NAME,
     LOCATION_STATE,
-    MH_Z19_ENABLED,
-    MOTION_SENSOR_ENABLED,
-    MOTION_SENSOR_PIN,
-    STARTUP_JINGLE,
-    SOUND_ENABLED,
-    UPDATER_USER_BETA_CHANNEL,
 )
 from waqd.ui.web2.authentication import PermissionChecker, User, get_current_user_with_redirect
 from waqd.ui.web2.templates import render_main, sub_template
@@ -39,6 +25,7 @@ current_path = Path(__file__).parent.resolve()
 
 @rt.get("/", response_class=HTMLResponse)
 async def settings(current_user: Annotated[User, Depends(get_current_user_with_redirect)]):
+    app.comp_ctrl.unload_all()
     context = app.settings.get_all()
     context["local"] = PermissionChecker(
         required_permissions=[
@@ -62,7 +49,7 @@ async def location_search_result(query: str):
     return sub_template(
         "snippets/location_result.html",
         {"location_data": location_data},
-        current_path,  #
+        current_path,
         component=True,
     )
 

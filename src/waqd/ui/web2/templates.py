@@ -3,7 +3,7 @@ import functools
 from pathlib import Path
 from typing import Any
 from fastapi.responses import HTMLResponse
-from frozendict import frozendict, deepfreeze
+from frozendict import deepfreeze
 from htmlmin.main import minify
 
 from jinja2 import Environment, FileSystemLoader
@@ -72,7 +72,7 @@ def render_main(
     menu_content = ""
     if menu:
         menu_content = base_template(
-            "views/menu.html",
+            "menu/views/menu.html",
             {
                 "local": local,
                 "logged_in": bool(user),

@@ -60,6 +60,8 @@ class ComponentController:
         if self._unload_thread and self._unload_thread.is_alive():
             self._unload_thread.join()
         self._stop_event.clear()
+        if self._inited_all:
+            return
         Logger().info("Start initializing all components")
         self._watch_thread = threading.Thread(
             name="Watchdog", target=self._watchdog_loop, daemon=True

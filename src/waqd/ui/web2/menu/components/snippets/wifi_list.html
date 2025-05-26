@@ -1,0 +1,68 @@
+{% for network in wifi_networks.values() %}
+<div class="stat">
+    <div class="stat-title"></div>
+    <div class="stat-value">
+        <div class="bg-base-100 rounded-box shadow-md flex flex-row  items-center">
+            <svg viewBox="0 0 24 24" class="h-8">
+                {% if network.signal > 75 and network.security %}
+                <use href="/static/general_icons/wifi_3_bar_locked.svg#main" fill="white" />
+                {% elif network.signal > 50 and network.security %}
+                <use href="/static/general_icons/wifi_2_bar_locked.svg#main" fill="white" />
+                {% elif network.security %}
+                <use href="/static/general_icons/wifi_1_bar_locked.svg#main" fill="white" />
+                {% endif %}
+            </svg>
+            <div class="text-s text-wrap tracking-wide p-4">{{network.ssid}}</div>
+            <div class="btn btn-sm btn-secondary ml-8 p-4">
+                {% if network.in_use %}Disconnect{%else%}Connect{% endif %}</div>
+        </div>
+    </div>
+    <div class="stat-desc">{{network.signal}}%{% if network.in_use %} - Connected{% endif %}</div>
+</div>
+{% endfor %}
+
+<!-- 
+          <div class="stat">
+            <div class="stat-title"></div>
+            <div class="stat-value">
+              <div class="bg-base-100 rounded-box shadow-md flex flex-row align-middle items-center">
+                <svg viewBox="0 0 24 24" class="h-8">
+                  <use href="/static/general_icons/wifi_2_bar_locked.svg#main" fill="white" />
+                </svg>
+                <div class="text-s tracking-wide p-4">OtherNet</div>
+                <div class="btn btn-sm btn-secondary hidden ml-8 p-4">Connect</div>
+              </div>
+              <div class="flex flex-row  items-center">
+                <input type="text" placeholder="Password" class="input input-bordered w-full max-w-xs m-4" />
+                <div class="btn btn-sm btn-secondary">Connect</div>
+              </div>
+            </div>
+            <div class="stat-desc"></div>
+          </div>
+          <div class="stat">
+            <div class="stat-title"></div>
+            <div class="stat-value">
+              <div class="bg-base-100 rounded-box shadow-md flex flex-row align-middle items-center">
+                <svg viewBox="0 0 24 24" class="h-8">
+                  <use href="/static/general_icons/wifi_1_bar_locked.svg#main" fill="white" />
+                </svg>
+                <div class="text-s tracking-wide p-4">WeakNet</div>
+                <div class="btn btn-sm btn-secondary ml-8 p-4">Connect</div>
+              </div>
+            </div>
+            <div class="stat-desc"></div>
+          </div>
+          <div class="stat">
+            <div class="stat-title"></div>
+            <div class="stat-value">
+              <div class="bg-base-100 rounded-box shadow-md flex flex-row align-middle items-center">
+                <svg viewBox="0 0 24 24" class="h-8">
+                  <use href="/static/general_icons/wifi_1_bar_locked.svg#main" fill="white" />
+                </svg>
+                <div class="text-s tracking-wide p-4">WeakNet</div>
+                <div class="btn btn-sm btn-secondary ml-8 p-4">Connect</div>
+              </div>
+            </div>
+            <div class="stat-desc"></div>
+          </div>
+          </div> -->

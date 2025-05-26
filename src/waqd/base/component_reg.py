@@ -222,7 +222,7 @@ class ComponentRegistry:
         """Access for Sound singleton"""
         from waqd.components import SoundQt, SoundVLC
 
-        sound_impl = SoundQt
+        sound_impl = SoundVLC
         if platform.system() == "Linux":
             sound_impl = SoundVLC
         return self._create_component_instance(

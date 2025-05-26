@@ -2,12 +2,10 @@ import socket
 import subprocess
 from typing import Tuple
 from time import sleep
+
+import nmcli
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
-
-
-# Use nmcli
-
 
 class Network:
     """
@@ -30,6 +28,9 @@ class Network:
 
     def init(self):
         self._runtime_system = RuntimeSystem()
+        self._devices = nmcli.device.status()
+        self._wifi_networks = nmcli.device.wifi()
+
         self.wait_for_network()
 
     @property
@@ -80,6 +81,8 @@ class Network:
         The restart of the adapter is black voodo magic, which is attempted after the second failure.
         If that doesn't help, the RPi reboots on the next failure.
         """
+        self._devices = nmcli.device.status()
+        self._wifi_networks = nmcli.device.wifi()
         if self.internet_connected_once:  # at least once connected:
             if self._internet_reconnect_try == 2:
                 # TODO use py network manager
@@ -128,3 +131,45 @@ class Network:
             return False
         self._wait_for_internet_counter = 0
         return True
+    
+    def is_connected_via_eth(self) -> bool:
+        for device in self._devices:
+            if device.device_type == "ethernet" and device.state == "connected":
+                return True
+        return False
+
+    def is_connected_via_wlan(self) -> bool:
+        for device in self._devices:
+            if device.device_type == "wifi" and device.state == "connected":
+                return True
+        return False
+    
+    def list_wifi(self, include_hidden=False):
+        # filter out duplicates
+        wifi_networks = {}
+        for device in self._wifi_networks:
+            if not device.ssid:
+                if not include_hidden:
+                    continue
+            same_device = wifi_networks.get(device.ssid, "")
+            if same_device and device.in_use == same_device.in_use:
+                continue
+            wifi_networks[device.ssid] = device
+        return wifi_networks
+
+    def current_wifi_strength(self) -> int|None:
+        for device in self._wifi_networks:
+            if device.in_use:
+                return device.signal
+        return None
+    def connect_wifi(self, ssid: str, password: str):
+        pass
+
+    def disconnect_wifi(self, ssid: str):
+        pass
+
+    def enable_wifi(self):
+        pass
+
+    def disable_wifi(self):
+        pass

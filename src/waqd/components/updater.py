@@ -101,21 +101,24 @@ class OnlineUpdater(CyclicComponent):
         # only check, that the main version is not lower
         if latest_version <= current_version:
             # alpha and beta release handling
-            if latest_version.prerelease:
+            if latest_version.is_prerelease:
                 # alpha - only with debug mode on - switch is possible from b3 to a4
-                if latest_version.prerelease[0] == "a" and waqd.DEBUG_LEVEL > 0 \
-                        and self._use_beta_channel and current_version.prerelease:
-                    if latest_version.prerelease[1] > current_version.prerelease[1]:
+                if (
+                    waqd.DEBUG_LEVEL > 0
+                    and self._use_beta_channel
+                    and latest_version.pre[0] == "a"
+                ):
+                    if latest_version.pre[1] > current_version.pre[1]:
                         return True
             else:
-                if latest_version.version <= current_version.version:
+                if latest_version <= current_version:
                     self._logger.debug("Updater: No new update found.")
                     return False
 
             self._logger.debug("Updater: No new update found.")
             return False
 
-        if latest_version.prerelease:
+        if latest_version.is_prerelease:
             if not self._use_beta_channel:
                 self._logger.info("Updater: Skip newer pre-release %s", latest_version)
                 return False

@@ -1,4 +1,4 @@
-/*! tailwindcss v4.1.4 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.1.7 | MIT License | https://tailwindcss.com */
 @layer properties;
 html {
   background: no-repeat linear-gradient(180deg, oklch(0.24 0.1403 286.92) 0%, oklch(0.42 0.2119 286.68) 100%);
@@ -15,11 +15,8 @@ html {
     --color-green-500: oklch(72.3% 0.219 149.579);
     --color-white: #fff;
     --spacing: 0.25rem;
-    --breakpoint-lg: 64rem;
     --container-xs: 20rem;
     --container-sm: 24rem;
-    --container-md: 28rem;
-    --container-3xl: 48rem;
     --text-xs: 0.75rem;
     --text-xs--line-height: calc(1 / 0.75);
     --text-lg: 1.125rem;
@@ -1588,9 +1585,6 @@ html {
   .top-2 {
     top: calc(var(--spacing) * 2);
   }
-  .top-10 {
-    top: calc(var(--spacing) * 10);
-  }
   .right-2 {
     right: calc(var(--spacing) * 2);
   }
@@ -1953,6 +1947,9 @@ html {
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
   }
+  .mr-2 {
+    margin-right: calc(var(--spacing) * 2);
+  }
   .mr-8 {
     margin-right: calc(var(--spacing) * 8);
   }
@@ -1971,9 +1968,6 @@ html {
   }
   .-mb-2 {
     margin-bottom: calc(var(--spacing) * -2);
-  }
-  .mb-5 {
-    margin-bottom: calc(var(--spacing) * 5);
   }
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
@@ -2174,12 +2168,6 @@ html {
   .h-20 {
     height: calc(var(--spacing) * 20);
   }
-  .h-24 {
-    height: calc(var(--spacing) * 24);
-  }
-  .h-26 {
-    height: calc(var(--spacing) * 26);
-  }
   .h-28 {
     height: calc(var(--spacing) * 28);
   }
@@ -2201,17 +2189,11 @@ html {
   .w-1\/2 {
     width: calc(1/2 * 100%);
   }
-  .w-3\/4 {
-    width: calc(3/4 * 100%);
-  }
   .w-4 {
     width: calc(var(--spacing) * 4);
   }
   .w-6 {
     width: calc(var(--spacing) * 6);
-  }
-  .w-8\/12 {
-    width: calc(8/12 * 100%);
   }
   .w-24 {
     width: calc(var(--spacing) * 24);
@@ -2219,38 +2201,14 @@ html {
   .w-60 {
     width: calc(var(--spacing) * 60);
   }
-  .w-96 {
-    width: calc(var(--spacing) * 96);
-  }
   .w-fit {
     width: fit-content;
   }
   .w-full {
     width: 100%;
   }
-  .w-max {
-    width: max-content;
-  }
-  .max-w-0\.5 {
-    max-width: calc(var(--spacing) * 0.5);
-  }
-  .max-w-3\/4 {
-    max-width: calc(3/4 * 100%);
-  }
-  .max-w-3xl {
-    max-width: var(--container-3xl);
-  }
   .max-w-96 {
     max-width: calc(var(--spacing) * 96);
-  }
-  .max-w-fit {
-    max-width: fit-content;
-  }
-  .max-w-md {
-    max-width: var(--container-md);
-  }
-  .max-w-screen-lg {
-    max-width: var(--breakpoint-lg);
   }
   .max-w-sm {
     max-width: var(--container-sm);
@@ -2319,14 +2277,8 @@ html {
   .grid-cols-\[40\%_20\%_40\%\] {
     grid-template-columns: 40% 20% 40%;
   }
-  .grid-cols-\[50\%_20\%_20\%\] {
-    grid-template-columns: 50% 20% 20%;
-  }
   .grid-cols-\[50\%_20\%_30\%\] {
     grid-template-columns: 50% 20% 30%;
-  }
-  .grid-cols-\[55\%_20\%_20\%\] {
-    grid-template-columns: 55% 20% 20%;
   }
   .grid-rows-2 {
     grid-template-rows: repeat(2, minmax(0, 1fr));
@@ -2484,9 +2436,6 @@ html {
   .p-4 {
     padding: calc(var(--spacing) * 4);
   }
-  .p-6 {
-    padding: calc(var(--spacing) * 6);
-  }
   .px-2 {
     padding-inline: calc(var(--spacing) * 2);
   }
@@ -2602,9 +2551,6 @@ html {
   .text-neutral {
     color: var(--color-neutral);
   }
-  .text-neutral-content {
-    color: var(--color-neutral-content);
-  }
   .text-red-500 {
     color: var(--color-red-500);
   }
@@ -2702,11 +2648,6 @@ html {
       margin-bottom: calc(var(--spacing) * -2);
     }
   }
-  .md\:-ml-4 {
-    @media (width >= 48rem) {
-      margin-left: calc(var(--spacing) * -4);
-    }
-  }
   .md\:block {
     @media (width >= 48rem) {
       display: block;
@@ -2730,16 +2671,6 @@ html {
   .md\:max-w-3\/4 {
     @media (width >= 48rem) {
       max-width: calc(3/4 * 100%);
-    }
-  }
-  .md\:max-w-8\/12 {
-    @media (width >= 48rem) {
-      max-width: calc(8/12 * 100%);
-    }
-  }
-  .md\:max-w-md {
-    @media (width >= 48rem) {
-      max-width: var(--container-md);
     }
   }
   .md\:grid-cols-3 {
@@ -2780,11 +2711,6 @@ html {
   .md\:py-0 {
     @media (width >= 48rem) {
       padding-block: calc(var(--spacing) * 0);
-    }
-  }
-  .lg\:max-w-md {
-    @media (width >= 64rem) {
-      max-width: var(--container-md);
     }
   }
   .lg\:flex-row {

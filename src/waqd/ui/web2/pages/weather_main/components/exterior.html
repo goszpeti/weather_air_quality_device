@@ -1,5 +1,8 @@
 <script>
     document.addEventListener('htmx:afterSettle', function (details) {
+        if (details.srcElement.id != "Excterior-stats"){
+            return
+        }
         const figureElement = document.querySelector('#Exterior-figure');
         if (figureElement) {
             try {

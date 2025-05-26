@@ -1,0 +1,37 @@
+<dialog id="wifi_mgr_modal" class="modal">
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+  <div class="modal-box">
+    <!-- close button -->
+    <form method="dialog">
+      <button class="btn btn-md btn-circle btn-ghost text-lg absolute right-2 top-2">✕</button>
+    </form>
+    <div class="flex flex-row align-middle items-center">
+      <h3 class="text-3xl font-bold p-2">Networks</h3>
+      <div class="btn btn-sm btn-secondary ml-8">
+        <svg viewBox="0 0 24 24" class="h-8">
+          <use href="/static/general_icons/wifi_off.svg#main" fill="white" />
+        </svg>
+        Turn Off Wifi
+      </div>
+    </div>
+    <div class="divider divider-accent m-0"></div>
+    <div class="stats stats-vertical shadow w-full">
+      <div class="stat">
+        <div class="stat-title"></div>
+        <div class="stat-value">
+          <div class="bg-base-100 rounded-box shadow-md flex flex-row align-middle items-center">
+            <svg viewBox="0 0 24 24" class="h-8">
+              <use href="/static/general_icons/lan.svg#main" fill="white" />
+            </svg>
+            <div class="text-s tracking-wide p-4">Ethernet-01</div>
+            <div class="btn btn-sm btn-secondary btn-disabled p-4">Disconnect</div>
+
+          </div>
+        </div>
+        <div class="stat-desc">Connected</div>
+      </div>
+      <div hx-get="/menu/wifi_list" hx-trigger="load">
+      </div>
+</dialog>

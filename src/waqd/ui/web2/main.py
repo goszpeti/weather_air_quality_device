@@ -19,6 +19,7 @@ from .local.routes import rt as local_router
 from .pages.public.routes import rt as public_router
 from .pages.settings.routes import rt as settings_router
 from .pages.weather_main.routes import rt as weather_router
+from .menu.routes import rt as menu_router
 
 current_path = Path(__file__).parent.resolve()
 
@@ -70,6 +71,7 @@ web_app.include_router(
     dependencies=[Depends(get_current_user_with_redirect)],
 )
 web_app.include_router(public_router, prefix="/public")
+web_app.include_router(menu_router, prefix="/menu")
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
