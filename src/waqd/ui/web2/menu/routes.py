@@ -27,6 +27,7 @@ async def wifi_signal_strength(
     ).check_permissions(current_user):
         return HTMLResponse("Nope")
     network = Network()
+    icon_name = "cloud_off"
     if network.is_connected_via_eth():
         icon_name = "lan"
     elif network.is_connected_via_wlan():
@@ -38,8 +39,6 @@ async def wifi_signal_strength(
                 icon_name = "wifi_2_bar"
             else:
                 icon_name = "wifi_1_bar"
-    else:
-        icon_name = "cloud_off"
     image = f"""<svg viewBox="0 0 24 24" class="h-8">
     <use href="/static/general_icons/{icon_name}.svg#main" fill="white"/></svg>"""
     return HTMLResponse(image)

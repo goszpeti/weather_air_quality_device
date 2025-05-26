@@ -8,6 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1.5" , charset="utf-8">
     <link href="/output.css" rel="stylesheet" type="text/css" />
 </head>
+<style>
+/* Cannot be in stylesheet - set font here, so no pop-in happens*/
+@font-face {
+    font-family: MyFranzo;
+    src: url('Franzo-E4GA.woff');
+}
+</style>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         fetch('http://localhost/public/token', {

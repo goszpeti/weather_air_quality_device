@@ -26,7 +26,7 @@ class DeviceMgr():
     @staticmethod
     def wifi():
         return [
-                DeviceWifi(in_use=False, ssid='WLAN-B.A', bssid='1', mode='Infra', chan=6, freq=2437, rate=260, signal=89, security='WPA2 WPA3'), 
+                DeviceWifi(in_use=True, ssid='WLAN-B.A', bssid='1', mode='Infra', chan=6, freq=2437, rate=260, signal=89, security='WPA2 WPA3'), 
                 DeviceWifi(in_use=False, ssid='WLAN-B.A', bssid='2', mode='Infra', chan=52, freq=5260, rate=540, signal=64, security='WPA2 WPA3'),
                 DeviceWifi(in_use=False, ssid='WLAN-985340', bssid='3', mode='Infra', chan=11, freq=2462, rate=540, signal=67, security='WPA2'), 
                 DeviceWifi(in_use=False, ssid='WLAN-206656', bssid='4', mode='Infra', chan=11, freq=2462, rate=130, signal=59, security='WPA2'),

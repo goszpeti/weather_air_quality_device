@@ -74,7 +74,6 @@ def start_web_ui_chromium_kiosk_mode():
             "--disable-pinch",
             "--disable-features=TranslateUI",
             f"http://localhost:{LOCAL_SERVER_PORT}/login_admin.html",
-            # "--force-device-scale-factor=0.8",
         ]
     )
 
@@ -84,6 +83,7 @@ def prepare_local_login():
 
     local_server_path = Path(__file__).parent / "local"
     shutil.copy(waqd.assets_path / "css" / "output.css", local_server_path)
+    shutil.copy(waqd.assets_path / "font" / "Franzo-E4GA.woff", local_server_path)
     login_admin_file = "login_admin.html"
     login_admin_content = base_template(
         login_admin_file + ".in",
