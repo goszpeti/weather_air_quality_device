@@ -162,14 +162,20 @@ class Network:
             if device.in_use:
                 return device.signal
         return None
+
     def connect_wifi(self, ssid: str, password: str):
-        pass
+        Logger().info("Network: Connecting to WiFi: %s", ssid)
+        nmcli.device.wifi_connect(ssid, password)
 
     def disconnect_wifi(self, ssid: str):
-        pass
+        Logger().info("Network: Disconnecting from WiFi: %s", ssid)
+        nmcli.device.disconnect(ssid)
 
     def enable_wifi(self):
-        pass
+        Logger().info("Network: Enabling WiFi")
+        nmcli.radio.wifi_on()
 
     def disable_wifi(self):
-        pass
+        Logger().info("Network: Disabling WiFi")
+        nmcli.radio.wifi_off()
+    
