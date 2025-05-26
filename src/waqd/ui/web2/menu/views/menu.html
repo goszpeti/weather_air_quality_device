@@ -43,8 +43,8 @@
     {% if logged_in %}
     <ul class="menu menu-horizontal menu-xl px-2" title="User Options">
       <div class="dropdown dropdown-end ">
-        <div tabindex="0" role="button" class="btn btn-ghost rounded-field">
-          <svg viewBox="0 0 24 24" class="h-8">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-lg">
+          <svg viewBox="0 0 24 24" class="h-10">
             <use href="/static/general_icons/account_circle.svg#main" fill="white" />
           </svg>
         </div>
@@ -81,25 +81,25 @@
           </li>
         </ul>
       </div>
-      </li>
       {% if local %}
       <li>
-        <a onclick="wifi_mgr_modal.showModal()" title="Network Manager" hx-trigger="load, every 10s"
+        <a onclick="wifi_mgr_modal.showModal()" class="btn btn-ghost btn-lg"title="Network Manager" hx-trigger="load, every 10s"
           hx-get="/menu/network_icon" hx-swap="innerHTML">
-          <svg id="network_status_btn" viewBox="0 0 24 24" class="h-8">
+          <svg id="network_status_btn" viewBox="0 0 24 24" class="h-10">
             <use href="/static/general_icons/lan.svg#main" fill="white" />
           </svg>
         </a>
       </li>
+      <li>
+        <span id="clock" class="p-2 text-2xl"></span>
+      </li>
       {% endif %}
     </ul>
-    {% if local %}
-    {% include "menu/components/clock.html" %}
-    {% endif %}
     {% endif %}
   </div>
 </div>
 {% if local %}
+{% include "menu/components/clock.html" %}
 {% include "menu/components/power_menu.html" %}
 {% include "menu/components/wifi_mgr.html" %}
 {% endif %}
