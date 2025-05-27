@@ -33,7 +33,7 @@
         "python.analysis.extraPaths": [
             "${workspaceFolder}/src"
         ],
-        "html.format.wrapLineLength": 120,
+        "html.format.wrapLineLength": 100,
         "editor.quickSuggestions": {
             "strings": "on"
         }
@@ -46,7 +46,7 @@
                 "request": "launch",
                 "module": "waqd",
                 "args": [
-                    "-D=3",
+                    "-D=2",
                     // "-H"
                 ],
                 "console": "integratedTerminal",

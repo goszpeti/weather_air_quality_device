@@ -14,7 +14,6 @@
       <button id="toggle_wifi" class="btn btn-sm btn-secondary ml-8" hx-post="/menu/toggle_wifi" hx-trigger="click"
         hx-on::after-request="document.getElementById('Rescan').click()">
         Turn Off Wifi
-        <span id="wifi_toggle_spinner" class="loading loading-spinner loading-xl p-4 hidden"></span>
       </button>
       <button id="Rescan" class="btn btn-sm btn-secondary ml-4 w-24" hx-get="/menu/wifi_list" hx-trigger="load, click"
         hx-target="#wifi_list"
