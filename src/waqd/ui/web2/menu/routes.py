@@ -43,21 +43,42 @@ async def wifi_signal_strength(
     <use href="/static/general_icons/{icon_name}.svg#main" fill="white"/></svg>"""
     return HTMLResponse(image)
 
-@rt.get("/wifi_list", response_class=HTMLResponse)
-async def network_mgr(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
+
+
+@rt.post("/toggle_wifi", response_class=HTMLResponse)
+async def toggle_wifi(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
     if not PermissionChecker(
         required_permissions=[
             "users:local",
         ]
     ).check_permissions(current_user):
         return HTMLResponse("Nope")
+    network = Network()
+    if network.wifi_enabled():
+        network.disable_wifi()
+        return HTMLResponse("Turn On Wifi")
+    else:
+        network.enable_wifi()
+        return HTMLResponse("Turn Off Wifi")
+
+@rt.get("/ethernet_status", response_class=HTMLResponse)
+async def ethernet_status(
+    current_user: Annotated[User, Depends(get_current_user_with_exception)],
+):
+    if Network().is_connected_via_eth():
+        content = "Connected"
+    else:
+        content = "Disconnected"
+    return HTMLResponse(content)
+
+@rt.get("/wifi_list", response_class=HTMLResponse)
+async def network_mgr(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
     content = sub_template(
         "snippets/wifi_list.html", {"wifi_networks": Network().list_wifi()}, current_path, True
     )
     return HTMLResponse(content)
 
-
-@rt.get("/shutdown", response_class=HTMLResponse)
+@rt.post("/shutdown", response_class=HTMLResponse)
 async def shutdown(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
     is_local = PermissionChecker(
         required_permissions=[
@@ -68,7 +89,7 @@ async def shutdown(current_user: Annotated[User, Depends(get_current_user_with_e
         RuntimeSystem().shutdown()
     return HTMLResponse("OK")
 
-@rt.get("/restart", response_class=HTMLResponse)
+@rt.post("/restart", response_class=HTMLResponse)
 async def restart(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
     is_local = PermissionChecker(
         required_permissions=[

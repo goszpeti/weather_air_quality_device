@@ -133,12 +133,14 @@ class Network:
         return True
     
     def is_connected_via_eth(self) -> bool:
+        self._devices = nmcli.device.status()
         for device in self._devices:
             if device.device_type == "ethernet" and device.state == "connected":
                 return True
         return False
 
     def is_connected_via_wlan(self) -> bool:
+        self._devices = nmcli.device.status()
         for device in self._devices:
             if device.device_type == "wifi" and device.state == "connected":
                 return True
@@ -146,6 +148,7 @@ class Network:
     
     def list_wifi(self, include_hidden=False):
         # filter out duplicates
+        self._wifi_networks = nmcli.device.wifi()
         wifi_networks = {}
         for device in self._wifi_networks:
             if not device.ssid:
@@ -178,4 +181,6 @@ class Network:
     def disable_wifi(self):
         Logger().info("Network: Disabling WiFi")
         nmcli.radio.wifi_off()
-    
+
+    def wifi_enabled(self):
+        return nmcli.radio.wifi()

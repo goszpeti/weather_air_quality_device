@@ -1,4 +1,4 @@
-/*! tailwindcss v4.1.7 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.1.4 | MIT License | https://tailwindcss.com */
 @layer properties;
 html {
   background: no-repeat linear-gradient(180deg, oklch(0.24 0.1403 286.92) 0%, oklch(0.42 0.2119 286.68) 100%);
@@ -1881,8 +1881,8 @@ html {
   .m-0 {
     margin: calc(var(--spacing) * 0);
   }
-  .m-4 {
-    margin: calc(var(--spacing) * 4);
+  .m-8 {
+    margin: calc(var(--spacing) * 8);
   }
   .mx-4 {
     margin-inline: calc(var(--spacing) * 4);
@@ -1977,6 +1977,9 @@ html {
   }
   .ml-8 {
     margin-left: calc(var(--spacing) * 8);
+  }
+  .ml-auto {
+    margin-left: auto;
   }
   .tabs {
     display: flex;
@@ -2186,6 +2189,9 @@ html {
   .loading-xl {
     width: calc(var(--size-selector, 0.25rem) * 8);
   }
+  .loading-xs {
+    width: calc(var(--size-selector, 0.25rem) * 4);
+  }
   .w-1\/2 {
     width: calc(1/2 * 100%);
   }
@@ -2195,8 +2201,14 @@ html {
   .w-6 {
     width: calc(var(--spacing) * 6);
   }
+  .w-16 {
+    width: calc(var(--spacing) * 16);
+  }
   .w-24 {
     width: calc(var(--spacing) * 24);
+  }
+  .w-36 {
+    width: calc(var(--spacing) * 36);
   }
   .w-60 {
     width: calc(var(--spacing) * 60);
@@ -2289,6 +2301,9 @@ html {
   .flex-row {
     flex-direction: row;
   }
+  .place-content-end {
+    place-content: end;
+  }
   .items-center {
     align-items: center;
   }
@@ -2371,12 +2386,6 @@ html {
   }
   .rounded-box {
     border-radius: var(--radius-box);
-  }
-  .rounded-field {
-    border-radius: var(--radius-field);
-  }
-  .rounded-field {
-    border-radius: var(--radius-field);
   }
   .rounded-b {
     border-bottom-right-radius: 0.25rem;

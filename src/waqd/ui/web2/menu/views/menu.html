@@ -3,7 +3,7 @@
     <!-- Mobile Menu -->
     {% if logged_in %}
     <div class="dropdown">
-      <div tabindex="0" role="button" class="btn btn-ghost btn-ghost2 md:hidden ">
+      <div tabindex="0" role="button" class="btn btn-ghost md:hidden ">
         <svg viewBox="0 0 24 24" class="h-10">
           <use href="/static/general_icons/menu.svg#main" fill="white" />
         </svg>
@@ -35,7 +35,9 @@
       </ul>
     </div>
     {% endif %}
-    <a href="/weather" class="btn btn-ghost btn-ghost2 text-3xl font-bold mx-4">WAQD</a>
+    <a href="/weather" class="btn btn-ghost text-3xl font-bold mx-4">
+      WAQD
+    </a>
   </div>
   <div class="navbar-center hidden md:flex"></div>
   <div class="navbar-end hidden md:flex">
@@ -52,14 +54,15 @@
           class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-fit p-2 shadow">
           <li>
             <a href="/settings">
-              <svg viewBox="0 0 24 24" class="h-6  mr-8">
+              <svg viewBox="0 0 24 24" class="h-6 mr-8">
                 <use href="/static/general_icons/settings.svg#main" fill="white" />
-              </svg>Settings
+              </svg>
+              Settings
             </a>
           </li>
           <li>
             <a href="/public/about">
-              <svg viewBox="0 0 24 24" class="h-6  mr-8">
+              <svg viewBox="0 0 24 24" class="h-6 mr-8">
                 <use href="/static/general_icons/info.svg#main" fill="white" />
               </svg>About
             </a>
@@ -69,13 +72,15 @@
             <a onclick="shutdown_menu.showModal()">
               <svg viewBox="0 0 24 24" class="h-6 mr-8">
                 <use href="/static/general_icons/power.svg#main" fill="white" />
-              </svg>Shutdown
+              </svg>
+              Shutdown
             </a>
             {% else %}
             <a href="/public/logout">
               <svg viewBox="0 0 24 24" class="h-6 mr-8">
                 <use href="/static/general_icons/logout.svg#main" fill="white" />
-              </svg>Logout
+              </svg>
+              Logout
             </a>
             {% endif %}
           </li>
@@ -83,15 +88,15 @@
       </div>
       {% if local %}
       <li>
-        <a onclick="wifi_mgr_modal.showModal()" class="btn btn-ghost btn-lg"title="Network Manager" hx-trigger="load, every 10s"
-          hx-get="/menu/network_icon" hx-swap="innerHTML">
+        <a onclick="wifi_mgr_modal.showModal()" class="btn btn-ghost btn-lg" title="Network Manager"
+          hx-trigger="load, every 20s" hx-get="/menu/network_icon" hx-swap="innerHTML">
           <svg id="network_status_btn" viewBox="0 0 24 24" class="h-10">
             <use href="/static/general_icons/lan.svg#main" fill="white" />
           </svg>
         </a>
       </li>
       <li>
-        <span id="clock" class="p-2 text-2xl"></span>
+        <span id="clock" title="Time" class="p-2 text-2xl"></span>
       </li>
       {% endif %}
     </ul>

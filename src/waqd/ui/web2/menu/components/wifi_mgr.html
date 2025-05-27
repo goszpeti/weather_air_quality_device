@@ -8,13 +8,21 @@
       <button class="btn btn-md btn-circle btn-ghost text-lg absolute right-2 top-2">✕</button>
     </form>
     <div class="flex flex-row align-middle items-center">
-      <h3 class="text-3xl font-bold p-2">Networks</h3>
-      <div class="btn btn-sm btn-secondary ml-8">
-        <svg viewBox="0 0 24 24" class="h-8">
-          <use href="/static/general_icons/wifi_off.svg#main" fill="white" />
-        </svg>
+      <h3 class="text-3xl font-bold p-2">
+        Networks
+      </h3>
+      <button id="toggle_wifi" class="btn btn-sm btn-secondary ml-8" hx-post="/menu/toggle_wifi" hx-trigger="click"
+        hx-on::after-request="document.getElementById('Rescan').click()">
         Turn Off Wifi
-      </div>
+        <span id="wifi_toggle_spinner" class="loading loading-spinner loading-xl p-4 hidden"></span>
+      </button>
+      <button id="Rescan" class="btn btn-sm btn-secondary ml-4 w-24" hx-get="/menu/wifi_list" hx-trigger="load, click"
+        hx-target="#wifi_list"
+        hx-on::before-request="document.getElementById('wifi_toggle_spinner').classList.remove('hidden')"
+        hx-on::after-request="document.getElementById('wifi_toggle_spinner').classList.add('hidden')">
+        Rescan
+        <span id="wifi_toggle_spinner" class="loading loading-xs loading-spinner ml-4 p-2 hidden "></span>
+      </button>
     </div>
     <div class="divider divider-accent m-0"></div>
     <div class="stats stats-vertical shadow w-full">
@@ -25,13 +33,17 @@
             <svg viewBox="0 0 24 24" class="h-8">
               <use href="/static/general_icons/lan.svg#main" fill="white" />
             </svg>
-            <div class="text-s tracking-wide p-4">Ethernet-01</div>
-            <div class="btn btn-sm btn-secondary btn-disabled p-4">Disconnect</div>
-
+            <div class="text-s tracking-wide p-4">
+              Ethernet-01
+            </div>
+            <div class="btn btn-sm btn-secondary ml-auto p-4" hx-get="/menu/ethernet_status" hx-target="#eth_con_status"
+              hx-trigger="load, click">
+              Recheck
+            </div>
           </div>
         </div>
-        <div class="stat-desc">Connected</div>
+        <div id="eth_con_status" class="stat-desc"></div>
       </div>
-      <div hx-get="/menu/wifi_list" hx-trigger="load">
-      </div>
+    </div>
+    <div id="wifi_list"></div>
 </dialog>

@@ -34,6 +34,7 @@ class ESaver(CyclicComponent):
         self._sleep_timer = None
         self._start_update_loop(update_func=self._set_day_night_mode)
         self._ready = True
+        self._previous_state = ""
 
     @property
     def is_awake(self):
@@ -87,6 +88,7 @@ class ESaver(CyclicComponent):
             return
 
         # switch through the different modes
+        previous_night_mode_active = self._night_mode_active
         if self.is_awake:  # wake from motion sensor
             if self.night_mode_active:
                 self._logger.debug("ESaver: Wake-up at night")
@@ -99,13 +101,16 @@ class ESaver(CyclicComponent):
                 time.sleep(self._settings.get_int(DAY_STANDBY_TIMEOUT))
         else:
             if self.night_mode_active and (wake_time <= current_date_time < sleep_time):
-                self._logger.debug("ESaver: Normal day mode")
+                new_state = "Normal day mode"
                 self._comps.display.set_brightness(self._settings.get_int(BRIGHTNESS))
                 self._night_mode_active = False
             elif not self.night_mode_active and self._settings.get(MOTION_SENSOR_ENABLED):
-                self._logger.debug("ESaver: Day standby mode")
+                new_state = "Day standby mode"
                 self._comps.display.set_brightness(STANDBY_BRIGHTNESS)
             if current_date_time <= wake_time or current_date_time >= sleep_time:
-                self._logger.debug("ESaver: Night mode")
+                new_state = "Night mode"
                 self._night_mode_active = True
                 self._comps.display.set_brightness(NIGHT_MODE_BRIGHTNESS)
+            if self._previous_state != new_state:
+                self._logger.debug("ESaver: %s", new_state)
+                self._previous_state = new_state

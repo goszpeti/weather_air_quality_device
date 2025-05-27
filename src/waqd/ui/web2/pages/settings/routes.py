@@ -60,7 +60,7 @@ async def set_setting(name: str = Form(), value=Form()):
     try:
         app.settings.set(name, value)
         if name == BRIGHTNESS: # instant set settings
-            app.comp_ctrl.components.display.set_brightness(value)
+            app.comp_ctrl.components.display.set_brightness(int(value))
         return HTMLResponse("Set ☑")
     except Exception as e:
         return HTMLResponse(f"Error: {e}", status_code=500)

@@ -2,6 +2,7 @@
   function updateClock(clock) {
     const lang = navigator.language || navigator.languages[0];
     clock.innerHTML = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' });
+    clock.title = new Date().toLocaleDateString();
   }
   window.onload = (function () {
     setInterval(function () {
