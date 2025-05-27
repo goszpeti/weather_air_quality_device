@@ -8,6 +8,7 @@ import waqd.app as app
 from waqd.components.weather.base_types import Location
 from waqd.components.weather.open_meteo import OpenMeteo
 from waqd.settings import (
+    BRIGHTNESS,
     LOCATION_ALTITUDE_M,
     LOCATION_COUNTRY_CODE,
     LOCATION_LATITUDE,
@@ -58,6 +59,8 @@ async def location_search_result(query: str):
 async def set_setting(name: str = Form(), value=Form()):
     try:
         app.settings.set(name, value)
+        if name == BRIGHTNESS: # instant set settings
+            app.comp_ctrl.components.display.set_brightness(value)
         return HTMLResponse("Set ☑")
     except Exception as e:
         return HTMLResponse(f"Error: {e}", status_code=500)
