@@ -19,9 +19,14 @@
     </div>
     <div id="{{network.ssid}}_pw_form" class="hidden">
       <div class="flex flex-row items-center gap-4 p-2">
-        <input type="text" placeholder="Password" class="input input-bordered w-full max-w-xs" />
-        <button class="btn btn-sm btn-secondary">Cancel</button>
-        <button class="btn btn-sm btn-secondary">Next</button>
+        <input id="{{network.ssid}}_pw" type="text" placeholder="Password" class="input input-bordered w-full max-w-xs" />
+        <button id="cancel_btn" class="btn btn-sm btn-secondary">Cancel</button>
+        <button id="next_btn"class="btn btn-sm btn-secondary"
+        hx-post="/menu/wifi/connect" 
+        hx-vals='js:{"password": document.getElementById("{{network.ssid}}_pw").value, "ssid": "{{network.ssid}}"}'
+        hx-swap="none"
+        hx-on::after-request="handleConnectionResponse(event, '{{network.ssid}}')"
+        >Next</button>
       </div>
     </div>
   </div>
@@ -37,6 +42,25 @@
     if (connectBtn.textContent.trim() === 'Connect') {
       pwForm.classList.remove('hidden');
       connectBtn.disabled = true;
+
+      const cancelBtn = pwForm.querySelector('#cancel_btn');
+      cancelBtn.addEventListener('click', () => {
+        pwForm.classList.add('hidden');
+        connectBtn.disabled = false;
+      });
+    }
+  }
+
+  function handleConnectionResponse(event, ssid) {
+    if (event.detail.successful) {
+      const connectBtn = document.getElementById(`${ssid}_connect`);
+      const pwForm = document.getElementById(`${ssid}_pw_form`);
+      const statDesc = connectBtn.closest('.stat').querySelector('.stat-desc');
+      
+      pwForm.classList.add('hidden');
+      connectBtn.disabled = false;
+      connectBtn.textContent = 'Disconnect';
+      statDesc.textContent = `${statDesc.textContent.split('-')[0]} - Connected`;
     }
   }
 </script>

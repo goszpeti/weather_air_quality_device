@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Form
 from fastapi.responses import HTMLResponse
 from waqd.base.network import Network
 from waqd.base.system import RuntimeSystem
@@ -77,6 +77,17 @@ async def network_mgr(current_user: Annotated[User, Depends(get_current_user_wit
         "snippets/wifi_list.html", {"wifi_networks": Network().list_wifi()}, current_path, True
     )
     return HTMLResponse(content)
+
+@rt.post("/wifi/connect", response_class=HTMLResponse)
+async def wifi_connect(current_user: Annotated[User, Depends(get_current_user_with_exception)], 
+                       ssid: str=Form(), password: str=Form()):
+    Network().connect_wifi(ssid, password)
+    # return HTMLResponse("OK")
+
+@rt.post("/wifi/disconnect", response_class=HTMLResponse)
+async def wifi_disconnect(current_user: Annotated[User, Depends(get_current_user_with_exception)], ssid: str=Form()):
+    Network().disconnect_wifi(ssid)
+    # return HTMLResponse("OK")
 
 @rt.post("/shutdown", response_class=HTMLResponse)
 async def shutdown(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
