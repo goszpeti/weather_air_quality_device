@@ -1,27 +1,4 @@
 <!-- need raw for htmx json substitution to work -->
-<script>
-  function handleInteriorAfterSettle(event) {
-    if (event.detail.successful) {
-       // Dynamic CO2 coloring
-       const co2Element = document.querySelector('#co2_value p');
-        if (!co2Element) return; // Ensure the element exists before proceeding
-        const co2Value = parseInt(co2Element.textContent, 10);
-        const co2Container = document.querySelector('#co2_value');
-
-        if (!isNaN(co2Value)) {
-            co2Container.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500');
-            if (co2Value < 800) {
-                co2Container.classList.add('text-green-500');
-            } else if (co2Value < 1200) {
-                co2Container.classList.add('text-yellow-500');
-            } else {
-                co2Container.classList.add('text-red-500');
-            }
-        }
-    }
-  }
-//# sourceURL=interior.html 
-</script>
 {% raw %}
 <template id="Interior-template">
     <div class="stat md:p-2">

@@ -53,9 +53,12 @@
     <!-- Enable client side templates for all main content -->
     {{content}}
   </main>
+  {% if not local %}
   <footer class="footer footer-center bg-transparent text-base-content text-xl p-4 space-y-8">
     <p>Copyright © 2025 - All right reserved by Péter Gosztolya and contributors</p>
   </footer>
+  {% endif %}
+
   <div id="toasts" class="toast toast-end">
     <script>
 
