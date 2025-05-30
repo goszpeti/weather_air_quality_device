@@ -17,24 +17,7 @@
         class="btn btn-sm btn-secondary ml-auto p-4">
         {% if network.in_use %}Disconnect{%else%}Connect{% endif %}</button>
     </div>
-    <div id="{{network.ssid}}_pw_form" class="hidden">
-      <div class="flex flex-row items-center gap-4 p-2">
-        <input id="{{network.ssid}}_pw" type="password" placeholder="Password"
-          class="input input-bordered w-full max-w-xs -mr-2" />
-        <button type="button" class="btn btn-square"
-          onclick="togglePasswordVisibility('{{network.ssid}}_pw', '{{network.ssid}}_togglePWVisibilityBtn')">
-          <svg id="{{network.ssid}}_togglePWVisibilityBtn" xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6" viewBox="0 0 24 24">
-            <use href="/static/general_icons/visibility.svg#main" fill="white" />
-          </svg>
-        </button>
-        <button id="cancel_btn" class="btn btn-sm btn-secondary">Cancel</button>
-        <button id="next_btn" class="btn btn-sm btn-secondary" hx-post="/menu/wifi/connect"
-          hx-vals='js:{"password": document.getElementById("{{network.ssid}}_pw").value, "ssid": "{{network.ssid}}"}'
-          hx-swap="none"
-          hx-on::after-request="handleConnectionResponse(event, '{{network.ssid}}')">Next</button>
-      </div>
-    </div>
+    
   </div>
   <div class="stat-desc flex flex-row items-center gap-4 ">
     <span>Signal: {{network.signal}}%</span>
@@ -43,21 +26,52 @@
 </div>
 {% endfor %}
 
+<dialog id="connection_dialog" class="modal">
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Connect to network</h3>
+    <div id="pw_form">
+      <div class="flex flex-row items-center gap-4 p-2">
+        <input id="pw" type="password" placeholder="Password"
+          class="input input-bordered w-full max-w-xs -mr-2" />
+        <button type="button" class="btn btn-square"
+          onclick="togglePasswordVisibility('pw', 'togglePWVisibilityBtn')">
+          <svg id="togglePWVisibilityBtn" xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6" viewBox="0 0 24 24">
+            <use href="/static/general_icons/visibility.svg#main" fill="white" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-action">
+      <form method="dialog">
+        <button id="cancel_btn" class="btn btn-sm btn-secondary">Cancel</button>
+        <button id="next_btn" class="btn btn-sm btn-secondary" hx-post="/menu/wifi/connect"
+          hx-vals='js:{"password": document.getElementById("pw").value, "ssid": selectedSSID}'
+          hx-swap="none"
+          hx-on::before-request="document.getElementById('pw_toggle_spinner').classList.remove('hidden')"
+          hx-on::after-request="document.getElementById('pw_toggle_spinner').classList.add('hidden')
+          document.getElementById('Rescan').click()">
+          Next
+          <span id="pw_toggle_spinner" class="loading loading-xs loading-spinner ml-4 p-2 hidden "></span>
+        </button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
 <script>
+  let selectedSSID = ""
   function handleConnectButton(ssid) {
     const connectBtn = document.getElementById(`${ssid}_connect`);
     const pwForm = document.getElementById(`${ssid}_pw_form`);
     const mainForm = document.getElementById(`${ssid}_main`);
 
     if (connectBtn.textContent.trim() === 'Connect') { // Show password field and buttons
-      pwForm.classList.remove('hidden');
-      connectBtn.disabled = true;
-
-      const cancelBtn = pwForm.querySelector('#cancel_btn');
-      cancelBtn.addEventListener('click', () => {
-        pwForm.classList.add('hidden');
-        connectBtn.disabled = false;
-      });
+      connection_dialog.showModal()
+      selectedSSID = ssid
     }
     else if (connectBtn.textContent.trim() === 'Disconnect') { // Disconnect directly
       htmx.ajax('post', '/menu/wifi/disconnect', {
@@ -65,35 +79,10 @@
         swap: "none",
         handler: function (elt, evt) {
           document.getElementById('Rescan').click()
-          // if (evt.xhr.status = 200) {
-          //   connectBtn.textContent = "Connect";
-          //   mainForm.classList.remove('bg-base-200');
-          //   mainForm.classList.add('bg-base-100');
-          // } else {
-          //   console.error('Disconnect failed');
-          // }
         }
       });
     }
   }
 
-  function handleConnectionResponse(event, ssid) {
-    document.getElementById('Rescan').click()
-    if (event.detail.successful) {
-      // const connectBtn = document.getElementById(`${ssid}_connect`);
-      // const pwForm = document.getElementById(`${ssid}_pw_form`);
-      // const mainForm = document.getElementById(`${ssid}_main`);
-
-      // // pwForm.classList.add('hidden');
-      // // connectBtn.disabled = false;
-      // // connectBtn.textContent = 'Disconnect';
-      // // mainForm.classList.remove('bg-base-100');
-      // // mainForm.classList.add('bg-base-200');
-      
-    }
-    else { // Show toast
-
-    }
-  }
   //# sourceURL=wifi_list.html
 </script>
