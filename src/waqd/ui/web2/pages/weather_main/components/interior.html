@@ -1,8 +1,9 @@
 <!-- need raw for htmx json substitution to work -->
 <script>
-    document.addEventListener('htmx:afterSettle', function (details) {
-        // Dynamic CO2 coloring
-        const co2Element = document.querySelector('#co2_value p');
+  function handleInteriorAfterSettle(event) {
+    if (event.detail.successful) {
+       // Dynamic CO2 coloring
+       const co2Element = document.querySelector('#co2_value p');
         if (!co2Element) return; // Ensure the element exists before proceeding
         const co2Value = parseInt(co2Element.textContent, 10);
         const co2Container = document.querySelector('#co2_value');
@@ -17,7 +18,9 @@
                 co2Container.classList.add('text-red-500');
             }
         }
-    });
+    }
+  }
+//# sourceURL=interior.html 
 </script>
 {% raw %}
 <template id="Interior-template">

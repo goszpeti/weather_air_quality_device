@@ -5,7 +5,8 @@
   <title>WAQD</title>
   <html lang="en">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.8 maximum-scale=1.5" , charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.8 maximum-scale=1.5" ,
+    charset="utf-8">
   <link rel="preload" href="/static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
   <link href="/static/css/output.css" rel="stylesheet" type="text/css" />
   <script src="/static/js/htmx_2_0_4.js"></script>
@@ -15,7 +16,8 @@
   <script src="/static/js/json-enc_1.9.2.js"></script>
   <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+    crossorigin="anonymous"></script>
 
   <style>
     /* Cannot be in stylesheet - set font here, so no pop-in happens*/
@@ -43,11 +45,11 @@
 
 <body class="{{overflow_config}}">
   <header>
-    {{menu}}
+    <div id="menu_container" hx-get="/menu" hx-trigger="load" hx-swap="innerHTML"></div>
   </header>
 
   <main class="py-2 px-2 md:px-0 md:py-0 lg:p-4" style="max-width: 100%; min-height: 80vh;"
-    hx-ext="client-side-templates"> 
+    hx-ext="client-side-templates">
     <!-- Enable client side templates for all main content -->
     {{content}}
   </main>
@@ -56,12 +58,27 @@
   </footer>
   <div id="toasts" class="toast toast-end">
     <script>
-      function hideToast(name) {
-        document.getElementById(name).classList.add('hidden');
-      }
+
     </script>
     {{toast}}
   </div>
+  <script>// Shared script functions
+    function togglePasswordVisibility(pw_id, toggle_btn_id) {
+      const passwordInput = document.getElementById(pw_id);
+      const toggleButton = document.getElementById(toggle_btn_id);
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleButton.style.opacity = '0.5'; // Grey out the button
+      } else {
+        passwordInput.type = 'password';
+        toggleButton.style.opacity = '1'; // Re-enable the button
+      }
+    }
+    function hideToast(name) {
+      document.getElementById(name).classList.add('hidden');
+    }
+
+  </script>
 </body>
 
 </html>

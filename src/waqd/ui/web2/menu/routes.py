@@ -9,12 +9,32 @@ from waqd.ui.web2.authentication import (
     User,
     get_current_user_with_exception,
 )
-from waqd.ui.web2.templates import sub_template
-from ..authentication import PermissionChecker
+from waqd.ui.web2.templates import base_template, sub_template
+from ..authentication import PermissionChecker, get_current_user_plain
 
 rt = APIRouter()
 
 current_path = Path(__file__).parent.resolve()
+
+@rt.get("/", response_class=HTMLResponse)
+async def menu(user: Annotated[User, Depends(get_current_user_plain)]):
+    menu_content = ""
+    local = False
+    if user:
+        local = PermissionChecker(
+            required_permissions=[
+                "users:local",
+            ]
+        ).check_permissions(user)
+    menu_content = base_template(
+        "views/menu.html",
+        {
+            "local": local,
+            "logged_in": bool(user),
+        },
+        current_path,
+    )
+    return HTMLResponse(menu_content)
 
 @rt.get("/network_icon", response_class=HTMLResponse)
 async def wifi_signal_strength(
@@ -82,12 +102,12 @@ async def network_mgr(current_user: Annotated[User, Depends(get_current_user_wit
 async def wifi_connect(current_user: Annotated[User, Depends(get_current_user_with_exception)], 
                        ssid: str=Form(), password: str=Form()):
     Network().connect_wifi(ssid, password)
-    # return HTMLResponse("OK")
+    return HTMLResponse("OK")
 
 @rt.post("/wifi/disconnect", response_class=HTMLResponse)
 async def wifi_disconnect(current_user: Annotated[User, Depends(get_current_user_with_exception)], ssid: str=Form()):
     Network().disconnect_wifi(ssid)
-    # return HTMLResponse("OK")
+    return HTMLResponse("OK")
 
 @rt.post("/shutdown", response_class=HTMLResponse)
 async def shutdown(current_user: Annotated[User, Depends(get_current_user_with_exception)]):

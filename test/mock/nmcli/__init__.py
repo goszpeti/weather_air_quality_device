@@ -17,14 +17,14 @@ class RadioMgr():
         return self._state
 
 radio = RadioMgr()
-@dataclass(frozen=True)
+@dataclass()
 class Device:
     device: str
     device_type: str
     state: str
     connection: Optional[str]
 
-@dataclass(frozen=True)
+@dataclass()
 class DeviceWifi:
     in_use: bool
     ssid: str
@@ -38,24 +38,144 @@ class DeviceWifi:
 
 class DeviceMgr():
     _eth = True
+    _wifi_list = [
+        DeviceWifi(
+            in_use=True,
+            ssid="WLAN-B.A",
+            bssid="1",
+            mode="Infra",
+            chan=6,
+            freq=2437,
+            rate=260,
+            signal=89,
+            security="WPA2 WPA3",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="WLAN-B.A",
+            bssid="2",
+            mode="Infra",
+            chan=52,
+            freq=5260,
+            rate=540,
+            signal=64,
+            security="WPA2 WPA3",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="WLAN-985340",
+            bssid="3",
+            mode="Infra",
+            chan=11,
+            freq=2462,
+            rate=540,
+            signal=67,
+            security="WPA2",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="WLAN-206656",
+            bssid="4",
+            mode="Infra",
+            chan=11,
+            freq=2462,
+            rate=130,
+            signal=59,
+            security="WPA2",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="WLAN-130251",
+            bssid="5",
+            mode="Infra",
+            chan=1,
+            freq=2412,
+            rate=540,
+            signal=50,
+            security="WPA2",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="WLAN-426465",
+            bssid="6",
+            mode="Infra",
+            chan=6,
+            freq=2437,
+            rate=540,
+            signal=50,
+            security="WPA2",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="FRITZ!Box 7590 EJ",
+            bssid="7",
+            mode="Infra",
+            chan=13,
+            freq=2472,
+            rate=260,
+            signal=39,
+            security="WPA2",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="FRITZ!Box 7590 EJ",
+            bssid="8",
+            mode="Infra",
+            chan=44,
+            freq=5220,
+            rate=540,
+            signal=35,
+            security="WPA2",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="",
+            bssid="9",
+            mode="Infra",
+            chan=104,
+            freq=5520,
+            rate=540,
+            signal=27,
+            security="WPA2",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="",
+            bssid="10",
+            mode="Infra",
+            chan=104,
+            freq=5520,
+            rate=540,
+            signal=24,
+            security="WPA2",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="FRITZ!Box 6660 Cable IV",
+            bssid="11",
+            mode="Infra",
+            chan=36,
+            freq=5180,
+            rate=270,
+            signal=22,
+            security="WPA2",
+        ),
+        DeviceWifi(
+            in_use=False,
+            ssid="FRITZ!Box 7530 HB",
+            bssid="12",
+            mode="Infra",
+            chan=36,
+            freq=5180,
+            rate=270,
+            signal=20,
+            security="WPA2",
+        ),
+    ]
 
-    @staticmethod
-    def wifi():
+    def wifi(self):
         if radio.wifi():
-            return [
-                    DeviceWifi(in_use=True, ssid='WLAN-B.A', bssid='1', mode='Infra', chan=6, freq=2437, rate=260, signal=89, security='WPA2 WPA3'), 
-                    DeviceWifi(in_use=False, ssid='WLAN-B.A', bssid='2', mode='Infra', chan=52, freq=5260, rate=540, signal=64, security='WPA2 WPA3'),
-                    DeviceWifi(in_use=False, ssid='WLAN-985340', bssid='3', mode='Infra', chan=11, freq=2462, rate=540, signal=67, security='WPA2'), 
-                    DeviceWifi(in_use=False, ssid='WLAN-206656', bssid='4', mode='Infra', chan=11, freq=2462, rate=130, signal=59, security='WPA2'),
-                    DeviceWifi(in_use=False, ssid='WLAN-130251', bssid='5', mode='Infra', chan=1, freq=2412, rate=540, signal=50, security='WPA2'), 
-                    DeviceWifi(in_use=False, ssid='WLAN-426465', bssid='6', mode='Infra', chan=6, freq=2437, rate=540, signal=50, security='WPA2'), 
-                    DeviceWifi(in_use=False, ssid='FRITZ!Box 7590 EJ', bssid='7', mode='Infra', chan=13, freq=2472, rate=260, signal=39, security='WPA2'), 
-                    DeviceWifi(in_use=False, ssid='FRITZ!Box 7590 EJ', bssid='8', mode='Infra', chan=44, freq=5220, rate=540, signal=35, security='WPA2'), 
-                    DeviceWifi(in_use=False, ssid='', bssid='9', mode='Infra', chan=104, freq=5520, rate=540, signal=27, security='WPA2'), 
-                    DeviceWifi(in_use=False, ssid='', bssid='10', mode='Infra', chan=104, freq=5520, rate=540, signal=24, security='WPA2'), 
-                    DeviceWifi(in_use=False, ssid='FRITZ!Box 6660 Cable IV', bssid='11', mode='Infra', chan=36, freq=5180, rate=270, signal=22, security='WPA2'), 
-                    DeviceWifi(in_use=False, ssid='FRITZ!Box 7530 HB', bssid='12', mode='Infra', chan=36, freq=5180, rate=270, signal=20, security='WPA2')
-                    ]
+            return self._wifi_list
         else:
             return []
 
@@ -97,10 +217,18 @@ class DeviceMgr():
         return status
 
     def wifi_connect(self, ssid, password):
-        return True
-    
+        for wconn in self._wifi_list:
+            if wconn.ssid == ssid:
+                wconn.in_use = True
+            else:
+                wconn.in_use = False
+
     def disconnect(self, ssid):
-        return True
+        for wconn in self._wifi_list:
+            if wconn.ssid == ssid and wconn.in_use:
+                wconn.in_use = False
+                return
+            
 
 
 device = DeviceMgr()

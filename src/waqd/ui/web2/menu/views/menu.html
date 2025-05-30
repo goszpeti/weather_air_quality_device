@@ -96,7 +96,7 @@
         </a>
       </li>
       <li>
-        <span id="clock" title="Time" class="p-2 text-2xl"></span>
+        {% include "menu/components/clock.html" %}
       </li>
       {% endif %}
     </ul>
@@ -104,7 +104,6 @@
   </div>
 </div>
 {% if local %}
-{% include "menu/components/clock.html" %}
 {% include "menu/components/power_menu.html" %}
 {% include "menu/components/wifi_mgr.html" %}
 {% endif %}

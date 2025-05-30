@@ -155,7 +155,7 @@ class Network:
                 if not include_hidden:
                     continue
             same_device = wifi_networks.get(device.ssid, "")
-            if same_device and device.in_use == same_device.in_use:
+            if same_device and same_device.in_use:
                 continue
             wifi_networks[device.ssid] = device
         return wifi_networks

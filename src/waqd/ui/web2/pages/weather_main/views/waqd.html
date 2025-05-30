@@ -7,7 +7,8 @@
     </figure>
     <div class="card-body md:p-2">
       <div hx-trigger="load, every 10s" hx-get="{{card.endpoint}}" hx-swap="innerHTML"
-        nunjucks-template="{{card.name}}-template" hx-target="#{{card.name}}-stats">
+        nunjucks-template="{{card.name}}-template" hx-target="#{{card.name}}-stats" 
+        hx-on::after-request="handle{{card.name}}AfterSettle(event)">
       </div>
       <div class="flex space-x-4 justify-evenly items-center-safe">
         <h2 class="text-5xl font-bold tracking-wider">{{card.name}}</h2>

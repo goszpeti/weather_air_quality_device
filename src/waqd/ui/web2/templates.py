@@ -69,22 +69,11 @@ def render_main(
                 "users:local",
             ]
         ).check_permissions(user)
-    menu_content = ""
-    if menu:
-        menu_content = base_template(
-            "menu/views/menu.html",
-            {
-                "local": local,
-                "logged_in": bool(user),
-            },
-            current_path,
-        )
     tpl = base_template(
         "views/index.html",
         {
             "content": content,
             "overflow_config": overflow_config,
-            "menu": menu_content,
             "toast": toast,
             "local": local,
         },
