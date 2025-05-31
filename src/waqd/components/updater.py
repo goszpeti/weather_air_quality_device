@@ -26,7 +26,7 @@ class OnlineUpdater(CyclicComponent):
     If a newer version is detected, it downloads it and calls "script/installer/start_installer.sh"
     This entry point should not be changed!
     """
-    UPDATE_TIME = 600  # 10 minutes in seconds
+    UPDATE_TIME = 6000  # 100 minutes in seconds
     INIT_WAIT_TIME = 20  # don't start updating until the station is ready
     STOP_TIMEOUT = 2  # override because of long update time
 
