@@ -14,11 +14,13 @@ import waqd.app as base_app
 from . import LOCAL_SERVER_PORT
 from .api.sensor.v1.routes import rt as sensor_v1_router
 from .api.weather.v1.routes import rt as weather_v1_router
-from .authentication import get_current_user_with_exception, get_current_user_with_redirect
+from .authentication import (get_current_user_with_exception,
+                             get_current_user_with_redirect)
+from .menu.routes import rt as menu_router
+from .pages.network_mgr.routes import rt as network_mgr
 from .pages.public.routes import rt as public_router
 from .pages.settings.routes import rt as settings_router
 from .pages.weather_main.routes import rt as weather_router
-from .menu.routes import rt as menu_router
 
 current_path = Path(__file__).parent.resolve()
 
@@ -67,6 +69,8 @@ web_app.include_router(
 
 web_app.include_router(public_router, prefix="/public")
 web_app.include_router(menu_router, prefix="/menu")
+web_app.include_router(network_mgr, prefix="/network_mgr")
+
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 

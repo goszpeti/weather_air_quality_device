@@ -88,7 +88,7 @@
       </div>
       {% if local %}
       <li>
-        <a onclick="wifi_mgr_modal.showModal()" class="btn btn-ghost btn-lg" title="Network Manager"
+        <a href="/network_mgr" class="btn btn-ghost btn-lg" title="Network Manager"
           hx-trigger="load, every 20s" hx-get="/menu/network_icon" hx-swap="innerHTML">
           <svg id="network_status_btn" viewBox="0 0 24 24" class="h-10">
             <use href="/static/general_icons/lan.svg#main" fill="white" />
@@ -105,5 +105,4 @@
 </div>
 {% if local %}
 {% include "menu/components/power_menu.html" %}
-{% include "menu/components/wifi_mgr.html" %}
 {% endif %}

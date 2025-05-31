@@ -1,8 +1,9 @@
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form
+from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse
+
 from waqd.base.network import Network
 from waqd.base.system import RuntimeSystem
 from waqd.ui.web2.authentication import (
@@ -119,6 +120,7 @@ async def shutdown(current_user: Annotated[User, Depends(get_current_user_with_e
     if is_local:
         RuntimeSystem().shutdown()
     return HTMLResponse("OK")
+
 
 @rt.post("/restart", response_class=HTMLResponse)
 async def restart(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
