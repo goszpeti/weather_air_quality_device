@@ -4,7 +4,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Form
 from fastapi.responses import HTMLResponse
 from waqd.base.network import Network
-from waqd.base.system import RuntimeSystem
 from waqd.ui.web2.authentication import (
     User,
     get_current_user_with_exception,
@@ -25,15 +24,21 @@ async def network_mgr(current_user: Annotated[User, Depends(get_current_user_wit
         ]
     ).check_permissions(current_user):
         return HTMLResponse("Nope")
+    network = Network()
+    if network.wifi_enabled():
+        snippet = "turn_off_wifi.html"
+    else:
+        snippet = "turn_on_wifi.html"
+    wifi_status_content = sub_template("snippets/" + snippet, {}, current_path, True)
+
     content = sub_template(
         "network_mgr.html",
-        {},
+        {"wifi_status": wifi_status_content},
         current_path,
     )
     return render_main(content, current_user)
 
-
-@rt.post("/toggle_wifi", response_class=HTMLResponse)
+@rt.post("/wifi/toggle", response_class=HTMLResponse)
 async def toggle_wifi(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
     if not PermissionChecker(
         required_permissions=[
@@ -44,10 +49,11 @@ async def toggle_wifi(current_user: Annotated[User, Depends(get_current_user_wit
     network = Network()
     if network.wifi_enabled():
         network.disable_wifi()
-        return HTMLResponse("Turn On Wifi")
+        snippet = "turn_on_wifi.html"
     else:
         network.enable_wifi()
-        return HTMLResponse("Turn Off Wifi")
+        snippet = "turn_off_wifi.html"
+    return HTMLResponse(sub_template("snippets/" + snippet, {}, current_path, True))
 
 
 @rt.get("/ethernet_status", response_class=HTMLResponse)

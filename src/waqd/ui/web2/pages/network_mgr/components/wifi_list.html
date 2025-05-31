@@ -4,7 +4,7 @@
   <div class="stat-title"></div>
   <div class="stat-value">
     <div class="flex flex-col p-2">
-      <div class="flex flex-row items-center p-2">
+      <div class="flex flex-row items-center">
         <svg viewBox="0 0 24 24" class="h-8">
           {% if network.signal > 75 and network.security %}
           <use href="/static/general_icons/wifi_3_bar_locked.svg#main" fill="white" />
@@ -37,7 +37,8 @@
             </button>
           </div>
           <form method="dialog" class="p-2">
-            <button id="cancel_btn" class="btn btn-sm btn-secondary mr-4">Cancel</button>
+            <button id="cancel_btn" class="btn btn-sm btn-secondary mr-4" 
+              onclick="document.getElementById('{{network.ssid}}_connection_dialog').classList.add('hidden')">Cancel</button>
             <button id="next_btn" class="btn btn-sm btn-secondary" hx-post="wifi/connect"
               hx-vals='js:{"password": document.getElementById("{{network.ssid}}_pw").value, "ssid": selectedSSID}'
               hx-swap="none"
@@ -53,7 +54,7 @@
     </div>
 
   </div>
-  <div class="stat-desc flex flex-row items-center gap-4 ">
+  <div class="stat-desc flex flex-row items-center gap-4 p-2">
     <span>Signal: {{network.signal}}%</span>
     <span id="{{network.ssid}}_security" class="">Security: {{network.security}}</span>
   </div>
