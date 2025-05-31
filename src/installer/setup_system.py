@@ -3,7 +3,6 @@
 
 import logging
 import os
-import sys
 import shutil
 from pathlib import Path
 from configparser import ConfigParser, DuplicateSectionError
@@ -21,6 +20,27 @@ from installer.common import (
     set_write_permissions,
     setup_logger,
 )
+
+def disable_screensaver():
+    logging.info("Check the screensaver")
+
+    config_file = HOME / ".xscreensaver"
+    switch_off_cmd = "mode: off\n"
+    assure_file_exists(config_file, chown=False)
+    logging.info("Disabling screen saver.")
+    remove_line_in_file(["mode:"], config_file)
+    add_line_to_file([switch_off_cmd], config_file)
+    logging.info("Add the screensaver to autostart")
+    add_to_autostart(["xscreensaver -no-splash"])
+
+
+def hide_mouse_cursor():
+    """ Modify xserver-command to append -nocursor """
+    lightdm_config_file = Path("/usr/share/lightdm/lightdm.conf.d/01_debian.conf")
+    assure_file_exists(lightdm_config_file, chown=False)
+    logging.info("Hiding mouse cursor")
+    remove_line_in_file(["xserver-command"], lightdm_config_file)
+    add_line_to_file(["xserver-command=X -nocursor"], lightdm_config_file)
 
 
 def enable_hw_access():
@@ -90,9 +110,8 @@ def set_wallpaper(install_path: Path):
                 logging.error(str(e))
             break
 
-
 def clean_lxde_desktop(
-    desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/desktop-items-DSI-1.conf"),
+    desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/desktop-items-0.conf"),
 ):
     # Can't be run as sudo, or as sudo -runuser. Needs desktop manager running.
     logging.info("Cleanup desktop icons...")
@@ -122,11 +141,11 @@ def do_setup():
     add_to_autostart(["pcmanfm --desktop --profile LXDE-pi"])
     remove_from_autostart(["lxpanel --profile"])
 
+    hide_mouse_cursor()
+    disable_screensaver()
+
     # Cosmetic setup
     customize_splash_screen()
-
-    # Add languages
-    setup_supported_locales()
 
     # Enable needed hardware access
     enable_hw_access()

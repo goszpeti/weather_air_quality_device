@@ -40,10 +40,14 @@ function waqd_install() {
 
     echo "# Installing InfluxDB Database... (Step 3/6)"
     cd $CURRENT_DIR
-    chmod +x ./install_influx.sh
-    ./install_influx.sh
+    chmod +x ./setup/install_influx.sh
+    ./setup/install_influx.sh
 
-    echo "# Setting up the system (Step 4/6)"
+    echo "# Configuring system languages (Step 4/6)"
+    if (~/.waqd/)
+    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --configure_languages
+
+    echo "# Setting up the system (Step 5/6)"
 
     chmod +x ./setup/setup_firewall.sh
     ./setup/setup_firewall.sh
@@ -51,18 +55,18 @@ function waqd_install() {
     # Setup port 80 binding per default
     sudo setcap 'cap_net_bind_service=+ep' /usr/bin/python3.11
 
-    # Disable mouse cursor, or actually delete it... Ugly as hell, but it works
-    sudo rm -rf /usr/share/icons/PiXflat/cursors/left_ptr
-
-    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
+    # Disable mouse cursor
 
     # Enable HW access (serial, i2c and spi)
     sudo raspi-config nonint do_serial 2 # console off, serial on
     sudo raspi-config nonint do_i2c 0
     sudo raspi-config nonint do_spi 0
-    sudo raspi-config nonint do_squeekboard S3
+    sudo raspi-config nonint do_squeekboard S3 # disable
+    sudo raspi-config nonint do_wayland W1 # X11
 
-    echo "# Installing application... (Step 5/6)"
+    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
+
+    echo "# Installing application... (Step 6/6)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --install
     # needs installed app
     export PYTHONPATH=${SRC_DIR}
@@ -71,3 +75,5 @@ function waqd_install() {
     echo "# Waiting for restart..."
     sudo reboot
 }
+
+"$@"
