@@ -74,6 +74,7 @@ def start_web_ui_chromium_kiosk_mode():
             "--disable-pinch",
             "--disable-features=TranslateUI",
             f"http://localhost:{LOCAL_SERVER_PORT}/login_admin.html",
+            "--force-device-scale-factor=0.8",
         ]
     )
 

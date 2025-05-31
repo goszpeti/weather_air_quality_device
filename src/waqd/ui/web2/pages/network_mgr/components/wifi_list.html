@@ -62,7 +62,7 @@
 {% endfor %}
 
 <script>
-  let selectedSSID = ""
+  var selectedSSID = ""
   function handleConnectButton(ssid) {
     const connectBtn = document.getElementById(`${ssid}_connect`);
     const mainForm = document.getElementById(`${ssid}_main`);
