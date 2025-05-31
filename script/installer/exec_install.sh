@@ -44,7 +44,6 @@ function waqd_install() {
     ./setup/install_influx.sh
 
     echo "# Configuring system languages (Step 4/6)"
-    if (~/.waqd/)
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --configure_languages
 
     echo "# Setting up the system (Step 5/6)"
@@ -52,13 +51,11 @@ function waqd_install() {
     chmod +x ./setup/setup_firewall.sh
     ./setup/setup_firewall.sh
 
-    # Setup port 80 binding per default
-    sudo setcap 'cap_net_bind_service=+ep' /usr/bin/python3.11
-
-    # Disable mouse cursor
 
     # Enable HW access (serial, i2c and spi)
-    sudo raspi-config nonint do_serial 2 # console off, serial on
+    
+    sudo raspi-config nonint do_serial_hw 0 # console off, serial on
+    sudo raspi-config nonint do_serial_cons 1
     sudo raspi-config nonint do_i2c 0
     sudo raspi-config nonint do_spi 0
     sudo raspi-config nonint do_squeekboard S3 # disable
@@ -75,5 +72,3 @@ function waqd_install() {
     echo "# Waiting for restart..."
     sudo reboot
 }
-
-"$@"

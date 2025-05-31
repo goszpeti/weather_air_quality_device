@@ -41,7 +41,7 @@ def parse_cmd_args():
         waqd.MIGRATE_SENSOR_LOGS = True
 
 
-if __name__ == "__main__":
+def startup():
     # System is first, is_target_system is the most basic check
     from waqd.base.system import RuntimeSystem
 
@@ -53,3 +53,7 @@ if __name__ == "__main__":
     from waqd.app import main
 
     main()
+
+
+if __name__ == "__main__":
+    startup()

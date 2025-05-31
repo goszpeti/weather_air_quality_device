@@ -84,8 +84,8 @@ namespaces = false # to disable scanning PEP 420 namespaces (true by default)
     "ui/qt/**/*.qm",
 ]
 
-[project.gui-scripts]
-waqd = "waqd.__main__:main"
+[project.scripts]
+waqd = "waqd.__main__:startup"
 
 # Test dependencies and configs
 
