@@ -23,19 +23,14 @@ function waqd_install() {
     pkill waqd || true
     pkill python3 || true
 
-    # Setup port 80 binding:
-    sudo setcap 'cap_net_bind_service=+ep' /usr/bin/python3.11
-
     echo "# Install needed system libraries... (Step 1/6)"
     # python dependencies
     # sudo apt -y install python3-apt # TODO: if apt via python is used
     sudo apt-get -y install python3-venv 
 	#  python3-libgpiod python3-pyrsistent python3-pyqt5 python3-pyqt5.qtmultimedia python3-pyqt5.qtsvg python3-pyqt5.qtchart
     # install pipx for venv based app creation
-    python3 -m pip install --user pipx==1.1.0
+    python3 -m pip install --user pipx==1.7.1 --break-system-packages
     python3 -m pipx ensurepath
-    # xscreensaver - for no auto screen turn off
-    sudo apt-get -y install xscreensaver
 
     echo "# Full system update... (Step 2/6)"
     sudo apt-get upgrade -y --force-yes
@@ -49,7 +44,24 @@ function waqd_install() {
     ./install_influx.sh
 
     echo "# Setting up the system (Step 4/6)"
+
+    chmod +x ./setup/setup_firewall.sh
+    ./setup/setup_firewall.sh
+
+    # Setup port 80 binding per default
+    sudo setcap 'cap_net_bind_service=+ep' /usr/bin/python3.11
+
+    # Disable mouse cursor, or actually delete it... Ugly as hell, but it works
+    sudo rm -rf /usr/share/icons/PiXflat/cursors/left_ptr
+
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
+
+    # Enable HW access (serial, i2c and spi)
+    sudo raspi-config nonint do_serial 2 # console off, serial on
+    sudo raspi-config nonint do_i2c 0
+    sudo raspi-config nonint do_spi 0
+    sudo raspi-config nonint do_squeekboard S3
+
     echo "# Installing application... (Step 5/6)"
     sudo PYTHONPATH=${SRC_DIR} python3 -m installer --install
     # needs installed app
