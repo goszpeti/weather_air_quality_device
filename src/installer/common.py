@@ -14,7 +14,7 @@ if not USERNAME:
 HOME = Path("/home") / USERNAME
 
 LOCAL_BIN_PATH = HOME / ".local" / "bin"
-INSTALL_TARGET_ROOT = HOME / ".local" / "pipx" / "venvs"
+INSTALL_TARGET_ROOT = HOME / ".local/share/pipx/venvs"
 USER_CONFIG_PATH = HOME / ".waqd"
 AUTOSTART_FILE = HOME / ".config/lxsession/LXDE-pi/autostart"
 

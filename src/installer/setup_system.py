@@ -72,7 +72,8 @@ def customize_splash_screen():
 
 
 def setup_supported_locales():
-    sup_locales = ["en_US.UTF8", "de_DE.UTF8", "hu_HU.UTF8"]
+    sup_locales = ["en_US.UTF-8", "de_DE.UTF-8", "hu_HU.UTF-8"]
+    installed_locales = ""
     # get locales:
     try:
         logging.info("Getting installed languages")
@@ -80,11 +81,12 @@ def setup_supported_locales():
     except Exception as e:
         logging.error(str(e))
         return
-    # TODO check does not work!
+    logging.info("Found languages: " + installed_locales)
     # set not installed locales in /etc/locale.gen
     locale_added = False
     for locale in sup_locales:
         if locale.lower() not in installed_locales.lower():
+            logging.info(locale.lower() + " not in " +  installed_locales.lower())
             os.system('echo "' + locale + ' UTF-8\n" | tee -a /etc/locale.gen')
             locale_added = True
     # generate them, if there is something to add
@@ -127,13 +129,6 @@ def clean_lxde_desktop(
     cp["*"]["show_mounts"] = "0"
     with open(desktop_conf_path, "w") as fd:
         cp.write(fd, space_around_delimiters=False)
-
-
-# TODO
-def customize_wifi_connect(self):
-    # /usr/local/share/wifi-connect/ui/static/media/logo*.png
-    pass
-
 
 def do_setup():
     # System setup
