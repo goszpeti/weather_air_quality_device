@@ -25,7 +25,7 @@ function waqd_install() {
 
     echo "# Install needed system libraries... (Step 1/6)"
     # python dependencies
-    sudo apt-get -y install python3-venv xscreensaver
+    sudo apt-get -y install python3-venv xscreensaver nmcli
     # install pipx for venv based app creation
     python3 -m pip install --user pipx==1.7.1 --break-system-packages
     python3 -m pipx ensurepath

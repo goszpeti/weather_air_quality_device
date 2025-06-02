@@ -42,7 +42,7 @@ dependencies = [
     "Adafruit-CircuitPython-BMP280==3.2.15",     # MIT License - temp/baro sensor
     "Adafruit-Circuitpython-BH1750==1.0.7",      # MIT License - light sensor
     "Adafruit-Circuitpython-ADS1x15==2.2.8",     # MIT License - currently only this ADC is used for analog sensors
-    "MH-Z19==3.1.3", # MIT License
+    "MH-Z19==3.1.3; platform_machine=='aarch64'", # MIT License
     # Web & UI
     "fastapi[standard]==0.115.12",
     "Jinja2==3.1.6",
