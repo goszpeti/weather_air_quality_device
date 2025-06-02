@@ -44,8 +44,6 @@ def hide_mouse_cursor():
 
 
 def enable_hw_access():
-    # TODO need to add dtoverlay=rpi-backlight to /boot/config.txt
-
     # enable non-sudo usage of rpi-backlight
     rules_dir = "/etc/udev/rules.d"
     rules_file = "backlight-permissions.rules"
@@ -66,7 +64,7 @@ def customize_splash_screen():
         src_image = f"{str(installer_root_dir)}/src/waqd/assets/gui_base/loading_screen.png"
         shutil.copy(src_image, "/usr/share/plymouth/themes/pix/splash.png")
         # remove rainbow screen
-        os.system("raspi-config nonint set_config_var disable_splash 1 /boot/config.txt")
+        os.system("raspi-config nonint set_config_var disable_splash 1 /boot/firmware/config.txt")
     except Exception as e:
         logging.error(str(e))
 

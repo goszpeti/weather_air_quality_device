@@ -8,7 +8,7 @@ OR
 sudo systemctl enable ssh
 sudo systemctl start ssh
 
-/boot/config.txt
+/boot/firmware/config.txt
 dtparam=i2c_arm=on
 dtparam=spi=on
 [all]
@@ -41,7 +41,7 @@ to correctly work, if SDO is wired to VDD, otherwise the device ID will be 76 an
     sudo i2cdetect -y 1
 
 ### CCS811
-Slowdown baud rate with sudo nano /boot/config.txt
+Slowdown baud rate with sudo nano /boot/firmware/config.txt
 
     dtparam=i2c_baudrate=10000
 
@@ -101,9 +101,9 @@ open settings and disable screensaver
 ### SplashScreen
 
 Remove Rainbow Screen
-Open “/boot/config.txt” as root.
+Open “/boot/firmware/config.txt” as root.
 
-sudo nano /boot/config.txt
+sudo nano /boot/firmware/config.txt
 Then add below line at the end of the file.
 
 disable_splash=1

@@ -26,9 +26,9 @@ export DOCKER_HOST=unix:///run/user/1000/docker.sock
 ######### HW specific settings
 
 # Setup Waveshare display
-sudo raspi-config nonint set_config_var hdmi_group 2 /boot/config.txt
-sudo raspi-config nonint set_config_var hdmi_mode 87 /boot/config.txt
-sudo raspi-config nonint set_config_var hdmi_cvt "800 480 60 6 0 0 0" /boot/config.txt
+sudo raspi-config nonint set_config_var hdmi_group 2 /boot/firmware/config.txt
+sudo raspi-config nonint set_config_var hdmi_mode 87 /boot/firmware/config.txt
+sudo raspi-config nonint set_config_var hdmi_cvt "800 480 60 6 0 0 0" /boot/firmware/config.txt
 sudo apt-get install xserver-xorg-input-evdev xinput-calibrator
 # can't use 32bit driver setup anymore!
 
