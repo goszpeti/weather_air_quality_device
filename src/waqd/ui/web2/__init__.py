@@ -1,15 +1,18 @@
-from datetime import timedelta
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from datetime import timedelta
+from pathlib import Path
+from time import sleep
 
 import jwt
+
 import waqd
+import waqd.app as base_app
 from waqd.settings import USER_API_KEY, USER_DEFAULT_PW, USER_SESSION_SECRET
+
 from .authentication import create_access_token
 from .templates import base_template
-import waqd.app as base_app
 
 browser_proc = None
 local_server = None
@@ -61,6 +64,7 @@ def create_api_token():
 
 def start_web_ui_chromium_kiosk_mode():
     # Start Chromium in kiosk mode
+    sleep(5) # wait a little bit so the hw is not overwhelmed and loading in shorter 
     global browser_proc
     browser_proc = subprocess.Popen(
         [

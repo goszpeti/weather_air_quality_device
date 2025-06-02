@@ -6,9 +6,9 @@ Sets up cmd arguments, settings and starts the gui
 import sys
 import time
 from typing import TYPE_CHECKING
+from threading import Thread
 
 import waqd
-from waqd import __version__ as WAQD_VERSION
 from waqd.assets.assets import get_asset_file
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
@@ -73,18 +73,21 @@ def main():
     # Load the selected GUI mode
     try:
         comp_ctrl.init_all()
+
         from waqd.ui.web2 import (start_web_server,
-                                  start_web_ui_chromium_kiosk_mode)
+                                start_web_ui_chromium_kiosk_mode)
 
-        runtime_system = RuntimeSystem()
-        if runtime_system.is_target_system and not waqd.HEADLESS_MODE:
-            start_web_ui_chromium_kiosk_mode()
-
-        start_web_server(reload=waqd.DEBUG_LEVEL > 3)
         if settings.get(STARTUP_JINGLE):
             comp_ctrl.components.sound.play(get_asset_file("sounds", "pera__introgui.wav"))
 
-        comp_ctrl._stop_event.wait()
+        runtime_system = RuntimeSystem()
+        if runtime_system.is_target_system and not waqd.HEADLESS_MODE:
+            chrome_browser = Thread(target=start_web_ui_chromium_kiosk_mode, daemon=True)
+            chrome_browser.start()
+        start_web_server(reload=waqd.DEBUG_LEVEL > 3)
+
+        if waqd.HEADLESS_MODE:
+            comp_ctrl._stop_event.wait()
 
     except Exception:
         import traceback
