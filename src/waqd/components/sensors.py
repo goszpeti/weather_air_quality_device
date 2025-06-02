@@ -1089,9 +1089,6 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
         """Cleanup GPIO"""
         if self._disabled:
             return
-        # self._sensor_driver.setmode(self._sensor_driver.BCM)
-        # self._sensor_driver.remove_event_detect(self._pin)
-        # self._sensor_driver.cleanup()
 
     @property
     def motion_detected(self) -> bool:

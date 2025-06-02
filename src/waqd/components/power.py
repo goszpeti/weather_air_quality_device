@@ -1,12 +1,14 @@
 
 import datetime
-from threading import Timer
 import time
+from threading import Timer
 
+from pynput import mouse
+import waqd.app as app
 from waqd.base.component_reg import ComponentRegistry, CyclicComponent
 from waqd.settings import (BRIGHTNESS, DAY_STANDBY_TIMEOUT,
-                                MOTION_SENSOR_ENABLED, NIGHT_MODE_BEGIN,
-                                NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT)
+                           MOTION_SENSOR_ENABLED, NIGHT_MODE_BEGIN,
+                           NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT)
 from waqd.settings.settings import Settings
 
 STANDBY_BRIGHTNESS = 20
@@ -35,6 +37,10 @@ class ESaver(CyclicComponent):
         self._start_update_loop(update_func=self._set_day_night_mode)
         self._ready = True
         self._previous_state = ""
+        self._mouse_listener = mouse.Listener(
+            on_move=ESaver._on_mouse_move,
+        )
+        self._mouse_listener.start()
 
     @property
     def is_awake(self):
@@ -48,12 +54,20 @@ class ESaver(CyclicComponent):
         return self._night_mode_active
     
     def wake_up(self, seconds: float):
+        if self._is_awake:
+            return
+        self._logger.info("Wake up from external device")
         self._is_awake = True
         self._sleep_timer = Timer(seconds, self.sleep)
         self._sleep_timer.start()
 
     def sleep(self):
         self._is_awake = False
+
+    @staticmethod
+    def _on_mouse_move(x, y, injected):
+        # Very ugly workround, because we can't register instance methods
+        app.comp_ctrl.components.energy_saver.wake_up(5)
 
     def _set_day_night_mode(self):
         """ Runs periodically. Does the actual switch between the modes and sets brightness """
@@ -88,7 +102,6 @@ class ESaver(CyclicComponent):
             return
 
         # switch through the different modes
-        previous_night_mode_active = self._night_mode_active
         if self.is_awake:  # wake from motion sensor
             if self.night_mode_active:
                 self._logger.debug("ESaver: Wake-up at night")
