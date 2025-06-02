@@ -63,7 +63,7 @@ def customize_splash_screen():
     os.makedirs("/usr/share/plymouth/themes/pix", exist_ok=True)
     try:
         logging.info("Customizing splash screen")
-        src_image = f"{str(installer_root_dir)}/src/waqd/assets/gui_base/splash_screen.png"
+        src_image = f"{str(installer_root_dir)}/src/waqd/assets/gui_base/loading_screen.png"
         shutil.copy(src_image, "/usr/share/plymouth/themes/pix/splash.png")
         # remove rainbow screen
         os.system("raspi-config nonint set_config_var disable_splash 1 /boot/config.txt")
@@ -102,7 +102,7 @@ def set_wallpaper(install_path: Path):
     lib_paths = (install_path / "lib").iterdir()  # TODO does not work anymore
     for lib_path in lib_paths:
         if "python" in lib_path.name:
-            image = lib_path / "site-packages/waqd/assets/gui_base/pre_loading_screen.png"
+            image = lib_path / "site-packages/waqd/assets/gui_base/pre_loading_screen.jpg"
             try:
                 logging.info("Setting wallpaper..." + f'pcmanfm --set-wallpaper="{str(image)}"')
                 os.system(f'pcmanfm --set-wallpaper="{str(image)}"')

@@ -20,20 +20,21 @@ dependencies = [
     # Backend
     "DebugPy<=2.0.0", # MS VSCode debugger for dynamic debugging
     # 1.48.0
-    "influxdb-client==1.30.0",    # MIT License - influxdb API
+    "influxdb-client==1.49.0",    # MIT License - influxdb API
     "frozendict==2.4.6",          # LGPLv3 - for frozen dicts
     "JsonSchema==4.23.0",         # MIT License - for events json schema validation
-    "Jinja2==3.1.6",
     "pint==0.24.4",               # BSD 3-clause style license - physical units for sensors
     "Python-DateUtil==2.8.2",     # Apache License - for date parse and relative delta
     "APScheduler==3.10.4",        # MIT License - Scheduler for Events function
+    # 2.6.1
     "PyGithub==1.55",             # LGPL - Access to GitHub in AutoUpdater
     "File-Read-Backwards==2.0.0", # MIT License - for performance in DetailView
     # Sound
     "gTTS==2.2.4",           # MIT License -Google TTS for speech
     "Python-VLC==3.0.16120", # LGPLv2+ - use VLC for playing sounds
     # HW
-    "RPi-Backlight==2.4.1",                      # MIT License
+    "gpiozero==2.0.1",
+    "RPi-Backlight==2.6.0",                      # MIT License
     "Adafruit-Blinka==7.1.1",                    # For all other Adafruit drivers
     "Adafruit-CircuitPython-DHT==3.7.1",         # MIT License - temp/hum sensor
     "Adafruit-CircuitPython-CCS811==1.3.4",      # MIT License - co2/tvoc sensor
@@ -44,6 +45,7 @@ dependencies = [
     "MH-Z19==3.1.3", # MIT License
     # Web & UI
     "fastapi[standard]==0.115.12",
+    "Jinja2==3.1.6",
     "PyJWT==2.10.1",
     "passlib >=1.7.4, <2.0.0", # BSD License - password hashing
     "htmlmin==0.1.12",         # BSD License - HTML minifier

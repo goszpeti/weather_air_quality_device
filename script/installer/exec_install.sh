@@ -25,9 +25,7 @@ function waqd_install() {
 
     echo "# Install needed system libraries... (Step 1/6)"
     # python dependencies
-    # sudo apt -y install python3-apt # TODO: if apt via python is used
-    sudo apt-get -y install python3-venv 
-	#  python3-libgpiod python3-pyrsistent python3-pyqt5 python3-pyqt5.qtmultimedia python3-pyqt5.qtsvg python3-pyqt5.qtchart
+    sudo apt-get -y install python3-venv xscreensaver
     # install pipx for venv based app creation
     python3 -m pip install --user pipx==1.7.1 --break-system-packages
     python3 -m pipx ensurepath
@@ -51,6 +49,8 @@ function waqd_install() {
     chmod +x ./setup/setup_firewall.sh
     ./setup/setup_firewall.sh
 
+    # set volume to max
+    amixer sset 'Master' 100%
 
     # Enable HW access (serial, i2c and spi)
     

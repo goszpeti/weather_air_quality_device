@@ -1105,15 +1105,6 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
 
             self._sensor_driver = MotionSensor(self._pin)
             self._sensor_driver.when_activated = self._wake_up_from_sensor
-
-            # import RPi.GPIO as GPIO  # type: ignore
-            # self._sensor_driver = GPIO
-            # self._sensor_driver.cleanup()
-            # self._sensor_driver.setmode(self._sensor_driver.BCM)
-            # self._sensor_driver.setup(self._pin, self._sensor_driver.IN)
-            # self._sensor_driver.add_event_detect(self._pin, self._sensor_driver.RISING,
-            #                                      callback=self._wake_up_from_sensor,
-            #                                      bouncetime=self.BOUNCE_TIME * 1000)
         except Exception as error:
             self._disabled = True
             self._logger.error("MotionDetector: sensor cannot be initialized: %s", str(error))
