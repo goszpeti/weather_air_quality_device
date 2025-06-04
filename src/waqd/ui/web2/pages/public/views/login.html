@@ -1,5 +1,5 @@
 <div class="hero rounded-box min-h-[85vh]"
-  style=" background-image: url(/static/gui_base/aimee-giles-ZcMUiZuOirY-unsplash.avif);">
+  style=" background-image: url(/static/gui_base/pascal-debrunner-UjyUlxr1Yjo-unsplash.avif);">
   <div class="hero-overlay"></div>
   <div class="hero-content flex-col lg:flex-row">
     <div class="text-center lg:text-left glass rounded-box p-4 bg-primary">
@@ -13,12 +13,16 @@
         <fieldset class="fieldset text-2xl">
           <label class="label">Username</label>
           <input type="text" id="username" name="username" autocomplete="username" placeholder="Username"
-            class="input" />
+           class="input js-kioskboard-input" data-kioskboard-specialcharacters="true"
+           data-kioskboard-type="keyboard"
+           />
 
           <label class="label">Password</label>
 
           <div class="flex items-center">
-            <input type="password" id="password" class="input input-bordered flex-grow" autocomplete="password" placeholder="Password">
+            <input type="password" id="password" class="input input-bordered flex-grow js-kioskboard-input"
+            data-kioskboard-specialcharacters="true" data-kioskboard-type="keyboard"
+            autocomplete="password" placeholder="Password">
             <button type="button" class="btn btn-square ml-2" onclick="togglePasswordVisibility('password', 'togglePWVisibilityBtn')">
               <svg id="togglePWVisibilityBtn" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
                 viewBox="0 0 24 24">

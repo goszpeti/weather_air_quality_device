@@ -1,4 +1,3 @@
-
 import datetime
 import time
 from threading import Timer
@@ -6,9 +5,14 @@ from threading import Timer
 from pynput import mouse
 import waqd.app as app
 from waqd.base.component_reg import ComponentRegistry, CyclicComponent
-from waqd.settings import (BRIGHTNESS, DAY_STANDBY_TIMEOUT,
-                           MOTION_SENSOR_ENABLED, NIGHT_MODE_BEGIN,
-                           NIGHT_MODE_END, NIGHT_STANDBY_TIMEOUT)
+from waqd.settings import (
+    BRIGHTNESS,
+    DAY_STANDBY_TIMEOUT,
+    MOTION_SENSOR_ENABLED,
+    NIGHT_MODE_BEGIN,
+    NIGHT_MODE_END,
+    NIGHT_STANDBY_TIMEOUT,
+)
 from waqd.settings.settings import Settings
 
 STANDBY_BRIGHTNESS = 20
@@ -22,6 +26,7 @@ class ESaver(CyclicComponent):
     Energy saver class  to manage the display day/night switch feature and
     wake-up/standby from motion sensor.
     """
+
     # TODO event based wake up and increase updatetime to 60 s
     INIT_WAIT_TIME = 5
     UPDATE_TIME = 2
@@ -44,15 +49,15 @@ class ESaver(CyclicComponent):
 
     @property
     def is_awake(self):
-        """ Display is in awake mode (higher brightness) """
+        """Display is in awake mode (higher brightness)"""
         motion_detected = self._comps.motion_detection_sensor.motion_detected
         return self._is_awake or motion_detected
-    
+
     @property
     def night_mode_active(self):
-        """ Return true, if current time is im the timeframe set up in settings """
+        """Return true, if current time is im the timeframe set up in settings"""
         return self._night_mode_active
-    
+
     def wake_up(self, seconds: float):
         if self._is_awake:
             return
@@ -70,7 +75,7 @@ class ESaver(CyclicComponent):
         app.comp_ctrl.components.energy_saver.wake_up(5)
 
     def _set_day_night_mode(self):
-        """ Runs periodically. Does the actual switch between the modes and sets brightness """
+        """Runs periodically. Does the actual switch between the modes and sets brightness"""
         # get value from motion sensor - if available
         if self._settings.get_bool(MOTION_SENSOR_ENABLED):
             NIGHT_MODE_BRIGHTNESS = 0
@@ -79,22 +84,38 @@ class ESaver(CyclicComponent):
 
         # determine sleep and wake time
         current_date_time = datetime.datetime.now()
-        temp_time = datetime.datetime(current_date_time.year, current_date_time.month,
-                                      current_date_time.day, 0, 0)
+        temp_time = datetime.datetime(
+            current_date_time.year, current_date_time.month, current_date_time.day, 0, 0
+        )
 
-        sleep_time = temp_time + \
-            datetime.timedelta(hours=self._settings.get_int(NIGHT_MODE_BEGIN))
+        sleep_begin_setting = datetime.time.fromisoformat(
+            self._settings.get_string(NIGHT_MODE_BEGIN)
+        )
+        sleep_time = temp_time + datetime.timedelta(
+            hours=sleep_begin_setting.hour, minutes=sleep_begin_setting.minute
+        )
 
-        wake_time = temp_time + \
-            datetime.timedelta(hours=self._settings.get_int(NIGHT_MODE_END))
+        wake_time_setting = datetime.time.fromisoformat(
+            self._settings.get_string(NIGHT_MODE_END)
+        )
+        wake_time = temp_time + datetime.timedelta(
+            hours=wake_time_setting.hour, minutes=wake_time_setting.minute
+        )
 
-        last_minute_today = temp_time + \
-            datetime.timedelta(hours=23, minutes=59, seconds=59)
+        last_minute_today = temp_time + datetime.timedelta(hours=23, minutes=59, seconds=59)
 
         is_before_midnight = current_date_time < last_minute_today
-        if sleep_time.hour > wake_time.hour and current_date_time > sleep_time and is_before_midnight:
+        if (
+            sleep_time.hour > wake_time.hour
+            and current_date_time > sleep_time
+            and is_before_midnight
+        ):
             wake_time = wake_time + datetime.timedelta(days=1)
-        elif sleep_time.hour < wake_time.hour and current_date_time > wake_time and is_before_midnight:
+        elif (
+            sleep_time.hour < wake_time.hour
+            and current_date_time > wake_time
+            and is_before_midnight
+        ):
             sleep_time = sleep_time + datetime.timedelta(days=1)
 
         # last exit point, to not vibrate screenon stop event
@@ -106,7 +127,8 @@ class ESaver(CyclicComponent):
             if self.night_mode_active:
                 self._logger.debug("ESaver: Wake-up at night")
                 self._comps.display.set_brightness(
-                    self._settings.get_int(BRIGHTNESS) - NIGHTMODE_WAKEUP_DELTA_BRIGHTNESS)
+                    self._settings.get_int(BRIGHTNESS) - NIGHTMODE_WAKEUP_DELTA_BRIGHTNESS
+                )
                 time.sleep(self._settings.get_int(NIGHT_STANDBY_TIMEOUT))
             else:
                 self._logger.debug("ESaver: Wake up at day")

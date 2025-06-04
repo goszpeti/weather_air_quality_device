@@ -42,11 +42,14 @@
             <use href="/static/general_icons/search.svg#main" fill="#e3e3e3" />
         </svg>
 
-        <input type="search" hx-trigger="input from:#search_loc_input delay:500ms"
+        <input type="search" placeholder="Search" id="search_loc_input"  
+        class="js-kioskboard-input" data-kioskboard-placement="top"
+        data-kioskboard-specialcharacters="true" data-kioskboard-type="keyboard"
+        hx-get="location_search_result" hx-trigger="input from:#search_loc_input delay:500ms" 
             hx-target="#location_list" hx-encoding="application/x-www-form-urlencoded"
             hx-swap="innerHTML" id="search_loc_input"
             oninput="this.setAttribute('hx-vals', JSON.stringify({query: this.value}))"
-            hx-get="location_search_result" placeholder="Search" id="search_loc_input" />
+             />
     </label>
 
     <div id="location_list"></div>

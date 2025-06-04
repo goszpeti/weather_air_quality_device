@@ -25,9 +25,8 @@
       <div id="{{network.ssid}}_connection_dialog" class="hidden">
           <div class="flex flex-row items-center gap-4 p-2">
             <input id="{{network.ssid}}_pw" type="password" placeholder="Password"
-              class="input input-bordered w-full max-w-xs -mr-2" 
-              onfocus="this.scrollIntoView({behavior: 'smooth', block: 'start'})"
-              oninput="this.scrollIntoView({behavior: 'smooth', block: 'start'})" />
+              class="input input-bordered w-full max-w-xs -mr-2 js-kioskboard-input"
+             data-kioskboard-specialcharacters="true" data-kioskboard-type="keyboard"/>
             <button type="button" class="btn btn-square btn-secondary"
               onclick="togglePasswordVisibility('{{network.ssid}}_pw', '{{network.ssid}}_togglePWVisibilityBtn')">
               <svg id="{{network.ssid}}_togglePWVisibilityBtn" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"

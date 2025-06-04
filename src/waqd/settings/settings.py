@@ -107,8 +107,8 @@ class Settings:
                 FORECAST_BG: "background_s9.jpg",
             },
             self._ENERGY_SECTION_NAME: {
-                NIGHT_MODE_BEGIN: 22,
-                NIGHT_MODE_END: 7,
+                NIGHT_MODE_BEGIN: "22:00",
+                NIGHT_MODE_END: "07:00",
                 BRIGHTNESS: 90,
                 DAY_STANDBY_TIMEOUT: 600,
                 NIGHT_STANDBY_TIMEOUT: 600,
