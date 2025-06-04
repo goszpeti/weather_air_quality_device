@@ -11,7 +11,7 @@
     <button id="Rescan" class="btn btn-secondary ml-4 " hx-get="wifi_list"
       hx-trigger="load, click" hx-target="#wifi_list"
       hx-on::before-request="document.getElementById('wifi_toggle_spinner').classList.remove('hidden')"
-      hx-on::after-request="initKeyboard();document.getElementById('wifi_toggle_spinner').classList.add('hidden')">
+      hx-on::after-request="KioskBoard.run('.js-kioskboard-input');document.getElementById('wifi_toggle_spinner').classList.add('hidden')">
       <svg viewBox="0 0 24 24" class="h-6">
         <use href="/static/general_icons/refresh.svg#main" fill="white" />
       </svg>
