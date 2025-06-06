@@ -32,7 +32,7 @@ dependencies = [
     "gTTS==2.2.4",           # MIT License -Google TTS for speech
     "Python-VLC==3.0.16120", # LGPLv2+ - use VLC for playing sounds
     # HW
-    "pyinput==0.3.2",                             # LGPLv3 License - for mouse input catching (touch input)
+    "pynput==1.8.1", # LGPLv3 License - for mouse input catching (touch input)
     "gpiozero==2.0.1",                            # BSD License (BSD-3-Clause)
     "RPi-Backlight==2.6.0",                       # MIT License
     "Adafruit-Blinka==7.1.1",                     # For all other Adafruit drivers
