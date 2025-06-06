@@ -1213,11 +1213,15 @@ class WAQDRemoteStation(
             Logger().warning(f"Cannot reach {url}: {response.text}")
             return ()
         content: SensorApi_v1 = SensorApi_v1(**response.json())
-        if val := content.temp in ["None", "N/A"]:
+        val = content.temp
+        if val and val not in ["None", "N/A"]:
             self._set_temperature(float(val))
-        if val := content.hum not in ["None", "N/A"]:
+        val = content.hum
+        if val and val not in ["None", "N/A"]:
             self._set_humidity(float(val))
-        if val := content.baro not in ["None", "N/A"]:
+        val = content.baro
+        if val and val not in ["None", "N/A"]:
             self._set_pressure(int(val))
-        if val := content.co2 not in ["None", "N/A"]:
+        val = content.co2
+        if val and val not in ["None", "N/A"]:
             self._set_co2(float(val))
