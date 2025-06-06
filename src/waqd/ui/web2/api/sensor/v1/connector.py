@@ -54,3 +54,13 @@ class SensorRetrieval:
             baro=pres,
             co2=co2,
         )
+    
+class SensorWriter():
+    def __init__(self) -> None:
+        assert base_app.comp_ctrl
+        self._comps = base_app.comp_ctrl.components
+
+    def write_sensor_values(self, value: SensorApi_v1):
+        self._comps.remote_exterior_sensor.read_callback(
+            value.temp, value.hum, value.baro, value.co2
+        )

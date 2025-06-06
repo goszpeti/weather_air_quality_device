@@ -8,37 +8,40 @@ import os
 import sys
 import threading
 import time
-
 from ast import literal_eval
 from statistics import mean
 from subprocess import check_output
-import requests
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
+import board
+import requests
+import RPi.GPIO
+from gpiozero import MotionSensor
 from pint.facets.plain import PlainQuantity as Quantity
+
 from waqd import LOCAL_TIMEZONE
 from waqd.app import unit_reg
 from waqd.base.component import Component, CyclicComponent
 from waqd.base.component_reg import ComponentRegistry
-from waqd.base.file_logger import Logger, SensorFileLogger
 from waqd.base.db_logger import InfluxSensorLogger
+from waqd.base.file_logger import Logger, SensorFileLogger
 from waqd.base.network import Network
 from waqd.settings import (
-    LOCATION_ALTITUDE_M,
     LAST_TEMP_C_OUTSIDE,
+    LOCATION_ALTITUDE_M,
     LOG_SENSOR_DATA,
     MH_Z19_VALUE_OFFSET,
     REMOTE_API_KEY,
     REMOTE_MODE_URL,
     Settings,
 )
+from ..ui.web.api.sensor.v1.model import SensorApi_v1
 
 if TYPE_CHECKING:
-    from waqd.components.server import SensorApi_0_1
-    import adafruit_bmp280
-    from adafruit_bme280.advanced import Adafruit_BME280_I2C
-    import adafruit_ccs811
     import adafruit_bh1750
+    import adafruit_bmp280
+    import adafruit_ccs811
+    from adafruit_bme280.advanced import Adafruit_BME280_I2C
 
 SENSOR_INTERIOR_TYPE = "interior"
 SENSOR_EXTERIOR_TYPE = "exterior"
@@ -687,7 +690,6 @@ class BMP280(TempSensor, BarometricSensor, CyclicComponent):
         """
         # use the old Adafruit driver, the new one is more unstable
         import adafruit_bmp280
-        import board  # pylint: disable=import-outside-toplevel
 
         i2c = board.I2C()  # uses board.SCL and board.SDA
         self._sensor_driver = adafruit_bmp280.Adafruit_BMP280_I2C(i2c, address=0x76)
@@ -745,7 +747,6 @@ class BME280(TempSensor, BarometricSensor, HumiditySensor, CyclicComponent):
         Initialize sensor (simply save the module), no complicated init needed.
         """
         from adafruit_bme280.advanced import Adafruit_BME280_I2C
-        import board  # pylint: disable=import-outside-toplevel
 
         i2c = board.I2C()  # uses board.SCL and board.SDA
         self._sensor_driver = Adafruit_BME280_I2C(i2c, address=0x76)
@@ -882,7 +883,6 @@ class CCS811(CO2Sensor, TvocSensor, CyclicComponent):  # pylint: disable=invalid
         Imports the real driver only on target platform.
         """
         import adafruit_ccs811
-        import board
         import busio  # pylint: disable=import-outside-toplevel
 
         try:
@@ -986,7 +986,6 @@ class BH1750(LightSensor, CyclicComponent):
         Initialize sensor (simply save the module), no complicated init needed.
         """
         import adafruit_bh1750
-        import board
 
         i2c = board.I2C()
         self._sensor_driver = adafruit_bh1750.BH1750(i2c)
@@ -1020,7 +1019,7 @@ class GP2Y1010AU0F(DustSensor, CyclicComponent):
         log_values = bool(settings.get(LOG_SENSOR_DATA))
         DustSensor.__init__(self, log_values)
         CyclicComponent.__init__(self, None, settings)
-        self._gpio: "RPi.GPIO"  # type: ignore
+        self._gpio = RPi.GPIO
         self._sensor_driver = None
         self._start_update_loop(self._init_sensor, self._read_sensor)
 
@@ -1029,11 +1028,8 @@ class GP2Y1010AU0F(DustSensor, CyclicComponent):
         Initialize sensor (simply save the module), no complicated init needed.
         """
         import adafruit_ads1x15.ads1115 as ADS
-        import board  # pylint: disable=import-outside-toplevel
         from adafruit_ads1x15.analog_in import AnalogIn
-        import RPi.GPIO as GPIO  # type: ignore
 
-        self._gpio = GPIO
         self._gpio.setup(self.LED_PIN, self._gpio.OUT)
         i2c = board.I2C()  # uses board.SCL and board.SDA
         # Create the ADC object using the I2C bus
@@ -1064,7 +1060,7 @@ class GP2Y1010AU0F(DustSensor, CyclicComponent):
         dust_ug_m3 = ((dust * 0.172) - 0.0999) * 1000  # from datasheet V->mg/m3
         self._set_dust(dust_ug_m3)
 
-        self._logger.debug(f"GP2Y1010AU0F: Dust={dust_ug_m3}ug/m3")
+        self._logger.debug("GP2Y1010AU0F: Dust=%sug/m3", dust_ug_m3)
 
 
 class SR501(SensorComponent):  # pylint: disable=invalid-name
@@ -1076,7 +1072,8 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
         super().__init__()
         self._pin = pin
         self._motion_detected = 0
-        self._sensor_driver: "RPi.GPIO"  # type: ignore
+
+        self._sensor_driver: MotionSensor
         if pin == 0:
             self._disabled = True
             return
@@ -1098,8 +1095,6 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
     def _register_callback(self):
         """Initializer function, register the wake-up function to the configured pin."""
         try:
-            from gpiozero import MotionSensor
-
             self._sensor_driver = MotionSensor(self._pin)
             self._sensor_driver.when_activated = self._wake_up_from_sensor
         except Exception as error:
@@ -1117,7 +1112,7 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
         self._motion_detected -= 1
 
 
-class WAQDRemoteSensor(TempSensor, HumiditySensor, BarometricSensor):
+class WAQDRemoteSensor(TempSensor, HumiditySensor, BarometricSensor, CO2Sensor):
     """Remote sensor via WAQD HTTP service"""
 
     MEASURE_POINTS = 3
@@ -1149,17 +1144,20 @@ class WAQDRemoteSensor(TempSensor, HumiditySensor, BarometricSensor):
         )
         self._disabled = True  # don't know if connected at startup
 
-    def read_callback(self, temperature=None, humidity=None, pressure=None):
+    def read_callback(self, temperature=None, humidity=None, pressure=None, co2=None):
         """ """
         self._disabled = False
 
         self._set_temperature(temperature)
         self._set_humidity(humidity)
         self._set_pressure(pressure)
+        self._set_co2(co2)
         self._logger.debug(
-            "WAQDExtTempSensor: Temp={0:0.1f}*C Humidity={1:0.1f}%".format(
-                temperature, humidity
-            )
+            "WAQDExtTempSensor: Temp=%0.1f*C Humidity=%0.1f%% Pressure=%s hPa CO2=%s ppm",
+            temperature,
+            humidity,
+            pressure,
+            co2,
         )
 
 
@@ -1219,17 +1217,17 @@ class WAQDRemoteStation(
                 timeout=5,
             )
         except Exception as e:
-            Logger().warning(f"Cannot reach {url}")
+            Logger().warning(f"Cannot reach {url}" + str(e))
             return
         if not response.ok:
             Logger().warning(f"Cannot reach {url}: {response.text}")
             return ()
-        content: "SensorApi_0_1" = response.json()
-        if (val := content.get("temp", "N/A")) not in ["None", "N/A"]:
+        content: SensorApi_v1 = SensorApi_v1(**response.json())
+        if val := content.temp in ["None", "N/A"]:
             self._set_temperature(float(val))
-        if (val := content.get("hum", "N/A")) not in ["None", "N/A"]:
+        if val := content.hum not in ["None", "N/A"]:
             self._set_humidity(float(val))
-        if (val := content.get("baro", "N/A")) not in ["None", "N/A"]:
+        if val := content.baro not in ["None", "N/A"]:
             self._set_pressure(int(val))
-        if (val := content.get("co2", "N/A")) not in ["None", "N/A"]:
+        if val := content.co2 not in ["None", "N/A"]:
             self._set_co2(float(val))

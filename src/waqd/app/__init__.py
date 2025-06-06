@@ -74,7 +74,7 @@ def main():
     try:
         comp_ctrl.init_all()
 
-        from waqd.ui.web2 import (start_web_server,
+        from waqd.ui.web import (start_web_server,
                                 start_web_ui_chromium_kiosk_mode)
 
         if settings.get(STARTUP_JINGLE):

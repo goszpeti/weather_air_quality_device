@@ -70,7 +70,7 @@ class ESaver(CyclicComponent):
         self._is_awake = False
 
     @staticmethod
-    def _on_mouse_move(x, y, injected):
+    def _on_mouse_move(x: int, y: int, injected=None):
         # Very ugly workround, because we can't register instance methods
         app.comp_ctrl.components.energy_saver.wake_up(5)
 

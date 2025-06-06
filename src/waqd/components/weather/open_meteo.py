@@ -12,15 +12,15 @@ import requests
 
 from typing import Dict, List, Optional, Any
 
-from waqd.base.component import Component
 from waqd.base.network import Network
+from . import WeatherProvider
 
 from .base_types import Location, Weather, DailyWeather, WeatherQuality, is_daytime
 
 from .icon_mapping import om_condition_map, om_day_code_to_ico, om_night_code_to_ico
 
 
-class OpenMeteo(Component):
+class OpenMeteo(WeatherProvider):
     API_FORECAST_CMD = "https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}"
     API_GEOCONDING_CMD = "https://geocoding-api.open-meteo.com/v1/search?name={query}&language={lang}"
 

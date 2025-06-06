@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Type, TypeVar, Union
 import waqd
 from waqd.base.component import Component, CyclicComponent
 from waqd.base.file_logger import Logger
+from waqd.components.weather import WeatherProvider
 from waqd.settings import (
     AUTO_UPDATER_ENABLED,
     BME_280_ENABLED,
@@ -53,7 +54,6 @@ if TYPE_CHECKING:
         TempSensor,
         TextToSpeach,
         TvocSensor,
-        Server,
     )
 
 
@@ -92,10 +92,11 @@ class ComponentRegistry:
                     self._settings.set(LOCATION_ALTITUDE_M, cw.altitude)
             if not self.remote_exterior_sensor.is_disabled:
                 import waqd.app as app  # resolve circular imports
-
+                temp = self.remote_exterior_sensor.get_temperature()
+                assert temp
                 self._settings.set(
                     LAST_TEMP_C_OUTSIDE,
-                    self.remote_exterior_sensor.get_temperature().m_as(app.unit_reg.degC),
+                    temp.m_as(app.unit_reg.degC),
                 )
         except Exception as e:
             self._logger.debug("ComponentRegistry: Error while writing last values: " + str(e))
@@ -237,11 +238,10 @@ class ComponentRegistry:
         return self._create_component_instance(ESaver, [self, self._settings])
 
     @property
-    def weather_info(self) -> "OpenWeatherMap":  # TODO interface
+    def weather_info(self) -> WeatherProvider:
         """Access for OnlineWeather singleton"""
         from waqd.components import OpenWeatherMap, OpenMeteo
 
-        location = self._settings.get_string(LOCATION_NAME)
         if waqd.WEATHER_DATA_PROVIDER == waqd.WeatherDataProviders.OpenWeatherMap.value:
             return self._create_component_instance(
                 OpenWeatherMap,
@@ -250,7 +250,7 @@ class ComponentRegistry:
                     self._settings.get(OW_API_KEY),
                 ],
             )
-        elif waqd.WEATHER_DATA_PROVIDER == waqd.WeatherDataProviders.OpenMeteo.value:
+        else: # fallback
             return self._create_component_instance(
                 OpenMeteo,
                 [
@@ -280,7 +280,6 @@ class ComponentRegistry:
 
         sensor = self._get_sensor(sensors.TempSensor)
         if not sensor:
-            dht22_pin = self._settings.get(DHT_22_PIN)
             if self._settings.get_string(REMOTE_MODE_URL):
                 sensor = self._create_component_instance(
                     sensors.WAQDRemoteStation, [self, self._settings]
@@ -289,7 +288,7 @@ class ComponentRegistry:
                 sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
             elif self._settings.get(BMP_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
-            elif dht22_pin != DHT_22_DISABLED:
+            elif dht22_pin := self._settings.get(DHT_22_PIN) != DHT_22_DISABLED:
                 sensor = self._create_component_instance(
                     sensors.DHT22, [dht22_pin, self, self._settings]
                 )
@@ -344,7 +343,7 @@ class ComponentRegistry:
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
             else:  # create a default instance that is disabled
                 sensor = self._create_component_instance(
-                    sensors.BarometricSensor, [False, 1, False]
+                    sensors.WAQDRemoteSensor, [False, 1, False]
                 )
             self._sensors.update({sensors.BarometricSensor.__name__: sensor})
             sensor.select_for_pres_logging()
@@ -422,7 +421,6 @@ class ComponentRegistry:
         """Access for motion_detection_sensor singleton"""
         from waqd.components import sensors
 
-        internal_name = "MotionSensor"
         sensor = self._get_sensor(sensors.SR501)
         if not sensor:
             pin = self._settings.get_int(MOTION_SENSOR_PIN)
@@ -464,11 +462,10 @@ class ComponentRegistry:
             self._sensors.update({WAQDRemoteSensor.__name__: sensor})
         return sensor
 
-    @property
-    def llm(self):
-        from waqd.components.llm import LLM
-
-        return self._create_component_instance(LLM, [self])
+    # @property
+    # def llm(self):
+    #     from waqd.components.llm import LLM
+    #     return self._create_component_instance(LLM, [self])
 
     S = TypeVar("S", bound="SensorComponent")  # can't import SensorComponent directly
 

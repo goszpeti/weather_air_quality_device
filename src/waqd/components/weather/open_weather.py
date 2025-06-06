@@ -1,23 +1,17 @@
-"""
-This file contains classes concerning online weather data.
-Currently OpenWeatherMap is supported.
-An own abstraction class was created to generalize the weather data.
-"""
-
 from datetime import datetime
 import requests
 
 from typing import Dict, List, Optional, Tuple, Any
 
-from waqd.base.component import Component
 from waqd.base.network import Network
+from . import WeatherProvider
 
 from .base_types import Weather, DailyWeather, WeatherQuality, is_daytime, BeaufortScale
 from .open_topo import OpenTopoData
 from .icon_mapping import owm_icon_mapping
 
 
-class OpenWeatherMap(Component):
+class OpenWeatherMap(WeatherProvider):
     """
     Interface to data from OpenWeatherMap, to get Current weather or 5 day forecast data.
     Only needs a free API key.
