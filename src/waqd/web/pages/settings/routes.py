@@ -16,8 +16,8 @@ from waqd.settings import (
     LOCATION_NAME,
     LOCATION_STATE,
 )
-from waqd.ui.web2.authentication import PermissionChecker, User, get_current_user_with_redirect
-from waqd.ui.web2.templates import render_main, sub_template
+from waqd.web.authentication import PermissionChecker, User, get_current_user_with_redirect
+from waqd.web.templates import render_main, sub_template
 
 rt = APIRouter()
 

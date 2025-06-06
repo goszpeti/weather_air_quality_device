@@ -19,9 +19,9 @@ async def get_exterior(request: Request, units: bool = False) -> SensorApi_v1:
     return values
 
 @rt.post("/interior", response_class=JSONResponse)
-async def post_interior(request: Request, values: SensorApi_v1)
+async def post_interior(request: Request, values: SensorApi_v1):
     SensorWriter().write_sensor_values(values)
 
 @rt.post("/exterior", response_class=JSONResponse)
-async def post_exterior(request: Request, values: SensorApi_v1)
+async def post_exterior(request: Request, values: SensorApi_v1):
     SensorWriter().write_sensor_values(values)

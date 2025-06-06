@@ -9,8 +9,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 import waqd
 
 from waqd.base.system import RuntimeSystem
-from waqd.ui.web2.templates import render_main, sub_template
-from waqd.ui.web2.authentication import (
+from waqd.web.templates import render_main, sub_template
+from waqd.web.authentication import (
     ACCESS_TOKEN_EXPIRE_DAYS,
     Token,
     User,

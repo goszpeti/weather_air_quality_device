@@ -4,12 +4,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Form
 from fastapi.responses import HTMLResponse
 from waqd.base.network import Network
-from waqd.ui.web2.authentication import (
+from waqd.web.authentication import (
     User,
     get_current_user_with_exception,
 )
-from waqd.ui.web2.templates import render_main, sub_template
-from ...authentication import PermissionChecker
+from waqd.web.templates import render_main, sub_template
+from waqd.web.authentication import PermissionChecker
 
 rt = APIRouter()
 

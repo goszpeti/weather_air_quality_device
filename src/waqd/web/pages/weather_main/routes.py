@@ -8,16 +8,16 @@ from frozendict import frozendict
 
 import waqd.app as base_app
 from waqd.assets.assets import get_asset_file_relative
-from waqd.ui import get_localized_date
-from waqd.ui.web2.api.sensor.v1.connector import SensorRetrieval
-from waqd.ui.web2.api.weather.v1.connector import WeatherRetrieval
-from waqd.ui.web2.authentication import (
+from waqd.web.helper import get_localized_date
+from waqd.web.api.sensor.v1.connector import SensorRetrieval
+from waqd.web.api.weather.v1.connector import WeatherRetrieval
+from waqd.web.authentication import (
     User,
     get_current_user_with_exception,
     get_current_user_with_redirect,
 )
-from waqd.ui.web2.pages.weather_main.model import ExteriorView, ForecastView
-from waqd.ui.web2.templates import render_main, sub_template
+from waqd.web.pages.weather_main.model import ExteriorView, ForecastView
+from waqd.web.templates import render_main, sub_template
 
 rt = APIRouter()
 

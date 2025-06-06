@@ -5,7 +5,7 @@ from pint.facets.plain import PlainQuantity as Quantity
 
 import waqd.app as base_app
 import waqd.app as app
-from waqd.ui import format_unit_disp_value
+from waqd.web.helper import format_unit_disp_value
 
 from .model import SensorApi_v1, TempHumSensorApi_v1
 
