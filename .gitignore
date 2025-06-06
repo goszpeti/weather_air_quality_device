@@ -29,6 +29,6 @@ user_db.json
 crash.log
 
 template/*
-src/waqd/ui/web2/local/output.css
-src/waqd/ui/web2/local/login_admin.html
-src/waqd/ui/web2/local/Franzo-E4GA.woff
+src/waqd/web/local/output.css
+src/waqd/web/local/login_admin.html
+src/waqd/web/local/Franzo-E4GA.woff

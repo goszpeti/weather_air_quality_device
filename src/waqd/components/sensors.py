@@ -26,16 +26,10 @@ from waqd.base.component_reg import ComponentRegistry
 from waqd.base.db_logger import InfluxSensorLogger
 from waqd.base.file_logger import Logger, SensorFileLogger
 from waqd.base.network import Network
-from waqd.settings import (
-    LAST_TEMP_C_OUTSIDE,
-    LOCATION_ALTITUDE_M,
-    LOG_SENSOR_DATA,
-    MH_Z19_VALUE_OFFSET,
-    REMOTE_API_KEY,
-    REMOTE_MODE_URL,
-    Settings,
-)
-from ..ui.web.api.sensor.v1.model import SensorApi_v1
+from waqd.settings import (LAST_TEMP_C_OUTSIDE, LOCATION_ALTITUDE_M,
+                           LOG_SENSOR_DATA, MH_Z19_VALUE_OFFSET,
+                           REMOTE_API_KEY, REMOTE_MODE_URL, Settings)
+from waqd.web.api.sensor.v1.model import SensorApi_v1
 
 if TYPE_CHECKING:
     import adafruit_bh1750
@@ -607,7 +601,8 @@ class DHT22(TempSensor, HumiditySensor, CyclicComponent):
         """
         Initialize sensor (simply save the module), no complicated init needed.
         """
-        from adafruit_dht import DHT22 as DHT22_drv  # pylint: disable=import-outside-toplevel
+        from adafruit_dht import \
+            DHT22 as DHT22_drv  # pylint: disable=import-outside-toplevel
 
         # driver uses pulseio - only one process can be open
         self._kill_libgpiod()
@@ -1081,11 +1076,6 @@ class SR501(SensorComponent):  # pylint: disable=invalid-name
             name="SR501_Init", target=self._register_callback, daemon=True
         )
         self._init_thread.start()
-
-    def __del__(self):
-        """Cleanup GPIO"""
-        if self._disabled:
-            return
 
     @property
     def motion_detected(self) -> bool:

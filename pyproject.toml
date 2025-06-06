@@ -18,7 +18,6 @@ dependencies = [
     "wheel",     # MIT License - for pep 517 legacy setup.py mode
     "packaging", # Apache Software License, BSD License
     # Backend
-    "DebugPy<2.0.0", # MS VSCode debugger for dynamic debugging
     "influxdb-client==1.49.0", # MIT License - influxdb API
     "frozendict==2.4.6",       # LGPLv3 - for frozen dicts
     "JsonSchema==4.23.0",      # MIT License - for events json schema validation
@@ -51,8 +50,6 @@ dependencies = [
     "htmlmin==0.1.12",             # BSD License - HTML minifier
     "bcrypt>=4.0.0, <5.0.0",       # Apache License, Version 2.0 - Password hashing
     "nmcli==1.5.0",                # MIT License
-    # Deprecated
-    "bottle",
 ]
 
 readme = "README.md"
@@ -97,6 +94,7 @@ dev = [
     "rope",          # refactoring
     "debugpy",       # Qt thread debugging
     "pytailwindcss", # for tailwindcss support
+    "DebugPy<2.0.0", # MS VSCode debugger for dynamic debugging
 ]
 test = [
     "pytest==8.3.3",

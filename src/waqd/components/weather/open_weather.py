@@ -1,14 +1,14 @@
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
+
 import requests
 
-from typing import Dict, List, Optional, Tuple, Any
-
 from waqd.base.network import Network
-from . import WeatherProvider
 
-from .base_types import Weather, DailyWeather, WeatherQuality, is_daytime, BeaufortScale
-from .open_topo import OpenTopoData
+from .base_types import (BeaufortScale, DailyWeather, Weather, WeatherProvider,
+                         WeatherQuality, is_daytime)
 from .icon_mapping import owm_icon_mapping
+from .open_topo import OpenTopoData
 
 
 class OpenWeatherMap(WeatherProvider):

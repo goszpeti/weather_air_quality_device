@@ -3,14 +3,16 @@
 This file contains generic classes concerning online weather data.
 """
 
-from datetime import datetime, time
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from datetime import datetime, time
 from enum import Enum
 from pathlib import Path
-from typing import List
+
 from pydantic import BaseModel
 
 from waqd.assets import get_asset_file
+from waqd.base.component import Component
 
 
 def is_daytime(sunrise, sunset, date_time=None):
@@ -141,3 +143,12 @@ class WeatherQuality(Enum):
     CLOUDS = 13
     CLEAR = 14
 
+
+class WeatherProvider(ABC, Component):
+    @abstractmethod
+    def get_current_weather(self) -> Weather | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_5_day_forecast(self) -> list[DailyWeather]:
+        raise NotImplementedError

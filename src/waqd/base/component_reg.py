@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Type, TypeVar, Union
 import waqd
 from waqd.base.component import Component, CyclicComponent
 from waqd.base.file_logger import Logger
-from waqd.components.weather import WeatherProvider
 from waqd.settings import (
     AUTO_UPDATER_ENABLED,
     BME_280_ENABLED,
@@ -47,15 +46,14 @@ if TYPE_CHECKING:
         HumiditySensor,
         LightSensor,
         OnlineUpdater,
-        OpenWeatherMap,
         WAQDRemoteSensor,
         SensorComponent,
         SoundInterface,
         TempSensor,
         TextToSpeach,
         TvocSensor,
+        WeatherProvider
     )
-
 
 class ComponentRegistry:
     """
@@ -238,7 +236,7 @@ class ComponentRegistry:
         return self._create_component_instance(ESaver, [self, self._settings])
 
     @property
-    def weather_info(self) -> WeatherProvider:
+    def weather_info(self) -> "WeatherProvider":
         """Access for OnlineWeather singleton"""
         from waqd.components import OpenWeatherMap, OpenMeteo
 

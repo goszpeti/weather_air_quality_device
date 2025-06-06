@@ -31,7 +31,7 @@ def start_web_server(reload=False):
     else:
         hostname = "0.0.0.0"
     uvicorn.run(
-        "waqd.ui.web2.main:web_app",
+        "waqd.web.main:web_app",
         host=hostname,
         port=80,
         reload=reload,

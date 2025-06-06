@@ -7,17 +7,17 @@ An own abstraction class was created to generalize the weather data.
 
 
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 from urllib.parse import quote
+
 import requests
 
-from typing import Dict, List, Optional, Any
-
 from waqd.base.network import Network
-from . import WeatherProvider
 
-from .base_types import Location, Weather, DailyWeather, WeatherQuality, is_daytime
-
-from .icon_mapping import om_condition_map, om_day_code_to_ico, om_night_code_to_ico
+from .base_types import (DailyWeather, Location, Weather, WeatherProvider,
+                         WeatherQuality, is_daytime)
+from .icon_mapping import (om_condition_map, om_day_code_to_ico,
+                           om_night_code_to_ico)
 
 
 class OpenMeteo(WeatherProvider):
