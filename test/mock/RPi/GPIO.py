@@ -3,6 +3,7 @@ EVENT = False
 BCM = 1
 IN = 2
 RISING = 3
+OUT = 4
 
 def cleanup():
     pass

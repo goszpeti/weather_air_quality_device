@@ -16,18 +16,18 @@ native desktop mode in a new merged Web Ui. The device will start the ui in a ki
 
 ## Features
 
-# <img src="./doc/images/main_gui.jpg" width="600">
+# <img src="./doc/images/main_gui.png" width="600">
 
 * Info pane witch clock and date
 * Interior with sensor display
 * Exterior with online or remote sensor temperature
 * 3 day forecast
 
-# <img src="./doc/images/options.jpg" width="600">
+# <img src="./doc/images/options.png" width="600">
 
 * Options for
+  * location
   * display settings
-  * scaling
   * language
   * online weather settings
 
@@ -36,12 +36,12 @@ native desktop mode in a new merged Web Ui. The device will start the ui in a ki
 
 ### Raspberry Pi
 
-* theoretically all versions, but a model 2 was never tested
-* model 1 runs also, but is very slow
+* All versions supporting ARMv7 64bit
 
 ### Case
 
 #### SmartiPi Touch 2
+
 * recommended because of cable management and supports all RPi Versions up to RPi4.
 
 # <img src="./doc/images/waqd_station.jpg" width="300">
@@ -83,7 +83,7 @@ Sound:
 
 ## Development - First Steps
 
-A Python installation of min. 3.7 is needed.
+A Python installation of min. 3.11 is needed.
 For an easy to use integration, it is suggested to set the Python installation on the system path.
 This project is is set up to be used with Microsoft VsCode as an IDE.
 To set a minimal working environment, the following steps are necessary:
@@ -96,9 +96,6 @@ There are two launch configurations: local start for windows and attach to remot
 The tasks are created to deploy the source files on the Raspberry.
 
 To use Text-To-Speech in Windows, VLC needs to be on the PATH.
-To edit and compile the GUI get a maximum Qt 5.11 editor (e.g. https://build-system.fman.io/qt-designer-download), otherwise it breaks the format.
-It is practical to set it onto the path.
-PyQt5-tools could also work, but only from 5.12 onwards in the future.
 
 Use virtualenv:
 
@@ -155,15 +152,13 @@ https://github.com/dfeneyrou/palanteer/releases
 
 * For all natively installed Python libs see setup.py
 * pipx from PyPi [MIT License](<http://opensource.org/licenses/mit-license.php>)
-* Python packages installed via system package manager
-  * python3-libgpiod
-  * python3-venv
+* pdm package manager
 
 ## Needed Operating System and builtin dependencies
 
 * Raspberry Pi OS - 64 bit (Bookworm)
   * APT
-  * LightDM desktop manager
+  * LightDM desktop manager (using X11)
   * XFCE desktop environment with pcmanfm
   * Plymouth for boot screen customization
   * raspi-config
@@ -175,6 +170,8 @@ https://github.com/dfeneyrou/palanteer/releases
     * wmctrl
     * xscreensaver
     * unattended-upgrades
+
+
 ## Author:
 
 Copyright (c) 2022 Péter Gosztolya and contributors.

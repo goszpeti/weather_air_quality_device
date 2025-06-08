@@ -1,7 +1,6 @@
 import os
 import tarfile
 import platform
-from docker.client import DockerClient
 import pytest
 import waqd
 from waqd import __version__ as VERSION
@@ -17,6 +16,7 @@ WAQD_IMAGE = "goszpeti/waqd:latest"
 
 def test_install_in_docker_without_gui(base_fixture):
     """ Start an installation with the installer running without the updater ui. """
+    from docker.client import DockerClient
     client = DockerClient()
 
     docker_base_cmd = f"docker build {str(base_fixture.base_path)} -t {WAQD_IMAGE} -f ./test/testdata/auto_updater/dockerfile_install"

@@ -26,11 +26,11 @@ if TYPE_CHECKING:
 Logger(output_path=waqd.user_config_dir)  # singleton, no assigment needed
 
 # singleton with access to all backend components
-comp_ctrl: "ComponentController"
+comp_ctrl: "ComponentController" = None
 # for global access to units
-unit_reg: "UnitRegistry"
+unit_reg: "UnitRegistry" = None
 # for global access to settings
-settings: "Settings"
+settings: "Settings" = None
 
 
 def basic_setup():

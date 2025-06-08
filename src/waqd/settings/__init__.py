@@ -57,7 +57,6 @@ LOCATION_STATE = "location_state"  # e.g. state, province, region
 LOCATION_COUNTRY_CODE = "location_country_code"
 
 OW_API_KEY = "open_weather_api_key"
-AW_API_KEY = "accu_weather_api_key"
 
 # import at the end, to avoid circular imports
 from waqd.settings.settings import Settings

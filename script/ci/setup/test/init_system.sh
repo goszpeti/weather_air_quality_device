@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Updated to Raspi Bullseye ARM64
+# Updated to Raspi Bookworm aarch64
 # use global noninteractive mode, no -y flags needed
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 

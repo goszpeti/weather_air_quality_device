@@ -219,7 +219,7 @@ class ComponentRegistry:
     @property
     def sound(self) -> "SoundInterface":
         """Access for Sound singleton"""
-        from waqd.components import SoundQt, SoundVLC
+        from waqd.components import SoundVLC
 
         sound_impl = SoundVLC
         if platform.system() == "Linux":

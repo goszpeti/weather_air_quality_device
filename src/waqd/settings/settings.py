@@ -15,7 +15,6 @@ from waqd.settings import (
     LOCATION_COUNTRY_CODE,
     LOCATION_STATE,
     MH_Z19_ENABLED,
-    AW_API_KEY,
     EVENTS_ENABLED,
     BRIGHTNESS,
     DAY_STANDBY_TIMEOUT,
@@ -120,8 +119,6 @@ class Settings:
                 LOCATION_LONGITUDE: 0.0,
                 LOCATION_ALTITUDE_M: 400.0,
                 LOCATION_STATE: "",
-                OW_API_KEY: "",
-                AW_API_KEY: "",
             },
             self._REMOTE_SECTION_NAME: {
                 REMOTE_MODE_URL: "",
@@ -142,7 +139,7 @@ class Settings:
                 USER_SESSION_SECRET: secrets.token_hex(32),
                 USER_API_KEY: "",
                 USER_DEFAULT_PW: secrets.token_hex(32),
-            },
+                OW_API_KEY: "",},
         }
 
         self._read_ini()
