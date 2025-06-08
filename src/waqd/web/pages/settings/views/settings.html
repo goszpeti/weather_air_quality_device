@@ -1,0 +1,43 @@
+<!-- name of each tab group should be unique -->
+
+<div class="tabs tabs-lift">
+  <label class="tab text-3xl">
+    <input type="radio" name="my_tabs" checked="checked" />
+    General
+  </label>
+  <div class="tab-content bg-base-200 border-base-300 p-1">
+    {% include "components/general.html" %}
+  </div>
+
+  <label class="tab text-3xl">
+    <input type="radio" name="my_tabs" />
+    Display
+  </label>
+  <div class="tab-content bg-base-200 border-base-300 p-1">
+    {% include "components/display.html" %}
+  </div>
+
+  <label class="tab text-3xl">
+    <input type="radio" name="my_tabs" />
+    Hardware
+  </label>
+  <div class="tab-content bg-base-200 border-base-300 p-1">
+    {% include "components/hardware.html" %}
+  </div>
+
+  <label class="tab text-3xl">
+    <input type="radio" name="my_tabs" />
+    Theming
+  </label>
+  <div class="tab-content bg-base-200 border-base-300 p-1">
+    {% include "components/theming.html" %}
+  </div>
+
+  <label class="tab text-3xl">
+    <input type="radio" name="my_tabs" />
+    Updates
+  </label>
+  <div class="tab-content bg-base-200 border-base-300 p-1">
+    {% include "components/updates.html" %}
+  </div>
+</div>

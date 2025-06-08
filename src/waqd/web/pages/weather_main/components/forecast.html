@@ -1,0 +1,39 @@
+
+<template id="Forecast-template">
+    {% for i in [0,1,2] %}
+    <div class="stat md:p-2">
+        <div class="stat-title pt-2 pl-2 tracking-wide">
+            {% raw %}{{{% endraw %} day_{{ i+1 }}_label {% raw %}}}{% endraw %}
+        </div>
+
+        <div class="stat-value -mb-2">
+            <div class="grid grid-cols-[40%_20%_40%] grid-rows-2 items-stretch">
+                <div class="row-span-2">
+                    <svg viewBox="0 0 24 24" class="-mb-1 h-20" hx-get="forecast/{{ i+1 }}" hx-trigger="click"
+                        hx-target="#modal" hx-swap="innerHTML" onclick="modal.showModal()">
+                        <use href="/static/{% raw %}{{{% endraw %}day_{{ i+1 }}_weather_icon{% raw %}}}{% endraw %}#Layer_1"
+                            fill="white" />
+                    </svg>
+                </div>
+                <div class="col-start-2 row-start-1 flex items-center">
+                    <svg viewBox="0 0 24 24" class="-m-1 h-12">
+                        <use href="/static/weather_icons/wi-day-sunny.svg#Layer_1" fill="white" />
+                    </svg>
+                </div>
+                <div class="col-start-3 row-start-1 text-2xl ml-2 flex items-center text-white">{% raw %}{{{% endraw
+                    %}day_{{ i+1 }}_weather_day_min_max{% raw %}}}{% endraw %}
+                </div>
+                <div class="col-start-2 row-start-2 flex items-center">
+                    <svg viewBox="0 0 24 24" class="-m-1 h-12">
+                        <use href="/static/weather_icons/wi-night-clear.svg#Layer_1" fill="white" />
+                    </svg>
+                </div>
+                <div class="col-start-3 row-start-2 text-2xl ml-2 flex items-center  text-white">{% raw %}{{{% endraw
+                    %}day_{{ i+1 }}_weather_night_min_max{% raw %}}}{% endraw %}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</template>
+
+<dialog id="modal" class="modal"></dialog>

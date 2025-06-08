@@ -1,27 +1,9 @@
-#
-# Copyright (c) 2019-2021 Péter Gosztolya & Contributors.
-#
-# This file is part of WAQD
-# (see https://github.com/goszpeti/WeatherAirQualityDevice).
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
+
 # 
 from waqd.base.component import CyclicComponent
 
 import os
-from distutils.version import StrictVersion as Version
+from packaging.version import Version
 from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING
@@ -44,7 +26,7 @@ class OnlineUpdater(CyclicComponent):
     If a newer version is detected, it downloads it and calls "script/installer/start_installer.sh"
     This entry point should not be changed!
     """
-    UPDATE_TIME = 600  # 10 minutes in seconds
+    UPDATE_TIME = 6000  # 100 minutes in seconds
     INIT_WAIT_TIME = 20  # don't start updating until the station is ready
     STOP_TIMEOUT = 2  # override because of long update time
 
@@ -119,21 +101,24 @@ class OnlineUpdater(CyclicComponent):
         # only check, that the main version is not lower
         if latest_version <= current_version:
             # alpha and beta release handling
-            if latest_version.prerelease:
+            if latest_version.is_prerelease:
                 # alpha - only with debug mode on - switch is possible from b3 to a4
-                if latest_version.prerelease[0] == "a" and waqd.DEBUG_LEVEL > 0 \
-                        and self._use_beta_channel and current_version.prerelease:
-                    if latest_version.prerelease[1] > current_version.prerelease[1]:
+                if (
+                    waqd.DEBUG_LEVEL > 0
+                    and self._use_beta_channel
+                    and latest_version.pre[0] == "a"
+                ):
+                    if latest_version.pre[1] > current_version.pre[1]:
                         return True
             else:
-                if latest_version.version <= current_version.version:
+                if latest_version <= current_version:
                     self._logger.debug("Updater: No new update found.")
                     return False
 
             self._logger.debug("Updater: No new update found.")
             return False
 
-        if latest_version.prerelease:
+        if latest_version.is_prerelease:
             if not self._use_beta_channel:
                 self._logger.info("Updater: Skip newer pre-release %s", latest_version)
                 return False

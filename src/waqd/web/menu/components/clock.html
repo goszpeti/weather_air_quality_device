@@ -1,0 +1,17 @@
+<span id="clock" title="Time" class="p-2 text-2xl">
+  <script> // clock
+    function updateClock(clock) {
+      const lang = navigator.language || navigator.languages[0];
+      clock.innerHTML = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' });
+      clock.title = new Date().toLocaleDateString();
+    }
+    window.onload = (function () {
+      setInterval(function () {
+        var clockElement = document.getElementById("clock");
+        updateClock(clockElement);
+      }, 10000);
+    }());
+    var clockElement = document.getElementById("clock");
+    updateClock(clockElement);
+  </script>
+</span>

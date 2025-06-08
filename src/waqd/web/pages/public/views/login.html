@@ -1,0 +1,91 @@
+<div class="hero rounded-box min-h-[85vh]"
+  style=" background-image: url(/static/gui_base/pascal-debrunner-UjyUlxr1Yjo-unsplash.avif);">
+  <div class="hero-overlay"></div>
+  <div class="hero-content flex-col lg:flex-row">
+    <div class="text-center lg:text-left glass rounded-box p-4 bg-primary">
+      <h1 class="text-5xl font-bold">Login now!</h1>
+      <p class="py-6 text-lg">
+        WAQD web access for remote login to monitor all your data.
+      </p>
+    </div>
+    <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+      <div class="card-body">
+        <fieldset class="fieldset text-2xl">
+          <label class="label">Username</label>
+          <input type="text" id="username" name="username" autocomplete="username" placeholder="Username"
+           class="input js-kioskboard-input" data-kioskboard-specialcharacters="true"
+           data-kioskboard-type="keyboard"
+           />
+
+          <label class="label">Password</label>
+
+          <div class="flex items-center">
+            <input type="password" id="password" class="input input-bordered flex-grow js-kioskboard-input"
+            data-kioskboard-specialcharacters="true" data-kioskboard-type="keyboard"
+            autocomplete="password" placeholder="Password">
+            <button type="button" class="btn btn-square ml-2" onclick="togglePasswordVisibility('password', 'togglePWVisibilityBtn')">
+              <svg id="togglePWVisibilityBtn" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
+                viewBox="0 0 24 24">
+                <use href="/static/general_icons/visibility.svg#main" fill="white" />
+              </svg>
+            </button>
+          </div>
+          <!-- <div><a class="link link-hover">Forgot password?</a></div> -->
+          <button class="btn btn-primary mt-4 text-lg" onclick="login()">
+            Login
+            <span id="loading" class="hidden loading loading-spinner loading-md ml-4"></span>
+          </button>
+          <script>
+            function login() {
+              document.getElementById("loading").classList.remove('hidden');
+
+              const username = document.getElementById('username').value;
+              const password = document.getElementById('password').value;
+
+              fetch('/public/token', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                  grant_type: 'password',
+                  username: username,
+                  password: password
+                })
+              })
+                .then(response => {
+                  if (!response.ok) { // show error toast
+                    const toastsContainer = document.getElementById('toasts');
+                    const id = toastsContainer.children.length;
+                    const toastTemplate = fetch('toast/login_failed?id=' + id.toString()).then(response => {
+                      if (response.ok) {
+                        return response.text().then(html => {
+                          const tempDiv = document.createElement('div');
+                          tempDiv.innerHTML = html;
+                          toastsContainer.appendChild(tempDiv)
+                        });
+                      }
+                    })
+                    throw new Error('Login failed! Wrong username or password.');
+                  }
+
+                  return response.json();
+                })
+                .then(data => {
+                  console.log('Success:', data);
+                  window.location.href = '/weather';
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                })
+                .finally(() => {
+                  document.getElementById("loading").classList.add('hidden');
+                });
+            }
+          </script>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

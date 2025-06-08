@@ -5,23 +5,11 @@
         }
     ],
     "settings": {
-        "pyqt-integration.pyuic.compile.filepath": "${ui_name}_ui.py",
-        "python.formatting.provider": "autopep8",
-        "python.formatting.autopep8Args": [
-            "--max-line-length=110"
-        ],
         "editor.formatOnPaste": true,
         "git.autofetch": true,
-        "python.linting.enabled": false,
-        "python.linting.pylintEnabled": true,
-        "python.linting.mypyEnabled": true,
         "python.analysis.typeCheckingMode": "basic",
-        "python.linting.lintOnSave": true,
-        "python.linting.pylintCategorySeverity.refactor": "Information",
         "python.terminal.activateEnvironment": true,
         "python.testing.pytestEnabled": true,
-        "coverage-gutters.showLineCoverage": true,
-        "coverage-gutters.showRulerCoverage": true,
         "python.testing.pytestArgs": [
             "-v",
             "--cov-report=xml:cov.xml",
@@ -34,8 +22,6 @@
             "--no-cov", // no coverage while debugging
             "./test/"
         ],
-        "python.venvPath": "${workspaceFolder}/.venv",
-        "python.pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe",
         //"${workspaceFolder}/.venv/Scripts/python.exe", // "${workspaceFolder}/.venv/bin/python3"
         "git.ignoreLimitWarning": true,
         "python.analysis.stubPath": "test/mock",
@@ -47,6 +33,10 @@
         "python.analysis.extraPaths": [
             "${workspaceFolder}/src"
         ],
+        "html.format.wrapLineLength": 100,
+        "editor.quickSuggestions": {
+            "strings": "on"
+        }
     },
     "launch": {
         "configurations": [
@@ -54,9 +44,9 @@
                 "name": "Main",
                 "type": "python",
                 "request": "launch",
-                "program": "${workspaceFolder}/src/waqd/__main__.py",
+                "module": "waqd",
                 "args": [
-                    "-D=1",
+                    "-D=2",
                     // "-H"
                 ],
                 "console": "integratedTerminal",
@@ -80,18 +70,18 @@
                 "pathMappings": [
                     {
                         "localRoot": "${workspaceFolder}/src/waqd",
-                        "remoteRoot": "/home/pi/.local/pipx/venvs/waqd-1-6-0b4/lib64/python3.9/site-packages/waqd/"
+                        "remoteRoot": "/home/peter/WeatherAirQualityDevice/src/waqd"
                     }
                 ],
                 "port": 3003,
-                "host": "mypi",
+                "host": "waqd-01",
                 "justMyCode": false
             },
             {
                 "name": "Python: Testing",
                 "type": "python",
                 "request": "test",
-                "console": "integratedTerminal",
+                // "console": "integratedTerminal",
                 "subProcess": true,
                 "justMyCode": false,
                 "python": "${command:python.interpreterPath}",

@@ -1,22 +1,4 @@
-#
-# Copyright (c) 2019-2021 Péter Gosztolya & Contributors.
-#
-# This file is part of WAQD
-# (see https://github.com/goszpeti/WeatherAirQualityDevice).
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
+
 
 from abc import ABC, abstractmethod
 from os import PathLike
@@ -63,7 +45,8 @@ class SoundVLC(SoundInterface):
         try:
             # import needs libs and can can crash appplication
             import vlc  # pylint: disable=import-outside-toplevel
-            player: vlc.MediaPlayer = vlc.MediaPlayer(str(audio_file))
+            player: vlc.MediaPlayer = vlc.MediaPlayer(str(audio_file)) # type: ignore
+            assert player is not None
             vlc.libvlc_audio_set_volume(player, 120)  # make it louder for passive loudspeake
             if self._comps and self._comps.energy_saver.night_mode_active:  # lower volume at night
                 player.audio_set_volume(50)
@@ -94,7 +77,10 @@ class SoundQt(SoundInterface):
     def _on_player_status_changed(self, id):
         Logger().debug(f"Media: {id}")
         # release lock, to play the next file
-        if id == self._player.EndOfMedia or id == self._player.InvalidMedia:
+        if (
+            id == self._player.MediaStatus.EndOfMedia
+            or id == self._player.MediaStatus.InvalidMedia
+        ):
             if self.lock.locked():
                 self.lock.release()
 

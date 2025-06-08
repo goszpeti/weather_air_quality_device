@@ -10,11 +10,11 @@ waqd.DEBUG_LEVEL = 1
 import waqd.base.file_logger
 import waqd.base.system
 import waqd.base.network
-from PyQt5 import QtCore, QtWidgets
+# from PyQt5 import QtCore, QtWidgets
 import waqd
 
-# enable scaling
-QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+# # enable scaling
+# QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
 
 def is_ci_job():

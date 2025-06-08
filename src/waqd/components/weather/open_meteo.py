@@ -1,42 +1,26 @@
-#
-# Copyright (c) 2019-2021 Péter Gosztolya & Contributors.
-#
-# This file is part of WAQD
-# (see https://github.com/goszpeti/WeatherAirQualityDevice).
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
+
 """
 This file contains classes concerning online weather data.
 Currently OpenWeatherMap is supported.
 An own abstraction class was created to generalize the weather data.
 """
 
+
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+from urllib.parse import quote
+
 import requests
 
-from typing import Dict, List, Optional, Any
-
-from waqd.base.component import Component
 from waqd.base.network import Network
 
-from .base_types import Location, Weather, DailyWeather, WeatherQuality, is_daytime
+from .base_types import (DailyWeather, Location, Weather, WeatherProvider,
+                         WeatherQuality, is_daytime)
+from .icon_mapping import (om_condition_map, om_day_code_to_ico,
+                           om_night_code_to_ico)
 
-from .icon_mapping import om_condition_map, om_day_code_to_ico, om_night_code_to_ico
 
-
-class OpenMeteo(Component):
+class OpenMeteo(WeatherProvider):
     API_FORECAST_CMD = "https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}"
     API_GEOCONDING_CMD = "https://geocoding-api.open-meteo.com/v1/search?name={query}&language={lang}"
 
@@ -51,20 +35,19 @@ class OpenMeteo(Component):
         self.nighttime_forecast_point: List[List[Weather]] = []
 
     def find_location_candidates(self, query: str, lang="en") -> List[Location]:
-        """ TODO currently unused """
-        data = self._call_api(self.API_GEOCONDING_CMD, query=query, lang=lang)
+        data = self._call_api(self.API_GEOCONDING_CMD, query=quote(query), lang=lang)
         locations = []
         for result in data.get("results", []):
             locations.append(
                 Location(
-                    result.get("name", ""),
-                    result.get("country", ""),
-                    result.get("admin1", ""),
-                    result.get("admin2", ""),
-                    result.get("postcodes", []),
-                    result.get("elevation", 0),
-                    result.get("latitude", 0),
-                    result.get("longitude", 0),
+                    name=result.get("name", ""),
+                    country=result.get("country", ""),
+                    country_code=result.get("country_code", ""),
+                    state=result.get("admin1", ""),
+                    county=result.get("admin2", ""),
+                    altitude=result.get("elevation", 0),
+                    latitude=result.get("latitude", 0),
+                    longitude=result.get("longitude", 0),
                 ))
         return locations
 

@@ -1,0 +1,67 @@
+/* tailwindcss -i src\waqd\assets\css\custom_theme.css -o src\waqd\assets\css\output.css */
+html {
+  background: no-repeat linear-gradient(180deg, oklch(0.24 0.1403 286.92) 0%,
+      oklch(0.42 0.2119 286.68) 100%);
+}
+
+@import "tailwindcss" source(none);
+@source "../../**/*.{html}";
+@source "../../**/templates.py";
+
+@plugin "./daisyui.js" {
+  themes: light --default, dark --prefersdark;
+  root: ":root";
+
+}
+
+@plugin "./daisyui-theme.js" {
+  name: "mytheme";
+  color-scheme: "dark";
+  font-family: MyFranzo;
+  --color-base-100: oklch(0.17 0.0718 295.71);
+  --color-base-200: oklch(0.24 0.1403 286.92);
+  --color-base-300: oklch(0.42 0.2119 286.68);
+  --color-base-content: oklch(100% 0 0);
+  --color-primary: oklch(0.4 0.2099 294.94);
+  --color-primary-content: oklch(96% 0 0);
+  --color-secondary: oklch(0.42 0.2119 286.68);
+  --color-secondary-content: oklch(96% 0 0);
+  --color-accent: oklch(0.6 0.0718 295.71);
+  --color-accent-content: oklch(18.685% 0.02 94.555);
+  --color-neutral: oklch(50% 0 0);
+  --color-neutral-content: oklch(96% 0 0);
+  --color-info: oklch(0.17 0.0718 295.71);
+  --color-info-content: oklch(96% 0 0);
+  --color-success: oklch(62.705% 0.169 149.213);
+  --color-success-content: oklch(12.541% 0.033 149.213);
+  --color-warning: oklch(66.584% 0.157 58.318);
+  --color-warning-content: oklch(27% 0.077 45.635);
+  --color-error: oklch(73.95% 0.19 27.33);
+  --color-error-content: oklch(14.79% 0.038 27.33);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+  --glass-blur: 1px;
+  --glass-text-shadow-opacity: 0.5;
+}
+
+@layer utilities {
+
+  .stat {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .stat-title {
+    font-size: 1.5rem;
+
+    @supports (color: color-mix(in lab, red, red)) {
+      color: color-mix(in oklab, var(--color-base-content) 90%, transparent);
+    }
+  }
+}

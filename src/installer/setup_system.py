@@ -3,36 +3,23 @@
 
 import logging
 import os
-import sys
-from distutils.file_util import copy_file
+import shutil
 from pathlib import Path
 from configparser import ConfigParser, DuplicateSectionError
 from subprocess import check_output
 
-from installer.common import (HOME, USER_CONFIG_PATH, add_line_to_file, assure_file_exists, installer_root_dir,
-                              add_to_autostart, remove_from_autostart, remove_line_in_file, set_write_permissions, setup_logger)
-
-
-def enable_hw_access():
-    # TODO need to add dtoverlay=rpi-backlight to /boot/config.txt
-
-    # enable non-sudo usage of rpi-backlight
-    rules_dir = "/etc/udev/rules.d"
-    rules_file = "backlight-permissions.rules"
-    rules_path = Path(rules_dir) / rules_file
-    assure_file_exists(rules_path, chown=False)
-    enable_text = 'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness' \
-        ' /sys/class/backlight/%k/bl_power"'
-    add_line_to_file([enable_text], rules_path, unique=True)
-
-    # enable all needed hw accesses
-    logging.info("Enable HW access (serial, i2c and spi)")
-    os.system("raspi-config nonint do_serial 2")  # console off, serial on
-    os.system("raspi-config nonint do_i2c 0")
-    os.system("raspi-config nonint do_spi 0")
-    # Allow port 80 to be accessed as non sudo
-    os.system(f"setcap 'cap_net_bind_service=+ep' /usr/bin/python3.{str(sys.version_info.minor)}")
-
+from installer.common import (
+    HOME,
+    USER_CONFIG_PATH,
+    add_line_to_file,
+    assure_file_exists,
+    installer_root_dir,
+    add_to_autostart,
+    remove_from_autostart,
+    remove_line_in_file,
+    set_write_permissions,
+    setup_logger,
+)
 
 def disable_screensaver():
     logging.info("Check the screensaver")
@@ -56,21 +43,35 @@ def hide_mouse_cursor():
     add_line_to_file(["xserver-command=X -nocursor"], lightdm_config_file)
 
 
+def enable_hw_access():
+    # enable non-sudo usage of rpi-backlight
+    rules_dir = "/etc/udev/rules.d"
+    rules_file = "backlight-permissions.rules"
+    rules_path = Path(rules_dir) / rules_file
+    assure_file_exists(rules_path, chown=False)
+    enable_text = (
+        'SUBSYSTEM=="backlight",RUN+="/bin/chmod 666 /sys/class/backlight/%k/brightness'
+        ' /sys/class/backlight/%k/bl_power"'
+    )
+    add_line_to_file([enable_text], rules_path, unique=True)
+
+
 def customize_splash_screen():
     # copy splash screen to /usr/share/plymouth/themes/pix
     os.makedirs("/usr/share/plymouth/themes/pix", exist_ok=True)
     try:
         logging.info("Customizing splash screen")
-        src_image = f"{str(installer_root_dir)}/src/waqd/assets/gui_base/splash_screen.png"
-        copy_file(src_image,  "/usr/share/plymouth/themes/pix/splash.png")
+        src_image = f"{str(installer_root_dir)}/src/waqd/assets/gui_base/loading_screen.png"
+        shutil.copy(src_image, "/usr/share/plymouth/themes/pix/splash.png")
         # remove rainbow screen
-        os.system("raspi-config nonint set_config_var disable_splash 1 /boot/config.txt")
+        os.system("raspi-config nonint set_config_var disable_splash 1 /boot/firmware/config.txt")
     except Exception as e:
         logging.error(str(e))
 
 
 def setup_supported_locales():
-    sup_locales = ["en_US.UTF8", "de_DE.UTF8", "hu_HU.UTF8"]
+    sup_locales = ["en_US.UTF-8", "de_DE.UTF-8", "hu_HU.UTF-8"]
+    installed_locales = ""
     # get locales:
     try:
         logging.info("Getting installed languages")
@@ -78,11 +79,12 @@ def setup_supported_locales():
     except Exception as e:
         logging.error(str(e))
         return
-    # TODO check does not work!
+    logging.info("Found languages: " + installed_locales)
     # set not installed locales in /etc/locale.gen
     locale_added = False
     for locale in sup_locales:
         if locale.lower() not in installed_locales.lower():
+            logging.info(locale.lower() + " not in " +  installed_locales.lower())
             os.system('echo "' + locale + ' UTF-8\n" | tee -a /etc/locale.gen')
             locale_added = True
     # generate them, if there is something to add
@@ -100,7 +102,7 @@ def set_wallpaper(install_path: Path):
     lib_paths = (install_path / "lib").iterdir()  # TODO does not work anymore
     for lib_path in lib_paths:
         if "python" in lib_path.name:
-            image = lib_path / "site-packages/waqd/assets/gui_base/pre_loading_screen.png"
+            image = lib_path / "site-packages/waqd/assets/gui_base/pre_loading_screen.jpg"
             try:
                 logging.info("Setting wallpaper..." + f'pcmanfm --set-wallpaper="{str(image)}"')
                 os.system(f'pcmanfm --set-wallpaper="{str(image)}"')
@@ -108,8 +110,9 @@ def set_wallpaper(install_path: Path):
                 logging.error(str(e))
             break
 
-
-def clean_lxde_desktop(desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/desktop-items-0.conf")):
+def clean_lxde_desktop(
+    desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/desktop-items-0.conf"),
+):
     # Can't be run as sudo, or as sudo -runuser. Needs desktop manager running.
     logging.info("Cleanup desktop icons...")
     assure_file_exists(desktop_conf_path)
@@ -119,18 +122,11 @@ def clean_lxde_desktop(desktop_conf_path=Path(HOME / ".config/pcmanfm/LXDE-pi/de
     try:
         cp.add_section("*")
     except DuplicateSectionError:
-        pass # don't care
+        pass  # don't care
     cp["*"]["show_trash"] = "0"
     cp["*"]["show_mounts"] = "0"
     with open(desktop_conf_path, "w") as fd:
         cp.write(fd, space_around_delimiters=False)
-
-
-# TODO
-def customize_wifi_connect(self):
-    # /usr/local/share/wifi-connect/ui/static/media/logo*.png
-    pass
-
 
 def do_setup():
     # System setup
@@ -138,39 +134,47 @@ def do_setup():
     add_to_autostart(["pcmanfm --desktop --profile LXDE-pi"])
     remove_from_autostart(["lxpanel --profile"])
 
-    # Cosmetic setup
-    customize_splash_screen()
     hide_mouse_cursor()
     disable_screensaver()
 
-    # Add languages
-    setup_supported_locales()
+    # Cosmetic setup
+    customize_splash_screen()
 
     # Enable needed hardware access
     enable_hw_access()
 
 
-def configure_unnattended_updates(auto_updates_path=Path("/etc/apt/apt.conf.d/20auto-upgrades"),
-                                  unattended_updates_path=Path("/etc/apt/apt.conf.d/50unattended-upgrades")):
+def configure_unnattended_updates(
+    auto_updates_path=Path("/etc/apt/apt.conf.d/20auto-upgrades"),
+    unattended_updates_path=Path("/etc/apt/apt.conf.d/50unattended-upgrades"),
+):
     # enable apt update and the unattended updates feature
-    remove_line_in_file(["APT::Periodic::Update-Package-Lists",
-                        "APT::Periodic::Unattended-Upgrade"],
-                        auto_updates_path)
-    add_line_to_file(['APT::Periodic::Update-Package-Lists "1";',
-                     'APT::Periodic::Unattended-Upgrade "1";'],
-                     auto_updates_path)
+    remove_line_in_file(
+        ["APT::Periodic::Update-Package-Lists", "APT::Periodic::Unattended-Upgrade"],
+        auto_updates_path,
+    )
+    add_line_to_file(
+        ['APT::Periodic::Update-Package-Lists "1";', 'APT::Periodic::Unattended-Upgrade "1";'],
+        auto_updates_path,
+    )
 
     # configure update mechanism
-    remove_line_in_file(["Unattended-Upgrade::Remove-Unused-Dependencies",
-                        "Unattended-Upgrade::AutoFixInterruptedDpkg",
-                        "Unattended-Upgrade::MinimalSteps"],
-                        unattended_updates_path)
-    add_line_to_file([
-        # we have enough space, we don't know what pkgs are removed -> safety
-        'Unattended-Upgrade::Remove-Unused-Dependencies "false;', 
-        # try to repair if somehow update was interrupted
-        'Unattended-Upgrade::AutoFixInterruptedDpkg "true";',
-        # use minimal steps to have the lowest possible rate of failure if update is interrupted
-        'Unattended-Upgrade::MinimalSteps "true"'],
-        unattended_updates_path)
-    # TODO Uncomment? //      "origin=Debian,codename=${distro_codename}-updates";
+    remove_line_in_file(
+        [
+            "Unattended-Upgrade::Remove-Unused-Dependencies",
+            "Unattended-Upgrade::AutoFixInterruptedDpkg",
+            "Unattended-Upgrade::MinimalSteps",
+        ],
+        unattended_updates_path,
+    )
+    add_line_to_file(
+        [
+            # we have enough space, we don't know what pkgs are removed -> safety
+            'Unattended-Upgrade::Remove-Unused-Dependencies "false;',
+            # try to repair if somehow update was interrupted
+            'Unattended-Upgrade::AutoFixInterruptedDpkg "true";',
+            # use minimal steps to have the lowest possible rate of failure if update is interrupted
+            'Unattended-Upgrade::MinimalSteps "true"',
+        ],
+        unattended_updates_path,
+    )

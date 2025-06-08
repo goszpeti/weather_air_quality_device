@@ -1,8 +1,7 @@
 import os
 import tempfile
-from distutils.file_util import copy_file
 from pathlib import Path
-
+import shutil
 from waqd import __version__
 from installer import common, setup_system
 from installer.common import assure_file_does_not_exist
@@ -12,7 +11,7 @@ def test_add_to_autostart(base_fixture):
     auto_update_file = base_fixture.testdata_path / "auto_updater" / "autostart.txt"
     temp_autostart_file = Path(tempfile.gettempdir()) / "tmp.txt"
 
-    copy_file(str(auto_update_file), str(temp_autostart_file))
+    shutil.copy(str(auto_update_file), str(temp_autostart_file))
     setup_system.add_to_autostart(["xscreensaver -no-splash"], temp_autostart_file)
     setup_system.remove_from_autostart(["waqd"], temp_autostart_file)
 

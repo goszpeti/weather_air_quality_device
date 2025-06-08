@@ -1,32 +1,15 @@
-#
-# Copyright (c) 2019-2021 Péter Gosztolya & Contributors.
-#
-# This file is part of WAQD
-# (see https://github.com/goszpeti/WeatherAirQualityDevice).
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
 import logging
 import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Optional, Tuple
-from waqd import LOCAL_TIMEZONE
 
 from file_read_backwards import FileReadBackwards
+
 import waqd
+from waqd import LOCAL_TIMEZONE, PROG_NAME
+
 
 # helper functions for logs
 def delete_log_file(log_file_path: Path) -> bool:
@@ -40,7 +23,7 @@ def delete_log_file(log_file_path: Path) -> bool:
 
 def delete_large_logfile(log_file_path: Path, size_mbytes: float):
     """
-    Tries to delete file if older then  arg <time>. 
+    Tries to delete file if older then  arg <time>.
     Returns True, if deletion succeeded.
     """
     if log_file_path.exists():
@@ -54,11 +37,12 @@ class Logger(logging.Logger):
     """
     Singleton instance for the global dual logger (file/console)
     """
+
     GLOBAL_LOGFILE_NAME = "waqd.log"
 
     _instance: Optional[logging.Logger] = None
 
-    def __new__(cls, output_path: Path=Path(".")):
+    def __new__(cls, output_path: Path = Path(".")):
         if cls._instance is None:
             cls._instance = cls._init_logger(output_path)
         return cls._instance
@@ -68,14 +52,14 @@ class Logger(logging.Logger):
 
     @classmethod
     def _init_logger(cls, output_path):
-        """ Set up format and a debug level and register loggers. """
+        """Set up format and a debug level and register loggers."""
 
         # restrict root logger
         root = logging.getLogger()
         root.setLevel(logging.ERROR)
 
         # set up file logger - log everything in file and stdout
-        logger = logging.getLogger()
+        logger = logging.getLogger(PROG_NAME)
         logger.setLevel(logging.DEBUG)
         log_debug_level = logging.INFO
         if waqd.DEBUG_LEVEL > 0:
@@ -112,18 +96,23 @@ class SensorFileLogger(logging.Logger):
     def __new__(cls, sensor_location: str, sensor_type: str, output_path: Path = Path(".")):
         return cls._init_logger(sensor_location, sensor_type, output_path)
 
-    def __init__(self, sensor_location: str, sensor_type: str, output_path: Path = Path(".")) -> None:
+    def __init__(
+        self, sensor_location: str, sensor_type: str, output_path: Path = Path(".")
+    ) -> None:
         pass
 
     @staticmethod
     def set_value(sensor_location: str, sensor_type: str, value: Optional[float]):
-        logger = SensorFileLogger(sensor_location, sensor_type,output_path=waqd.user_config_dir / "sensor_logs")
+        logger = SensorFileLogger(
+            sensor_location, sensor_type, output_path=waqd.user_config_dir / "sensor_logs"
+        )
         logger.info(value)
 
     @staticmethod
     def _get_sensor_logfile_path(sensor_location: str, sensor_type: str) -> Path:
-        logger = SensorFileLogger(sensor_location, sensor_type,
-                                  output_path=waqd.user_config_dir / "sensor_logs")
+        logger = SensorFileLogger(
+            sensor_location, sensor_type, output_path=waqd.user_config_dir / "sensor_logs"
+        )
         if logger.handlers == 0:
             return Path("InvalidPath")
         try:
@@ -132,13 +121,16 @@ class SensorFileLogger(logging.Logger):
                 filename = Path(logger.handlers[0].baseFilename)  # can be any type of handler
             return filename
         except Exception as e:
-            print(f"WARNING: Can't find file handler for {sensor_location} {sensor_type} logger.")
+            print(
+                f"WARNING: Can't find file handler for {sensor_location} {sensor_type} logger."
+            )
             return Path("InvalidPath")
 
     @staticmethod
     # zero reads the last value
-    def get_sensor_values(sensor_location: str, sensor_type: str, minutes_to_read: int = 0) -> List[Tuple[datetime, float]]:
-
+    def get_sensor_values(
+        sensor_location: str, sensor_type: str, minutes_to_read: int = 0
+    ) -> List[Tuple[datetime, float]]:
         log_file_path = SensorFileLogger._get_sensor_logfile_path(sensor_location, sensor_type)
         if not log_file_path.exists():
             return []
@@ -165,7 +157,7 @@ class SensorFileLogger(logging.Logger):
 
     @staticmethod
     def _init_logger(sensor_location, sensor_type: str, output_path: Path) -> logging.Logger:
-        """ Logger used by sensors to store values to display in detail view """
+        """Logger used by sensors to store values to display in detail view"""
         logger = logging.getLogger(sensor_location + "_" + sensor_type)
 
         # return already initalized logger when calling multiple times
@@ -191,6 +183,7 @@ class SensorFileLogger(logging.Logger):
     @staticmethod
     def migrate_txts_to_db():
         from waqd.base.db_logger import InfluxSensorLogger
+
         sensor_files = (waqd.user_config_dir / "sensor_logs").glob("*.log")
         db_logger = InfluxSensorLogger()
         for sensor_file in sensor_files:
@@ -202,17 +195,19 @@ class SensorFileLogger(logging.Logger):
                 Logger().info(f"Unknown sensor log file {sensor_file.stem} to migrate.")
                 continue
             sensor_type = sensor_file.stem.replace("interior", "").lstrip("_").rstrip("_")
-            Logger().info(f"Starting to migrate {sensor_location} {sensor_type} from txt to db...")
+            Logger().info(
+                f"Starting to migrate {sensor_location} {sensor_type} from txt to db..."
+            )
             with open(sensor_file) as fd:
                 ln = 0
                 while True:
                     line = fd.readline()
                     if ln % 100 == 0:
-                        Logger().info(
-                            f"Migrated {str(ln)} entries.")
+                        Logger().info(f"Migrated {str(ln)} entries.")
                     if not line:
                         Logger().info(
-                            f"Finished  migrating {str(ln)} entries from {sensor_location} {sensor_type}.")
+                            f"Finished  migrating {str(ln)} entries from {sensor_location} {sensor_type}."
+                        )
                         break
                     ln += 1
                     try:  # parse file format
@@ -221,7 +216,8 @@ class SensorFileLogger(logging.Logger):
                         value = float(content[1])
                     except Exception as e:
                         Logger().debug(
-                            f"Can't parse {str(line)} entry from {sensor_location} {sensor_type} logfile.")
+                            f"Can't parse {str(line)} entry from {sensor_location} {sensor_type} logfile."
+                        )
                         continue
                     db_logger.set_value(sensor_location, sensor_type, value, time)
 

@@ -14,6 +14,9 @@ class CCS811:
     
     def data_ready(self):
         return AVAILABLE
+    
+    def reset(self):
+        pass
 
     @property
     def temperature(self):

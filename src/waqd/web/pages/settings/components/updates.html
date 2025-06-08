@@ -1,0 +1,25 @@
+<fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
+    {% with title="Auto updates", description="The device will check every few hours and
+     on finding a new release it will update it immeadiatly and restart.",
+    icon="auto_update",
+    name="auto_updater_enabled", value=auto_updater_enabled %}
+    {% include "components/snippets/bool_setting.html" %}
+    {% endwith %}
+
+    {% with title="Beta channel", description="Enable beta versions for updates.
+     This will allow you to test new features, but it may be unstable.",
+    icon="refresh",
+    name="updater_use_beta_channel", value=updater_use_beta_channel %}
+    {% include "components/snippets/bool_setting.html" %}
+    {% endwith %}
+
+</fieldset>
+<!-- <fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border p-4 gap-4">
+
+    <legend class="fieldset-legend">Manual update</legend>
+    <button class="btn btn-primary max-w-96">Check for updates</button>
+    <label class="label text-wrap">Check manually auto updates.
+        You will be prompted for confirmation before the update.
+    </label>
+
+</fieldset> -->

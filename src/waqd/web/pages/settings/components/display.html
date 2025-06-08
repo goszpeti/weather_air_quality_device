@@ -1,0 +1,55 @@
+<fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend">Display</legend>
+
+    <legend class="fieldset-legend">Brightness</legend>
+    <div class="min-w-96 md:w-3/4">
+        <input type="range" min="0" max="100" value={{brightness}} class="range w-full"
+            hx-trigger="change" hx-post="set" hx-swap="none"
+            hx-vals="js:{'name':'brightness', 'value': event.target.value}">
+        <div class="flex justify-between px-2.5 mt-2 text-xs">
+            <span>0%</span>
+            <span>20%</span>
+            <span>40%</span>
+            <span>60%</span>
+            <span>80%</span>
+            <span>100%</span>
+        </div>
+    </div>
+
+    <legend class="fieldset-legend">Night Mode Begin</legend>
+    <input type="time" class="input" value="{{night_mode_begin}}:00" hx-trigger="change"
+        hx-post="set" hx-swap="none"
+        hx-vals="js:{'name':'night_mode_begin', 'value': event.target.value}">
+    <legend class="fieldset-legend">Night Mode End</legend>
+    <input type="time" class="input" value="{{night_mode_end}}:00" hx-trigger="change" hx-post="set"
+        hx-swap="none" hx-vals="js:{'name':'night_mode_end', 'value': event.target.value}" />
+
+    <legend class="fieldset-legend">Motions sensing</legend>
+    <label class="label text text-wrap">These settings control after which time on sensing movement
+        the display brightness changes.</label>
+
+    <legend class="fieldset-legend">Night Turn-off Timeout</legend>
+    <select class="select" hx-trigger="change" hx-post="set" hx-swap="none"
+        hx-vals="js:{'name':'night_standby_timeout', 
+        'value': (function(v){if(v.endsWith('min')){return parseInt(v)*60;}else{return parseInt(v);} })(event.target.value)}">
+        <option disabled selected>Night Turn-off Timeout</option>
+        <option {% if night_standby_timeout==5 %}selected{% endif %}>5s</option>
+        <option {% if night_standby_timeout==30 %}selected{% endif %}>30s</option>
+        <option {% if night_standby_timeout==120 %}selected{% endif %}>120s</option>
+        <option {% if night_standby_timeout==10*60 %}selected{% endif %}>10 min</option>
+        <option {% if night_standby_timeout==30*60 %}selected{% endif %}>30 min</option>
+    </select>
+
+    <legend class="fieldset-legend">Day Standby Timeout</legend>
+    <select class="select" hx-trigger="change" hx-post="set" hx-swap="none"
+        hx-vals="js:{'name':'day_standby_timeout', 
+        'value': (function(v){if(v.endsWith('min')){return parseInt(v)*60;}else{return parseInt(v);} })(event.target.value)}">
+        <option disabled selected>Day Standby Timeout</option>
+        <option {% if day_standby_timeout==5 %}selected{% endif %}>5s</option>
+        <option {% if day_standby_timeout==30 %}selected{% endif %}>30s</option>
+        <option {% if day_standby_timeout==120 %}selected{% endif %}>120s</option>
+        <option {% if day_standby_timeout==10*60 %}selected{% endif %}>10 min</option>
+        <option {% if day_standby_timeout==30*60 %}selected{% endif %}>30 min</option>
+    </select>
+
+</fieldset>

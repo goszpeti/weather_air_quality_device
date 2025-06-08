@@ -21,68 +21,33 @@
             "command": "python -m venv .venv ",
             "problemMatcher": []
         },
-        {
-            "label": "Restart Target",
-            "type": "shell",
-            "command": "ssh pi@${input:raspiHost} sudo shutdown -r now",
-            "problemMatcher": [
-                "$eslint-compact"
-            ]
-        },
-        {
-            "label": "Shutdown Target",
-            "type": "shell",
-            "command": "ssh pi@${input:raspiHost}sudo shutdown -h now",
-            "problemMatcher": [
-                "$eslint-compact"
-            ]
-        },
-        {
-            "label": "Copy Base to RPi",
-            "type": "shell",
-            "command": "ssh pi@${input:raspiHost} mkdir -p ~/waqd-dev && scp -r script pi@${input:raspiHost}:waqd-dev && scp -r setup.py pi@${input:raspiHost}:waqd-dev",
-            "problemMatcher": []
-        },
-        {
-            "label": "Copy Src to RPi",
-            "type": "shell",
-            "command": "scp -r src pi@${input:raspiHost}:waqd-dev",
-            "problemMatcher": []
-        },
+
+
         {
             "label": "Install package in editable mode",
             "type": "shell",
-            // "runOptions": {
-            //     "runOn": "folderOpen"
-            // },
             "command": "${config:python.pythonPath} -m pip install -e .",
             "problemMatcher": []
         },
         {
             "label": "Install dev and test dependencies",
             "type": "shell",
-            // "runOptions": {
-            //     "runOn": "folderOpen"
-            // },
+
             "upgrade_pip": "${config:python.pythonPath} -m pip install --upgrade pip ;",
             "command": "${config:python.pythonPath} -m pip install -r test/requirements.txt",
             "problemMatcher": []
-        },
-        {
-            "label": "Compile gui",
-            "type": "shell",
-            "command": "${workspaceRoot}/script/build/compileGui.sh",
-            "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
         },
         {
             "label": "Add license headers",
             "type": "shell",
             "command": "python -m licenseheaders -t agpl-v3 -y 2019-2021 -o 'Péter Gosztolya & Contributors' -n WAQD -u https://github.com/goszpeti/WeatherAirQualityDevice -d ./src",
             "problemMatcher": [],
-        }
+        },
+        {
+            "label": "Run tailwindcss",
+            "type": "shell",
+            "command": "${workspaceRoot}/.venv/Scripts/activate.bat && tailwindcss -i src/waqd/assets/css/custom_theme.css -o src/waqd/assets/css/output.css -w",
+            "problemMatcher": []
+        },
     ]
 }

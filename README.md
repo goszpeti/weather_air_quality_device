@@ -11,22 +11,23 @@ with the use of commonly used sensors and a touch display.
 
 It also focuses on an easy system setup and assembly with a suited case. 
 
-The project will be written with the usage of Qt in Python.
+The project will switch with version 3.0 to merge the Mobile web view with the 
+native desktop mode in a new merged Web Ui. The device will start the ui in a kiosk mode broswer.
 
 ## Features
 
-# <img src="./doc/images/main_gui.jpg" width="600">
+# <img src="./doc/images/main_gui.png" width="600">
 
 * Info pane witch clock and date
 * Interior with sensor display
 * Exterior with online or remote sensor temperature
 * 3 day forecast
 
-# <img src="./doc/images/options.jpg" width="600">
+# <img src="./doc/images/options.png" width="600">
 
 * Options for
+  * location
   * display settings
-  * scaling
   * language
   * online weather settings
 
@@ -35,12 +36,12 @@ The project will be written with the usage of Qt in Python.
 
 ### Raspberry Pi
 
-* theoretically all versions, but a model 2 was never tested
-* model 1 runs also, but is very slow
+* All versions supporting ARMv7 64bit
 
 ### Case
 
 #### SmartiPi Touch 2
+
 * recommended because of cable management and supports all RPi Versions up to RPi4.
 
 # <img src="./doc/images/waqd_station.jpg" width="300">
@@ -82,7 +83,7 @@ Sound:
 
 ## Development - First Steps
 
-A Python installation of min. 3.7 is needed.
+A Python installation of min. 3.11 is needed.
 For an easy to use integration, it is suggested to set the Python installation on the system path.
 This project is is set up to be used with Microsoft VsCode as an IDE.
 To set a minimal working environment, the following steps are necessary:
@@ -95,13 +96,14 @@ There are two launch configurations: local start for windows and attach to remot
 The tasks are created to deploy the source files on the Raspberry.
 
 To use Text-To-Speech in Windows, VLC needs to be on the PATH.
-To edit and compile the GUI get a maximum Qt 5.11 editor (e.g. https://build-system.fman.io/qt-designer-download), otherwise it breaks the format.
-It is practical to set it onto the path.
-PyQt5-tools could also work, but only from 5.12 onwards in the future.
 
 Use virtualenv:
 
     python3 -m venv python
+
+## Instal with dev mode
+
+  pip install -e .[dev,test]
 
 ## Performance Profiling
 
@@ -138,25 +140,29 @@ https://github.com/dfeneyrou/palanteer/releases
   * https://unsplash.com/photos/_SnPaOUxO2k from Annie Niemaszyk
   * https://unsplash.com/photos/06qZZZNfzD8 from Scott Webb
   * https://unsplash.com/photos/n2poVQijgzo from Zuzana Ruttkay
+  * https://unsplash.com/photos/a-turtle-swimming-in-water-ZcMUiZuOirY
+  * https://unsplash.com/photos/the-sun-is-shining-through-the-clouds-in-the-sky-Ozlzi3DXuGg
+  * https://unsplash.com/photos/rain-moving-into-western-loudoun-county-virginia-s-S3J8wDAoM
+  * https://unsplash.com/photos/low-angle-photography-of-clouds-KOnl4LFvwHE
+  * https://unsplash.com/photos/a-purple-sky-filled-with-lots-of-clouds-ZbGwGW_u8zI
+  * https://unsplash.com/photos/gray-road-between-green-grass-field-near-mountain-under-white-clouds-during-daytime-UjyUlxr1Yjo
+  * https://unsplash.com/photos/blue-sky-and-white-clouds-over-lake-bR_-gllg7Bs
 
 ## Used software
 
 * For all natively installed Python libs see setup.py
 * pipx from PyPi [MIT License](<http://opensource.org/licenses/mit-license.php>)
-* Python packages installed via system package manager
-  * PyQt5 (including python3-pyqt5.qtsvg python3-pyqt5.qtchart) by Riverbank Computing Limited, [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
-  * python3-libgpiod
-  * python3-venv
-* wifi-connect under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) from https://github.com/balena-os/wifi-connect
+* pdm package manager
+
 ## Needed Operating System and builtin dependencies
 
-* Raspberry Pi OS - 64 bit (Bullseye) - 32 bit no longer supported
+* Raspberry Pi OS - 64 bit (Bookworm)
   * APT
-  * LightDM desktop manager
+  * LightDM desktop manager (using X11)
   * XFCE desktop environment with pcmanfm
   * Plymouth for boot screen customization
   * raspi-config
-  * Python 3.9
+  * Python 3.11
   * Installed official apt packages
     * feh
     * zenity
@@ -164,6 +170,9 @@ https://github.com/dfeneyrou/palanteer/releases
     * wmctrl
     * xscreensaver
     * unattended-upgrades
+
+
 ## Author:
 
 Copyright (c) 2022 Péter Gosztolya and contributors.
+

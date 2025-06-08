@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="mytheme">
+
+<head>
+    <title>WAQD Admin Startup</title>
+    <html lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1.5" , charset="utf-8">
+    <link href="/output.css" rel="stylesheet" type="text/css" />
+</head>
+<style>
+/* Cannot be in stylesheet - set font here, so no pop-in happens*/
+@font-face {
+    font-family: MyFranzo;
+    src: url('Franzo-E4GA.woff');
+}
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('http://localhost/public/token', {
+            resolveWithFullResponse: true,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                username: 'local_admin',
+                password: '{{password}}',
+                grant_type: 'password'
+            }),
+            credentials: 'include'
+
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    fetch('http://localhost/weather', {
+                        method: 'GET',
+                        credentials: 'include'
+                    })
+                        .then(weatherResponse => {
+                            if (weatherResponse.ok) {
+                                window.location.href = 'http://localhost/weather';
+                            } else {
+                                console.error('Failed to fetch weather data:', weatherResponse.statusText);
+                            }
+                        })
+                        .catch(error => console.error('Error fetching weather data:', error));
+                } else {
+                    console.error('Authentication failed:', data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+
+<body>
+    <div class="hero bg-base-200 min-h-screen">
+        <div class="hero-content text-center">
+            <div class="max-w-md">
+                <h1 class="text-4xl font-bold  p-4">Loading WAQD...</h1>
+                <span class="loading loading-spinner loading-xl p-4"></span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

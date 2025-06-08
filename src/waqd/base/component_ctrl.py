@@ -1,22 +1,3 @@
-#
-# Copyright (c) 2019-2021 Péter Gosztolya & Contributors.
-#
-# This file is part of WAQD
-# (see https://github.com/goszpeti/WeatherAirQualityDevice).
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
 import threading
 
 from typing import Optional
@@ -24,28 +5,32 @@ from typing import Optional
 from waqd.base.file_logger import Logger
 from waqd.base.component_reg import ComponentRegistry
 from waqd.base.network import Network
-from waqd.base.signal import QtSignalRegistry
 from waqd.base.component_reg import CyclicComponent
 from waqd.settings import Settings
 
-class ComponentController():
-    """ Loader, unloader and watchdog for components. """
+
+class ComponentController:
+    """Loader, unloader and watchdog for components."""
+
     UPDATE_TIME = 5
 
     def __init__(self, settings: Settings):
         self._components = ComponentRegistry(settings)
 
         # thread for watchdog
-        self._watch_thread: Optional[threading.Thread] = None # re-usable thread, assignment is in init_all
+        self._watch_thread: Optional[threading.Thread] = (
+            None  # re-usable thread, assignment is in init_all
+        )
         self._stop_event = threading.Event()  # own stop event for watchdog
         # thread for waiting for comps unload
-        self._unload_thread: Optional[threading.Thread] = None # re-usable thread, assignment is in unload_all
+        self._unload_thread: Optional[threading.Thread] = (
+            None  # re-usable thread, assignment is in unload_all
+        )
         self._inited_all = False
-
 
     @property
     def all_ready(self) -> bool:
-        """ Signals, that all modules have been started loading """
+        """Signals, that all modules have been started loading"""
         all_ready = False
         if not self._inited_all:
             return False
@@ -58,14 +43,14 @@ class ComponentController():
 
     @property
     def all_unloaded(self) -> bool:
-        """ All managed modules are unloaded. """
+        """All managed modules are unloaded."""
         if not self._unload_thread:
             return True
         return not self._unload_thread.is_alive()
 
     @property
     def components(self) -> ComponentRegistry:
-        """ Returns held components for higher level functions """
+        """Returns held components for higher level functions"""
         return self._components
 
     def init_all(self):
@@ -75,20 +60,25 @@ class ComponentController():
         if self._unload_thread and self._unload_thread.is_alive():
             self._unload_thread.join()
         self._stop_event.clear()
+        if self._inited_all:
+            return
         Logger().info("Start initializing all components")
-        self._watch_thread = threading.Thread(name="Watchdog", target=self._watchdog_loop, daemon=True)
+        self._watch_thread = threading.Thread(
+            name="Watchdog", target=self._watchdog_loop, daemon=True
+        )
         self._watch_thread.start()
-
 
     def unload_all(self, reload_intended=False, updating=False):
         """
         Start unloading modules. modules_unloaded signals finish.
         """
         self._components.set_unload_in_progress()
-        QtSignalRegistry().clear_registry()
         Logger().info("Start unloading all components")
         self._unload_thread = threading.Thread(
-            name="UnloadModules", target=self._unload_all_components, args=[reload_intended, updating])
+            name="UnloadModules",
+            target=self._unload_all_components,
+            args=[reload_intended, updating],
+        )
         self._unload_thread.start()
 
     def stop(self):
@@ -102,6 +92,7 @@ class ComponentController():
     def _watchdog_loop(self):
         # this import statement imports all the components initially
         import waqd.components
+
         self._components.watch_all()
         self._inited_all = True
         ticker = threading.Event()
@@ -109,7 +100,6 @@ class ComponentController():
             if self._stop_event.is_set():
                 self._stop_event.clear()
                 return
-            # self._components.watch_all()
             self._watch_components()
 
     def _watch_components(self):
@@ -117,7 +107,7 @@ class ComponentController():
         Checks existence of global variable of each module and starts it.
         """
         # check and restart wifi
-        #if RuntimeSystem().is_target_system:
+        # if RuntimeSystem().is_target_system:
         Network().check_internet_connection()
         try:
             for comp_name in self._components.get_names():
@@ -125,7 +115,11 @@ class ComponentController():
                 if not component:
                     break
                 if issubclass(type(component), CyclicComponent):
-                    if component.is_ready and not component.is_alive and not component.is_disabled:
+                    if (
+                        component.is_ready
+                        and not component.is_alive
+                        and not component.is_disabled
+                    ):
                         # call stop, so it will be initialized in the next cycle
                         self._components.stop_component(comp_name)
 
@@ -134,13 +128,16 @@ class ComponentController():
                 sensor = self._components.get_sensors()[sensor_name]
                 if not sensor:
                     break
-                if isinstance(sensor, CyclicComponent) and sensor.is_ready and not sensor.is_alive:
+                if (
+                    isinstance(sensor, CyclicComponent)
+                    and sensor.is_ready
+                    and not sensor.is_alive
+                ):
                     sensors_to_remove.append(sensor_name)
             for sensor_name in sensors_to_remove:
                 self._components.get_sensors().pop(sensor_name)
         except Exception as e:
             Logger().debug(f"ERROR: Watchdog crashed: {str(e)}")
-
 
     def _unload_all_components(self, reload_intended, updating):
         """

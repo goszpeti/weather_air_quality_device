@@ -4,8 +4,10 @@
 import logging
 import os
 import stat
-
+import sys
 from pathlib import Path
+
+sys.path.append(str(Path(__file__).parent.parent))
 
 from installer.common import (
     INSTALL_TARGET_ROOT, AUTOSTART_FILE, USER_CONFIG_PATH, INSTALL_DIR_SUFFIX, LOCAL_BIN_PATH, USERNAME,
@@ -19,8 +21,9 @@ def install_waqd(waqd_version: str):
     suffix = INSTALL_DIR_SUFFIX.format(version=waqd_version)
     # must be executed as user
     args = f"--force --verbose --system-site-packages --suffix {suffix} {installer_root_dir}"
-    os.system(f'runuser - {USERNAME} -c "python3 -m pipx install {args}"')
-
+    install_cmd = f'runuser - {USERNAME} -c "python3 -m pipx install {args}"'
+    logging.info(install_cmd)
+    os.system(install_cmd)
 
 def register_waqd_autostart(bin_path: Path = LOCAL_BIN_PATH, autostart_file: Path = AUTOSTART_FILE):
     # Create an executable with auto restart for the current user

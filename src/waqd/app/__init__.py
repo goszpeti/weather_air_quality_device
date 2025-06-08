@@ -1,123 +1,97 @@
-#
-# Copyright (c) 2019-2021 Péter Gosztolya & Contributors.
-#
-# This file is part of WAQD
-# (see https://github.com/goszpeti/WeatherAirQualityDevice).
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
-
 """
 Entry module of WAQD
 Sets up cmd arguments, settings and starts the gui
 """
 
-
-from typing import TYPE_CHECKING
-import argparse
-import logging
-import os
 import sys
 import time
-import traceback
-from pathlib import Path
-from typing import Optional
-from pint import UnitRegistry
+from typing import TYPE_CHECKING
+from threading import Thread
 
 import waqd
-from waqd import PROG_NAME
-from waqd import __version__ as WAQD_VERSION
-from waqd import base_path
-from waqd.base.component_ctrl import ComponentController
+from waqd.assets.assets import get_asset_file
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
-from waqd.settings import (DISP_TYPE_RPI,
-                           DISP_TYPE_WAVESHARE_5_LCD,
-                           DISPLAY_TYPE, Settings)
+from waqd.settings import STARTUP_JINGLE
 
 # don't import anything from Qt globally! we want to run also without qt in headless mode
 if TYPE_CHECKING:
-    from waqd.ui.qt.main_window import QtBackChannel
-    from waqd.base.component_ctrl import ComponentController
-    from PyQt5 import QtCore
-    Qt = QtCore.Qt
+    from pint import UnitRegistry
 
+    from waqd.base.component_ctrl import ComponentController
+    from waqd.settings import Settings
 
 # GLOBAL VARIABLES
 
-# singleton with access to all backend components
-comp_ctrl: Optional["ComponentController"] = None
-# for global access to units
-unit_reg = UnitRegistry()
-# to send back data form backend to gui, if the gui loaded
-qt_backchannel: Optional["QtBackChannel"] = None
-# translator for qt app translation singleton
-translator: Optional["QtCore.QTranslator"] = None
-# for built-in Qt strings
-base_translator: Optional["QtCore.QTranslator"] = None
+Logger(output_path=waqd.user_config_dir)  # singleton, no assigment needed
 
-def main(settings_path: Optional[Path] = None):
+# singleton with access to all backend components
+comp_ctrl: "ComponentController" = None
+# for global access to units
+unit_reg: "UnitRegistry" = None
+# for global access to settings
+settings: "Settings" = None
+
+
+def basic_setup():
     """
     Main function, calling setup, loading components and safe shutdown.
     :param settings_path: Only used for testing to load a settings file.
     """
+    global comp_ctrl, settings
+
     sys.excepthook = crash_hook
 
-    # Create user config dir
-    if not waqd.user_config_dir.exists():
-        os.makedirs(waqd.user_config_dir)
+    from waqd.settings import Settings
 
-    # System is first, is_target_system is the most basic check
-    runtime_system = RuntimeSystem()
-    if not runtime_system.is_target_system:
-        setup_on_non_target_system()
-
-    # All other classes depend on settings
-    if not settings_path:
-        settings_path = waqd.user_config_dir
-    settings = Settings(ini_folder=settings_path)
-
-    parse_cmd_args()  # cmd args set Debug level for logger
+    settings = Settings(ini_folder=waqd.user_config_dir)
     setup_unit_reg()
 
     # to be able to remote debug as much as possible, this call is being done early
     start_remote_debug()
-    Logger(output_path=waqd.user_config_dir)  # singleton, no assigment needed
+
     if waqd.DEBUG_LEVEL > 0:
         Logger().info(f"DEBUG level set to {waqd.DEBUG_LEVEL}")
 
     if waqd.MIGRATE_SENSOR_LOGS:
         from waqd.base.file_logger import SensorFileLogger
+
         SensorFileLogger.migrate_txts_to_db()
-        return
-    global comp_ctrl
+        return None, None
+    from waqd.base.component_ctrl import ComponentController
+
     comp_ctrl = ComponentController(settings)
-    if waqd.DEBUG_LEVEL > 1:  # disable startup sound
-        comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
-    comp_ctrl.init_all()
+    # if waqd.DEBUG_LEVEL > 1:  # disable startup sound
+    #     comp_ctrl.components.tts.say_internal("startup", [WAQD_VERSION])
+
+
+def main():
+    basic_setup()
+    global comp_ctrl, settings
+    if not comp_ctrl or not settings:
+        return
     # Load the selected GUI mode
-    display_type = settings.get(DISPLAY_TYPE)
     try:
+        comp_ctrl.init_all()
+
+        from waqd.web import (start_web_server,
+                                start_web_ui_chromium_kiosk_mode)
+
+        if settings.get(STARTUP_JINGLE):
+            comp_ctrl.components.sound.play(get_asset_file("sounds", "pera__introgui.wav"))
+
+        runtime_system = RuntimeSystem()
+        if runtime_system.is_target_system and not waqd.HEADLESS_MODE:
+            chrome_browser = Thread(target=start_web_ui_chromium_kiosk_mode, daemon=True)
+            chrome_browser.start()
+        start_web_server(reload=waqd.DEBUG_LEVEL > 3)
+
         if waqd.HEADLESS_MODE:
             comp_ctrl._stop_event.wait()
-        elif display_type in [DISP_TYPE_RPI, DISP_TYPE_WAVESHARE_5_LCD]:
-            from waqd.ui.qt.startup import qt_app_setup, qt_loading_sequence
-            qt_app = qt_app_setup(settings)
-            # main_ui must be held in this context, otherwise the gc will destroy the gui
-            qt_loading_sequence(comp_ctrl, settings)
-            qt_app.exec()
+
     except Exception:
+        import traceback
+
         trace_back = traceback.format_exc()
         Logger().error("Application crashed: \n%s", trace_back)
 
@@ -126,37 +100,15 @@ def main(settings_path: Optional[Path] = None):
     if comp_ctrl:
         comp_ctrl.unload_all()
         while not comp_ctrl.all_unloaded:
-            time.sleep(.1)
-
-
-def parse_cmd_args():
-    """
-    All CLI related functions.
-    """
-    parser = argparse.ArgumentParser(
-        prog=PROG_NAME, description=f"{PROG_NAME} command line interface")
-    parser.add_argument("-v", "--version", action="version",
-                        version=WAQD_VERSION)
-    parser.add_argument("-H", "--headless", action='store_true')
-    parser.add_argument("-D", "--debug_level", type=int, default=waqd.DEBUG_LEVEL)
-    parser.add_argument("-M", "--migrate_sensor_logs", action='store_true')
-
-    args = parser.parse_args()
-    waqd.DEBUG_LEVEL = args.debug_level
-    debug_env_var = os.getenv("WAQD_DEBUG")
-    if debug_env_var:
-        waqd.DEBUG_LEVEL = int(debug_env_var)
-    if args.headless:
-        waqd.HEADLESS_MODE = True
-    if args.migrate_sensor_logs:
-        waqd.MIGRATE_SENSOR_LOGS = True
+            time.sleep(0.1)
 
 
 def start_remote_debug():
-    """ Start remote debugging from level 2 and wait on it from level 3"""
+    """Start remote debugging from level 2 and wait on it from level 3"""
     runtime_system = RuntimeSystem()
     if waqd.DEBUG_LEVEL > 1 and runtime_system.is_target_system:
         import debugpy  # pylint: disable=import-outside-toplevel
+
         port = 3003
         debugpy.listen(("0.0.0.0", port))
         if waqd.DEBUG_LEVEL > 2:
@@ -164,25 +116,23 @@ def start_remote_debug():
             debugpy.wait_for_client()  # blocks execution until client is attached
 
 
-def setup_on_non_target_system():
-    """ Must be able to load on desktop systems """
-    mockup_path = base_path.parent.parent / "test" / "mock"
-    sys.path = [str(mockup_path)] + sys.path
-    os.environ["PYTHONPATH"] = str(mockup_path)  # for mh-z19
-    waqd.user_config_dir = base_path.parent
-    logging.getLogger("root").info("System: Using mockups from %s" % str(mockup_path))  # don't use logger yet
-
-
 def setup_unit_reg():
-    """ Setup custom units """
-    unit_reg.define('fraction = [] = frac')
-    unit_reg.define('percent = 1e-2 frac = %')
-    unit_reg.define('ppm = 1e-6 fraction')
-    unit_reg.define('ppb = 1e-9 fraction')
+    """Setup custom units"""
+    global unit_reg
+    from pint import UnitRegistry
+
+    unit_reg = UnitRegistry()
+
+    unit_reg.define("fraction = [] = frac")
+    unit_reg.define("percent = 1e-2 frac = %")
+    unit_reg.define("ppm = 1e-6 fraction")
+    unit_reg.define("ppb = 1e-9 fraction")
 
 
 def crash_hook(exctype, excvalue, tb):
     try:
+        import traceback
+
         tb_formatted = "\n".join(traceback.format_tb(tb, limit=10))
         error_text = f"Application crashed: {str(exctype)} {excvalue}\n{tb_formatted}"
         Logger().fatal(error_text)

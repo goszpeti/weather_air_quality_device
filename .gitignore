@@ -7,6 +7,7 @@
 .venv_lin/*
 result.xml
 .coverage
+.sesskey
 cov.xml
 htmlcov
 doc/users_manual_DE.html
@@ -14,6 +15,9 @@ doc/users_manual_DE.pdf
 script/installer/waqd.log
 v1.4.4
 nonexistant
+.sesskey
+node_modules
+
 
 src/config.ini
 waqd.log
@@ -23,3 +27,8 @@ src/waqd/assets/weather_icons/*_white.svg
 user_db.json
 *.mp3
 crash.log
+
+template/*
+src/waqd/web/local/output.css
+src/waqd/web/local/login_admin.html
+src/waqd/web/local/Franzo-E4GA.woff

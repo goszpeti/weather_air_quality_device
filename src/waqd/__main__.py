@@ -1,24 +1,59 @@
-#
-# Copyright (c) 2019-2021 Péter Gosztolya & Contributors.
-#
-# This file is part of WAQD
-# (see https://github.com/goszpeti/WeatherAirQualityDevice).
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
+import argparse
+import os
+import sys
+import waqd
 
-from waqd.app import main
+
+def setup_on_non_target_system():
+    """Must be able to load on desktop systems"""
+    mockup_path = waqd.base_path.parent.parent / "test" / "mock"
+    sys.path = [str(mockup_path)] + sys.path
+    os.environ["PYTHONPATH"] = str(mockup_path)  # for mh-z19
+    waqd.user_config_dir = waqd.base_path.parent
+    import logging
+
+    logging.getLogger("root").info(
+        "System: Using mockups from %s" % str(mockup_path)
+    )  # don't use logger yet
+
+
+def parse_cmd_args():
+    """
+    All CLI related functions.
+    """
+
+    parser = argparse.ArgumentParser(
+        prog=waqd.PROG_NAME, description=f"{waqd.PROG_NAME} command line interface"
+    )
+    parser.add_argument("-v", "--version", action="version", version=waqd.__version__)
+    parser.add_argument("-H", "--headless", action="store_true")
+    parser.add_argument("-D", "--debug_level", type=int, default=waqd.DEBUG_LEVEL)
+    parser.add_argument("-M", "--migrate_sensor_logs", action="store_true")
+
+    args = parser.parse_args()
+    waqd.DEBUG_LEVEL = args.debug_level
+    debug_env_var = os.getenv("WAQD_DEBUG")
+    if debug_env_var:
+        waqd.DEBUG_LEVEL = int(debug_env_var)
+    if args.headless:
+        waqd.HEADLESS_MODE = True
+    if args.migrate_sensor_logs:
+        waqd.MIGRATE_SENSOR_LOGS = True
+
+
+def startup():
+    # System is first, is_target_system is the most basic check
+    from waqd.base.system import RuntimeSystem
+
+    runtime_system = RuntimeSystem()
+    if not runtime_system.is_target_system:
+        setup_on_non_target_system()
+
+    parse_cmd_args()  # cmd args set Debug level for logger
+    from waqd.app import main
+
+    main()
+
 
 if __name__ == "__main__":
-    main()
+    startup()

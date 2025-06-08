@@ -1,0 +1,99 @@
+<fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend">Temperature</legend>
+
+    {% with title="Enable BME-280", description="", icon="",
+    name="bme_280_enabled", value=bme_280_enabled %}
+    {% include "components/snippets/bool_setting.html" %}
+    {% endwith %}
+
+    {% with title="Enable BMP-280", description="", icon="",
+    name="bmp_280_enabled", value=bmp_280_enabled %}
+    {% include "components/snippets/bool_setting.html" %}
+    {% endwith %}
+
+
+    <legend class="fieldset-legend">DHT-11/22</legend>
+    <label class="label text-wrap">
+        Select the pin (GPIO) where you connected the sensor.
+    </label>
+    <select id="dht_22_select" class="select text-xl" hx-trigger="change" hx-post="set"
+        hx-vals="js:{'name':'dht_22_pin', 'value': event.target.value}" hx-swap="none">
+        <option {% if dht_22_pin==0 %}selected{% endif %}>Disabled</option>
+        <option {% if dht_22_pin==4 %}selected{% endif %}>4</option>
+        <option {% if dht_22_pin==8 %}selected{% endif %}>8</option>
+        <option {% if dht_22_pin==22 %}selected{% endif %}>22</option>
+    </select>
+
+
+</fieldset>
+<fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend">Air Quality</legend>
+
+    <!-- Add calibration -->
+    {% with title="Enable MH-Z19", description="", icon="",
+    name="mh_z19_enabled", value=mh_z19_enabled %}
+    {% include "components/snippets/bool_setting.html" %}
+    {% endwith %}
+
+    {% with title="Enable CS811", description="", icon="",
+    name="ccs811_enabled", value=ccs811_enabled %}
+    {% include "components/snippets/bool_setting.html" %}
+    {% endwith %}
+</fieldset>
+
+<fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend">Motion Sensor</legend>
+    {% with title="Enable Motion Sensor", description="", icon="",
+    name="motion_sensor_pin", value=motion_sensor_pin %}
+    {% include "components/snippets/bool_setting.html" %}
+    {% endwith %}
+
+    <legend class="fieldset-legend">Motion Sensor Connection</legend>
+    <label class="label text-wrap">
+        Select the pin (GPIO) where you connected the sensor.
+    </label>
+    <select id="motion_sensor_22_select" class="select text-xl" hx-trigger="change" hx-post="set"
+        hx-vals="js:{'name':'motion_sensor_pin', 'value': event.target.value}" hx-swap="none">
+        <option {% if motion_sensor_pin==20 %}selected{% endif %}>20</option>
+        <option {% if motion_sensor_pin==21 %}selected{% endif %}>21</option>
+        <option {% if motion_sensor_pin==23 %}selected{% endif %}>23</option>
+        <option {% if motion_sensor_pin==26 %}selected{% endif %}>26</option>
+    </select>
+</fieldset>
+<!-- 
+<fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend">Remote WAQD</legend>
+    <label class="label text-wrap">
+        This option allows you to connect a WAQD instance to another remote (possibly headless) instance of the device.
+        All the interior sensor values will be queried from the remote instance.
+    </label>
+    <legend class="fieldset-legend">Remote URL</legend>
+    <label class="label">
+        <label class="input">
+            <svg viewBox="0 0 24 24" class="-m-1 h-8">
+                <use href="/static/general_icons/home_address.svg#main" fill="white" />
+            </svg>
+            <input id="remote_mode_url_input" type="url" placeholder="http://my-waqd-address"
+                required {% if remote_mode_url %} value={{remote_mode_url}} {% endif%} />
+        </label>
+        <div class="validator-hint hidden">Enter valid URL</div>
+        <button class="btn btn-primary" hx-trigger="click" hx-post="set" hx-swap="innerHTML"
+            hx-vals="js:{'name':'remote_mode_url', 'value': document.getElementById('remote_mode_url_input').value}">
+            Set</button>
+    </label>
+    <legend class="fieldset-legend">Remote API Key</legend>
+        <label class="label text-wrap">
+            Get the API key from the remote WAQD device settings.
+        </label>
+    <label class="label">
+        <label class="input">
+            <svg viewBox="0 0 24 24" class="-m-1 h-8">
+                <use href="/static/general_icons/key.svg#main" fill="white" />
+            </svg>
+            <input id="remote_api_key_input" type="text" value="{{remote_api_key}}" />
+        </label>
+        <button class="btn btn-primary" hx-trigger="click" hx-post="set" hx-swap="innerHTML"
+            hx-vals="js:{'name':'remote_api_key', 'value': document.getElementById('remote_api_key_input').value}">
+            Set</button>
+    </label>
+</fieldset> -->

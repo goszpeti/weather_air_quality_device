@@ -1,33 +1,18 @@
-#
-# Copyright (c) 2019-2021 Péter Gosztolya & Contributors.
-#
-# This file is part of WAQD
-# (see https://github.com/goszpeti/WeatherAirQualityDevice).
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
+
 """
 This file contains generic classes concerning online weather data.
 """
 
-from datetime import datetime, time
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from datetime import datetime, time
 from enum import Enum
 from pathlib import Path
-from typing import List
+
+from pydantic import BaseModel
 
 from waqd.assets import get_asset_file
+from waqd.base.component import Component
 
 
 def is_daytime(sunrise, sunset, date_time=None):
@@ -39,13 +24,12 @@ def is_daytime(sunrise, sunset, date_time=None):
     return sunrise < date_time.time() < sunset
 
 
-@dataclass
-class Location():
+class Location(BaseModel):
     name: str
     country: str
     state: str
     county: str
-    postcodes: List[str]
+    country_code: str
     altitude: float
     latitude: float
     longitude: float
@@ -159,3 +143,12 @@ class WeatherQuality(Enum):
     CLOUDS = 13
     CLEAR = 14
 
+
+class WeatherProvider(ABC, Component):
+    @abstractmethod
+    def get_current_weather(self) -> Weather | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_5_day_forecast(self) -> list[DailyWeather]:
+        raise NotImplementedError

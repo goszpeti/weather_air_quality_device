@@ -1,0 +1,108 @@
+<div class="navbar bg-base-100 shadow-sm rounded-b p-4 md:p-0 lg:p-2">
+  <div class="navbar-start">
+    <!-- Mobile Menu -->
+    {% if logged_in %}
+    <div class="dropdown">
+      <div tabindex="0" role="button" class="btn btn-ghost md:hidden ">
+        <svg viewBox="0 0 24 24" class="h-10">
+          <use href="/static/general_icons/menu.svg#main" fill="white" />
+        </svg>
+      </div>
+      <ul tabindex="0" class="menu menu-xl dropdown-content
+                                bg-base-100 rounded-box z-1 mt-3 w-60 p-4 gap-4 shadow">
+        <li>
+          <a href="/settings"><svg viewBox="0 0 24 24" class="h-4">
+              <use href="/static/general_icons/settings.svg#main" fill="white" />
+            </svg>Settings</a>
+        </li>
+        <li>
+          <details open>
+            <summary class="text-neutral">
+              <svg viewBox="0 0 24 24" class="h-4">
+                <use href="/static/general_icons/account_circle.svg#main" fill="#57534d" />
+              </svg>
+              Account
+            </summary>
+            <ul>
+              <li><a href="/public/logout">
+                  <svg viewBox="0 0 24 24" class="h-4 w-4">
+                    <use href="/static/general_icons/logout.svg#main" fill="white" />
+                  </svg>
+                  Logout
+                </a></li>
+            </ul>
+        </li>
+      </ul>
+    </div>
+    {% endif %}
+    <a href="/weather" class="btn btn-ghost text-3xl font-bold mx-4">
+      WAQD
+    </a>
+  </div>
+  <div class="navbar-center hidden md:flex"></div>
+  <div class="navbar-end hidden md:flex">
+    <!-- Desktop Menu -->
+    {% if logged_in %}
+    <ul class="menu menu-horizontal menu-xl px-2" title="User Options">
+      <div class="dropdown dropdown-end ">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-lg">
+          <svg viewBox="0 0 24 24" class="h-10">
+            <use href="/static/general_icons/account_circle.svg#main" fill="white" />
+          </svg>
+        </div>
+        <ul tabindex="0"
+          class="menu menu-lg dropdown-content bg-base-100 rounded-box z-1 mt-3 w-fit p-2 shadow">
+          <li>
+            <a href="/settings">
+              <svg viewBox="0 0 24 24" class="h-6 mr-8">
+                <use href="/static/general_icons/settings.svg#main" fill="white" />
+              </svg>
+              Settings
+            </a>
+          </li>
+          <li>
+            <a href="/public/about">
+              <svg viewBox="0 0 24 24" class="h-6 mr-8">
+                <use href="/static/general_icons/info.svg#main" fill="white" />
+              </svg>About
+            </a>
+          </li>
+          <li>
+            {% if local %}
+            <a onclick="shutdown_menu.showModal()">
+              <svg viewBox="0 0 24 24" class="h-6 mr-8">
+                <use href="/static/general_icons/power.svg#main" fill="white" />
+              </svg>
+              Shutdown
+            </a>
+            {% else %}
+            <a href="/public/logout">
+              <svg viewBox="0 0 24 24" class="h-6 mr-8">
+                <use href="/static/general_icons/logout.svg#main" fill="white" />
+              </svg>
+              Logout
+            </a>
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+      {% if local %}
+      <li>
+        <a href="/network_mgr" class="btn btn-ghost btn-lg" title="Network Manager"
+          hx-trigger="load, every 20s" hx-get="/menu/network_icon" hx-swap="innerHTML">
+          <svg id="network_status_btn" viewBox="0 0 24 24" class="h-10">
+            <use href="/static/general_icons/lan.svg#main" fill="white" />
+          </svg>
+        </a>
+      </li>
+      <li>
+        {% include "menu/components/clock.html" %}
+      </li>
+      {% endif %}
+    </ul>
+    {% endif %}
+  </div>
+</div>
+{% if local %}
+{% include "menu/components/power_menu.html" %}
+{% endif %}
