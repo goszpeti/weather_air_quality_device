@@ -1,4 +1,28 @@
 <fieldset class="fieldset bg-base-200 border-base-300 text-3xl rounded-box w-full border p-4 gap-4">
+    <legend class="fieldset-legend">Manual update</legend>
+    <label class="label text-wrap">
+        Check manually for updates. You will be prompted for confirmation before the update.
+    </label>
+    <button class="btn btn-primary max-w-96" hx-get="new_release_available"
+        hx-target="#update_modal_content" hx-trigger="click" hx-swap="innerHTML"
+        hx-indicator="#update_modal_spinner"
+        onclick="update_modal.showModal()">
+        Check for updates
+    </button>
+    
+    <!-- Modal -->
+    <dialog id="update_modal" class="modal">
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+        <div class="modal-box" id="update_modal_content">
+            <div id="update_modal_spinner" class="flex justify-center items-center py-8">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
+            <!-- Modal content will be loaded here via htmx -->
+        </div>
+    </dialog>
+
     {% with title="Auto updates", description="The device will check every few hours and
      on finding a new release it will update it immeadiatly and restart.",
     icon="auto_update",
@@ -14,12 +38,3 @@
     {% endwith %}
 
 </fieldset>
-<!-- <fieldset class="fieldset bg-base-200 border-base-300 text-xl rounded-box w-full border p-4 gap-4">
-
-    <legend class="fieldset-legend">Manual update</legend>
-    <button class="btn btn-primary max-w-96">Check for updates</button>
-    <label class="label text-wrap">Check manually auto updates.
-        You will be prompted for confirmation before the update.
-    </label>
-
-</fieldset> -->

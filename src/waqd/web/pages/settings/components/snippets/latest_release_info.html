@@ -1,0 +1,15 @@
+<div class="modal-box">
+    <h3 class="font-bold text-lg">New Release {{version}} found</h3>
+    {% for line in content %}
+    {% if line %}
+    <p class="p-1 text-lg">{{line}}</p>
+    {% endif %}
+    {% endfor %}
+    <p class="py-4 text-lg">Do you want to install the release?</p>
+    <div class="modal-action">
+        <form method="dialog">
+            <button class="btn btn-error" hx-post="trigger_update" hx-swap="none">Yes</button>
+            <button class="btn btn-ghost mr-2">No</button>
+        </form>
+    </div>
+</div>

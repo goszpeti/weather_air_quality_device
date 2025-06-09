@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Form
 from fastapi.responses import HTMLResponse
 
 import waqd.app as app
+from ....base.file_logger import Logger
 from waqd.components.weather.base_types import Location
 from waqd.components.weather.open_meteo import OpenMeteo
 from waqd.settings import (
@@ -54,6 +55,37 @@ async def location_search_result(query: str):
         component=True,
     )
 
+@rt.get("/new_release_available", response_class=HTMLResponse)
+async def new_release_available():
+    try:
+        latest_version, update_available = app.comp_ctrl.components.auto_updater.check_newer_version()
+    except Exception as e:
+        Logger().debug("Failed to check for updates: %s", e)
+        return HTMLResponse("Failed to check update information. Try again later!")
+    if not update_available:
+        return sub_template(
+            "snippets/no_new_release.html",
+            {},
+            current_path,
+            component=True,
+        ) 
+    assert latest_version
+    return sub_template(
+        "snippets/latest_release_info.html",
+        {"version": latest_version.title, "content": latest_version.body.splitlines()},
+        current_path,
+        component=True,
+    )
+
+@rt.post("/trigger_update", response_class=HTMLResponse)
+async def trigger_update():
+    try:
+        app.comp_ctrl.components.auto_updater.install_update(
+            app.comp_ctrl.components.auto_updater.latest_release.tag_name
+        )
+        return HTMLResponse("Update started. Please wait for the device to restart.")
+    except Exception as e:
+        return HTMLResponse(f"Error: {e}", status_code=500)
 
 @rt.post("/set", response_class=HTMLResponse)
 async def set_setting(name: str = Form(), value=Form()):

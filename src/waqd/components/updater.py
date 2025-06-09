@@ -1,13 +1,8 @@
-
-# 
-from waqd.base.component import CyclicComponent
-
 import os
 from packaging.version import Version
 from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING
-
 
 import waqd
 import waqd.app as app
@@ -17,28 +12,27 @@ from waqd.base.component_reg import ComponentRegistry
 from waqd.base.network import Network
 
 if TYPE_CHECKING:
-    from github import Repository
+    from github import GitRelease, Repository
 
 
 class OnlineUpdater(CyclicComponent):
     """
-    Auto updater class, which checks for new releases on GitHub with an access token
+    Updater class, which checks for new releases on GitHub with an access token
     If a newer version is detected, it downloads it and calls "script/installer/start_installer.sh"
     This entry point should not be changed!
     """
+
     UPDATE_TIME = 6000  # 100 minutes in seconds
     INIT_WAIT_TIME = 20  # don't start updating until the station is ready
     STOP_TIMEOUT = 2  # override because of long update time
 
-
     def __init__(self, components: "ComponentRegistry", enabled=True, use_beta_channel=False):
         super().__init__(components, enabled=enabled)
-        if self._disabled:
-            return
         self._comps: "ComponentRegistry"
         self._use_beta_channel = use_beta_channel
         self._base_path = waqd.base_path  # save for multiprocessing
         self._repository: "Repository.Repository"
+        self._releases = []
 
         self._new_version_path = Path.home() / ".waqd" / "updater"
 
@@ -46,14 +40,23 @@ class OnlineUpdater(CyclicComponent):
         if self._new_version_path.exists():
             try:
                 import shutil
+
                 shutil.rmtree(self._new_version_path)
             except PermissionError:
                 os.system(f"sudo rm -rf {str(self._new_version_path)}")
 
+        if self._disabled:
+            self._logger.info("Auto Updater: Disabled by settings.")
+            return
         self._start_update_loop(self._updater_sequence, self._updater_sequence)
 
+    @property
+    def latest_release(self) -> "GitRelease.GitRelease | None":
+        """Get the latest release from the repository."""
+        return self._releases[0] if self._releases else None
+
     def _updater_sequence(self):
-        """ Check, that runs continously and start the installation if a new version is available. """
+        """Check, that runs continously and start the installation if a new version is available."""
         if not Network().wait_for_internet():
             return
         try:
@@ -62,38 +65,56 @@ class OnlineUpdater(CyclicComponent):
             self._logger.error("Updater: Cannot connect to updater Server.")
             return
 
-        latest_tag = self._get_latest_version_tag()
-        if not latest_tag:
+        latest_version, update_available = self.check_newer_version()
+        if not latest_version:
             return
-        update_available = self._check_should_update(latest_tag)
         if update_available:
-            self._logger.info("Updater: Found newer version %s", latest_tag)
-            self._comps.tts.say_internal("new_version", [latest_tag])
-            self._install_update(latest_tag)
+            self._logger.info("Updater: Found newer version %s", latest_version.tag_name)
+            self._comps.tts.say_internal("new_version", [latest_version.tag_name])
+            self.install_update(latest_version.tag_name)
+
+    def check_newer_version(self):
+        latest_version = self._get_latest_version()
+        if not latest_version:
+            return None, False
+        update_available = self._check_should_update(latest_version.tag_name)
+        return latest_version, update_available
 
     def _connect_to_repository(self):
-        """ Get Github repo object """
+        """Get Github repo object"""
+        try:
+            if self._repository:
+                return
+        except AttributeError:
+            # if the repository is not set, we need to connect
+            pass
         from github import Github
+
         github = Github()
         self._repository = github.get_repo(waqd.GITHUB_REPO_NAME)
 
-    def _get_latest_version_tag(self) -> str:
-        """ Check, if an update is found and return it's version. """
-        releases = self._repository.get_releases()
-        if releases.totalCount == 0:
+    def _get_latest_version(self) -> "GitRelease.GitRelease | None":
+        """Check, if an update is found and return it's version."""
+        self._connect_to_repository()
+        self._releases = self._repository.get_releases()
+        if self._releases.totalCount == 0:
             self._logger.info("Updater: No releases found.")
-            return ""
+            return None
 
-        latest_release = releases[0]
-        if not latest_release.tag_name:  # latest release is not tagged - probably an alpha version
-            if releases.totalCount > 1:
-                latest_release = releases[1]  # next release - there should not be 2 untagged releases
-        return latest_release.tag_name
+        latest_release = self._releases[0]
+        if (
+            not latest_release.tag_name
+        ):  # latest release is not tagged - probably an alpha version
+            if self._releases.totalCount > 1:
+                latest_release = self._releases[
+                    1
+                ]  # next release - there should not be 2 untagged releases
+        return latest_release
 
     def _check_should_update(self, latest_release_version: str):
         if len(latest_release_version.split("v")) > 1:  # remove v for comparing
             latest_release_version = latest_release_version.split("v")[1]
-        self._logger.debug(f"Updater: Latest version is {latest_release_version}")
+        self._logger.debug("Updater: Latest version is %s", latest_release_version)
 
         latest_version = Version(latest_release_version)
         current_version = Version(WAQD_VERSION)
@@ -106,8 +127,11 @@ class OnlineUpdater(CyclicComponent):
                 if (
                     waqd.DEBUG_LEVEL > 0
                     and self._use_beta_channel
+                    and latest_version.pre
                     and latest_version.pre[0] == "a"
                 ):
+                    if not current_version.pre:
+                        return False
                     if latest_version.pre[1] > current_version.pre[1]:
                         return True
             else:
@@ -124,7 +148,7 @@ class OnlineUpdater(CyclicComponent):
                 return False
         return True
 
-    def _install_update(self, tag_name):
+    def install_update(self, tag_name: str):
         """
         Start the installer at the defined entry point:
         script/installer/start_installer.sh
@@ -132,32 +156,32 @@ class OnlineUpdater(CyclicComponent):
         # TODO do a popup later with deferring option?
         import tarfile
         import urllib.request
+
         # download as tar because direct support
         self._logger.info("Updater: Downloading new release")
         [update_file, _] = urllib.request.urlretrieve(
-            self._repository.get_archive_link("tarball", tag_name))
+            self._repository.get_archive_link("tarball", tag_name)
+        )
         with tarfile.open(str(update_file)) as tar:
             os.makedirs(self._new_version_path, exist_ok=True)
+
             def is_within_directory(directory, target):
-                
                 abs_directory = os.path.abspath(directory)
                 abs_target = os.path.abspath(target)
-            
+
                 prefix = os.path.commonprefix([abs_directory, abs_target])
-                
+
                 return prefix == abs_directory
-            
+
             def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
-            
                 for member in tar.getmembers():
                     member_path = os.path.join(path, member.name)
                     if not is_within_directory(path, member_path):
                         raise Exception("Attempted Path Traversal in Tar File")
-            
-                tar.extractall(path, members, numeric_owner) 
-                
-            
-            safe_extract(tar, path=self._new_version_path)
+
+                tar.extractall(path, members, numeric_owner)
+
+            safe_extract(tar, path=str(self._new_version_path))
 
         # the repo will be in a randomly named dir, so we must scan for it
         update_dir = [f.path for f in os.scandir(self._new_version_path) if f.is_dir()]
@@ -186,5 +210,4 @@ class OnlineUpdater(CyclicComponent):
                 # this kills this program
                 os.system(str(installer_script))
             except RuntimeError as error:
-                self._logger.error(
-                    "Updater: Error while executing updater: \n%s", str(error))
+                self._logger.error("Updater: Error while executing updater: \n%s", str(error))

@@ -10,8 +10,8 @@ from waqd.web.authentication import (
     User,
     get_current_user_with_exception,
 )
-from waqd.web.templates import base_template, sub_template
-from ..authentication import PermissionChecker, get_current_user_plain
+from waqd.web.templates import base_template
+from waqd.web.authentication import PermissionChecker, get_current_user_plain
 
 rt = APIRouter()
 
