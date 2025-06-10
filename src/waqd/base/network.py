@@ -1,6 +1,4 @@
-import socket
-import subprocess
-from typing import Tuple
+from typing import Literal
 from time import sleep
 
 import nmcli
@@ -12,12 +10,11 @@ class Network:
     Singleton that abstracts information about the network.
     """
 
-    NW_READY_SIG_NAME = "network_ready_sig"
     _instance = None
     _internet_reconnect_try = 0  # internal counter for wlan restart
     _disable_network = False
-    _wait_for_network_counter = 0
-    _wait_for_internet_counter = 0
+    _netw_counter = 0
+    _inet_counter = 0
     internet_connected_once = False
 
     def __new__(cls):
@@ -30,50 +27,11 @@ class Network:
         self._runtime_system = RuntimeSystem()
         self._devices = nmcli.device.status()
         self._wifi_networks = nmcli.device.wifi()
+        self._eth_device = ""
+        self._wlan_device = ""
 
         self.wait_for_network()
 
-    @property
-    def internet_connected(self) -> bool:
-        if self._disable_network:
-            return False
-        try:
-            socket.create_connection(("1.1.1.1", 53))
-            return True
-        except OSError:
-            pass
-        return False
-
-    @property
-    def network_connected(self) -> bool:
-        [ipv4, ipv6] = self.get_ip()
-        if not ipv4 and not ipv6 or self._disable_network:
-            return False
-        return True
-
-    def get_ip(self) -> Tuple[str, str]:  # "ipv4", "ipv6"
-        """Gets IP 4 and 6 addresses on target system"""
-        ipv4 = ""
-        ipv6 = ""
-        if self._runtime_system.is_target_system:
-            try:
-                ret = subprocess.check_output("hostname -I", shell=True)
-                ret_str = ret.decode("utf-8")
-            except Exception as e:
-                Logger().error("Network: Can't get IP address")
-                return (ipv4, ipv6)
-            # if both 4 and 6 are available, there is a space between them
-            ips = ret_str.split(" ")
-            for ip_adr in ips:
-                if "." in ip_adr:
-                    ipv4 = ip_adr
-                elif ":" in ip_adr:
-                    ipv6 = ip_adr
-        else:
-            ipv4 = socket.gethostbyname(socket.gethostname())
-        if ipv4 in ["localhost", "127.0.0.1"]:  # we want the LAN address
-            ipv4 = ""
-        return (ipv4, ipv6)
 
     def check_internet_connection(self):
         """
@@ -85,19 +43,16 @@ class Network:
         self._wifi_networks = nmcli.device.wifi()
         if self.internet_connected_once:  # at least once connected:
             if self._internet_reconnect_try == 2:
-                # TODO use py network manager
-                # Logger().error("Watchdog: Restarting wlan...")
-                # os.system("sudo systemctl restart dhcpcd")
-                # sleep(2)
-                # os.system("wpa_cli -i wlan0 reconfigure")
-                # os.system("sudo dhclient")
+                if not self.is_connected_via_eth() and self.is_connected_via_wlan():
+                        Logger().error("Network: Restarting wlan - Net failure...")
+                        self.restart_wlan()
                 sleep(5)
             # failed 3 times straight - restart linux
             if self._internet_reconnect_try == 3:
                 # TODO dialog!
                 Logger().error("Network: Restarting system - Net failure...")
                 self._runtime_system.restart()
-        if not self.internet_connected:
+        if not self.get_connectivity() == "full":
             self._internet_reconnect_try += 1
             sleep(5)
         else:
@@ -107,35 +62,36 @@ class Network:
 
     def wait_for_network(self) -> bool:
         max_error = 5
-        while not self.network_connected and self._wait_for_network_counter < max_error:
+        while not self.get_connectivity() == "limited" and self._netw_counter < max_error:
             sleep(1)
-            self._wait_for_network_counter += 1
-            if self._wait_for_network_counter == 0:
+            self._netw_counter += 1
+            if self._netw_counter == 0:
                 Logger().info("Waiting for network...")
 
-        self._wait_for_network_counter = 0
-        if self._wait_for_network_counter == max_error:
+        self._netw_counter = 0
+        if self._netw_counter == max_error:
             return False
         return True
 
     def wait_for_internet(self) -> bool:
         self.wait_for_network()
         max_error = 5
-        while not self.internet_connected and self._wait_for_internet_counter < max_error:
+        while not self.get_connectivity() == "full" and self._inet_counter < max_error:
             sleep(1)
-            self._wait_for_internet_counter += 1
-            if self._wait_for_internet_counter == 0:
+            self._inet_counter += 1
+            if self._inet_counter == 0:
                 Logger().info("Waiting for network...")
 
-        if self._wait_for_internet_counter == max_error:
+        if self._inet_counter == max_error:
             return False
-        self._wait_for_internet_counter = 0
+        self._inet_counter = 0
         return True
     
     def is_connected_via_eth(self) -> bool:
         self._devices = nmcli.device.status()
         for device in self._devices:
             if device.device_type == "ethernet" and device.state == "connected":
+                self._eth_device = device.device
                 return True
         return False
 
@@ -143,8 +99,10 @@ class Network:
         self._devices = nmcli.device.status()
         for device in self._devices:
             if device.device_type == "wifi" and device.state == "connected":
+                self._wlan_device = device.device
                 return True
         return False
+    
     
     def list_wifi(self, include_hidden=False):
         # filter out duplicates
@@ -170,9 +128,9 @@ class Network:
         Logger().info("Network: Connecting to WiFi: %s", ssid)
         nmcli.device.wifi_connect(ssid, password)
 
-    def disconnect_wifi(self, ssid: str):
-        Logger().info("Network: Disconnecting from WiFi: %s", ssid)
-        nmcli.device.disconnect(ssid)
+    def disconnect_wifi(self):
+        Logger().info("Network: Disconnecting from WiFi")
+        nmcli.device.disconnect(self._wlan_device)
 
     def enable_wifi(self):
         Logger().info("Network: Enabling WiFi")
@@ -184,3 +142,12 @@ class Network:
 
     def wifi_enabled(self):
         return nmcli.radio.wifi()
+    
+    def get_connectivity(self) -> Literal["none", "portal", "limited", "full", "unknown"]:
+        return nmcli.network.connectivity(check=True)
+
+    def restart_wlan(self):
+        self.disable_wifi()
+        sleep(2)
+        self.enable_wifi()
+        nmcli.connection.up(self._wlan_device)

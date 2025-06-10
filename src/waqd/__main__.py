@@ -3,7 +3,6 @@ import os
 import sys
 import waqd
 
-
 def setup_on_non_target_system():
     """Must be able to load on desktop systems"""
     mockup_path = waqd.base_path.parent.parent / "test" / "mock"
