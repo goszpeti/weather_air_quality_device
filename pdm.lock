@@ -2,10 +2,10 @@
 # It is not intended for manual editing.
 
 [metadata]
-groups = ["default", "dev", "test"]
+groups = ["default", "dev", "test", "waqd"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:b8843f4e85d4f9acafe153e3b4bcfe60701a96e5990f82858d50c445129aeb7c"
+content_hash = "sha256:e2b6e2b20dfa03914c1fba0e1e30757336809d3e0446b5d119ac0562ca5fdbab"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -15,7 +15,7 @@ name = "adafruit-blinka"
 version = "7.1.1"
 requires_python = ">=3.7.0"
 summary = "CircuitPython APIs for non-CircuitPython versions of Python such as CPython on Linux and MicroPython."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-PlatformDetect>=3.13.0",
     "Adafruit-PureIO>=1.1.7",
@@ -29,7 +29,7 @@ files = [
 name = "adafruit-circuitpython-ads1x15"
 version = "2.2.8"
 summary = "CircuitPython library for controlling an ADS1x15 ADC."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka",
     "adafruit-circuitpython-busdevice",
@@ -42,7 +42,7 @@ files = [
 name = "adafruit-circuitpython-bh1750"
 version = "1.0.7"
 summary = "CircuitPython library for use with the Adafruit BH1750 breakout"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka",
     "adafruit-circuitpython-busdevice",
@@ -56,7 +56,7 @@ files = [
 name = "adafruit-circuitpython-bme280"
 version = "2.6.10"
 summary = "CircuitPython library for the Bosch BME280 temperature/humidity/pressure sensor."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka",
     "adafruit-circuitpython-busdevice",
@@ -69,7 +69,7 @@ files = [
 name = "adafruit-circuitpython-bmp280"
 version = "3.2.15"
 summary = "CircuitPython driver for the BMP280."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka",
     "adafruit-circuitpython-busdevice",
@@ -82,7 +82,7 @@ files = [
 name = "adafruit-circuitpython-busdevice"
 version = "5.2.12"
 summary = "CircuitPython bus device classes to manage bus sharing."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka>=7.0.0",
     "adafruit-circuitpython-typing",
@@ -96,7 +96,7 @@ files = [
 name = "adafruit-circuitpython-ccs811"
 version = "1.3.4"
 summary = "CircuitPython library for CCS811 air quality sensor."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka",
     "adafruit-circuitpython-busdevice",
@@ -110,7 +110,7 @@ files = [
 name = "adafruit-circuitpython-connectionmanager"
 version = "3.1.4"
 summary = "A urllib3.poolmanager/urllib3.connectionpool-like library for managing sockets and connections"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka",
 ]
@@ -123,7 +123,7 @@ files = [
 name = "adafruit-circuitpython-dht"
 version = "3.7.1"
 summary = "CircuitPython support for DHT11 and DHT22 type temperature/humidity devices"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka",
 ]
@@ -135,7 +135,7 @@ files = [
 name = "adafruit-circuitpython-register"
 version = "1.10.3"
 summary = "CircuitPython data descriptor classes to represent hardware registers on I2C and SPI devices."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka",
     "adafruit-circuitpython-busdevice",
@@ -151,7 +151,7 @@ files = [
 name = "adafruit-circuitpython-requests"
 version = "4.1.12"
 summary = "A requests-like library for web interfacing"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka",
     "Adafruit-Circuitpython-ConnectionManager",
@@ -166,7 +166,7 @@ name = "adafruit-circuitpython-typing"
 version = "1.12.1"
 requires_python = ">=3.8"
 summary = "Types needed for type annotation that are not in `typing`"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "Adafruit-Blinka",
     "adafruit-circuitpython-busdevice",
@@ -182,7 +182,7 @@ files = [
 name = "adafruit-platformdetect"
 version = "3.79.0"
 summary = "Platform detection for use by libraries like Adafruit-Blinka."
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "adafruit_platformdetect-3.79.0-py3-none-any.whl", hash = "sha256:10e4dccaa72c2a0fcb64eab1482b55857264d667ae5481963a20786948a44b72"},
     {file = "adafruit_platformdetect-3.79.0.tar.gz", hash = "sha256:13f522c4ab92441600c3f47fd795b1610a646034922ecd2cbc1e207c64c3cf7f"},
@@ -193,7 +193,7 @@ name = "adafruit-pureio"
 version = "1.1.11"
 requires_python = ">=3.5.0"
 summary = "Pure python (i.e. no native extensions) access to Linux IO    including I2C and SPI. Drop in replacement for smbus and spidev modules."
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "Adafruit_PureIO-1.1.11-py3-none-any.whl", hash = "sha256:281ab2099372cc0decc26326918996cbf21b8eed694ec4764d51eefa029d324e"},
     {file = "Adafruit_PureIO-1.1.11.tar.gz", hash = "sha256:c4cfbb365731942d1f1092a116f47dfdae0aef18c5b27f1072b5824ad5ea8c7c"},
@@ -235,7 +235,7 @@ name = "apscheduler"
 version = "3.10.4"
 requires_python = ">=3.6"
 summary = "In-process task scheduler with Cron-like capabilities"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "importlib-metadata>=3.6.0; python_version < \"3.8\"",
     "pytz",
@@ -251,7 +251,7 @@ files = [
 name = "argparse"
 version = "1.4.0"
 summary = "Python command-line parsing library"
-groups = ["default"]
+groups = ["waqd"]
 marker = "platform_machine == \"aarch64\""
 files = [
     {file = "argparse-1.4.0-py2.py3-none-any.whl", hash = "sha256:c31647edb69fd3d465a847ea3157d37bed1f95f19760b11a47aa91c04b666314"},
@@ -263,7 +263,7 @@ name = "attrs"
 version = "25.3.0"
 requires_python = ">=3.8"
 summary = "Classes Without Boilerplate"
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "attrs-25.3.0-py3-none-any.whl", hash = "sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3"},
     {file = "attrs-25.3.0.tar.gz", hash = "sha256:75d7cefc7fb576747b2c81b4442d4d4a1ce0900973527c011d1030fd3bf4af1b"},
@@ -330,7 +330,7 @@ name = "certifi"
 version = "2025.4.26"
 requires_python = ">=3.6"
 summary = "Python package for providing Mozilla's CA Bundle."
-groups = ["default"]
+groups = ["default", "waqd"]
 files = [
     {file = "certifi-2025.4.26-py3-none-any.whl", hash = "sha256:30350364dfe371162649852c63336a15c70c6510c2ad5015b21c2345311805f3"},
     {file = "certifi-2025.4.26.tar.gz", hash = "sha256:0a816057ea3cdefcef70270d2c515e4506bbc954f417fa5ade2021213bb8f0c6"},
@@ -341,7 +341,7 @@ name = "cffi"
 version = "1.17.1"
 requires_python = ">=3.8"
 summary = "Foreign Function Interface for Python calling C code."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "pycparser",
 ]
@@ -388,7 +388,7 @@ name = "charset-normalizer"
 version = "3.4.2"
 requires_python = ">=3.7"
 summary = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "charset_normalizer-3.4.2-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:be1e352acbe3c78727a16a455126d9ff83ea2dfdcbc83148d2982305a04714c2"},
     {file = "charset_normalizer-3.4.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:aa88ca0b1932e93f2d961bf3addbb2db902198dca337d88c89e1559e066e7645"},
@@ -438,7 +438,7 @@ name = "click"
 version = "8.2.1"
 requires_python = ">=3.10"
 summary = "Composable command line interface toolkit"
-groups = ["default"]
+groups = ["default", "waqd"]
 dependencies = [
     "colorama; platform_system == \"Windows\"",
 ]
@@ -452,7 +452,7 @@ name = "colorama"
 version = "0.4.6"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 summary = "Cross-platform colored terminal text."
-groups = ["default", "test"]
+groups = ["default", "test", "waqd"]
 marker = "sys_platform == \"win32\" or platform_system == \"Windows\""
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
@@ -463,7 +463,7 @@ files = [
 name = "colorzero"
 version = "2.0"
 summary = "Yet another Python color library"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "setuptools",
 ]
@@ -590,6 +590,49 @@ files = [
 ]
 
 [[package]]
+name = "cryptography"
+version = "45.0.3"
+requires_python = "!=3.9.0,!=3.9.1,>=3.7"
+summary = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
+groups = ["waqd"]
+dependencies = [
+    "cffi>=1.14; platform_python_implementation != \"PyPy\"",
+]
+files = [
+    {file = "cryptography-45.0.3-cp311-abi3-macosx_10_9_universal2.whl", hash = "sha256:7573d9eebaeceeb55285205dbbb8753ac1e962af3d9640791d12b36864065e71"},
+    {file = "cryptography-45.0.3-cp311-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d377dde61c5d67eb4311eace661c3efda46c62113ff56bf05e2d679e02aebb5b"},
+    {file = "cryptography-45.0.3-cp311-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fae1e637f527750811588e4582988932c222f8251f7b7ea93739acb624e1487f"},
+    {file = "cryptography-45.0.3-cp311-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:ca932e11218bcc9ef812aa497cdf669484870ecbcf2d99b765d6c27a86000942"},
+    {file = "cryptography-45.0.3-cp311-abi3-manylinux_2_28_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:af3f92b1dc25621f5fad065288a44ac790c5798e986a34d393ab27d2b27fcff9"},
+    {file = "cryptography-45.0.3-cp311-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:2f8f8f0b73b885ddd7f3d8c2b2234a7d3ba49002b0223f58cfde1bedd9563c56"},
+    {file = "cryptography-45.0.3-cp311-abi3-manylinux_2_34_aarch64.whl", hash = "sha256:9cc80ce69032ffa528b5e16d217fa4d8d4bb7d6ba8659c1b4d74a1b0f4235fca"},
+    {file = "cryptography-45.0.3-cp311-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:c824c9281cb628015bfc3c59335163d4ca0540d49de4582d6c2637312907e4b1"},
+    {file = "cryptography-45.0.3-cp311-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:5833bb4355cb377ebd880457663a972cd044e7f49585aee39245c0d592904578"},
+    {file = "cryptography-45.0.3-cp311-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:9bb5bf55dcb69f7067d80354d0a348368da907345a2c448b0babc4215ccd3497"},
+    {file = "cryptography-45.0.3-cp311-abi3-win32.whl", hash = "sha256:3ad69eeb92a9de9421e1f6685e85a10fbcfb75c833b42cc9bc2ba9fb00da4710"},
+    {file = "cryptography-45.0.3-cp311-abi3-win_amd64.whl", hash = "sha256:97787952246a77d77934d41b62fb1b6f3581d83f71b44796a4158d93b8f5c490"},
+    {file = "cryptography-45.0.3-cp37-abi3-macosx_10_9_universal2.whl", hash = "sha256:c92519d242703b675ccefd0f0562eb45e74d438e001f8ab52d628e885751fb06"},
+    {file = "cryptography-45.0.3-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c5edcb90da1843df85292ef3a313513766a78fbbb83f584a5a58fb001a5a9d57"},
+    {file = "cryptography-45.0.3-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:38deed72285c7ed699864f964a3f4cf11ab3fb38e8d39cfcd96710cd2b5bb716"},
+    {file = "cryptography-45.0.3-cp37-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:5555365a50efe1f486eed6ac7062c33b97ccef409f5970a0b6f205a7cfab59c8"},
+    {file = "cryptography-45.0.3-cp37-abi3-manylinux_2_28_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:9e4253ed8f5948a3589b3caee7ad9a5bf218ffd16869c516535325fece163dcc"},
+    {file = "cryptography-45.0.3-cp37-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:cfd84777b4b6684955ce86156cfb5e08d75e80dc2585e10d69e47f014f0a5342"},
+    {file = "cryptography-45.0.3-cp37-abi3-manylinux_2_34_aarch64.whl", hash = "sha256:a2b56de3417fd5f48773ad8e91abaa700b678dc7fe1e0c757e1ae340779acf7b"},
+    {file = "cryptography-45.0.3-cp37-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:57a6500d459e8035e813bd8b51b671977fb149a8c95ed814989da682314d0782"},
+    {file = "cryptography-45.0.3-cp37-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:f22af3c78abfbc7cbcdf2c55d23c3e022e1a462ee2481011d518c7fb9c9f3d65"},
+    {file = "cryptography-45.0.3-cp37-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:232954730c362638544758a8160c4ee1b832dc011d2c41a306ad8f7cccc5bb0b"},
+    {file = "cryptography-45.0.3-cp37-abi3-win32.whl", hash = "sha256:cb6ab89421bc90e0422aca911c69044c2912fc3debb19bb3c1bfe28ee3dff6ab"},
+    {file = "cryptography-45.0.3-cp37-abi3-win_amd64.whl", hash = "sha256:d54ae41e6bd70ea23707843021c778f151ca258081586f0cfa31d936ae43d1b2"},
+    {file = "cryptography-45.0.3-pp311-pypy311_pp73-macosx_10_9_x86_64.whl", hash = "sha256:edd6d51869beb7f0d472e902ef231a9b7689508e83880ea16ca3311a00bf5ce7"},
+    {file = "cryptography-45.0.3-pp311-pypy311_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:555e5e2d3a53b4fabeca32835878b2818b3f23966a4efb0d566689777c5a12c8"},
+    {file = "cryptography-45.0.3-pp311-pypy311_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:25286aacb947286620a31f78f2ed1a32cded7be5d8b729ba3fb2c988457639e4"},
+    {file = "cryptography-45.0.3-pp311-pypy311_pp73-manylinux_2_34_aarch64.whl", hash = "sha256:050ce5209d5072472971e6efbfc8ec5a8f9a841de5a4db0ebd9c2e392cb81972"},
+    {file = "cryptography-45.0.3-pp311-pypy311_pp73-manylinux_2_34_x86_64.whl", hash = "sha256:dc10ec1e9f21f33420cc05214989544727e776286c1c16697178978327b95c9c"},
+    {file = "cryptography-45.0.3-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:9eda14f049d7f09c2e8fb411dda17dd6b16a3c76a1de5e249188a32aeb92de19"},
+    {file = "cryptography-45.0.3.tar.gz", hash = "sha256:ec21313dd335c51d7877baf2972569f40a4291b76a0ce51391523ae358d05899"},
+]
+
+[[package]]
 name = "debugpy"
 version = "1.8.14"
 requires_python = ">=3.8"
@@ -617,7 +660,7 @@ name = "deprecated"
 version = "1.2.18"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
 summary = "Python @deprecated decorator to deprecate old python classes, functions or methods."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "wrapt<2,>=1.10",
 ]
@@ -657,7 +700,7 @@ name = "evdev"
 version = "1.9.2"
 requires_python = ">=3.8"
 summary = "Bindings to the Linux input handling subsystem"
-groups = ["default"]
+groups = ["waqd"]
 marker = "\"linux\" in sys_platform"
 files = [
     {file = "evdev-1.9.2.tar.gz", hash = "sha256:5d3278892ce1f92a74d6bf888cc8525d9f68af85dbe336c95d1c87fb8f423069"},
@@ -736,7 +779,7 @@ files = [
 name = "file-read-backwards"
 version = "2.0.0"
 summary = "Memory efficient way of reading files line-by-line from the end of file"
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "file_read_backwards-2.0.0-py2.py3-none-any.whl", hash = "sha256:78684aafc0471e9e0f62a8662361bfaf70ade3d38333d7f166fd8024a028b1d1"},
     {file = "file_read_backwards-2.0.0.tar.gz", hash = "sha256:fd50d9089b412147ea3c6027e2ad905f977002db2918cf315d64eed23d6d6eb8"},
@@ -747,7 +790,7 @@ name = "flexcache"
 version = "0.3"
 requires_python = ">=3.9"
 summary = "Saves and loads to the cache a transformed versions of a source object."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "typing-extensions",
 ]
@@ -761,7 +804,7 @@ name = "flexparser"
 version = "0.4"
 requires_python = ">=3.9"
 summary = "Parsing made fun ... using typing."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "typing-extensions",
 ]
@@ -789,7 +832,7 @@ name = "frozendict"
 version = "2.4.6"
 requires_python = ">=3.6"
 summary = "A simple immutable dictionary"
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "frozendict-2.4.6-py311-none-any.whl", hash = "sha256:d065db6a44db2e2375c23eac816f1a022feb2fa98cbb50df44a9e83700accbea"},
     {file = "frozendict-2.4.6-py312-none-any.whl", hash = "sha256:49344abe90fb75f0f9fdefe6d4ef6d4894e640fadab71f11009d52ad97f370b9"},
@@ -801,7 +844,7 @@ files = [
 name = "getrpimodel"
 version = "0.1.26"
 summary = "Get Raspberry Pi model Name(eg: A, B, B+...)"
-groups = ["default"]
+groups = ["waqd"]
 marker = "platform_machine == \"aarch64\""
 files = [
     {file = "getrpimodel-0.1.26.tar.gz", hash = "sha256:67dabdf1565b4f4a477b481f8b0f11c3a3d84594dc9a3f6e8d8e62c1e32824db"},
@@ -812,7 +855,7 @@ name = "gpiozero"
 version = "2.0.1"
 requires_python = ">=3.9"
 summary = "A simple interface to GPIO devices with Raspberry Pi"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "colorzero",
     "importlib-metadata~=4.6; python_version < \"3.10\"",
@@ -828,7 +871,7 @@ name = "gtts"
 version = "2.2.4"
 requires_python = ">=2.7"
 summary = "gTTS (Google Text-to-Speech), a Python library and CLI tool to interface with Google Translate text-to-speech API"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "click",
     "requests",
@@ -926,7 +969,7 @@ name = "idna"
 version = "3.10"
 requires_python = ">=3.6"
 summary = "Internationalized Domain Names in Applications (IDNA)"
-groups = ["default"]
+groups = ["default", "waqd"]
 files = [
     {file = "idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"},
     {file = "idna-3.10.tar.gz", hash = "sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9"},
@@ -937,7 +980,7 @@ name = "influxdb-client"
 version = "1.49.0"
 requires_python = ">=3.7"
 summary = "InfluxDB 2.0 Python client library"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "certifi>=14.05.14",
     "python-dateutil>=2.5.3",
@@ -980,7 +1023,7 @@ name = "jsonschema"
 version = "4.23.0"
 requires_python = ">=3.8"
 summary = "An implementation of JSON Schema validation for Python"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "attrs>=22.2.0",
     "importlib-resources>=1.4.0; python_version < \"3.9\"",
@@ -999,7 +1042,7 @@ name = "jsonschema-specifications"
 version = "2025.4.1"
 requires_python = ">=3.9"
 summary = "The JSON Schema meta-schemas and vocabularies, exposed as a Registry"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "referencing>=0.31.0",
 ]
@@ -1087,7 +1130,7 @@ files = [
 name = "mh-z19"
 version = "3.1.3"
 summary = "mh-z19 CO2 concentration sensor library for All models of Raspberry Pi"
-groups = ["default"]
+groups = ["waqd"]
 marker = "platform_machine == \"aarch64\""
 dependencies = [
     "RPi-GPIO",
@@ -1105,7 +1148,7 @@ name = "nmcli"
 version = "1.5.0"
 requires_python = ">=3.7"
 summary = "A python wrapper library for the network-manager cli client"
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "nmcli-1.5.0-py3-none-any.whl", hash = "sha256:55e8cba0b4650f8d0741c9c403f8e33c6ad270b66bc23f9dc830214ef37b8429"},
     {file = "nmcli-1.5.0.tar.gz", hash = "sha256:6261dbd6f48b8454b7efc992f4285a5c126613a91a965d2c6c2caf749dec4ddf"},
@@ -1137,7 +1180,7 @@ name = "pint"
 version = "0.24.4"
 requires_python = ">=3.9"
 summary = "Physical quantities module"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "flexcache>=0.3",
     "flexparser>=0.4",
@@ -1154,7 +1197,7 @@ name = "platformdirs"
 version = "4.3.8"
 requires_python = ">=3.9"
 summary = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
-groups = ["default", "dev"]
+groups = ["dev", "waqd"]
 files = [
     {file = "platformdirs-4.3.8-py3-none-any.whl", hash = "sha256:ff7059bb7eb1179e2685604f4aaf157cfd9535242bd23742eadc3c13542139b4"},
     {file = "platformdirs-4.3.8.tar.gz", hash = "sha256:3d512d96e16bcb959a814c9f348431070822a6496326a4be0911c40b5a74c2bc"},
@@ -1193,7 +1236,7 @@ name = "pycparser"
 version = "2.22"
 requires_python = ">=3.8"
 summary = "C parser in Python"
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc"},
     {file = "pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6"},
@@ -1288,7 +1331,7 @@ name = "pyftdi"
 version = "0.56.0"
 requires_python = ">=3.9"
 summary = "FTDI device driver (pure Python)"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "pyserial>=3.0",
     "pyusb!=1.2.0,>=1.0.0",
@@ -1299,19 +1342,21 @@ files = [
 
 [[package]]
 name = "pygithub"
-version = "1.55"
-requires_python = ">=3.6"
+version = "2.6.1"
+requires_python = ">=3.8"
 summary = "Use the full Github API v3"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
-    "deprecated",
-    "pyjwt>=2.0",
+    "Deprecated",
+    "pyjwt[crypto]>=2.4.0",
     "pynacl>=1.4.0",
     "requests>=2.14.0",
+    "typing-extensions>=4.0.0",
+    "urllib3>=1.26.0",
 ]
 files = [
-    {file = "PyGithub-1.55-py3-none-any.whl", hash = "sha256:2caf0054ea079b71e539741ae56c5a95e073b81fa472ce222e81667381b9601b"},
-    {file = "PyGithub-1.55.tar.gz", hash = "sha256:1bbfff9372047ff3f21d5cd8e07720f3dbfdaf6462fcaed9d815f528f1ba7283"},
+    {file = "PyGithub-2.6.1-py3-none-any.whl", hash = "sha256:6f2fa6d076ccae475f9fc392cc6cdbd54db985d4f69b8833a28397de75ed6ca3"},
+    {file = "pygithub-2.6.1.tar.gz", hash = "sha256:b5c035392991cca63959e9453286b41b54d83bf2de2daa7d7ff7e4312cebf3bf"},
 ]
 
 [[package]]
@@ -1330,7 +1375,23 @@ name = "pyjwt"
 version = "2.10.1"
 requires_python = ">=3.9"
 summary = "JSON Web Token implementation in Python"
-groups = ["default"]
+groups = ["default", "waqd"]
+files = [
+    {file = "PyJWT-2.10.1-py3-none-any.whl", hash = "sha256:dcdd193e30abefd5debf142f9adfcdd2b58004e644f25406ffaebd50bd98dacb"},
+    {file = "pyjwt-2.10.1.tar.gz", hash = "sha256:3cc5772eb20009233caf06e9d8a0577824723b44e6648ee0a2aedb6cf9381953"},
+]
+
+[[package]]
+name = "pyjwt"
+version = "2.10.1"
+extras = ["crypto"]
+requires_python = ">=3.9"
+summary = "JSON Web Token implementation in Python"
+groups = ["waqd"]
+dependencies = [
+    "cryptography>=3.4.0",
+    "pyjwt==2.10.1",
+]
 files = [
     {file = "PyJWT-2.10.1-py3-none-any.whl", hash = "sha256:dcdd193e30abefd5debf142f9adfcdd2b58004e644f25406ffaebd50bd98dacb"},
     {file = "pyjwt-2.10.1.tar.gz", hash = "sha256:3cc5772eb20009233caf06e9d8a0577824723b44e6648ee0a2aedb6cf9381953"},
@@ -1341,7 +1402,7 @@ name = "pynacl"
 version = "1.5.0"
 requires_python = ">=3.6"
 summary = "Python binding to the Networking and Cryptography (NaCl) library"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "cffi>=1.4.1",
 ]
@@ -1362,7 +1423,7 @@ files = [
 name = "pynput"
 version = "1.8.1"
 summary = "Monitor and control user input devices"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "enum34; python_version == \"2.7\"",
     "evdev>=1.3; \"linux\" in sys_platform",
@@ -1381,7 +1442,7 @@ name = "pyobjc-core"
 version = "11.0"
 requires_python = ">=3.8"
 summary = "Python<->ObjC Interoperability Module"
-groups = ["default"]
+groups = ["waqd"]
 marker = "sys_platform == \"darwin\""
 files = [
     {file = "pyobjc_core-11.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:50675c0bb8696fe960a28466f9baf6943df2928a1fd85625d678fa2f428bd0bd"},
@@ -1396,7 +1457,7 @@ name = "pyobjc-framework-applicationservices"
 version = "11.0"
 requires_python = ">=3.9"
 summary = "Wrappers for the framework ApplicationServices on macOS"
-groups = ["default"]
+groups = ["waqd"]
 marker = "sys_platform == \"darwin\""
 dependencies = [
     "pyobjc-core>=11.0",
@@ -1417,7 +1478,7 @@ name = "pyobjc-framework-cocoa"
 version = "11.0"
 requires_python = ">=3.9"
 summary = "Wrappers for the Cocoa frameworks on macOS"
-groups = ["default"]
+groups = ["waqd"]
 marker = "sys_platform == \"darwin\""
 dependencies = [
     "pyobjc-core>=11.0",
@@ -1435,7 +1496,7 @@ name = "pyobjc-framework-coretext"
 version = "11.0"
 requires_python = ">=3.9"
 summary = "Wrappers for the framework CoreText on macOS"
-groups = ["default"]
+groups = ["waqd"]
 marker = "sys_platform == \"darwin\""
 dependencies = [
     "pyobjc-core>=11.0",
@@ -1455,7 +1516,7 @@ name = "pyobjc-framework-quartz"
 version = "11.0"
 requires_python = ">=3.9"
 summary = "Wrappers for the Quartz frameworks on macOS"
-groups = ["default"]
+groups = ["waqd"]
 marker = "sys_platform == \"darwin\""
 dependencies = [
     "pyobjc-core>=11.0",
@@ -1473,7 +1534,7 @@ files = [
 name = "pyserial"
 version = "3.5"
 summary = "Python Serial Port Extension"
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "pyserial-3.5-py2.py3-none-any.whl", hash = "sha256:c4451db6ba391ca6ca299fb3ec7bae67a5c55dde170964c7a14ceefec02f2cf0"},
     {file = "pyserial-3.5.tar.gz", hash = "sha256:3c77e014170dfffbd816e6ffc205e9842efb10be9f58ec16d3e8675b4925cddb"},
@@ -1557,7 +1618,7 @@ name = "python-dateutil"
 version = "2.8.2"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 summary = "Extensions to the standard Python datetime module"
-groups = ["default", "test"]
+groups = ["test", "waqd"]
 dependencies = [
     "six>=1.5",
 ]
@@ -1592,7 +1653,7 @@ files = [
 name = "python-vlc"
 version = "3.0.16120"
 summary = "VLC bindings for python."
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "python-vlc-3.0.16120.tar.gz", hash = "sha256:92f98fee088f72bd6d063b3b3312d0bd29b37e7ad65ddeb3a7303320300c2807"},
     {file = "python_vlc-3.0.16120-py3-none-any.whl", hash = "sha256:c409afb38fe9f788a663b4302ca583f31289ef0860ab2b1668da96bbe8f14bfc"},
@@ -1602,7 +1663,7 @@ files = [
 name = "python-xlib"
 version = "0.33"
 summary = "Python X Library"
-groups = ["default"]
+groups = ["waqd"]
 marker = "\"linux\" in sys_platform"
 dependencies = [
     "six>=1.10.0",
@@ -1647,7 +1708,7 @@ files = [
 name = "pytz"
 version = "2025.2"
 summary = "World timezone definitions, modern and historical"
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "pytz-2025.2-py2.py3-none-any.whl", hash = "sha256:5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00"},
     {file = "pytz-2025.2.tar.gz", hash = "sha256:360b9e3dbb49a209c21ad61809c7fb453643e048b38924c765813546746e81c3"},
@@ -1658,7 +1719,7 @@ name = "pyusb"
 version = "1.3.1"
 requires_python = ">=3.9.0"
 summary = "Easy USB access for Python"
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "pyusb-1.3.1-py3-none-any.whl", hash = "sha256:bf9b754557af4717fe80c2b07cc2b923a9151f5c08d17bdb5345dac09d6a0430"},
     {file = "pyusb-1.3.1.tar.gz", hash = "sha256:3af070b607467c1c164f49d5b0caabe8ac78dbed9298d703a8dbf9df4052d17e"},
@@ -1706,7 +1767,7 @@ name = "reactivex"
 version = "4.0.4"
 requires_python = ">=3.7,<4.0"
 summary = "ReactiveX (Rx) for Python"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "typing-extensions<5.0.0,>=4.1.1",
 ]
@@ -1720,7 +1781,7 @@ name = "referencing"
 version = "0.36.2"
 requires_python = ">=3.9"
 summary = "JSON Referencing + Python"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "attrs>=22.2.0",
     "rpds-py>=0.7.0",
@@ -1733,10 +1794,10 @@ files = [
 
 [[package]]
 name = "requests"
-version = "2.32.3"
+version = "2.32.4"
 requires_python = ">=3.8"
 summary = "Python HTTP for Humans."
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "certifi>=2017.4.17",
     "charset-normalizer<4,>=2",
@@ -1744,8 +1805,8 @@ dependencies = [
     "urllib3<3,>=1.21.1",
 ]
 files = [
-    {file = "requests-2.32.3-py3-none-any.whl", hash = "sha256:70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6"},
-    {file = "requests-2.32.3.tar.gz", hash = "sha256:55365417734eb18255590a9ff9eb97e9e1da868d4ccd6402399eaf68af20a760"},
+    {file = "requests-2.32.4-py3-none-any.whl", hash = "sha256:27babd3cda2a6d50b30443204ee89830707d396671944c998b5975b031ac2b2c"},
+    {file = "requests-2.32.4.tar.gz", hash = "sha256:27d0316682c8a29834d3264820024b62a36942083d52caf2f14c0591336d3422"},
 ]
 
 [[package]]
@@ -1799,7 +1860,7 @@ name = "rpds-py"
 version = "0.25.1"
 requires_python = ">=3.9"
 summary = "Python bindings to Rust's persistent data structures (rpds)"
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "rpds_py-0.25.1-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:5f048bbf18b1f9120685c6d6bb70cc1a52c8cc11bdd04e643d28d3be0baf666d"},
     {file = "rpds_py-0.25.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:4fbb0dbba559959fcb5d0735a0f87cdbca9e95dac87982e9b95c0f8f7ad10255"},
@@ -1874,7 +1935,7 @@ files = [
 name = "rpi-backlight"
 version = "2.6.0"
 summary = "A Python module for controlling power and brightness of the official Raspberry Pi 7\" touch display."
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "rpi-backlight-2.6.0.tar.gz", hash = "sha256:4b57871020e3067026fcd1f00a0f67265e269af18b7ef53f7725580c3d08e219"},
     {file = "rpi_backlight-2.6.0-py3-none-any.whl", hash = "sha256:c5fe0a7b85dbe95adf3114983a63841d09e359b7c3a8d38b4a4f2e81d09d73fd"},
@@ -1884,7 +1945,7 @@ files = [
 name = "rpi-gpio"
 version = "0.7.1"
 summary = "A module to control Raspberry Pi GPIO channels"
-groups = ["default"]
+groups = ["waqd"]
 marker = "platform_machine == \"aarch64\""
 files = [
     {file = "RPi.GPIO-0.7.1.tar.gz", hash = "sha256:cd61c4b03c37b62bba4a5acfea9862749c33c618e0295e7e90aa4713fb373b70"},
@@ -1895,7 +1956,7 @@ name = "setuptools"
 version = "80.9.0"
 requires_python = ">=3.9"
 summary = "Easily download, build, install, upgrade, and uninstall Python packages"
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "setuptools-80.9.0-py3-none-any.whl", hash = "sha256:062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922"},
     {file = "setuptools-80.9.0.tar.gz", hash = "sha256:f36b47402ecde768dbfafc46e8e4207b4360c654f1f3bb84475f0a28628fb19c"},
@@ -1917,7 +1978,7 @@ name = "six"
 version = "1.17.0"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 summary = "Python 2 and 3 compatibility utilities"
-groups = ["default", "test"]
+groups = ["test", "waqd"]
 files = [
     {file = "six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274"},
     {file = "six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81"},
@@ -1971,7 +2032,7 @@ name = "typing-extensions"
 version = "4.14.0"
 requires_python = ">=3.9"
 summary = "Backported and Experimental Type Hints for Python 3.9+"
-groups = ["default"]
+groups = ["default", "waqd"]
 files = [
     {file = "typing_extensions-4.14.0-py3-none-any.whl", hash = "sha256:a1514509136dd0b477638fc68d6a91497af5076466ad0fa6c338e44e359944af"},
     {file = "typing_extensions-4.14.0.tar.gz", hash = "sha256:8676b788e32f02ab42d9e7c61324048ae4c6d844a399eebace3d4979d75ceef4"},
@@ -1996,7 +2057,7 @@ name = "tzdata"
 version = "2025.2"
 requires_python = ">=2"
 summary = "Provider of IANA time zone data"
-groups = ["default"]
+groups = ["waqd"]
 marker = "platform_system == \"Windows\""
 files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
@@ -2008,7 +2069,7 @@ name = "tzlocal"
 version = "5.3.1"
 requires_python = ">=3.9"
 summary = "tzinfo object for the local timezone"
-groups = ["default"]
+groups = ["waqd"]
 dependencies = [
     "tzdata; platform_system == \"Windows\"",
 ]
@@ -2022,7 +2083,7 @@ name = "urllib3"
 version = "2.4.0"
 requires_python = ">=3.9"
 summary = "HTTP library with thread-safe connection pooling, file post, and more."
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "urllib3-2.4.0-py3-none-any.whl", hash = "sha256:4e16665048960a0900c702d4a66415956a584919c03361cac9f1df5c5dd7e813"},
     {file = "urllib3-2.4.0.tar.gz", hash = "sha256:414bc6535b787febd7567804cc015fee39daab8ad86268f1310a9250697de466"},
@@ -2206,7 +2267,7 @@ name = "wrapt"
 version = "1.17.2"
 requires_python = ">=3.8"
 summary = "Module for decorators, wrappers and monkey patching."
-groups = ["default"]
+groups = ["waqd"]
 files = [
     {file = "wrapt-1.17.2-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:ff04ef6eec3eee8a5efef2401495967a916feaa353643defcc03fc74fe213b58"},
     {file = "wrapt-1.17.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:4db983e7bca53819efdbd64590ee96c9213894272c776966ca6306b73e4affda"},
