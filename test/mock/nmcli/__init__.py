@@ -1,8 +1,24 @@
 
+from enum import Enum
 from typing import Optional
 from attr import dataclass
 
+class ConnectionActivateFailedException(Exception):
+    """"Raised when a connection activation fails."""
 
+class NetworkConnectivity(Enum):
+    UNKNOWN = 'unknown'
+    NONE = 'none'
+    PORTAL = 'portal'
+    LIMITED = 'limited'
+    FULL = 'full'
+
+class _syscmd():
+    @staticmethod
+    def nmcli(cmd):
+        # This is a mock implementation of the nmcli command execution.
+        # In a real scenario, this would execute the command and return the output.
+        return "Mocked nmcli output for command: " + " ".join(cmd)
 
 class RadioMgr():
     _state = True
@@ -232,3 +248,11 @@ class DeviceMgr():
 
 
 device = DeviceMgr()
+
+class Networking:
+    def connectivity(self, check=False) -> NetworkConnectivity:
+        # This is a mock implementation of network connectivity.
+        # In a real scenario, this would check the actual network status.
+        return NetworkConnectivity.FULL
+
+networking = Networking()

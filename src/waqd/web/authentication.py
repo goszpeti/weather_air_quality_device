@@ -131,7 +131,7 @@ def create_access_token(
     )
     return encoded_jwt
 
-
+@lru_cache(maxsize=None)
 def get_current_user(token):
     try:
         payload = jwt.decode(
@@ -200,21 +200,11 @@ def get_db():
         },
     }
 
-
-# admin: bool = Depends(
-#     PermissionChecker(
-#         required_permissions=[
-#             "users:admin",
-#         ]
-#     )
-# ),
-
-
 class PermissionChecker:
     def __init__(self, required_permissions: list[str]) -> None:
         self.required_permissions = required_permissions
 
-    def __call__(self, user: User = Depends(get_current_user), exception=True) -> bool:
+    def __call__(self, user: User = Depends(get_current_user_plain), exception=True) -> bool:
         if self.check_permissions(user):
             return True
         if exception:
@@ -229,3 +219,10 @@ class PermissionChecker:
             if r_perm not in user.permissions:
                 return False
         return True
+
+user_exception_check = Depends(get_current_user_with_exception)
+user_redirect_check = Depends(get_current_user_with_redirect)
+user_plain_check = Depends(get_current_user_plain)
+
+local_check = Depends(PermissionChecker(required_permissions=["users:local"]))
+admin_check = Depends(PermissionChecker(required_permissions=["users:admin"]))

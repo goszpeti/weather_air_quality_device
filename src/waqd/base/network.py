@@ -1,9 +1,11 @@
-from typing import Literal
+import re
 from time import sleep
 
 import nmcli
+from nmcli import NetworkConnectivity
 from waqd.base.file_logger import Logger
 from waqd.base.system import RuntimeSystem
+
 
 class Network:
     """
@@ -30,8 +32,10 @@ class Network:
         self._eth_device = ""
         self._wlan_device = ""
 
-        self.wait_for_network()
+        self.is_connected_via_eth()  # init _eth_device
+        self.is_connected_via_wlan()  # init _wlan_device
 
+        self.wait_for_network()
 
     def check_internet_connection(self):
         """
@@ -44,15 +48,15 @@ class Network:
         if self.internet_connected_once:  # at least once connected:
             if self._internet_reconnect_try == 2:
                 if not self.is_connected_via_eth() and self.is_connected_via_wlan():
-                        Logger().error("Network: Restarting wlan - Net failure...")
-                        self.restart_wlan()
+                    Logger().error("Network: Restarting wlan - Net failure...")
+                    self.restart_wlan()
                 sleep(5)
             # failed 3 times straight - restart linux
             if self._internet_reconnect_try == 3:
                 # TODO dialog!
                 Logger().error("Network: Restarting system - Net failure...")
                 self._runtime_system.restart()
-        if not self.get_connectivity() == "full":
+        if not self.get_connectivity() == NetworkConnectivity.FULL:
             self._internet_reconnect_try += 1
             sleep(5)
         else:
@@ -62,7 +66,11 @@ class Network:
 
     def wait_for_network(self) -> bool:
         max_error = 5
-        while not self.get_connectivity() == "limited" and self._netw_counter < max_error:
+        while (
+            self.get_connectivity()
+            not in [NetworkConnectivity.LIMITED, NetworkConnectivity.FULL]
+            and self._netw_counter < max_error
+        ):
             sleep(1)
             self._netw_counter += 1
             if self._netw_counter == 0:
@@ -76,7 +84,10 @@ class Network:
     def wait_for_internet(self) -> bool:
         self.wait_for_network()
         max_error = 5
-        while not self.get_connectivity() == "full" and self._inet_counter < max_error:
+        while (
+            not self.get_connectivity() == NetworkConnectivity.FULL
+            and self._inet_counter < max_error
+        ):
             sleep(1)
             self._inet_counter += 1
             if self._inet_counter == 0:
@@ -86,9 +97,8 @@ class Network:
             return False
         self._inet_counter = 0
         return True
-    
+
     def is_connected_via_eth(self) -> bool:
-        self._devices = nmcli.device.status()
         for device in self._devices:
             if device.device_type == "ethernet" and device.state == "connected":
                 self._eth_device = device.device
@@ -96,14 +106,12 @@ class Network:
         return False
 
     def is_connected_via_wlan(self) -> bool:
-        self._devices = nmcli.device.status()
         for device in self._devices:
             if device.device_type == "wifi" and device.state == "connected":
                 self._wlan_device = device.device
                 return True
         return False
-    
-    
+
     def list_wifi(self, include_hidden=False):
         # filter out duplicates
         self._wifi_networks = nmcli.device.wifi()
@@ -118,7 +126,7 @@ class Network:
             wifi_networks[device.ssid] = device
         return wifi_networks
 
-    def current_wifi_strength(self) -> int|None:
+    def current_wifi_strength(self) -> int | None:
         for device in self._wifi_networks:
             if device.in_use:
                 return device.signal
@@ -128,9 +136,17 @@ class Network:
         Logger().info("Network: Connecting to WiFi: %s", ssid)
         nmcli.device.wifi_connect(ssid, password)
 
+    def try_connect_wifi(self, ssid: str):
+        cmd = ["device", "wifi", "connect", ssid]
+        r = nmcli._syscmd.nmcli(cmd)
+        m = re.search(r"Connection activation failed:", r)
+        if m:
+            raise nmcli.ConnectionActivateFailedException("Connection activation failed")
+
     def disconnect_wifi(self):
         Logger().info("Network: Disconnecting from WiFi")
-        nmcli.device.disconnect(self._wlan_device)
+        if self.is_connected_via_wlan():
+            nmcli.device.disconnect(self._wlan_device)
 
     def enable_wifi(self):
         Logger().info("Network: Enabling WiFi")
@@ -142,12 +158,13 @@ class Network:
 
     def wifi_enabled(self):
         return nmcli.radio.wifi()
-    
-    def get_connectivity(self) -> Literal["none", "portal", "limited", "full", "unknown"]:
-        return nmcli.network.connectivity(check=True)
+
+    def get_connectivity(self) -> NetworkConnectivity:
+        if (status := nmcli.networking.connectivity(check=True)) == NetworkConnectivity.FULL:
+            self.internet_connected_once = True
+        return status
 
     def restart_wlan(self):
         self.disable_wifi()
         sleep(2)
-        self.enable_wifi()
-        nmcli.connection.up(self._wlan_device)
+        self.enable_wifi()  # reconnects

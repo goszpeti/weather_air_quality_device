@@ -17,8 +17,8 @@ from waqd.web.authentication import (
     authenticate_user,
     create_access_token,
     get_db,
-    get_current_user_with_exception,
-    get_current_user_plain,
+    user_plain_check,
+    user_exception_check
 )
 
 rt = APIRouter()
@@ -27,7 +27,7 @@ current_path = Path(__file__).parent.resolve()
 
 
 @rt.get("/login", response_class=HTMLResponse)
-async def login(current_user: Annotated[User, Depends(get_current_user_plain)]):
+async def login(current_user: Annotated[User, user_plain_check]):
     if current_user:
         return RedirectResponse(url="/weather")
     content = sub_template(
@@ -94,7 +94,7 @@ async def login_for_access_token(
 
 
 @rt.get("/keepalive", response_class=JSONResponse)
-async def keepalive(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
+async def keepalive(current_user: Annotated[User, user_exception_check]):
     if current_user.token_expires - datetime.now() > timedelta(minutes=11):
         access_token_expires = timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
         access_token = create_access_token(
@@ -133,7 +133,7 @@ def set_access_token_cookie(
 
 
 @rt.get("/about", response_class=HTMLResponse)
-async def about(current_user: Annotated[User, Depends(get_current_user_plain)]):
+async def about(current_user: Annotated[User, user_plain_check]):
     content = sub_template(
         "about.html",
         {"version": waqd.__version__, "platform": RuntimeSystem().platform},

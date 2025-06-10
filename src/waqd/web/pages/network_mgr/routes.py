@@ -1,29 +1,21 @@
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form
+from fastapi import APIRouter, Form
 from fastapi.responses import HTMLResponse
 from waqd.base.network import Network
 from waqd.web.authentication import (
     User,
-    get_current_user_with_exception,
 )
 from waqd.web.templates import render_main, sub_template
-from waqd.web.authentication import PermissionChecker
+from waqd.web.authentication import user_exception_check
 
 rt = APIRouter()
 
 current_path = Path(__file__).parent.resolve()
 
-
 @rt.get("/", response_class=HTMLResponse)
-async def network_mgr(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
-    if not PermissionChecker(
-        required_permissions=[
-            "users:local",
-        ]
-    ).check_permissions(current_user):
-        return HTMLResponse("Nope")
+async def network_mgr(current_user: Annotated[User, user_exception_check]):
     network = Network()
     if network.wifi_enabled():
         snippet = "turn_off_wifi.html"
@@ -38,14 +30,9 @@ async def network_mgr(current_user: Annotated[User, Depends(get_current_user_wit
     )
     return render_main(content, current_user)
 
+
 @rt.post("/wifi/toggle", response_class=HTMLResponse)
-async def toggle_wifi(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
-    if not PermissionChecker(
-        required_permissions=[
-            "users:local",
-        ]
-    ).check_permissions(current_user):
-        return HTMLResponse("Nope")
+async def toggle_wifi():
     network = Network()
     if network.wifi_enabled():
         network.disable_wifi()
@@ -57,9 +44,7 @@ async def toggle_wifi(current_user: Annotated[User, Depends(get_current_user_wit
 
 
 @rt.get("/ethernet_status", response_class=HTMLResponse)
-async def ethernet_status(
-    current_user: Annotated[User, Depends(get_current_user_with_exception)],
-):
+async def ethernet_status():
     if Network().is_connected_via_eth():
         content = "Connected"
     else:
@@ -68,7 +53,7 @@ async def ethernet_status(
 
 
 @rt.get("/wifi_list", response_class=HTMLResponse)
-async def wifi_list(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
+async def wifi_list():
     content = sub_template(
         "wifi_list.html", {"wifi_networks": Network().list_wifi()}, current_path, True
     )
@@ -76,18 +61,20 @@ async def wifi_list(current_user: Annotated[User, Depends(get_current_user_with_
 
 
 @rt.post("/wifi/connect", response_class=HTMLResponse)
-async def wifi_connect(
-    current_user: Annotated[User, Depends(get_current_user_with_exception)],
-    ssid: str = Form(),
-    password: str = Form(),
-):
+async def wifi_connect(ssid: str = Form(), password: str = Form()):
     Network().connect_wifi(ssid, password)
     return HTMLResponse("OK")
 
 
-@rt.post("/wifi/disconnect", response_class=HTMLResponse)
-async def wifi_disconnect(
-    current_user: Annotated[User, Depends(get_current_user_with_exception)], ssid: str = Form()
+@rt.post("/wifi/try_connect", response_class=HTMLResponse)
+async def wifi_try_connect(
+    ssid: str = Form(),
 ):
-    Network().disconnect_wifi(ssid)
+    Network().try_connect_wifi(ssid)
+    return HTMLResponse("OK")
+
+
+@rt.post("/wifi/disconnect", response_class=HTMLResponse)
+async def wifi_disconnect():
+    Network().disconnect_wifi()
     return HTMLResponse("OK")

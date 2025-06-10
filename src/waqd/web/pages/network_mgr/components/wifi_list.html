@@ -73,7 +73,6 @@
     }
     else if (connectBtn.textContent.trim() === 'Disconnect') { // Disconnect directly
       htmx.ajax('post', 'wifi/disconnect', {
-        values: { "ssid": ssid },
         swap: "none",
         handler: function (elt, evt) {
           document.getElementById('Rescan').click()

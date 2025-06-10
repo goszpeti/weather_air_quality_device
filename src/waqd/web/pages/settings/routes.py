@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Form
 from fastapi.responses import HTMLResponse
 
 import waqd.app as app
-from ....base.file_logger import Logger
+from waqd.base.file_logger import Logger
 from waqd.components.weather.base_types import Location
 from waqd.components.weather.open_meteo import OpenMeteo
 from waqd.settings import (
