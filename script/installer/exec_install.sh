@@ -42,7 +42,7 @@ function waqd_install() {
     ./setup/install_influx.sh
 
     echo "# Configuring system languages (Step 4/6)"
-    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --configure_languages
+    sudo PYTHONPATH=${SRC_DIR} python3 -m waqd_installer --configure_languages
 
     echo "# Setting up the system (Step 5/6)"
 
