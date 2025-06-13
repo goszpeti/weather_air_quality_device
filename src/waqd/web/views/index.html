@@ -41,13 +41,14 @@
     }, 600000); // 10 minutes in milliseconds 600000
   </script>
   {% endif %}
+  <header>
+    <div id="menu_container" hx-get="/menu" hx-trigger="load" hx-swap="innerHTML"></div>
+    <input class="js-kioskboard-input hidden">
+  </header>
 </head>
 
 <body class="{{overflow_config}}">
-  <header>
-    <div id="menu_container" hx-get="/menu" hx-trigger="load" hx-swap="innerHTML"></div>
-    <input class="js-kioskboard-input hidden" >
-  </header>
+
   <main class="py-2 px-2 md:px-0 md:py-0 lg:p-4" style="max-width: 100%; min-height: 80vh;"
     hx-ext="client-side-templates">
     <!-- Enable client side templates for all main content -->

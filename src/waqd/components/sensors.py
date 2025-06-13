@@ -618,18 +618,20 @@ class DHT22(TempSensor, HumiditySensor, CyclicComponent):
         if not self._sensor_driver:
             self._disabled = True
             return
-        try:
-            humidity = self._sensor_driver.humidity
-            temperature = self._sensor_driver.temperature
-        except Exception as error:
-            self._error_num += 1
-            # errors happen fairly often, keep going
-            self._logger.error("DHT22: Can't read sensor - %s", str(error))
-            return
-        if self._error_num >= 3:
-            self._logger.error("DHT22: Restarting sensor after 3 errors")
-            self._comps.stop_component_instance(self)
-            return
+        
+        temperature = None
+        while not temperature:
+            try:
+                humidity = self._sensor_driver.humidity
+                temperature = self._sensor_driver.temperature
+            except Exception as error:
+                self._error_num += 1
+                # errors happen fairly often, keep going
+                self._logger.debug("DHT22: Can't read sensor - %s", str(error))
+            if self._error_num >= 5:
+                self._logger.error("DHT22: Restarting sensor after 5 errors")
+                self._comps.stop_component_instance(self)
+                return
         self._error_num = 0
 
         self._set_humidity(humidity)

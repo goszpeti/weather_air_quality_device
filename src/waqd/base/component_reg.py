@@ -286,7 +286,7 @@ class ComponentRegistry:
                 sensor = self._create_component_instance(sensors.BME280, [self, self._settings])
             elif self._settings.get(BMP_280_ENABLED):
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
-            elif dht22_pin := self._settings.get(DHT_22_PIN) != DHT_22_DISABLED:
+            elif (dht22_pin := self._settings.get(DHT_22_PIN)) != DHT_22_DISABLED:
                 sensor = self._create_component_instance(
                     sensors.DHT22, [dht22_pin, self, self._settings]
                 )
@@ -304,13 +304,11 @@ class ComponentRegistry:
 
         sensor = self._get_sensor(sensors.HumiditySensor)
         if not sensor:
-            # DHT-22 is prioritized, if both are available
-            dht22_pin = self._settings.get(DHT_22_PIN)
             if self._settings.get_string(REMOTE_MODE_URL):
                 sensor = self._create_component_instance(
                     sensors.WAQDRemoteStation, [self, self._settings]
                 )
-            elif dht22_pin != DHT_22_DISABLED:
+            elif (dht22_pin := self._settings.get(DHT_22_PIN)) != DHT_22_DISABLED:
                 sensor = self._create_component_instance(
                     sensors.DHT22, [dht22_pin, self, self._settings]
                 )
@@ -341,7 +339,7 @@ class ComponentRegistry:
                 sensor = self._create_component_instance(sensors.BMP280, [self, self._settings])
             else:  # create a default instance that is disabled
                 sensor = self._create_component_instance(
-                    sensors.WAQDRemoteSensor, [False, 1, False]
+                    sensors.BarometricSensor, [False, 1, False]
                 )
             self._sensors.update({sensors.BarometricSensor.__name__: sensor})
             sensor.select_for_pres_logging()
