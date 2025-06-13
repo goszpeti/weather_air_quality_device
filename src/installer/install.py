@@ -20,7 +20,7 @@ def install_waqd(waqd_version: str):
     # -- suffix creates a version specific dir. "." will be converted to "-" in the name
     suffix = INSTALL_DIR_SUFFIX.format(version=waqd_version)
     # must be executed as user
-    args = f"--force --verbose --system-site-packages --suffix {suffix} {installer_root_dir}"
+    args = f"--force --verbose --system-site-packages --suffix {suffix} {installer_root_dir}[waqd]"
     install_cmd = f'runuser - {USERNAME} -c "python3 -m pipx install {args}"'
     logging.info(install_cmd)
     os.system(install_cmd)

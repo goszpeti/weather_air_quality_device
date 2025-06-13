@@ -35,8 +35,8 @@ issues = "https://github.com/goszpeti/WeatherAirQualityDevice/issues"
 # Build dependencies and configs
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["pdm-backend", "pdm-build-locked"]
+build-backend = "pdm.backend"
 
 [tool.setuptools.packages.find]
 where = ["src"] # list of folders that contain the packages (["."] by default)
