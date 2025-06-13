@@ -1405,27 +1405,6 @@ html {
       opacity: 100%;
     }
   }
-  .menu-horizontal {
-    display: inline-flex;
-    flex-direction: row;
-    & > li:not(.menu-title) > details > ul {
-      position: absolute;
-      margin-inline-start: calc(0.25rem * 0);
-      margin-top: calc(0.25rem * 4);
-      padding-block: calc(0.25rem * 2);
-      padding-inline-end: calc(0.25rem * 2);
-    }
-    & > li > details > ul {
-      &:before {
-        content: none;
-      }
-    }
-    :where(& > li:not(.menu-title) > details > ul) {
-      border-radius: var(--radius-box);
-      background-color: var(--color-base-100);
-      box-shadow: 0 1px 3px 0 oklch(0% 0 0/0.1), 0 1px 2px -1px oklch(0% 0 0/0.1);
-    }
-  }
   .checkbox {
     border: var(--border) solid var(--input-color, var(--color-base-content));
     @supports (color: color-mix(in lab, red, red)) {
@@ -1569,29 +1548,6 @@ html {
   }
   .absolute {
     position: absolute;
-  }
-  .dropdown-end {
-    --anchor-h: span-left;
-    :where(.dropdown-content) {
-      inset-inline-end: calc(0.25rem * 0);
-      translate: 0 0;
-    }
-    &.dropdown-left {
-      --anchor-h: left;
-      --anchor-v: span-top;
-      .dropdown-content {
-        top: auto;
-        bottom: calc(0.25rem * 0);
-      }
-    }
-    &.dropdown-right {
-      --anchor-h: right;
-      --anchor-v: span-top;
-      .dropdown-content {
-        top: auto;
-        bottom: calc(0.25rem * 0);
-      }
-    }
   }
   .top-2 {
     top: calc(var(--spacing) * 2);
@@ -1880,6 +1836,16 @@ html {
   .mx-auto {
     margin-inline: auto;
   }
+  .input-lg {
+    --size: calc(var(--size-field, 0.25rem) * 12);
+    font-size: 1.125rem;
+    &[type="number"] {
+      &::-webkit-inner-spin-button {
+        margin-block: calc(0.25rem * -3);
+        margin-inline-end: calc(0.25rem * -3);
+      }
+    }
+  }
   .label {
     display: inline-flex;
     align-items: center;
@@ -1936,9 +1902,6 @@ html {
   }
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
-  }
-  .-mr-2 {
-    margin-right: calc(var(--spacing) * -2);
   }
   .mr-2 {
     margin-right: calc(var(--spacing) * 2);
@@ -2212,9 +2175,6 @@ html {
   .w-60 {
     width: calc(var(--spacing) * 60);
   }
-  .w-fit {
-    width: fit-content;
-  }
   .w-full {
     width: 100%;
   }
@@ -2232,6 +2192,9 @@ html {
   }
   .min-w-full {
     min-width: 100%;
+  }
+  .flex-auto {
+    flex: auto;
   }
   .shrink-0 {
     flex-shrink: 0;
@@ -2349,18 +2312,6 @@ html {
   }
   .overflow-scroll {
     overflow: scroll;
-  }
-  .menu-lg {
-    :where(li:not(.menu-title) > *:not(ul, details, .menu-title)), :where(li:not(.menu-title) > details > summary:not(.menu-title)) {
-      border-radius: var(--radius-field);
-      padding-inline: calc(0.25rem * 4);
-      padding-block: calc(0.25rem * 1.5);
-      font-size: 1.125rem;
-    }
-    .menu-title {
-      padding-inline: calc(0.25rem * 6);
-      padding-block: calc(0.25rem * 3);
-    }
   }
   .menu-xl {
     :where(li:not(.menu-title) > *:not(ul, details, .menu-title)), :where(li:not(.menu-title) > details > summary:not(.menu-title)) {
@@ -2633,10 +2584,9 @@ html {
     --btn-p: 1rem;
     --size: calc(var(--size-field, 0.25rem) * 10);
   }
-  .btn-sm {
-    --fontsize: 0.75rem;
-    --btn-p: 0.75rem;
-    --size: calc(var(--size-field, 0.25rem) * 8);
+  .btn-accent {
+    --btn-color: var(--color-accent);
+    --btn-fg: var(--color-accent-content);
   }
   .btn-error {
     --btn-color: var(--color-error);
@@ -2645,6 +2595,10 @@ html {
   .btn-info {
     --btn-color: var(--color-info);
     --btn-fg: var(--color-info-content);
+  }
+  .btn-neutral {
+    --btn-color: var(--color-neutral);
+    --btn-fg: var(--color-neutral-content);
   }
   .btn-primary {
     --btn-color: var(--color-primary);
@@ -3026,7 +2980,7 @@ html {
     --color-secondary-content: oklch(96% 0 0);
     --color-accent: oklch(0.6 0.0718 295.71);
     --color-accent-content: oklch(18.685% 0.02 94.555);
-    --color-neutral: oklch(50% 0 0);
+    --color-neutral: oklch(0.24 0.1403 286.92);
     --color-neutral-content: oklch(96% 0 0);
     --color-info: oklch(0.17 0.0718 295.71);
     --color-info-content: oklch(96% 0 0);
