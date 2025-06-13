@@ -1,7 +1,7 @@
 [project]
 name = "waqd"
 authors = [{ name = "Péter Gosztolya and Contributors" }]
-version = "3.0.0a0"
+version = "3.0.0a3"
 requires-python = ">=3.11"
 description = 'Weather Air Quality Device - base package'
 license = { 'file' = "LICENSE" }
@@ -29,8 +29,8 @@ dependencies = [
 readme = "README.md"
 
 [project.urls]
-repository = "https://github.com/goszpeti/WeatherAirQualityDevice"
-issues = "https://github.com/goszpeti/WeatherAirQualityDevice/issues"
+repository = "https://github.com/goszpeti/weather_air_quality_device"
+issues = "https://github.com/goszpeti/weather_air_quality_device/issues"
 
 # Build dependencies and configs
 

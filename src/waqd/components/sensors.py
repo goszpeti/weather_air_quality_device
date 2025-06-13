@@ -821,7 +821,7 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
         co2 = 0
         output = ""
         self._error_num = 0
-        while not co2 and self._error_num < 5:
+        while not co2 and self._error_num < 10:
             try:
                 # Parse back from cli
                 if self._runtime_system.is_target_system:
@@ -840,7 +840,9 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
                     f"MH-Z19: Can't read sensor - {str(error)} Output: {output}",
                 )
                 return
-
+        if not co2:
+            self._logger.error("MH-Z19: Error in reading sensor after 10 tries")
+            return
         self._set_co2(co2 + self._offset)
 
         # eval stabilizer time

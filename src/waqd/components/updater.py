@@ -91,7 +91,9 @@ class OnlineUpdater(CyclicComponent):
         from github import Github
 
         github = Github()
-        self._repository = github.get_repo(waqd.GITHUB_REPO_NAME)
+        repo_name = "/".join(waqd.REPO_URL.split("/")[-2:])
+
+        self._repository = github.get_repo(repo_name)
 
     def _get_latest_version(self) -> "GitRelease.GitRelease | None":
         """Check, if an update is found and return it's version."""

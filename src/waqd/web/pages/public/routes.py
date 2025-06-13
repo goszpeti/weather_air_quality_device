@@ -133,10 +133,10 @@ def set_access_token_cookie(
 
 
 @rt.get("/about", response_class=HTMLResponse)
-async def about(current_user: Annotated[User, user_plain_check]):
+async def about():
     content = sub_template(
         "about.html",
         {"version": waqd.__version__, "platform": RuntimeSystem().platform},
         current_path,
     )
-    return render_main(content, current_user)
+    return content

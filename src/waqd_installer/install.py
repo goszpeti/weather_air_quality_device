@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from installer.common import (
+from .common import (
     INSTALL_TARGET_ROOT, AUTOSTART_FILE, USER_CONFIG_PATH, INSTALL_DIR_SUFFIX, LOCAL_BIN_PATH, USERNAME,
     installer_root_dir,
     add_to_autostart, get_waqd_version, get_waqd_bin_name, remove_from_autostart, set_write_permissions, setup_logger)
