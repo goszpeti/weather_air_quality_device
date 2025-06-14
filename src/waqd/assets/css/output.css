@@ -1909,9 +1909,6 @@ html {
   .mr-4 {
     margin-right: calc(var(--spacing) * 4);
   }
-  .mr-8 {
-    margin-right: calc(var(--spacing) * 8);
-  }
   .fieldset-legend {
     margin-bottom: calc(0.25rem * -1);
     display: flex;
@@ -2192,9 +2189,6 @@ html {
   }
   .min-w-full {
     min-width: 100%;
-  }
-  .flex-auto {
-    flex: auto;
   }
   .shrink-0 {
     flex-shrink: 0;

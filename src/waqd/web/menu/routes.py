@@ -4,7 +4,6 @@ from typing import Annotated
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
-from waqd.base.network import Network
 from waqd.base.system import RuntimeSystem
 from waqd.web.authentication import (
     User,
@@ -48,6 +47,7 @@ async def wifi_signal_strength(
         ]
     ).check_permissions(current_user):
         return HTMLResponse("Nope")
+    from waqd.base.network import Network
     network = Network()
     icon_name = "cloud_off"
     if network.is_connected_via_eth():

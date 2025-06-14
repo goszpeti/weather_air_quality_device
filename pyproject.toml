@@ -15,8 +15,12 @@ classifiers = [
     "Environment :: Win32 (MS Windows)",
 ]
 dependencies = [
+    # Base dependencies
     "wheel",     # MIT License - for pep 517 legacy setup.py mode
     "packaging", # Apache Software License, BSD License
+    "File-Read-Backwards==2.0.0", # MIT License - for performance in DetailView
+    "frozendict==2.4.6",       # LGPLv3 - for frozen dicts
+
     # Web & UI
     "fastapi[standard]==0.115.12", # MIT License
     "Jinja2==3.1.6",               # BSD License
@@ -67,13 +71,11 @@ waqd = "waqd.__main__:startup"
 waqd = [
     # Backend
     "influxdb-client==1.49.0", # MIT License - influxdb API
-    "frozendict==2.4.6",       # LGPLv3 - for frozen dicts
     "JsonSchema==4.23.0",      # MIT License - for events json schema validation
     "pint==0.24.4",            # BSD 3-clause style license - physical units for sensors
     "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
     "APScheduler==3.10.4",     # MIT License - Scheduler for Events function
     "PyGithub==2.6.1",             # LGPL - Access to GitHub in AutoUpdater
-    "File-Read-Backwards==2.0.0", # MIT License - for performance in DetailView
     # Sound
     "gTTS==2.2.4",           # MIT License -Google TTS for speech
     "Python-VLC==3.0.16120", # LGPLv2+ - use VLC for playing sounds

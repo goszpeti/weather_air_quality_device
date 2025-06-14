@@ -6,6 +6,7 @@ Should not contain any 3rd party imports!
 import datetime
 from enum import Enum
 from importlib.metadata import PackageNotFoundError, distribution
+import os
 from pathlib import Path
 PROG_NAME = "WAQD"
 
@@ -26,7 +27,7 @@ except PackageNotFoundError:  # pragma: no cover
 ### Global Flags and constants ###
 # 0: No debug, 1 = logging on, 2: remote debugging on
 # 3: wait for remote debugger, 4: quick-load
-DEBUG_LEVEL = 0
+DEBUG_LEVEL = int(os.getenv("WAQD_DEBUG", "0"))
 HEADLESS_MODE = False
 MIGRATE_SENSOR_LOGS = False
 LOCAL_TIMEZONE = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo

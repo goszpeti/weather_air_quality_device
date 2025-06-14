@@ -133,6 +133,8 @@ def create_access_token(
 
 @lru_cache(maxsize=None)
 def get_current_user(token):
+    if not token:
+        return None
     try:
         payload = jwt.decode(
             token, base_app.settings.get_string(USER_SESSION_SECRET), algorithms=[ALGORITHM]

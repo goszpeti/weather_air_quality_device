@@ -48,14 +48,17 @@ def sub_template(
 
 def base_template(file_name: str, context: dict[str, Any], root_path=current_path) -> str:
     # also include the parent, so we can use the components from the main template
-    template_loader = FileSystemLoader(searchpath=[str(root_path), str(root_path.parent)])
-    template_env = Environment(loader=template_loader)
-    template = template_env.get_template(file_name)
-    return minify(template.render(context), remove_comments=True, remove_empty_space=True)
+    
+    @conditional_lru_cache
+    def _get_template():
+        template_loader = FileSystemLoader(searchpath=[str(root_path), str(root_path.parent)])
+        template_env = Environment(loader=template_loader)
+        return template_env.get_template(file_name)
+    return minify(_get_template().render(context), remove_comments=True, remove_empty_space=True)
 
 
 def render_main(
-    content: str, user: UserInDB | None, overflow=True, menu=True, toast=""
+    content: str, user: UserInDB | None, overflow=True, toast="", root_path=current_path
 ) -> HTMLResponse:
     """if overflow is false, on the RPI itself it will not scroll"""
     overflow_config = ""
@@ -77,6 +80,6 @@ def render_main(
             "toast": toast,
             "local": local,
         },
-        current_path,
+        root_path,
     )
     return HTMLResponse(content=extra_minify(tpl), status_code=200)

@@ -1,0 +1,15 @@
+services:
+  server:
+    build:
+      context: ../..
+      dockerfile: src/waqd_website/Dockerfile
+    image: waqd/waqd_website:latest
+    container_name: waqd_website
+    ports:
+      - "8000:80"
+    # environment:
+    #   - VIRTUAL_HOST=waqd.de,www.waqd.de
+    #   - LETSENCRYPT_HOST=waqd.de,www.waqd.de
+    entrypoint: ["/bin/bash", "-c", ". /pdm-venv/bin/activate && uvicorn waqd_website.main:web_app --host 0.0.0.0 --port 8000"]
+    # volumes:
+    #   - ../..:/waqd
