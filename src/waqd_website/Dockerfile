@@ -16,11 +16,10 @@ RUN adduser --disabled-password --gecos '' waqd
 
 WORKDIR /home/waqd
 
-COPY pyproject.toml pyproject.toml
-COPY pdm.lock pdm.lock
+COPY pyproject.toml pdm.lock LICENSE README.md ./
 COPY src/waqd_website/__init__.py src/waqd_website/__init__.py
 
-RUN . /pdm-venv/bin/activate && pdm install --prod --no-lock
+RUN . /pdm-venv/bin/activate && pdm install --prod
 
 RUN chown -R waqd:waqd /pdm-venv
 RUN chown -R waqd:waqd src
@@ -28,5 +27,6 @@ RUN chown -R waqd:waqd src
 USER waqd
 WORKDIR /home/waqd
 
+COPY src/waqd src/waqd
 COPY src/waqd_website src/waqd_website
 
