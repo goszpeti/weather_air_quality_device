@@ -24,10 +24,6 @@ current_path = Path(__file__).parent.resolve()
 @rt.get("/", response_class=HTMLResponse)
 async def root(current_user: Annotated[User, user_redirect_check]):
     base_app.comp_ctrl.init_all()
-
-    interior = sub_template("interior.html", {}, current_path, True)
-    exterior = sub_template("exterior.html", {}, current_path, True)
-    forecast = sub_template("forecast.html", {}, current_path, True)
     content = sub_template(
         "waqd.html",
         {
@@ -37,7 +33,6 @@ async def root(current_user: Annotated[User, user_redirect_check]):
                         {
                             "name": "Interior",
                             "background": "/static/gui_bgrs/background_interior2.jpg",
-                            "content": interior,
                             "endpoint": "/weather/interior",
                         }
                     ),
@@ -45,7 +40,6 @@ async def root(current_user: Annotated[User, user_redirect_check]):
                         {
                             "name": "Exterior",
                             "background": "",
-                            "content": exterior,
                             "endpoint": "/weather/exterior",
                         }
                     ),
@@ -53,7 +47,6 @@ async def root(current_user: Annotated[User, user_redirect_check]):
                         {
                             "name": "Forecast",
                             "background": "/static/gui_bgrs/background_s7.jpg",
-                            "content": forecast,
                             "endpoint": "/weather/forecast",
                         }
                     ),

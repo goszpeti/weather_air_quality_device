@@ -1,6 +1,8 @@
 from pathlib import Path
+import secrets
 from typing import Annotated
 
+import bcrypt
 from fastapi import APIRouter, Depends, Form
 from fastapi.responses import HTMLResponse
 
@@ -16,8 +18,9 @@ from waqd.settings import (
     LOCATION_LONGITUDE,
     LOCATION_NAME,
     LOCATION_STATE,
+    USER_DEFAULT_PW,
 )
-from waqd.web.authentication import PermissionChecker, User, get_current_user_with_redirect
+from waqd.web.authentication import PermissionChecker, User, get_current_user_with_redirect, get_db
 from waqd.web.templates import render_main, sub_template
 
 rt = APIRouter()
@@ -111,5 +114,15 @@ async def set_location(
         app.settings.set(LOCATION_STATE, location.state)
 
         return HTMLResponse("Set ☑")
+    except Exception as e:
+        return HTMLResponse(f"Error: {e}", status_code=500)
+
+@rt.post("/reset_pw", response_class=HTMLResponse)
+async def reset_pw():
+    try:
+        pw = bcrypt.gensalt(4).decode("utf-8")[18:]
+        app.settings.set(USER_DEFAULT_PW, pw)
+        username = "remote_user"
+        return HTMLResponse(f"Username: {username} <br/> password: {pw}", status_code=200)
     except Exception as e:
         return HTMLResponse(f"Error: {e}", status_code=500)
