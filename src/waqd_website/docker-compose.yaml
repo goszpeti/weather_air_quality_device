@@ -1,5 +1,6 @@
 services:
   server:
+    restart: always
     build:
       context: ../..
       dockerfile: src/waqd_website/Dockerfile
