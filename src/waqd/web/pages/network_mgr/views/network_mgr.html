@@ -59,28 +59,6 @@
 </fieldset>
 
 <script>
-function networkStatus() {
-    return {
-        networkIcon: '/static/general_icons/lan.svg#main',
-        init() {
-            this.checkStatus();
-            setInterval(() => this.checkStatus(), 20000);
-        },
-        checkStatus() {
-            fetch('/menu/network_icon')
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const useEl = doc.querySelector('use');
-                    if (useEl) {
-                        this.networkIcon = useEl.getAttribute('href');
-                    }
-                });
-        }
-    }
-}
-
 function networkMgr() {
     return {
         wifiEnabled: false,

@@ -55,6 +55,29 @@
     <svg id="network_status_btn" viewBox="0 0 24 24" class="h-10">
       <use :href="networkIcon" fill="white" />
     </svg>
+    <script>
+      function networkStatus() {
+          return {
+            networkIcon: '/static/general_icons/lan.svg#main',
+            init() {
+              this.checkStatus();
+              setInterval(() => this.checkStatus(), 20000);
+            },
+            checkStatus() {
+              fetch('/menu/network_icon')
+                .then(response => response.text())
+                .then(html => {
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(html, 'text/html');
+                  const useEl = doc.querySelector('use');
+                  if (useEl) {
+                    this.networkIcon = useEl.getAttribute('href');
+                  }
+                });
+            }
+          }
+        }
+    </script>
   </a>
   {% include "menu/components/clock.html" %}
   {% endif %}
