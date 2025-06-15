@@ -13,11 +13,17 @@ class NetworkConnectivity(Enum):
     LIMITED = 'limited'
     FULL = 'full'
 
+_syscmd_toggle = False
+
 class _syscmd():
     @staticmethod
     def nmcli(cmd):
         # This is a mock implementation of the nmcli command execution.
         # In a real scenario, this would execute the command and return the output.
+        global _syscmd_toggle
+        if _syscmd_toggle:
+            raise ConnectionActivateFailedException("Connection activation failed")
+        _syscmd_toggle = not _syscmd_toggle
         return "Mocked nmcli output for command: " + " ".join(cmd)
 
 class RadioMgr():
@@ -241,9 +247,8 @@ class DeviceMgr():
 
     def disconnect(self, ssid):
         for wconn in self._wifi_list:
-            if wconn.ssid == ssid and wconn.in_use:
+            if wconn.in_use:
                 wconn.in_use = False
-                return
             
 
 

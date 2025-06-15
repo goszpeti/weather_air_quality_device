@@ -50,10 +50,10 @@
     </a>
   </div>
   {% if local %}
-  <a href="/network_mgr" class="btn btn-ghost btn-lg" title="Network Manager"
-    hx-trigger="load, every 20s" hx-get="/menu/network_icon" hx-swap="innerHTML">
+  <a id="network_icon" href="/network_mgr" class="btn btn-ghost btn-lg" title="Network Manager"
+    x-data="networkStatus()" x-init="init()">
     <svg id="network_status_btn" viewBox="0 0 24 24" class="h-10">
-      <use href="/static/general_icons/lan.svg#main" fill="white" />
+      <use :href="networkIcon" fill="white" />
     </svg>
   </a>
   {% include "menu/components/clock.html" %}
