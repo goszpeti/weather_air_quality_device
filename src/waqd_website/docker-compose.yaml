@@ -8,6 +8,3 @@ services:
     container_name: waqd_website
     ports:
       - "80:8080"
-    entrypoint: ["/bin/bash", "-c", ". /pdm-venv/bin/activate && uvicorn waqd_website.main:web_app --host 0.0.0.0 --port 8080"]
-    # volumes:
-    #   - ../..:/waqd

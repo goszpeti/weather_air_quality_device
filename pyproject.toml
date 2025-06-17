@@ -26,7 +26,7 @@ dependencies = [
     "Jinja2==3.1.6",               # BSD License
     "PyJWT==2.10.1",               # MIT License
     "passlib >=1.7.4, <2.0.0",     # BSD License - password hashing
-    "htmlmin==0.1.12",             # BSD License - HTML minifier
+    "htmlmin2==0.1.13",             # BSD License - HTML minifier
     "bcrypt>=4.0.0, <5.0.0",       # Apache License, Version 2.0 - Password hashing
 ]
 

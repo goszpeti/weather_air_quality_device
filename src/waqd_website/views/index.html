@@ -1,61 +1,31 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="mytheme">
-
 <head>
-  <title>WAQD</title>
-  <html lang="en">
+  <title>WAQD - WeatherAirQualityDevice</title>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, maximum-scale=1.5" , charset="utf-8">
+  <meta name="viewport" content="width=device-width, maximum-scale=1.5">
   <link rel="preload" href="/static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
   <link href="/static/css/output.css" rel="stylesheet" type="text/css" />
-  <script src="/static/js/htmx_2_0_4.js"></script>
 
-  <!-- <script src="/static/js/htmx_ext_client_side_temp_2_0_0.js"></script>
-  <script src="/static/js/nunjucks_3_2_4.js"></script>
-  <script src="/static/js/json-enc_1.9.2.js">
-    integrity = "sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=">
-  </script> -->
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   <style>
-    /* Cannot be in stylesheet - set font here, so no pop-in happens*/
     @font-face {
       font-family: MyFranzo;
       src: url('/static/font/Franzo-E4GA.woff');
     }
   </style>
-  <link rel="icon" href="/static/gui_base/icon.avif" type="image/png">
-  <header>
-    <div id="menu_container" hx-get="/menu/" hx-trigger="load" hx-swap="innerHTML"></div>
-  </header>
+  <link rel="icon" href="/static/gui_base/icon.avif" type="image/avif">
 </head>
-
 <body class="{{overflow_config}}">
-
-  <main class="py-2 px-2 md:px-0 md:py-0 lg:p-4" style="max-width: 100%; min-height: 80vh;"
-    hx-ext="client-side-templates">
+  <header>
+    {{menu_content}}
+  </header>
+  <main class="py-2 px-2 md:px-0 md:py-0 lg:p-4" style="max-width: 100%; min-height: 80vh;" hx-ext="client-side-templates">
     <!-- Enable client side templates for all main content -->
     {{content}}
   </main>
-
   <div id="toasts" class="toast toast-end">
     {{toast}}
   </div>
-  <script>// Shared script functions
-      function togglePasswordVisibility(pw_id, toggle_btn_id) {
-        const passwordInput = document.getElementById(pw_id);
-        const toggleButton = document.getElementById(toggle_btn_id);
-        if (passwordInput.type === 'password') {
-          passwordInput.type = 'text';
-          toggleButton.style.opacity = '0.5'; // Grey out the button
-        } else {
-          passwordInput.type = 'password';
-          toggleButton.style.opacity = '1'; // Re-enable the button
-        }
-      }
-    function hideToast(name) {
-      document.getElementById(name).classList.add('hidden');
-    }
-    //# sourceURL=index.html
-  </script>
 </body>
-
 </html>
