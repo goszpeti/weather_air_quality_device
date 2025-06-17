@@ -11,7 +11,7 @@
       <ul tabindex="0" class="menu menu-xl dropdown-content
                                 bg-base-100 rounded-box z-1 mt-3 w-60 p-4 gap-4 shadow">
         <li>
-          <a href="/settings"><svg viewBox="0 0 24 24" class="h-4">
+          <a href="/settings/"><svg viewBox="0 0 24 24" class="h-4">
               <use href="/static/general_icons/settings.svg#main" fill="white" />
             </svg>Settings</a>
         </li>
@@ -24,7 +24,7 @@
               Account
             </summary>
             <ul>
-              <li><a href="/public/logout">
+              <li><a href="/public/logout/">
                   <svg viewBox="0 0 24 24" class="h-4 w-4">
                     <use href="/static/general_icons/logout.svg#main" fill="white" />
                   </svg>
@@ -35,7 +35,7 @@
       </ul>
     </div>
     {% endif %}
-    <a href="/weather" class="btn btn-neutral text-3xl font-bold mx-4">
+    <a href="/weather/" class="btn btn-neutral text-3xl font-bold mx-4">
       WAQD
     </a>
   </div>
@@ -43,14 +43,14 @@
   <div class="navbar-end hidden md:flex">
     <!-- Desktop Menu -->
     {% if logged_in %}
-    <a title="Settings" href="/settings" class="btn btn-ghost btn-lg">
+    <a title="Settings" href="/settings/" class="btn btn-ghost btn-lg">
       <svg viewBox="0 0 24 24" class="h-8">
         <use href="/static/general_icons/settings.svg#main" fill="white" />
       </svg>
     </a>
   </div>
   {% if local %}
-  <a id="network_icon" href="/network_mgr" class="btn btn-ghost btn-lg" title="Network Manager"
+  <a id="network_icon" href="/network_mgr/" class="btn btn-ghost btn-lg" title="Network Manager"
     x-data="networkStatus()" x-init="init()">
     <svg id="network_status_btn" viewBox="0 0 24 24" class="h-10">
       <use :href="networkIcon" fill="white" />
@@ -88,7 +88,7 @@
     </svg>
   </button>
   {% else %}
-  <a title="Logout" href="/public/logout" class="btn btn-ghost btn-lg">
+  <a title="Logout" href="/public/logout/" class="btn btn-ghost btn-lg">
     <svg viewBox="0 0 24 24" class="h-8">
       <use href="/static/general_icons/logout.svg#main" fill="white" />
     </svg>

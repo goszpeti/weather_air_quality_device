@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 from fastapi.responses import HTMLResponse
 from frozendict import deepfreeze
-from htmlmin.main import minify
+from htmlmin import minify
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -48,17 +48,19 @@ def sub_template(
 
 def base_template(file_name: str, context: dict[str, Any], root_path=current_path) -> str:
     # also include the parent, so we can use the components from the main template
-    
+
     @conditional_lru_cache
     def _get_template():
         template_loader = FileSystemLoader(searchpath=[str(root_path), str(root_path.parent)])
         template_env = Environment(loader=template_loader)
         return template_env.get_template(file_name)
-    return minify(_get_template().render(context), remove_comments=True, remove_empty_space=True)
+
+    return extra_minify(_get_template().render(context))
 
 
 def render_main(
     content: str, user: UserInDB | None, overflow=True, toast="", root_path=current_path
+    , menu: bool=True
 ) -> HTMLResponse:
     """if overflow is false, on the RPI itself it will not scroll"""
     overflow_config = ""
@@ -72,9 +74,19 @@ def render_main(
                 "users:local",
             ]
         ).check_permissions(user)
+    if menu:
+        menu_content = base_template(
+            "menu/views/menu.html",
+            {
+                "local": local,
+                "logged_in": bool(user),
+            },
+            current_path,
+        )
     tpl = base_template(
         "views/index.html",
         {
+            "menu_content": menu_content if menu else "",
             "content": content,
             "overflow_config": overflow_config,
             "toast": toast,
