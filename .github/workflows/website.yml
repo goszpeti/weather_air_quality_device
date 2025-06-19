@@ -33,18 +33,20 @@ jobs:
             .
       - name: Push Docker image
         run: |
+          NEW_TAG="$(git rev-parse --short HEAD)"
           echo ${{ secrets.DOCKER_ACCESS_TOKEN }} | docker login -u goszpeti --password-stdin
-          docker push goszpeti/waqd_website:latest
+          docker push goszpeti/waqd_website:$NEW_TAG
 
-  
   update-image-tag:
+    needs:
+      - build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-          repository: 'goszpeti/waqd_infrastructure'
+          repository: 'WAQD/waqd_infrastructure'
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update image tag in docker-compose.yml
