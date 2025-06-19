@@ -1,0 +1,76 @@
+name: Build waqd_website Docker Image
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'src/waqd_website/**'
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'src/waqd_website/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ARM64
+    outputs:
+      version_comment: ${{ steps.set_tag.outputs.version_comment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set version comment
+        id: set_tag
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          else
+            VERSION=$(git rev-parse --short HEAD)
+          fi
+          echo "version_comment=# Version: ${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image
+        run: |
+          docker buildx build \
+            --platform linux/arm64/v8 \
+            --build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
+            --build-arg VCS_REF=$(git rev-parse HEAD) \
+            --build-arg VERSION=$(git describe --tags) \
+            -t goszpeti/waqd_website:latest \
+            -f src/waqd_website/Dockerfile \
+            .
+
+      - name: Push Docker image
+        run: |
+          echo ${{ secrets.DOCKER_ACCESS_TOKEN }} | docker login -u goszpeti --password-stdin
+          docker push goszpeti/waqd_website:latest
+
+  update-image-tag:
+    # TODO: later; only on tagged releases if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          repository: 'WAQD/waqd_infrastructure'
+          token: ${{ secrets.WAQD_GITHUB_ACCESS_TOKEN }}
+          ref: 'main'
+
+      - name: Update version comment in yaml
+        run: |
+          IMAGE_NAME="waqd_website"
+          # Add version comment and keep latest tag
+          sed -i "s|image: goszpeti/$IMAGE_NAME:.*|${{ needs.build.outputs.version_comment }}\n    image: goszpeti/$IMAGE_NAME:latest|g" deployment/waqd-website.yaml
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deployment/waqd-website.yaml
+          git commit -m "Update version comment to ${{ needs.build.outputs.version_comment }}" || echo "No changes to commit"
+          git push

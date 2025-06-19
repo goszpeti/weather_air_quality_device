@@ -2,20 +2,17 @@ import datetime
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from frozendict import frozendict
 
 import waqd.app as base_app
 from waqd.assets.assets import get_asset_file_relative
-from waqd.web.helper import get_localized_date
 from waqd.web.api.sensor.v1.connector import SensorRetrieval
 from waqd.web.api.weather.v1.connector import WeatherRetrieval
-from waqd.web.authentication import (
-    User,
-    get_current_user_with_exception,
-    get_current_user_with_redirect,
-)
+from waqd.web.authentication import (User, user_exception_check,
+                                     user_redirect_check)
+from waqd.web.helper import get_localized_date
 from waqd.web.pages.weather_main.model import ExteriorView, ForecastView
 from waqd.web.templates import render_main, sub_template
 
@@ -25,12 +22,8 @@ current_path = Path(__file__).parent.resolve()
 
 
 @rt.get("/", response_class=HTMLResponse)
-async def root(current_user: Annotated[User, Depends(get_current_user_with_redirect)]):
+async def root(current_user: Annotated[User, user_redirect_check]):
     base_app.comp_ctrl.init_all()
-
-    interior = sub_template("interior.html", {}, current_path, True)
-    exterior = sub_template("exterior.html", {}, current_path, True)
-    forecast = sub_template("forecast.html", {}, current_path, True)
     content = sub_template(
         "waqd.html",
         {
@@ -40,7 +33,6 @@ async def root(current_user: Annotated[User, Depends(get_current_user_with_redir
                         {
                             "name": "Interior",
                             "background": "/static/gui_bgrs/background_interior2.jpg",
-                            "content": interior,
                             "endpoint": "/weather/interior",
                         }
                     ),
@@ -48,7 +40,6 @@ async def root(current_user: Annotated[User, Depends(get_current_user_with_redir
                         {
                             "name": "Exterior",
                             "background": "",
-                            "content": exterior,
                             "endpoint": "/weather/exterior",
                         }
                     ),
@@ -56,7 +47,6 @@ async def root(current_user: Annotated[User, Depends(get_current_user_with_redir
                         {
                             "name": "Forecast",
                             "background": "/static/gui_bgrs/background_s7.jpg",
-                            "content": forecast,
                             "endpoint": "/weather/forecast",
                         }
                     ),
@@ -69,13 +59,15 @@ async def root(current_user: Annotated[User, Depends(get_current_user_with_redir
 
 
 @rt.get("/interior", response_class=JSONResponse)
-async def interior(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
+async def interior(
+    user=user_exception_check,
+):
     return RedirectResponse(url="/api/sensor/v1/interior?units=True")
 
 
 @rt.get("/exterior", response_class=JSONResponse)
 async def exterior(
-    current_user: Annotated[User, Depends(get_current_user_with_exception)],
+    user=user_exception_check,
 ) -> ExteriorView:
     ext_values = SensorRetrieval().get_exterior_sensor_values(units=True)
     current_weather = WeatherRetrieval().get_current_weather()
@@ -95,7 +87,7 @@ async def exterior(
 
 @rt.get("/forecast", response_class=JSONResponse)
 async def forecast(
-    current_user: Annotated[User, Depends(get_current_user_with_exception)],
+    user=user_exception_check,
 ) -> ForecastView:
     forecast = WeatherRetrieval().get_5_day_forecast()
     current_date_time = datetime.datetime.now()
@@ -122,9 +114,9 @@ async def forecast(
     )
 
 
-@rt.get("/forecast/1", response_class=HTMLResponse)
+@rt.get("/forecast/daily/1", response_class=HTMLResponse)
 async def forecast_1(
-    current_user: Annotated[User, Depends(get_current_user_with_exception)],
+    user=user_exception_check,
 ):
     content = sub_template("forecast_1.html", {}, current_path, True)
     return content

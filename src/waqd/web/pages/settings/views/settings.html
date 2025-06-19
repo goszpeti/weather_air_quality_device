@@ -40,4 +40,12 @@
   <div class="tab-content bg-base-200 border-base-300 p-1">
     {% include "components/updates.html" %}
   </div>
+
+  <label class="tab text-3xl">
+    <input type="radio" name="my_tabs" />
+    About
+  </label>
+  <div class="tab-content bg-base-200 border-base-300 p-1" hx-get="/public/about/"
+  hx-trigger="load">
+  </div>
 </div>

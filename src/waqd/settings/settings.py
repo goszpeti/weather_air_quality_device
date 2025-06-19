@@ -4,6 +4,8 @@ import os
 import secrets
 from pathlib import Path
 from typing import Union, Dict
+
+import bcrypt
 from waqd import PROG_NAME
 from waqd.settings import (
     AUTO_UPDATER_ENABLED,
@@ -138,8 +140,9 @@ class Settings:
             self._SECRET_SECTION_NAME: {
                 USER_SESSION_SECRET: secrets.token_hex(32),
                 USER_API_KEY: "",
-                USER_DEFAULT_PW: secrets.token_hex(32),
-                OW_API_KEY: "",},
+                USER_DEFAULT_PW: bcrypt.gensalt(4).decode("utf-8")[18:],
+                OW_API_KEY: "",
+            },
         }
 
         self._read_ini()

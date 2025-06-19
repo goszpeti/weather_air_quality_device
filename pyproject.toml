@@ -1,7 +1,7 @@
 [project]
 name = "waqd"
 authors = [{ name = "Péter Gosztolya and Contributors" }]
-version = "3.0.0a0"
+version = "3.0.0a3"
 requires-python = ">=3.11"
 description = 'Weather Air Quality Device - base package'
 license = { 'file' = "LICENSE" }
@@ -15,54 +15,32 @@ classifiers = [
     "Environment :: Win32 (MS Windows)",
 ]
 dependencies = [
+    # Base dependencies
     "wheel",     # MIT License - for pep 517 legacy setup.py mode
     "packaging", # Apache Software License, BSD License
-    # Backend
-    "influxdb-client==1.49.0", # MIT License - influxdb API
-    "frozendict==2.4.6",       # LGPLv3 - for frozen dicts
-    "JsonSchema==4.23.0",      # MIT License - for events json schema validation
-    "pint==0.24.4",            # BSD 3-clause style license - physical units for sensors
-    "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
-    "APScheduler==3.10.4",     # MIT License - Scheduler for Events function
-    # 2.6.1
-    "PyGithub==1.55",             # LGPL - Access to GitHub in AutoUpdater
     "File-Read-Backwards==2.0.0", # MIT License - for performance in DetailView
-    # Sound
-    "gTTS==2.2.4",           # MIT License -Google TTS for speech
-    "Python-VLC==3.0.16120", # LGPLv2+ - use VLC for playing sounds
-    # HW
-    "pynput==1.8.1", # LGPLv3 License - for mouse input catching (touch input)
-    "gpiozero==2.0.1",                            # BSD License (BSD-3-Clause)
-    "RPi-Backlight==2.6.0",                       # MIT License
-    "Adafruit-Blinka==7.1.1",                     # For all other Adafruit drivers
-    "Adafruit-CircuitPython-DHT==3.7.1",          # MIT License - temp/hum sensor
-    "Adafruit-CircuitPython-CCS811==1.3.4",       # MIT License - co2/tvoc sensor
-    "Adafruit-CircuitPython-BME280==2.6.10",      # MIT License - temp/hum/baro sensor
-    "Adafruit-CircuitPython-BMP280==3.2.15",      # MIT License - temp/baro sensor
-    "Adafruit-Circuitpython-BH1750==1.0.7",       # MIT License - light sensor
-    "Adafruit-Circuitpython-ADS1x15==2.2.8",      # MIT License - currently only this ADC is used for analog sensors
-    "MH-Z19==3.1.3; platform_machine=='aarch64'", # MIT License
+    "frozendict==2.4.6",       # LGPLv3 - for frozen dicts
+
     # Web & UI
     "fastapi[standard]==0.115.12", # MIT License
     "Jinja2==3.1.6",               # BSD License
     "PyJWT==2.10.1",               # MIT License
     "passlib >=1.7.4, <2.0.0",     # BSD License - password hashing
-    "htmlmin==0.1.12",             # BSD License - HTML minifier
+    "htmlmin2==0.1.13",             # BSD License - HTML minifier
     "bcrypt>=4.0.0, <5.0.0",       # Apache License, Version 2.0 - Password hashing
-    "nmcli==1.5.0",                # MIT License
 ]
 
 readme = "README.md"
 
 [project.urls]
-repository = "https://github.com/goszpeti/WeatherAirQualityDevice"
-issues = "https://github.com/goszpeti/WeatherAirQualityDevice/issues"
+repository = "https://github.com/goszpeti/weather_air_quality_device"
+issues = "https://github.com/goszpeti/weather_air_quality_device/issues"
 
 # Build dependencies and configs
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["pdm-backend", "pdm-build-locked"]
+build-backend = "pdm.backend"
 
 [tool.setuptools.packages.find]
 where = ["src"] # list of folders that contain the packages (["."] by default)
@@ -90,6 +68,31 @@ waqd = "waqd.__main__:startup"
 # Test dependencies and configs
 
 [project.optional-dependencies]
+waqd = [
+    # Backend
+    "influxdb-client==1.49.0", # MIT License - influxdb API
+    "JsonSchema==4.23.0",      # MIT License - for events json schema validation
+    "pint==0.24.4",            # BSD 3-clause style license - physical units for sensors
+    "Python-DateUtil==2.8.2",  # Apache License - for date parse and relative delta
+    "APScheduler==3.10.4",     # MIT License - Scheduler for Events function
+    "PyGithub==2.6.1",             # LGPL - Access to GitHub in AutoUpdater
+    # Sound
+    "gTTS==2.2.4",           # MIT License -Google TTS for speech
+    "Python-VLC==3.0.16120", # LGPLv2+ - use VLC for playing sounds
+    # HW
+    "nmcli==1.5.0",                # MIT License
+    "pynput==1.8.1", # LGPLv3 License - for mouse input catching (touch input)
+    "gpiozero==2.0.1",                            # BSD License (BSD-3-Clause)
+    "RPi-Backlight==2.6.0",                       # MIT License
+    "Adafruit-Blinka==7.1.1",                     # For all other Adafruit drivers
+    "Adafruit-CircuitPython-DHT==3.7.1",          # MIT License - temp/hum sensor
+    "Adafruit-CircuitPython-CCS811==1.3.4",       # MIT License - co2/tvoc sensor
+    "Adafruit-CircuitPython-BME280==2.6.10",      # MIT License - temp/hum/baro sensor
+    "Adafruit-CircuitPython-BMP280==3.2.15",      # MIT License - temp/baro sensor
+    "Adafruit-Circuitpython-BH1750==1.0.7",       # MIT License - light sensor
+    "Adafruit-Circuitpython-ADS1x15==2.2.8",      # MIT License - currently only this ADC is used for analog sensors
+    "MH-Z19==3.1.3; platform_machine=='aarch64'", # MIT License
+]
 dev = [
     "rope",          # refactoring
     "debugpy",       # Qt thread debugging
@@ -105,10 +108,10 @@ test = [
     "freezegun==1.5.1",
 ]
 
+
 [tool.pytest.ini_options]
 minversion = "5.15"
 testpaths = ["test"]
-qt_api = "pyqt5"
 markers = []
 
 # Development configs

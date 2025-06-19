@@ -45,7 +45,7 @@
         <input type="search" placeholder="Search" id="search_loc_input"  
         class="js-kioskboard-input" data-kioskboard-placement="top"
         data-kioskboard-specialcharacters="true" data-kioskboard-type="keyboard"
-        hx-get="location_search_result" hx-trigger="input from:#search_loc_input delay:500ms" 
+        hx-get="location_search_result/" hx-trigger="input from:#search_loc_input delay:500ms" 
             hx-target="#location_list" hx-encoding="application/x-www-form-urlencoded"
             hx-swap="innerHTML" id="search_loc_input"
             oninput="this.setAttribute('hx-vals', JSON.stringify({query: this.value}))"
@@ -75,14 +75,21 @@
     <legend class="fieldset-legend  text-error">Danger Zone</legend>
 
     <legend class="fieldset-legend">Reset Password</legend>
-    <button class="btn btn-primary max-w-96"  onclick="confirm_pw_reset.showModal()">Reset admin password</button>
+    <button class="btn btn-primary max-w-96" onclick="confirm_pw_reset.showModal()">Reset admin password</button>
     <dialog id="confirm_pw_reset" class="modal">
         <div class="modal-box">
-            <h3 class="text-lg font-bold">Hello!</h3>
-            <p class="py-4">Press ESC key or click the button below to close</p>
-            <div class="modal-action">
+            <h3 class="text-lg font-bold">Reset remote password</h3>
+            <div id="pw_reset_result" class="py-4 text-xl"></div>
+            <div class="modal-action flex flex-col gap-2">
+                <button class="btn btn-error" 
+                        hx-post="reset_pw" 
+                        hx-target="#pw_reset_result" 
+                        hx-trigger="click"
+                        hx-swap="innerHTML"
+                        hx-on::after-request="this.style.display='none'">
+                    Confirm Reset
+                </button>
                 <form method="dialog">
-                    <!-- if there is a button in form, it will close the modal -->
                     <button class="btn">Close</button>
                 </form>
             </div>

@@ -1,8 +1,30 @@
 
+from enum import Enum
 from typing import Optional
 from attr import dataclass
 
+class ConnectionActivateFailedException(Exception):
+    """"Raised when a connection activation fails."""
 
+class NetworkConnectivity(Enum):
+    UNKNOWN = 'unknown'
+    NONE = 'none'
+    PORTAL = 'portal'
+    LIMITED = 'limited'
+    FULL = 'full'
+
+_syscmd_toggle = False
+
+class _syscmd():
+    @staticmethod
+    def nmcli(cmd):
+        # This is a mock implementation of the nmcli command execution.
+        # In a real scenario, this would execute the command and return the output.
+        global _syscmd_toggle
+        if _syscmd_toggle:
+            raise ConnectionActivateFailedException("Connection activation failed")
+        _syscmd_toggle = not _syscmd_toggle
+        return "Mocked nmcli output for command: " + " ".join(cmd)
 
 class RadioMgr():
     _state = True
@@ -225,10 +247,17 @@ class DeviceMgr():
 
     def disconnect(self, ssid):
         for wconn in self._wifi_list:
-            if wconn.ssid == ssid and wconn.in_use:
+            if wconn.in_use:
                 wconn.in_use = False
-                return
             
 
 
 device = DeviceMgr()
+
+class Networking:
+    def connectivity(self, check=False) -> NetworkConnectivity:
+        # This is a mock implementation of network connectivity.
+        # In a real scenario, this would check the actual network status.
+        return NetworkConnectivity.FULL
+
+networking = Networking()

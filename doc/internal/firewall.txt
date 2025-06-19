@@ -2,9 +2,9 @@ sudo apt install ufw
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw allow ssh
-# vnc
-sudo ufw allow 5900
 sudo ufw allow http
 sudo ufw allow https
 sudo ufw enable
 sudo ufw status verbose
+# vnc
+sudo ufw allow 5900

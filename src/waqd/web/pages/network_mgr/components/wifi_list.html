@@ -1,86 +1,84 @@
-{% for network in wifi_networks.values() %}
-<div id="{{network.ssid}}_main"
-  class="stat rounded-box shadow-md {% if network.in_use %}bg-base-300{%else%}bg-base-200{% endif %}">
-  <div class="stat-title"></div>
-  <div class="stat-value">
-    <div class="flex flex-col p-2">
-      <div class="flex flex-row items-center">
-        <svg viewBox="0 0 24 24" class="h-8">
-          {% if network.signal > 75 and network.security %}
-          <use href="/static/general_icons/wifi_3_bar_locked.svg#main" fill="white" />
-          {% elif network.signal > 50 and network.security %}
-          <use href="/static/general_icons/wifi_2_bar_locked.svg#main" fill="white" />
-          {% elif network.security %}
-          <use href="/static/general_icons/wifi_1_bar_locked.svg#main" fill="white" />
-          {% endif %}
-        </svg>
-        <div class="text-s text-wrap tracking-wide p-4">{{network.ssid}}</div>
-        <button id="{{network.ssid}}_connect" onclick="handleConnectButton('{{network.ssid}}')" {%
-          if network.in_use %} class="btn btn-sm btn-info ml-auto p-4"> Disconnect
-          {%else%}
-          class="btn btn-sm btn-secondary ml-auto p-4">
-          Connect{% endif %}
-        </button>
-      </div>
-      <div id="{{network.ssid}}_connection_dialog" class="hidden">
-          <div class="flex flex-row items-center gap-4 p-2">
-            <input id="{{network.ssid}}_pw" type="password" placeholder="Password"
-              class="input input-bordered w-full max-w-xs -mr-2 js-kioskboard-input"
-             data-kioskboard-specialcharacters="true" data-kioskboard-type="keyboard"/>
-            <button type="button" class="btn btn-square btn-secondary"
-              onclick="togglePasswordVisibility('{{network.ssid}}_pw', '{{network.ssid}}_togglePWVisibilityBtn')">
-              <svg id="{{network.ssid}}_togglePWVisibilityBtn" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
-                viewBox="0 0 24 24">
-                <use href="/static/general_icons/visibility.svg#main" fill="white" />
-              </svg>
+<div x-data="wifiMgr()" x-init="initWifiStates()">
+  <template x-for="network in wifiNetworks">
+    <div :id="`${network.ssid}_main`" class="stat rounded-box shadow-md"
+      :class="network.inUse ? 'bg-base-300' : 'bg-base-200'">
+      <div class="stat-title"></div>
+      <div class="stat-value">
+        <div class="flex flex-col p-2">
+          <div class="flex flex-row items-center">
+            <svg viewBox="0 0 24 24" class="h-8">
+              <use :href="getWifiIcon(network)" fill="white" />
+            </svg>
+            <div class="text-s text-wrap tracking-wide p-4" x-text="network.ssid"></div>
+            <button x-show="!network.showDialog"
+              x-on:click="network.inUse ? disconnect(network.ssid) : tryConnect(network.ssid)"
+              :class="network.inUse ? 'btn btn-lg btn-info ml-auto p-4' : 'btn btn-lg btn-secondary ml-auto p-4'">
+              <span x-text="network.inUse ? 'Disconnect' : 'Connect'"></span>
+              <span x-show="network.disconnecting || network.connecting"
+                class="loading loading-xs loading-spinner ml-4 p-2"></span>
             </button>
           </div>
-          <form method="dialog" class="p-2">
-            <button id="cancel_btn" class="btn btn-sm btn-secondary mr-4" 
-              onclick="document.getElementById('{{network.ssid}}_connection_dialog').classList.add('hidden')">Cancel</button>
-            <button id="next_btn" class="btn btn-sm btn-secondary" hx-post="wifi/connect"
-              hx-vals='js:{"password": document.getElementById("{{network.ssid}}_pw").value, "ssid": selectedSSID}'
-              hx-swap="none"
-              hx-on::before-request="document.getElementById('{{network.ssid}}_pw_toggle_spinner').classList.remove('hidden')"
-              hx-on::after-request="document.getElementById('{{network.ssid}}_pw_toggle_spinner').classList.add('hidden')
-                    document.getElementById('Rescan').click()">
-              Next
-              <span id="{{network.ssid}}_pw_toggle_spinner"
-                class="loading loading-xs loading-spinner ml-4 p-2 hidden "></span>
-            </button>
-          </form>
+          <div x-show="network.showDialog" class="mt-2" x-effect="
+            if (network.showDialog) {
+              setTimeout(() => {
+                const input = $el.querySelector('input.js-kioskboard-input');
+                if (input && window.KioskBoard) {
+                  window.KioskBoard.run(input);
+                }
+              }, 0);
+            }
+          ">
+            <div class="flex flex-row items-center gap-4 p-2">
+              <input x-model="network.password" type="password" placeholder="Password"
+                class="input input-lg input-bordered w-full max-w-xs -pr-8 js-kioskboard-input"
+                data-kioskboard-specialcharacters="true" data-kioskboard-type="keyboard"
+                x-ref="pwInput"
+                :id="`${network.ssid}_pw_input`" />
+              <button type="button" class="btn btn-square btn-lg btn-secondary"
+                :id="`${network.ssid}_pw_toggle`"
+                x-ref="pwToggle"
+                x-on:click="togglePasswordVisibility($refs.pwInput, $refs.pwToggle)">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24">
+                  <use href="/static/general_icons/visibility.svg#main" fill="white" />
+                </svg>
+              </button>
+            </div>
+            <div class="flex flex-row items-center gap-4 p-2">
+              <button type="button" class="btn btn-lg btn-secondary mr-4"
+                x-on:click="network.showDialog = false">
+                Cancel
+              </button>
+              <button type="button" class="btn btn-lg btn-secondary"
+                x-on:click="connect(network.ssid)">
+                Next
+                <span x-show="network.connecting"
+                  class="loading loading-xs loading-spinner ml-4 p-2"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="stat-desc flex flex-row items-center gap-4 p-2">
+        <span x-text="`Signal: ${network.signal}%`"></span>
+        <span :id="`${network.ssid}_security`" x-text="`Security: ${network.security}`"></span>
       </div>
     </div>
-
-  </div>
-  <div class="stat-desc flex flex-row items-center gap-4 p-2">
-    <span>Signal: {{network.signal}}%</span>
-    <span id="{{network.ssid}}_security" class="">Security: {{network.security}}</span>
-  </div>
+  </template>
 </div>
-{% endfor %}
 
-<script>
-  var selectedSSID = ""
-  function handleConnectButton(ssid) {
-    const connectBtn = document.getElementById(`${ssid}_connect`);
-    const mainForm = document.getElementById(`${ssid}_main`);
-
-    if (connectBtn.textContent.trim() === 'Connect') { // Show password field and buttons
-      connection_dialog = document.getElementById(`${ssid}_connection_dialog`);
-      connection_dialog.classList.remove('hidden')
-      selectedSSID = ssid
-    }
-    else if (connectBtn.textContent.trim() === 'Disconnect') { // Disconnect directly
-      htmx.ajax('post', 'wifi/disconnect', {
-        values: { "ssid": ssid },
-        swap: "none",
-        handler: function (elt, evt) {
-          document.getElementById('Rescan').click()
-        }
-      });
-    }
-  }
-
-  //# sourceURL=wifi_list.html
+<script id="wifi-data" type="application/json">
+{
+  {% for network in wifi_networks.values() %}
+  "{{ network.ssid }}": {
+    "ssid": "{{ network.ssid }}",
+    "signal": {{ network.signal }},
+    "security": "{{ network.security }}",
+    "inUse": {{ 'true' if network.in_use else 'false' }},
+    "showDialog": false,
+    "connecting": false,
+    "disconnecting": false,
+    "password": ""
+  }{% if not loop.last %}, {% endif %}
+  {% endfor %}
+}
 </script>

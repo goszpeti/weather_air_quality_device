@@ -9,6 +9,7 @@ import sys
 import threading
 import time
 from ast import literal_eval
+from nmcli import NetworkConnectivity
 from statistics import mean
 from subprocess import check_output
 from typing import TYPE_CHECKING, Optional
@@ -618,18 +619,21 @@ class DHT22(TempSensor, HumiditySensor, CyclicComponent):
         if not self._sensor_driver:
             self._disabled = True
             return
-        try:
-            humidity = self._sensor_driver.humidity
-            temperature = self._sensor_driver.temperature
-        except Exception as error:
-            self._error_num += 1
-            # errors happen fairly often, keep going
-            self._logger.error("DHT22: Can't read sensor - %s", str(error))
-            return
-        if self._error_num >= 3:
-            self._logger.error("DHT22: Restarting sensor after 3 errors")
-            self._comps.stop_component_instance(self)
-            return
+        
+        temperature = None
+        humidity = None
+        while not temperature and not humidity:
+            try:
+                humidity = self._sensor_driver.humidity
+                temperature = self._sensor_driver.temperature
+            except Exception as error:
+                self._error_num += 1
+                # errors happen fairly often, keep going
+                self._logger.debug("DHT22: Can't read sensor - %s", str(error))
+            if self._error_num >= 5:
+                self._logger.error("DHT22: Restarting sensor after 5 errors")
+                self._comps.stop_component_instance(self)
+                return
         self._error_num = 0
 
         self._set_humidity(humidity)
@@ -766,7 +770,7 @@ class BME280(TempSensor, BarometricSensor, HumiditySensor, CyclicComponent):
         # change this to match the location's pressure (hPa) at sea level
         altitude = self._settings.get_float(LOCATION_ALTITUDE_M)
         temp_outside = self._settings.get_float(LAST_TEMP_C_OUTSIDE)
-        if Network().internet_connected:
+        if Network().get_connectivity() == NetworkConnectivity.FULL:
             weather = self._comps.weather_info.get_current_weather()
             if weather:
                 altitude = weather.altitude
@@ -801,6 +805,7 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
         self._offset = settings.get_int(MH_Z19_VALUE_OFFSET)
         self._start_time = datetime.datetime.now()
         self._readings_stabilized = False
+        self._error_num = 0
         self._start_update_loop(self._init_sensor, self._read_sensor)
 
     def _init_sensor(self):
@@ -815,25 +820,29 @@ class MH_Z19(CO2Sensor, CyclicComponent):  # pylint: disable=invalid-name
     def _read_sensor(self):
         co2 = 0
         output = ""
-        try:
-            # Parse back from cli
-            if self._runtime_system.is_target_system:
-                cmd = ["sudo", sys.executable, "-m", "mh_z19"]
-            else:  # for local tests
-                cmd = [sys.executable, "-m", "mh_z19"]
-            output = check_output(cmd).decode("utf-8")
-            output.strip()
-            if not output or not "co2" in output.lower():
-                self._logger.error("MH-Z19: Can't read sensor")
+        self._error_num = 0
+        while not co2 and self._error_num < 10:
+            try:
+                # Parse back from cli
+                if self._runtime_system.is_target_system:
+                    cmd = ["sudo", sys.executable, "-m", "mh_z19"]
+                else:  # for local tests
+                    cmd = [sys.executable, "-m", "mh_z19"]
+                output = check_output(cmd).decode("utf-8")
+                output.strip()
+                if not output or not "co2" in output.lower():
+                    self._error_num += 1
+                else:
+                    co2 = int(literal_eval(output).get("co2", ""))
+            except Exception as error:
+                # errors happen fairly often, keep going
+                self._logger.error(
+                    f"MH-Z19: Can't read sensor - {str(error)} Output: {output}",
+                )
                 return
-            co2 = int(literal_eval(output).get("co2", ""))
-        except Exception as error:
-            # errors happen fairly often, keep going
-            self._logger.error(
-                f"MH-Z19: Can't read sensor - {str(error)} Output: {output}",
-            )
+        if not co2:
+            self._logger.error("MH-Z19: Error in reading sensor after 10 tries")
             return
-
         self._set_co2(co2 + self._offset)
 
         # eval stabilizer time

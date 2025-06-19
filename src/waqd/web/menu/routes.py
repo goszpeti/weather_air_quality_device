@@ -1,24 +1,24 @@
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
-from waqd.base.network import Network
 from waqd.base.system import RuntimeSystem
 from waqd.web.authentication import (
     User,
-    get_current_user_with_exception,
+    user_exception_check,
+    user_plain_check
 )
 from waqd.web.templates import base_template
-from waqd.web.authentication import PermissionChecker, get_current_user_plain
+from waqd.web.authentication import PermissionChecker
 
 rt = APIRouter()
 
 current_path = Path(__file__).parent.resolve()
 
 @rt.get("/", response_class=HTMLResponse)
-async def menu(user: Annotated[User, Depends(get_current_user_plain)]):
+async def menu(user: Annotated[User, user_plain_check]):
     menu_content = ""
     local = False
     if user:
@@ -39,7 +39,7 @@ async def menu(user: Annotated[User, Depends(get_current_user_plain)]):
 
 @rt.get("/network_icon", response_class=HTMLResponse)
 async def wifi_signal_strength(
-    current_user: Annotated[User, Depends(get_current_user_with_exception)],
+    current_user: Annotated[User, user_exception_check],
 ):
     if not PermissionChecker(
         required_permissions=[
@@ -47,6 +47,7 @@ async def wifi_signal_strength(
         ]
     ).check_permissions(current_user):
         return HTMLResponse("Nope")
+    from waqd.base.network import Network
     network = Network()
     icon_name = "cloud_off"
     if network.is_connected_via_eth():
@@ -66,7 +67,7 @@ async def wifi_signal_strength(
 
 
 @rt.post("/shutdown", response_class=HTMLResponse)
-async def shutdown(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
+async def shutdown(current_user: Annotated[User, user_exception_check]):
     is_local = PermissionChecker(
         required_permissions=[
             "users:local",
@@ -78,7 +79,7 @@ async def shutdown(current_user: Annotated[User, Depends(get_current_user_with_e
 
 
 @rt.post("/restart", response_class=HTMLResponse)
-async def restart(current_user: Annotated[User, Depends(get_current_user_with_exception)]):
+async def restart(current_user: Annotated[User, user_exception_check]):
     is_local = PermissionChecker(
         required_permissions=[
             "users:local",

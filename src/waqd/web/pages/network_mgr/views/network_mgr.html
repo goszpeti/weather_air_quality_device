@@ -1,28 +1,39 @@
-<fieldset class="fieldset bg-base-100 border-base-300 text-3xl rounded-box w-full border p-6 gap-4">
-  <!-- <div class="w-3/4 flex flex-column align-middle items-center"> -->
+<fieldset id="network_mgr"
+  class="fieldset bg-base-100 border-base-300 text-3xl rounded-box w-full border p-6 gap-4"
+  x-data="networkMgr()" x-init="init()"
+  data-wifi-enabled="{{ 'true' if wifi_enabled else 'false' }}">
   <div class="flex flex-row align-middle items-center">
     <h3 class="text-3xl font-bold p-2">
       Networks
     </h3>
-    <button id="toggle_wifi" class="btn btn-secondary ml-8" hx-post="wifi/toggle"
-      hx-trigger="click" hx-on::after-request="document.getElementById('Rescan').click()">
-      {{wifi_status}}
+    <button id="toggle_wifi" class="btn btn-secondary ml-8 flex flex-row items-center gap-2"
+      @click="toggleWifi" :disabled="wifiToggleLoading">
+      <template x-if="wifiEnabled">
+        <svg viewBox="0 0 24 24" class="h-6">
+          <use href="/static/general_icons/wifi_off.svg#main" fill="white" />
+        </svg>
+      </template>
+      <template x-if="!wifiEnabled">
+        <svg viewBox="0 0 24 24" class="h-6">
+          <use href="/static/general_icons/wifi_full.svg#main" fill="white" />
+        </svg>
+      </template>
+      <span x-text="wifiEnabled ? 'Turn Off Wifi' : 'Turn On Wifi'"></span>
+      <span x-show="wifiToggleLoading" class="loading loading-xs loading-spinner ml-2"></span>
     </button>
-    <button id="Rescan" class="btn btn-secondary ml-4 " hx-get="wifi_list"
-      hx-trigger="load, click" hx-target="#wifi_list"
-      hx-on::before-request="document.getElementById('wifi_toggle_spinner').classList.remove('hidden')"
-      hx-on::after-request="KioskBoard.run('.js-kioskboard-input');document.getElementById('wifi_toggle_spinner').classList.add('hidden')">
+    <button id="Rescan" class="btn btn-secondary ml-4" @click="rescanWifi()">
       <svg viewBox="0 0 24 24" class="h-6">
         <use href="/static/general_icons/refresh.svg#main" fill="white" />
       </svg>
-      Rescan   
-      <span id="wifi_toggle_spinner"
-        class="loading loading-xs loading-spinner ml-4 p-2 hidden "></span>
+      Rescan
+      <span id="wifi_toggle_spinner" class="loading loading-xs loading-spinner ml-4 p-2"
+        x-show="rescanLoading"></span>
     </button>
   </div>
   <div class="divider divider-accent m-0"></div>
   <div class="stats stats-vertical shadow w-full bg-base-300 ">
-    <div class="stat">
+    <div class="stat rounded-box shadow-md"
+      :class="ethConnected ? 'bg-base-300' : 'bg-base-200'">
       <div class="stat-title"></div>
       <div class="stat-value">
         <div class="flex flex-row align-middle items-center p-2">
@@ -32,15 +43,133 @@
           <div class="text-s tracking-wide p-2">
             Ethernet-01
           </div>
-          <div class="btn btn-sm btn-info ml-auto p-4" hx-get="ethernet_status"
-            hx-target="#eth_con_status" hx-trigger="load, click">
+          <div class="btn btn-lg btn-info ml-auto p-4" @click="recheckEthernet"
+            :disabled="ethLoading">
             Recheck
+            <span x-show="ethLoading" class="loading loading-xs loading-spinner ml-2"></span>
           </div>
         </div>
       </div>
-      <div id="eth_con_status" class="stat-desc p-2"></div>
+      <div id="eth_con_status" class="stat-desc p-2" x-text="ethStatus"></div>
     </div>
   </div>
   <div class="mb-60" id="wifi_list"></div>
-  <!-- </div> -->
 </fieldset>
+
+<script>
+  function networkMgr() {
+    return {
+      wifiEnabled: false,
+      wifiToggleLoading: false,
+      rescanLoading: false,
+      ethStatus: '',
+      ethLoading: false,
+      get ethConnected() {
+        return this.ethStatus === 'Connected';
+      },
+      init() {
+        const el = document.querySelector('fieldset[x-data]');
+        this.wifiEnabled = el?.getAttribute('data-wifi-enabled') === 'true';
+        this.recheckEthernet();
+        if (this.wifiEnabled) {
+          this.rescanWifi();
+        }
+      },
+      toggleWifi() {
+        this.wifiToggleLoading = true;
+        fetch('wifi/toggle', { method: 'POST' })
+          .then(resp => resp.ok ? resp.text() : Promise.reject())
+          .then(() => {
+            this.wifiEnabled = !this.wifiEnabled;
+            this.rescanWifi();
+          })
+          .finally(() => { this.wifiToggleLoading = false; });
+      },
+      rescanWifi() {
+        this.rescanLoading = true;
+        fetch('wifi_list')
+          .then(response => response.ok ? response.text() : Promise.reject())
+          .then(html => {
+            const wifiListEl = document.getElementById('wifi_list');
+            if (wifiListEl) {
+              wifiListEl.innerHTML = html;
+            }
+          })
+          .catch(error => console.error('Error fetching wifi list:', error))
+          .finally(() => { this.rescanLoading = false;this.updateNetworkIcon();
+          });
+      },
+      recheckEthernet() {
+        this.ethLoading = true;
+        fetch('ethernet_status')
+          .then(resp => resp.text())
+          .then(text => {
+            this.ethStatus = text;
+          })
+          .finally(() => { this.ethLoading = false; this.updateNetworkIcon();          });
+      },
+      updateNetworkIcon() {
+        document.querySelectorAll('[x-data="networkStatus()"]').forEach(el => {
+          if (el._x_dataStack) {
+            el._x_dataStack[0].checkStatus();
+          }
+        });
+      },
+    }
+  }
+
+  function wifiMgr() {
+    return {
+      wifiNetworks: [],
+      initWifiStates() {
+        const rawData = JSON.parse(document.getElementById('wifi-data').textContent);
+        this.wifiNetworks = Object.values(rawData);
+      },
+      getWifiIcon(network) {
+        if (!network.security) return '';
+        if (network.signal > 75) return '/static/general_icons/wifi_3_bar_locked.svg#main';
+        if (network.signal > 50) return '/static/general_icons/wifi_2_bar_locked.svg#main';
+        return '/static/general_icons/wifi_1_bar_locked.svg#main';
+      },
+      tryConnect(ssid) {
+        const network = this.wifiNetworks.find(n => n.ssid === ssid);
+        network.connecting = true;
+        fetch('wifi/try_connect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ ssid })
+        }).then(response => {
+          if (response.ok) {
+            network.inUse = true;
+            Alpine.$data(document.getElementById('network_mgr')).rescanWifi();
+          } else {
+            network.showDialog = true;
+          }
+        }).finally(() => { network.connecting = false; });
+      },
+      connect(ssid) {
+        const network = this.wifiNetworks.find(n => n.ssid === ssid);
+        network.connecting = true;
+        fetch('wifi/connect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ssid, password: network.password })
+        }).then(response => {
+          if (response.ok) network.inUse = true;
+          network.showDialog = false;
+          Alpine.$data(document.getElementById('network_mgr')).rescanWifi();
+        }).finally(() => { network.connecting = false; });
+      },
+      disconnect(ssid) {
+        const network = this.wifiNetworks.find(n => n.ssid === ssid);
+        network.disconnecting = true;
+        fetch('wifi/disconnect', {
+          method: 'POST',
+        }).then(response => {
+          if (response.ok) network.inUse = false;
+          Alpine.$data(document.getElementById('network_mgr')).rescanWifi();
+        }).finally(() => { network.disconnecting = false; });
+      }
+    }
+  }
+</script>

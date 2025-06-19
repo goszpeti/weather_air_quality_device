@@ -42,7 +42,7 @@ function waqd_install() {
     ./setup/install_influx.sh
 
     echo "# Configuring system languages (Step 4/6)"
-    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --configure_languages
+    sudo PYTHONPATH=${SRC_DIR} python3 -m waqd_installer --configure_languages
 
     echo "# Setting up the system (Step 5/6)"
 
@@ -61,13 +61,13 @@ function waqd_install() {
     sudo raspi-config nonint do_squeekboard S3 # disable
     sudo raspi-config nonint do_wayland W1 # X11
 
-    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --setup_system
+    sudo PYTHONPATH=${SRC_DIR} python3 -m waqd_installer --setup_system
 
     echo "# Installing application... (Step 6/6)"
-    sudo PYTHONPATH=${SRC_DIR} python3 -m installer --install
+    sudo PYTHONPATH=${SRC_DIR} python3 -m waqd_installer --install
     # needs installed app
     export PYTHONPATH=${SRC_DIR}
-    python3 -m installer --set_wallpaper
+    python3 -m waqd_installer --set_wallpaper
     
     echo "# Waiting for restart..."
     sudo reboot

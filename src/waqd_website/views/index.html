@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="mytheme">
+<head>
+  <title>WAQD - WeatherAirQualityDevice</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, maximum-scale=1.5">
+  <link rel="preload" href="/static/font/Franzo-E4GA.woff" as="font" type="font/woff2" crossorigin>
+  <link href="/static/css/output.css" rel="stylesheet" type="text/css" />
+
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <style>
+    @font-face {
+      font-family: MyFranzo;
+      src: url('/static/font/Franzo-E4GA.woff');
+    }
+  </style>
+  <link rel="icon" href="/static/gui_base/icon.avif" type="image/avif">
+</head>
+<body class="{{overflow_config}}">
+  <header>
+    {{menu_content}}
+  </header>
+  <main class="py-2 px-2 md:px-0 md:py-0 lg:p-4" style="max-width: 100%; min-height: 80vh;" hx-ext="client-side-templates">
+    <!-- Enable client side templates for all main content -->
+    {{content}}
+  </main>
+  <div id="toasts" class="toast toast-end">
+    {{toast}}
+  </div>
+</body>
+</html>
