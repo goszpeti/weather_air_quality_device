@@ -18,17 +18,17 @@ jobs:
         uses: actions/checkout@v2
       - name: Build Docker image
         run: |
+          NEW_TAG=$(git rev-parse --short HEAD)
           docker buildx build \
             --platform linux/arm64/v8 \
             --build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
             --build-arg VCS_REF=$(git rev-parse HEAD) \
             --build-arg VERSION=$(git describe --tags) \
-            -t goszpeti/waqd_website::$NEW_TAG \
+            -t goszpeti/waqd_website:$NEW_TAG \
             -f src/waqd_website/Dockerfile \
             .
       - name: Push Docker image
         run: |
-          NEW_TAG=$(git rev-parse --short HEAD)
           echo $NEW_TAG >> $GITHUB_OUTPUT
           echo ${{ secrets.DOCKER_ACCESS_TOKEN }} | docker login -u goszpeti --password-stdin
           docker push goszpeti/waqd_website:$NEW_TAG
@@ -48,7 +48,7 @@ jobs:
       - name: Update image tag in docker-compose.yml
         run: |
           IMAGE_NAME="waqd_website"
-          NEW_TAG=${{ needs.job1.outputs.example_var }}"
+          NEW_TAG=${{ needs.job1.outputs.example_var }}
           sed -i "s|$IMAGE_NAME:[^ ]*|$IMAGE_NAME:$NEW_TAG|g" deployment/waqd-website.yaml
 
       - name: Commit and push changes
