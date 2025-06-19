@@ -58,7 +58,7 @@ jobs:
         with:
           fetch-depth: 1
           repository: 'WAQD/waqd_infrastructure'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.WAQD_GITHUB_ACCESS_TOKEN }}
           ref: 'main'
 
       - name: Update version comment in yaml
